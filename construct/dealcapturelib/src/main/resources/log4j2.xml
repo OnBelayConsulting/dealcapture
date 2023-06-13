@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30" >
+	<Appenders>
+    	<Console name="Console" target="SYSTEM_OUT">
+      		<PatternLayout pattern="%marker %d %-5p [%t] %C{2} - %m%n"/>
+    	</Console>
+    	<File name="fileAppenderUser" fileName="sd_deal.user.log">
+      		<PatternLayout pattern="%X %marker %d %-5p [%t] %C{2} - %m%n"/>
+      		<filters>
+        		<MarkerFilter marker="USER" onMatch="ACCEPT" onMismatch="NEUTRAL" />
+        		<MarkerFilter marker="JOB" onMatch="DENY" onMismatch="DENY" />
+        	</filters>
+    	</File>
+    	<File name="fileAppenderJob" fileName="sd_deal.job.log">
+      		<PatternLayout pattern="%marker %d %-5p [%t] %C{2} - %m%n"/>
+      		<filters>
+        		<MarkerFilter marker="JOB" onMatch="ACCEPT" onMismatch="NEUTRAL" />
+        		<MarkerFilter marker="USER" onMatch="DENY" onMismatch="DENY" />
+        	</filters>
+	    </File>
+    	<File name="fileAppenderOther" fileName="sd_deal.log">
+      		<PatternLayout pattern="%d %-5p [%t] %C{2} - %m%n"/>
+	   		<NoMarkerFilter onMatch="ACCEPT" onMismatch="DENY" />
+	    </File>
+	</Appenders>
+    <Loggers>
+		<logger name="com.onbelay" level="debug" >
+			<AppenderRef ref="fileAppenderUser" />
+			<AppenderRef ref="fileAppenderJob" />
+			<AppenderRef ref="fileAppenderOther" />
+		</logger>
+		
+        <Root level="ERROR">
+	        <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>  

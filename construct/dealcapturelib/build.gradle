@@ -1,0 +1,101 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'idea'
+}
+
+
+repositories {
+	mavenCentral()
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/onbelayconsulting/obcorelib")
+		credentials {
+			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+			password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+		}
+	}
+
+}
+
+
+dependencyManagement {
+
+	imports {
+		mavenBom 'org.springframework.boot:spring-boot-dependencies:2.7.5'
+	}
+
+	dependencies {
+
+	}
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.8.2"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.8.2", classifier: 'tests'
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation "com.fasterxml.jackson.core:jackson-core"
+	implementation "com.fasterxml.jackson.core:jackson-databind"
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
+	implementation group: "org.apache.commons", name: "commons-lang3", version: "3.12.0"
+	implementation group: "org.apache.commons", name: "commons-collections4", version: "4.4"
+	implementation group: "org.apache.commons", name: "commons-text", version: "1.+"
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation("org.junit.vintage:junit-vintage-engine")
+	implementation('org.springframework.boot:spring-boot-starter-log4j2')
+
+}
+
+configurations {
+	all*.exclude group:'org.springframework.boot',
+			module:'spring-boot-starter-logging'
+	tests
+}
+
+test {
+	useJUnitPlatform()
+}
+
+
+
+
+jar {
+	enabled = true
+	baseName = 'obdealcapturelib'
+	version = '1.0.0-SNAPSHOT'
+	manifest {
+		attributes("Implementation-Title": "OBDealCapturelib", "Implementation-Version": "1.0", "Created-By": "OnBelay Consulting")
+	}
+}
+
+task srcZip (type: Zip) {
+	
+	classifier = 'src'
+	from projectDir
+	include 'src/**/*'
+	
+}
+
+task construct (dependsOn: ["build", "srcZip"])
+
+bootJar {
+  enabled = false
+}
+
+
+task testJar(type: Jar, dependsOn: testClasses) {
+	archiveClassifier.set('tests')
+	from sourceSets.test.output
+}
+
+artifacts {
+	tests testJar
+}
+
+

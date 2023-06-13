@@ -1,0 +1,3 @@
+rootProject.name = 'dealcapture'
+include ':construct:dealcapturelib',
+        ':construct:dealcaptureapp'
