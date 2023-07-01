@@ -15,11 +15,13 @@
  */
 package com.onbelay.dealcapture.organization.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationErrorCode;
 
 import javax.persistence.Column;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationDetail {
 
 	private String shortName;

@@ -1,0 +1,48 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/DEAL_COST.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="DEAL_COST_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="DEAL_COST" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID" defaultValueSequenceNext="DEAL_COST_SEQ"
+                    remarks="Surrogate key for the DEAL_COST table." type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="DEAL_COST_PK" nullable="false"/>
+            </column>
+            <column name="DEAL_ID" remarks="Surrogate key for the BASE_DEAL table."
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COST_NAME" remarks="Accronym or short name for cost" type="java.sql.Types.VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COST_DESCRIPTION" remarks="description" type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COST_CURRENCY_CODE" remarks="" type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COST_UOM_CODE" remarks="" type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COST_PER_UNIT" remarks="COST" type="java.sql.Types.NUMERIC(8, 3)"/>
+            <column name="OPTIMISTIC_LOCK_NO" remarks="Version number." defaultValueNumeric="0"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPIRED_FLG" remarks="Y or N" type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

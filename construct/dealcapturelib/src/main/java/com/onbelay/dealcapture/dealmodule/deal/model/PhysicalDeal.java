@@ -25,8 +25,8 @@ import javax.persistence.Transient;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatus;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealType;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
@@ -40,7 +40,7 @@ public class PhysicalDeal extends BaseDeal {
 	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
 	public PhysicalDeal() {
-		super(DealType.PHYSICAL_DEAL);
+		super(DealTypeCode.PHYSICAL_DEAL);
 	}
 	
 	public static PhysicalDeal create(PhysicalDealSnapshot snapshot) {
@@ -70,16 +70,15 @@ public class PhysicalDeal extends BaseDeal {
 		setAssociationsFromSnapshot(snapshot);
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
 		this.detail.copyFrom(physicalDealSnapshot.getPhysicalDealDetail());
-		validate();
 		update();
 	}
 	
 	public void createWith(BaseDealSnapshot snapshot) {
+		detail.setDefaults();
 		super.createWith(snapshot);
 		setAssociationsFromSnapshot(snapshot);
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
 		this.detail.copyFrom(physicalDealSnapshot.getPhysicalDealDetail());
-		validate();
 		save();
 	}
 	
@@ -89,7 +88,7 @@ public class PhysicalDeal extends BaseDeal {
 	protected void validate() throws OBValidationException {
 		super.validate();
 		detail.validate();
-		if (getDealDetail().getDealStatus() == DealStatus.VERIFIED) {
+		if (getDealDetail().getDealStatus() == DealStatusCode.VERIFIED) {
 			if (marketPricingIndex == null)
 				throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
 		}

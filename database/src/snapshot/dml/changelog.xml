@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/changelog.xml"
+>
+    <include file="DEAL_STATUS_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="FREQUENCY_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="UNIT_OF_MEASURE_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="VALUATION_CODE_Insert.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>
+
+
+

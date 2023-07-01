@@ -21,10 +21,12 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IndexPriceDetail extends AbstractDetail {
 	
 	private LocalDate priceDate;

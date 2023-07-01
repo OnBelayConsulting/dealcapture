@@ -19,10 +19,12 @@ import javax.persistence.Column;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PricingIndexDetail {
 
 	private String name;
@@ -83,7 +85,7 @@ public class PricingIndexDetail {
 		this.indexTypeValue = indexTypeValue;
 	}
 
-	@Column(name = "NAME_TXT")
+	@Column(name = "INDEX_NAME")
 	public String getName() {
 		return name;
 	}
@@ -94,7 +96,7 @@ public class PricingIndexDetail {
 	}
 
 
-	@Column(name = "DESCRIPTION_TXT")
+	@Column(name = "INDEX_DESCRIPTION")
 	public String getDescription() {
 		return description;
 	}

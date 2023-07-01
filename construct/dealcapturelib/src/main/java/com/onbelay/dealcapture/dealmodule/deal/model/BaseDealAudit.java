@@ -18,7 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealType;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
@@ -76,8 +76,8 @@ public abstract class BaseDealAudit extends AuditAbstractEntity {
 
 
 	@Transient
-	public DealType getDealType() {
-		return DealType.lookUp(dealTypeValue);
+	public DealTypeCode getDealType() {
+		return DealTypeCode.lookUp(dealTypeValue);
 	}
 	
 	@Column(name = "DEAL_TYPE_CODE")

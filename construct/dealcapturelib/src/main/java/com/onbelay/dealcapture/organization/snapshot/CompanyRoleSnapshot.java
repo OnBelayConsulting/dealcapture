@@ -15,8 +15,10 @@
  */
 package com.onbelay.dealcapture.organization.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CompanyRoleSnapshot extends OrganizationRoleSnapshot {
 
 	private CompanyDetail detail = new CompanyDetail();

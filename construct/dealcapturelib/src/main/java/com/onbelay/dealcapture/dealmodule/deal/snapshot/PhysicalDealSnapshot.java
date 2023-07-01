@@ -15,13 +15,15 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealType;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PhysicalDealSnapshot extends BaseDealSnapshot {
 
 	private PhysicalDealDetail physicalDealDetail = new PhysicalDealDetail();
@@ -29,12 +31,12 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 	private EntityId marketPricingIndexId;
 	
 	public PhysicalDealSnapshot() {
-		super(DealType.PHYSICAL_DEAL);
+		super(DealTypeCode.PHYSICAL_DEAL);
 	}
 
 	public PhysicalDealSnapshot(String errorCode) {
 		super(
-				DealType.PHYSICAL_DEAL,
+				DealTypeCode.PHYSICAL_DEAL,
 				errorCode);
 	}
 
@@ -43,7 +45,7 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 			boolean isPermissionException) {
 
 		super(
-				DealType.PHYSICAL_DEAL,
+				DealTypeCode.PHYSICAL_DEAL,
 				errorCode,
 				isPermissionException);
 	}
@@ -52,7 +54,7 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 			String errorCode,
 			List<String> parameters) {
 		super(
-				DealType.PHYSICAL_DEAL,
+				DealTypeCode.PHYSICAL_DEAL,
 				errorCode,
 				parameters);
 	}
@@ -64,7 +66,7 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 			PhysicalDealDetail physicalDealDetail) {
 		
 		super(
-				DealType.PHYSICAL_DEAL,
+				DealTypeCode.PHYSICAL_DEAL,
 				companyRoleSlot,
 				counterpartySlot,
 				dealDetail);

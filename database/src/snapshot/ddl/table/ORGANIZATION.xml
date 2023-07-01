@@ -1,0 +1,39 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/organizations/snapshot/ddl/ORGANIZATION.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="ORGANIZATION_SEQ"
+                cacheSize="100"
+                startValue="1"
+        />
+
+        <createTable tableName="OB_ORGANIZATION" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID" defaultValueSequenceNext="ORGANIZATION_SEQ"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="ORGANIZATION_PK" nullable="false"/>
+            </column>
+            <column name="SHORT_NAME"
+                    type="java.sql.Types.VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LEGAL_NAME"
+                    type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPTIMISTIC_LOCK_NO"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPIRED_FLG"
+                    type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

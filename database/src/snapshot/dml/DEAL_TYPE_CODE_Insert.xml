@@ -1,0 +1,27 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/snapshot/dml/DEAL_TYPE_CODE_Insert.xml'
+>
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <insert tableName='DEAL_TYPE_CODE'>
+            <column name='CODE_ID' value='E'/>
+            <column name='CODE_LABEL' value='In Error'/>
+            <column name='DISPLAY_ORDER_NO' value='10'/>
+        </insert>
+        <insert tableName='DEAL_TYPE_CODE'>
+            <column name='CODE_ID' value='FS'/>
+            <column name='CODE_LABEL' value='Financial Swap'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+        <insert tableName='DEAL_TYPE_CODE'>
+            <column name='CODE_ID' value='PHY'/>
+            <column name='CODE_LABEL' value='Physical'/>
+            <column name='DISPLAY_ORDER_NO' value='30'/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

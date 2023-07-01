@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/changes/ChangesLog.xml"
+>
+    <!--
+        Include the "now" and "concatenation_operator" properties once here so that
+        all changelogs that follow have access to them.
+    -->
+    <include file="../now.xml" relativeToChangelogFile="true"/>
+    <include file="../concatenationOperator.xml" relativeToChangelogFile="true"/>
+
+    <!--include file="lefeuvremDb-xxxxx/lefeuvremDb-xxxxx-Changes.xml" relativeToChangelogFile="true"/-->
+
+</databaseChangeLog>

@@ -17,12 +17,10 @@ package com.onbelay.dealcapture.dealmodule.deal.services;
 
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.dealcapture.dealmodule.deal.enums.BuySellType;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
@@ -31,10 +29,9 @@ import com.onbelay.dealcapture.pricing.model.PricingIndex;
 import com.onbelay.dealcapture.pricing.model.PricingIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.shared.enums.BuySellCode;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 public class DealServiceTest extends DealCaptureSpringTestCase {
 	
@@ -73,7 +70,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		clearCache();
 		
 		PhysicalDealSnapshot snapshot = new PhysicalDealSnapshot();
-		snapshot.getDealDetail().setBuySellType(BuySellType.BUY);
+		snapshot.getDealDetail().setBuySell(BuySellCode.BUY);
 		snapshot.setEntityId(physicalDeal.generateEntityId());
 		snapshot.setEntityState(EntityState.MODIFIED);
 		
@@ -87,7 +84,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		assertNotNull(physicalDeal.getCounterpartyRole());
 		assertNotNull(physicalDeal.getMarketPricingIndex());
 		
-		assertEquals(BuySellType.BUY, physicalDeal.getDealDetail().getBuySellType());
+		assertEquals(BuySellCode.BUY, physicalDeal.getDealDetail().getBuySell());
 		
 		flush();
 		clearCache();

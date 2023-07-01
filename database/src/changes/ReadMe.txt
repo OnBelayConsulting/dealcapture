@@ -1,0 +1,1 @@
+Each folder should correspond to a single defect #.  Changelog file(s) in the folder will only contain changes for that defect.  The changelog files will not know how or where they will be used.  It will be up to other higher level changelog files to pull together defect changelog files from here to include in a release.

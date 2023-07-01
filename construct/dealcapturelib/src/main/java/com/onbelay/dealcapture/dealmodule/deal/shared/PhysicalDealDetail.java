@@ -15,48 +15,63 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.shared;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.onbelay.core.codes.annotations.CodeLabelSerializer;
+import com.onbelay.core.codes.annotations.InjectCodeLabel;
+import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
+import com.onbelay.shared.enums.CurrencyCode;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.common.enums.CurrencyCode;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PhysicalDealDetail  {
 
+	private String dealPriceValuationCodeValue;
 	private BigDecimal dealPriceValue;
 	private String dealPriceCurrencyCodeValue;
 	private String dealPriceUnitOfMeasureValue;
-	
+
 	public PhysicalDealDetail() {
+	}
+
+	public void setDefaults() {
+		dealPriceValuationCodeValue = ValuationCode.FIXED.getCode();
 	}
 	
 	public PhysicalDealDetail(
 			BigDecimal dealPrice, 
-			CurrencyCode currency, 
+			CurrencyCode currency,
 			UnitOfMeasureCode unitOfMeasure) {
-		
+
+		dealPriceValuationCodeValue = ValuationCode.FIXED.getCode();
 		this.dealPriceValue = dealPrice;
 		this.dealPriceCurrencyCodeValue = currency.getCode();
 		this.dealPriceUnitOfMeasureValue = unitOfMeasure.getCode();
 	}
 	
 	public void validate() throws OBValidationException {
-		
-		if (dealPriceValue == null)
+
+		if (dealPriceValuationCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
-		
-		if (dealPriceCurrencyCodeValue == null)
-			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_CURRENCY.getCode());
-		
-		if (dealPriceUnitOfMeasureValue == null)
-			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_UOM.getCode());
-		
+
+		if (getDealPriceValuationCode() == ValuationCode.FIXED) {
+			if (dealPriceValue == null)
+				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+
+			if (dealPriceCurrencyCodeValue == null)
+				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_CURRENCY.getCode());
+
+			if (dealPriceUnitOfMeasureValue == null)
+				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_UOM.getCode());
+		}
 		
 	}
 	
@@ -70,12 +85,32 @@ public class PhysicalDealDetail  {
 	}
 	
 	public void setDealPrice(Price price) {
+		this.dealPriceValuationCodeValue = ValuationCode.FIXED.getCode();
 		this.dealPriceValue = price.getValue();
 		this.dealPriceCurrencyCodeValue = price.getCurrency().getCode();
 		this.dealPriceUnitOfMeasureValue = price.getUnitOfMeasure().getCode();
 	}
 
-    @Column(name="DEAL_PRICE")
+	@Transient
+	@JsonIgnore
+	public ValuationCode getDealPriceValuationCode() {
+		return ValuationCode.lookUp(dealPriceCurrencyCodeValue);
+	}
+
+	public void setDealPriceValuationCode(ValuationCode code) {
+		this.dealPriceCurrencyCodeValue = code.getCode();
+	}
+
+	@Column(name="DEAL_PRICE_VALUATION_CODE")
+	public String getDealPriceValuationCodeValue() {
+		return dealPriceValuationCodeValue;
+	}
+
+	public void setDealPriceValuationCodeValue(String dealPriceValuationCodeValue) {
+		this.dealPriceValuationCodeValue = dealPriceValuationCodeValue;
+	}
+
+	@Column(name="DEAL_PRICE")
     public BigDecimal getDealPriceValue() {
 		return dealPriceValue;
 	}
@@ -85,8 +120,19 @@ public class PhysicalDealDetail  {
 		this.dealPriceValue = dealPriceValue;
 	}
 
+	@Transient
+	@JsonIgnore
+	public CurrencyCode getDealPriceCurrency() {
+		return CurrencyCode.lookUp(dealPriceCurrencyCodeValue);
+	}
+
+	public void setDealPriceCurrency(CurrencyCode code) {
+		this.dealPriceCurrencyCodeValue = code.getCode();
+	}
 
     @Column(name="DEAL_PRICE_CURRENCY_CODE")
+	@InjectCodeLabel(codeFamily = "currencyCode", injectedPropertyName = "dealPriceCurrencyCodeItem")
+	@JsonSerialize(using = CodeLabelSerializer.class)
     public String getDealPriceCurrencyCodeValue() {
 		return dealPriceCurrencyCodeValue;
 	}
@@ -96,8 +142,19 @@ public class PhysicalDealDetail  {
 		this.dealPriceCurrencyCodeValue = dealPriceCurrencyValue;
 	}
 
+	@Transient
+	@JsonIgnore
+	public UnitOfMeasureCode getDealPriceUnitOfMeasure() {
+		return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureValue);
+	}
+
+	public void setDealPriceUnitOfMeasure(UnitOfMeasureCode code) {
+		this.dealPriceUnitOfMeasureValue = code.getCode();
+	}
 
     @Column(name="DEAL_PRICE_UOM_CODE")
+	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "dealPriceUnitOfMeasureCodeItem")
+	@JsonSerialize(using = CodeLabelSerializer.class)
     public String getDealPriceUnitOfMeasureValue() {
 		return dealPriceUnitOfMeasureValue;
 	}
@@ -109,6 +166,9 @@ public class PhysicalDealDetail  {
 
 
     public void copyFrom(PhysicalDealDetail copy) {
+		if (copy.dealPriceValuationCodeValue != null)
+			this.dealPriceValuationCodeValue = copy.dealPriceValuationCodeValue;
+
     	if (copy.dealPriceValue != null)
     		this.dealPriceValue = copy.dealPriceValue;
     	

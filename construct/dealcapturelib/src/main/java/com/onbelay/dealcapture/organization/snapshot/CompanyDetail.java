@@ -17,10 +17,12 @@ package com.onbelay.dealcapture.organization.snapshot;
 
 import javax.persistence.Column;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationErrorCode;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CompanyDetail extends AbstractDetail {
 	
 	private Boolean isHoldingParent;

@@ -1,0 +1,127 @@
+plugins {
+	id 'java'
+	id 'org.liquibase.gradle' version '2.0.3'
+	id("maven-publish")
+}
+
+
+repositories {
+	mavenCentral()
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/onbelayconsulting/obsharedlib")
+		credentials {
+			username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+			password = project.findProperty("gpr.key") ?: System.getenv("GPR_TOKEN")
+		}
+	}
+}
+
+dependencies {
+	liquibaseRuntime "org.liquibase:liquibase-core:4.3.5"
+	liquibaseRuntime 'org.postgresql:postgresql:42.2.8'
+	liquibaseRuntime group: 'com.onbelay.shared', name: 'obshareddb', version: '1.0.0', classifier: 'database'
+}
+
+
+task deployNew() {
+	doLast{ liquibase.runList = "applySharedSnapshotActivity, applySnapshotActivity, applyChangesActivity" }
+}
+deployNew.finalizedBy update
+
+task deployChanges() {
+	doLast { liquibase.runList = "applyChangesActivity" }
+}
+deployChanges.finalizedBy update
+
+
+liquibase {
+
+	Properties jdbcProps = new Properties()
+	File jdbcPropertiesFile = project.file('jdbc.properties')
+	if (!jdbcPropertiesFile.exists()) {
+		jdbcProps.setProperty("jdbc.url", "")
+		jdbcProps.setProperty("jdbc.username", "")
+		jdbcProps.setProperty("jdbc.password", "")
+		jdbcProps.setProperty("jdbc.driverClassName", "")
+	} else {
+		jdbcProps.load(jdbcPropertiesFile.newDataInputStream())
+	}
+	
+	System.getProperties().put("tblspace_data", tblspace_data)
+	System.getProperties().put("tblspace_data_idx",  tblspace_data_idx)
+	System.getProperties().put("tblspace_work",  tblspace_work)
+	System.getProperties().put("tblspace_work_idx",  tblspace_work_idx)
+
+	activities {
+
+		noChangeLogActivity {
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+		applySharedSnapshotActivity {
+			changeLogFile '/obshared/snapshot/changelog.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+
+		applySnapshotActivity {
+			changeLogFile '/src/snapshot/changelog.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+		applyChangesActivity {
+			changeLogFile '/src/changes/changelog.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+	}
+
+	try {
+		runList = project.ext.runList
+	} catch (Exception e) {
+		runList = 'noChangeLogActivity'
+	}
+}
+
+task dbJar(type: Jar) {
+	archiveClassifier = ''
+	archiveBaseName = 'dealcapturedb'
+	from projectDir
+		include "*.txt"
+}
+
+
+artifacts {
+	dbJar
+}
+
+
+publishing {
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/onbelayconsulting/dealcapture")
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+				password = project.findProperty("gpr.key") ?: System.getenv("GPR_TOKEN")
+			}
+		}
+	}
+	publications {
+		dealcapturedblibrary(MavenPublication) {
+			groupId = 'com.onbelay.dealcapture'
+			artifactId = 'dealcapturedb'
+			version = 'SNAPSHOT'
+			artifact dbJar
+		}
+	}
+}
+

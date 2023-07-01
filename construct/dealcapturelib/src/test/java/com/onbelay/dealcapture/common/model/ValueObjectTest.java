@@ -19,13 +19,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 
+import com.onbelay.shared.enums.CurrencyCode;
 import org.junit.Test;
 
 import com.onbelay.dealcapture.busmath.model.Amount;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
-import com.onbelay.dealcapture.common.enums.CurrencyCode;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 
 public class ValueObjectTest {
 
@@ -33,7 +33,7 @@ public class ValueObjectTest {
 	public void testValues() {
 		
 		Price price = new Price(
-				CurrencyCode.CDN, 
+				CurrencyCode.CAD,
 				UnitOfMeasureCode.GJ, 
 				BigDecimal.valueOf(3));
 		

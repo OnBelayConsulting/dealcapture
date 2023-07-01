@@ -15,29 +15,28 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.shared;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.onbelay.core.codes.annotations.CodeLabelSerializer;
+import com.onbelay.core.codes.annotations.InjectCodeLabel;
+import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.Quantity;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.shared.enums.BuySellCode;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.busmath.model.Quantity;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.BuySellType;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatus;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DealDetail {
 
 	private String dealStatusValue;
-	private String buySellTypeValue;
+	private String buySellCodeValue;
 	private String ticketNo;
 	private LocalDate startDate;
 	private LocalDate endDate;
@@ -53,7 +52,7 @@ public class DealDetail {
 		if (dealStatusValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_STATUS.getCode());
 		
-		if (buySellTypeValue == null)
+		if (buySellCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_BUY_SELL.getCode());
 		
 		if (ticketNo == null)
@@ -74,8 +73,8 @@ public class DealDetail {
 	}
 	
 	public DealDetail(
-			DealStatus status,
-			BuySellType buySellType,
+			DealStatusCode status,
+			BuySellCode buySellType,
 			String ticketNo,
 			LocalDate startDate,
 			LocalDate endDate,
@@ -83,7 +82,7 @@ public class DealDetail {
 			UnitOfMeasureCode unitOfMeasure) {
 		
 		this.dealStatusValue = status.getCode();
-		this.buySellTypeValue = buySellType.getCode();
+		this.buySellCodeValue = buySellType.getCode();
 		this.ticketNo = ticketNo;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -93,14 +92,14 @@ public class DealDetail {
 	}
 	
 	public void setDealAttributes(
-			DealStatus dealStatus,
-			BuySellType buySell,
+			DealStatusCode dealStatus,
+			BuySellCode buySell,
 			LocalDate startDate,
 			LocalDate endDate,
 			Quantity volume) {
 
 		setDealStatus(dealStatus);
-		setBuySellType(buySell);
+		setBuySell(buySell);
 		setStartDate(startDate);
 		setEndDate(endDate);
 		setVolume(volume);
@@ -129,7 +128,19 @@ public class DealDetail {
 		this.volumeQuantity = volumeQuantity;
 	}
 
+	@Transient
+	@JsonIgnore
+	public UnitOfMeasureCode getVolumeUnitOfMeasure() {
+		return UnitOfMeasureCode.lookUp(volumeUnitOfMeasureValue);
+	}
+
+	public void setVolumeUnitOfMeasure(UnitOfMeasureCode code) {
+		this.volumeUnitOfMeasureValue = code.getCode();
+	}
+
 	@Column(name = "VOLUME_UOM_CODE")
+	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
+	@JsonSerialize(using = CodeLabelSerializer.class)
 	public String getVolumeUnitOfMeasureValue() {
 		return volumeUnitOfMeasureValue;
 	}
@@ -140,15 +151,17 @@ public class DealDetail {
 
 	@Transient
 	@JsonIgnore
-	public DealStatus getDealStatus() {
-		return DealStatus.lookUp(dealStatusValue);
+	public DealStatusCode getDealStatus() {
+		return DealStatusCode.lookUp(dealStatusValue);
 	}
 	
-	public void setDealStatus(DealStatus status) {
+	public void setDealStatus(DealStatusCode status) {
 		this.dealStatusValue = status.getCode();
 	}
 	
 	@Column(name = "DEAL_STATUS_CODE")
+	@InjectCodeLabel(codeFamily = "dealStatusCode", injectedPropertyName = "dealStatusCodeItem")
+	@JsonSerialize(using = CodeLabelSerializer.class)
 	public String getDealStatusValue() {
 		return dealStatusValue;
 	}
@@ -159,26 +172,28 @@ public class DealDetail {
 
 	@Transient
 	@JsonIgnore
-	public BuySellType getBuySellType() {
-		return BuySellType.lookUp(buySellTypeValue);
+	public BuySellCode getBuySell() {
+		return BuySellCode.lookUp(buySellCodeValue);
 	}
 	
-	public void setBuySellType(BuySellType type) {
-		buySellTypeValue = type.getCode();
+	public void setBuySell(BuySellCode type) {
+		buySellCodeValue = type.getCode();
 	}
 	
 	@Column(name = "BUY_SELL_CODE")
-	public String getBuySellTypeValue() {
-		return buySellTypeValue;
+	@InjectCodeLabel(codeFamily = "buySellCode", injectedPropertyName = "buySellCodeItem")
+	@JsonSerialize(using = CodeLabelSerializer.class)
+	public String getBuySellCodeValue() {
+		return buySellCodeValue;
 	}
-	public void setBuySellTypeValue(String buySellTypeValue) {
-		this.buySellTypeValue = buySellTypeValue;
+	public void setBuySellCodeValue(String buySellCodeValue) {
+		this.buySellCodeValue = buySellCodeValue;
 	}
 	
 	@Column(name = "START_DATE")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)	
+//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+//	@JsonDeserialize(using = LocalDateDeserializer.class)
+//	@JsonSerialize(using = LocalDateSerializer.class)
 	public LocalDate getStartDate() {
 		return startDate;
 	}
@@ -187,9 +202,9 @@ public class DealDetail {
 	}
 	
 	@Column(name = "END_DATE")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)	
+//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+//	@JsonDeserialize(using = LocalDateDeserializer.class)
+//	@JsonSerialize(using = LocalDateSerializer.class)
 	public LocalDate getEndDate() {
 		return endDate;
 	}
@@ -219,8 +234,8 @@ public class DealDetail {
 		if (copy.ticketNo != null)
 			this.ticketNo = copy.ticketNo;
 		
-		if (copy.buySellTypeValue != null)
-			this.buySellTypeValue = copy.buySellTypeValue;
+		if (copy.buySellCodeValue != null)
+			this.buySellCodeValue = copy.buySellCodeValue;
 		
 		if (copy.volumeQuantity != null)
 			this.volumeQuantity = copy.volumeQuantity;

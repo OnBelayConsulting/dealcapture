@@ -15,12 +15,14 @@
  */
 package com.onbelay.dealcapture.pricing.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.pricing.shared.PricingLocationDetail;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PricingLocationSnapshot extends AbstractSnapshot {
 
 	private PricingLocationDetail detail = new PricingLocationDetail();

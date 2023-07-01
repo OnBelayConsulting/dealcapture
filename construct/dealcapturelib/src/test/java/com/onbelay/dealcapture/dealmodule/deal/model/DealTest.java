@@ -17,11 +17,8 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
-import com.onbelay.dealcapture.common.enums.CurrencyCode;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.BuySellType;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatus;
-import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
@@ -29,7 +26,8 @@ import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import org.junit.Ignore;
+import com.onbelay.shared.enums.BuySellCode;
+import com.onbelay.shared.enums.CurrencyCode;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -62,8 +60,8 @@ public class DealTest extends DealCaptureSpringTestCase {
 						companyRole.generateEntityId(), 
 						counterpartyRole.generateEntityId(),
 						new DealDetail(
-							DealStatus.PENDING,
-							BuySellType.BUY,
+							DealStatusCode.PENDING,
+							BuySellCode.BUY,
 							"deal-12n",
 							LocalDate.of(2019, 1, 1),
 							LocalDate.of(2019, 1, 1),
@@ -71,7 +69,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 							UnitOfMeasureCode.GJ),
 						new PhysicalDealDetail(
 								BigDecimal.valueOf(1.55),
-								CurrencyCode.CDN,
+								CurrencyCode.CAD,
 								UnitOfMeasureCode.GJ)));
 		
 		flush();
@@ -95,7 +93,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 
-		dealSnapshot.getDealDetail().setDealStatus(DealStatus.PENDING);
+		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.PENDING);
 		dealSnapshot.getDealDetail().setStartDate(LocalDate.of(2019, 1, 1));
 		dealSnapshot.getDealDetail().setEndDate(LocalDate.of(2019, 12, 31));
 		dealSnapshot.getDealDetail().setTicketNo("myTicket");
@@ -107,7 +105,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 		
 		dealSnapshot.getPhysicalDealDetail().setDealPrice(
 				new Price(
-						CurrencyCode.CDN,
+						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ,
 						BigDecimal.valueOf(1.55)));
 		

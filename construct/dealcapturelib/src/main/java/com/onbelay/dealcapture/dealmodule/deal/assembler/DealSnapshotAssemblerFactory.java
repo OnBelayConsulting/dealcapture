@@ -21,21 +21,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealType;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 
 public class DealSnapshotAssemblerFactory {
 	
-	private static Map<DealType, Supplier<AbstractDealAssembler>> assemblersMap = new HashMap<DealType, Supplier<AbstractDealAssembler>>();
+	private static Map<DealTypeCode, Supplier<AbstractDealAssembler>> assemblersMap = new HashMap<DealTypeCode, Supplier<AbstractDealAssembler>>();
 	
 	static {
 		
-		assemblersMap.put(DealType.PHYSICAL_DEAL, PhysicalDealAssembler::new);
+		assemblersMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDealAssembler::new);
 		
 	}
 
-	public static AbstractDealAssembler newAssembler(DealType dealType) {
+	public static AbstractDealAssembler newAssembler(DealTypeCode dealType) {
 		return assemblersMap.get(dealType).get();
 	}
 	

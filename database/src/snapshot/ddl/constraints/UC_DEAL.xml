@@ -1,0 +1,22 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/UC_DEAL.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <addUniqueConstraint
+                columnNames='TICKET_NO'
+                tableName='BASE_DEAL'
+                constraintName='DEAL_TICKET_NO_UC'/>
+
+    </changeSet>
+    <changeSet author="lefeuvrem" id="2.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createIndex tableName="BASE_DEAL" indexName="DEAL_TICKET_NO_IDX">
+            <column name="TICKET_NO"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

@@ -15,11 +15,11 @@
  */
 package com.onbelay.dealcapture.busmath.model;
 
-import java.math.BigDecimal;
-
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
-import com.onbelay.dealcapture.common.enums.CurrencyCode;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.shared.enums.CurrencyCode;
+
+import java.math.BigDecimal;
 
 public class Price extends CalculatedEntity {
     public static final int PRICE_SCALE = 8;

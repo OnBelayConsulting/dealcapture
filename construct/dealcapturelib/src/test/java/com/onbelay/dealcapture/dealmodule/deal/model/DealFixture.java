@@ -17,20 +17,17 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
-import com.onbelay.dealcapture.common.enums.CurrencyCode;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.BuySellType;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatus;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.pricing.model.PricingIndex;
+import com.onbelay.shared.enums.BuySellCode;
+import com.onbelay.shared.enums.CurrencyCode;
 
 public class DealFixture {
 	
@@ -47,8 +44,8 @@ public class DealFixture {
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 
-		dealSnapshot.getDealDetail().setDealStatus(DealStatus.PENDING);
-		dealSnapshot.getDealDetail().setBuySellType(BuySellType.SELL);
+		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.PENDING);
+		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
 		dealSnapshot.getDealDetail().setStartDate(LocalDate.of(2019, 1, 1));
 		dealSnapshot.getDealDetail().setEndDate(LocalDate.of(2019, 12, 31));
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
@@ -62,7 +59,7 @@ public class DealFixture {
 		
 		dealSnapshot.getPhysicalDealDetail().setDealPrice(
 				new Price(
-						CurrencyCode.CDN,
+						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ,
 						BigDecimal.valueOf(1.55)));
 

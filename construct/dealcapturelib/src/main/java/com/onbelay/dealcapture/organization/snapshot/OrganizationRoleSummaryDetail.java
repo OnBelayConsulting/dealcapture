@@ -1,11 +1,13 @@
 package com.onbelay.dealcapture.organization.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleStatus;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationRoleSummaryDetail {
 
     private String shortName;

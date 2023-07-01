@@ -53,7 +53,10 @@ public class DealRestController extends BaseRestController {
 	
 	
 	@Operation(summary="Create or update a deal")
-	@RequestMapping(method=RequestMethod.POST, produces="application/json", consumes="application/json"  )
+	@RequestMapping(
+			method=RequestMethod.POST,
+			produces="application/json",
+			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveDeal(
 			@RequestHeader Map<String, String> headers,
 			@RequestBody BaseDealSnapshot dealSnapshot,
@@ -82,7 +85,10 @@ public class DealRestController extends BaseRestController {
 	
 	
 	@Operation(summary="Save deals")
-	@RequestMapping(method=RequestMethod.PUT, produces="application/json", consumes="application/json"  )
+	@RequestMapping(
+			method=RequestMethod.PUT,
+			produces="application/json",
+			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveDeals(
 			@RequestHeader Map<String, String> headers,
 			@RequestBody List<BaseDealSnapshot> snapshots,

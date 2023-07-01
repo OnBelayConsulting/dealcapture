@@ -18,7 +18,7 @@ package com.onbelay.dealcapture.busmath.model;
 import java.math.BigDecimal;
 
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 
 public class Quantity extends CalculatedEntity{
 	

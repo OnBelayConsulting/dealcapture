@@ -17,10 +17,12 @@ package com.onbelay.dealcapture.pricing.shared;
 
 import javax.persistence.Column;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PricingLocationDetail extends AbstractDetail {
 
 	private String countryCode;
@@ -61,7 +63,7 @@ public class PricingLocationDetail extends AbstractDetail {
 		this.stateProvinceCode = stateProvinceCode;
 	}
 
-	@Column(name = "NAME_TXT")
+	@Column(name = "LOCATION_NAME")
 	public String getName() {
 		return name;
 	}
@@ -70,7 +72,7 @@ public class PricingLocationDetail extends AbstractDetail {
 		this.name = name;
 	}
 
-	@Column(name = "DESCRIPTION_TXT")
+	@Column(name = "LOCATION_DESCRIPTION")
 	public String getDescription() {
 		return description;
 	}

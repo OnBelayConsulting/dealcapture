@@ -16,12 +16,13 @@
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealType;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
 
 import java.util.List;
@@ -31,10 +32,11 @@ import java.util.List;
 		include = JsonTypeInfo.As.PROPERTY,
 		property = "dealTypeValue")
 @JsonSubTypes( {
-		@Type(value = PhysicalDealSnapshot.class, name = "P"),
+		@Type(value = PhysicalDealSnapshot.class, name = "PHY"),
 		@Type(value = ErrorDealSnapshot.class, name = "E"),
 })
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class BaseDealSnapshot extends AbstractSnapshot {
 	
 	private EntityId companyRoleId;
@@ -44,7 +46,7 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 	private String dealTypeValue;
 	
 	public BaseDealSnapshot(
-			DealType dealType,
+			DealTypeCode dealType,
 			EntityId companyRoleId,
 			EntityId counterpartyRoleId,
 			DealDetail dealDetail) {
@@ -57,17 +59,17 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 	
 	}
 	
-	public BaseDealSnapshot(DealType dealType) {
+	public BaseDealSnapshot(DealTypeCode dealType) {
 		this.dealTypeValue = dealType.getCode();
 	}
 
-	public BaseDealSnapshot(DealType dealType, String errorCode) {
+	public BaseDealSnapshot(DealTypeCode dealType, String errorCode) {
 		super(errorCode);
 		this.dealTypeValue = dealType.getCode();
 	}
 
 	public BaseDealSnapshot(
-			DealType dealType,
+			DealTypeCode dealType,
 			String errorCode,
 			boolean isPermissionException) {
 		super(errorCode, isPermissionException);
@@ -75,7 +77,7 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 	}
 
 	public BaseDealSnapshot(
-			DealType dealType,
+			DealTypeCode dealType,
 			String errorCode,
 			List<String> parameters) {
 		super(errorCode, parameters);
@@ -91,8 +93,8 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 	}
 
 	@JsonIgnore
-	public DealType getDealType() {
-		return DealType.lookUp(dealTypeValue);
+	public DealTypeCode getDealType() {
+		return DealTypeCode.lookUp(dealTypeValue);
 	}
 	
 	public DealDetail getDealDetail() {

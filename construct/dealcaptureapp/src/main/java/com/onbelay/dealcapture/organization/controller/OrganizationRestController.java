@@ -16,10 +16,12 @@
 package com.onbelay.dealcapture.organization.controller;
 
 import com.onbelay.core.controller.BaseRestController;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.organization.adapter.OrganizationRestAdapter;
+import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummaryCollection;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshotCollection;
@@ -35,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,7 +52,10 @@ public class OrganizationRestController extends BaseRestController {
 
 
 	@Operation(summary="Create or update an organization")
-	@RequestMapping(method=RequestMethod.POST, produces="application/json", consumes="application/json"  )
+	@RequestMapping(
+			method=RequestMethod.POST,
+			produces="application/json",
+			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveOrganization(
 			@RequestHeader Map<String, String> headers,
 			@RequestBody OrganizationSnapshot snapshot,
@@ -79,6 +85,44 @@ public class OrganizationRestController extends BaseRestController {
 		return processResponse(result);
 	}
 
+
+	@Operation(summary="Create or update an organization roles for an organization.")
+	@RequestMapping(
+			value = "/{id}/roles",
+			method=RequestMethod.PUT,
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> saveOrganizationRoles(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@RequestBody List<OrganizationRoleSnapshot> snapshots,
+			BindingResult bindingResult) {
+
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error("Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+
+		TransactionResult result;
+
+		try {
+			result = organizationRestAdapter.saveRoles(
+					id,
+					snapshots);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
 
 
 	@Operation(summary="fetch organizations")

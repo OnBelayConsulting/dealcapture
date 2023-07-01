@@ -16,11 +16,18 @@
 package com.onbelay.dealcapture.organization.servicesimpl;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.*;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
-import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
+import com.onbelay.dealcapture.organization.snapshot.*;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.shared.enums.CurrencyCode;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 
@@ -47,5 +54,87 @@ public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 		
 		assertTrue(result.isSuccessful());
 	}
-	
+
+	@Test
+	public void fetchOrganizationIds() {
+		DefinedQuery definedQuery = new DefinedQuery("Organization");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression("shortName", ExpressionOperator.LIKE, "On%")
+		);
+		QuerySelectedPage selectedPage = organizationService.findOrganizationIds(definedQuery);
+		assertEquals(1, selectedPage.getIds().size());
+	}
+
+
+	@Test
+	public void createOrganizationRoles() {
+		List<OrganizationRoleSnapshot> snapshots = new ArrayList<>();
+
+		CompanyRoleSnapshot snapshot = new CompanyRoleSnapshot();
+		snapshot.getDetail().setIsHoldingParent(false);
+		snapshots.add(snapshot);
+
+		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		snapshots.add(counterpartyRoleSnapshot);
+
+		TransactionResult result = organizationService.saveOrganizationRoles(
+				myOrganization.generateEntityId(),
+				snapshots);
+		flush();
+
+		assertEquals(2, result.getEntityIds().size());
+	}
+
+
+	@Test
+	public void fetchOrganizationRoles() {
+		List<OrganizationRoleSnapshot> snapshots = new ArrayList<>();
+
+		CompanyRoleSnapshot snapshot = new CompanyRoleSnapshot();
+		snapshot.getDetail().setIsHoldingParent(false);
+		snapshots.add(snapshot);
+
+		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		snapshots.add(counterpartyRoleSnapshot);
+
+		TransactionResult result = organizationService.saveOrganizationRoles(
+				myOrganization.generateEntityId(),
+				snapshots);
+
+		List<OrganizationRoleSnapshot> roleSnapshots = organizationService.fetchOrganizationRoles(myOrganization.generateEntityId());
+		assertEquals(2, roleSnapshots.size());
+	}
+
+
+	@Test
+	public void fetchOrganizationRoleSummaries() {
+		List<OrganizationRoleSnapshot> snapshots = new ArrayList<>();
+
+		CompanyRoleSnapshot snapshot = new CompanyRoleSnapshot();
+		snapshot.getDetail().setIsHoldingParent(false);
+		snapshots.add(snapshot);
+
+		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		snapshots.add(counterpartyRoleSnapshot);
+
+		TransactionResult result = organizationService.saveOrganizationRoles(
+				myOrganization.generateEntityId(),
+				snapshots);
+
+		List<OrganizationRoleSummary> roleSnapshots = organizationService.findOrganizationRoleSummariesByIds(
+
+				new QuerySelectedPage(
+						result.getEntityIds()
+								.stream()
+								.map(c -> c.getId())
+								.collect(Collectors.toList()),
+						new DefinedOrderByClause()));
+
+		assertEquals(2, roleSnapshots.size());
+	}
+
+
 }

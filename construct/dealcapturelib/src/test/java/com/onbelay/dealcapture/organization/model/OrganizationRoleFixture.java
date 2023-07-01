@@ -15,13 +15,9 @@
  */
 package com.onbelay.dealcapture.organization.model;
 
-import com.onbelay.dealcapture.busmath.model.Amount;
-import com.onbelay.dealcapture.common.enums.CurrencyCode;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleStatus;
 import com.onbelay.dealcapture.organization.snapshot.CompanyRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.CounterpartyRoleSnapshot;
-
-import java.math.BigDecimal;
 
 public class OrganizationRoleFixture {
 	
@@ -59,7 +55,7 @@ public class OrganizationRoleFixture {
 		CounterpartyRole counterpartyRole = new CounterpartyRole();
 		counterpartyRole.getRoleDetail().setDefaults();
 
-		counterpartyRole.getDetail().setSettlementCurrencyCode("CAD");
+		counterpartyRole.getDetail().setSettlementCurrencyCodeValue("CAD");
 		
 		organization.addOrganizationRole(counterpartyRole);
 		return counterpartyRole;
@@ -71,7 +67,7 @@ public class OrganizationRoleFixture {
 		CounterpartyRoleSnapshot counterpartyRole = new CounterpartyRoleSnapshot();
 		counterpartyRole.getRoleDetail().setDefaults();
 
-		counterpartyRole.getDetail().setSettlementCurrencyCode("CAD");
+		counterpartyRole.getDetail().setSettlementCurrencyCodeValue("CAD");
 		
 		return counterpartyRole;
 	}

@@ -15,6 +15,14 @@ repositories {
 			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
 			password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
 		}
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/onbelayconsulting/obsharedlib")
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+			}
+		}
 	}
 
 }
@@ -35,8 +43,10 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
-	implementation group: "com.onbelay.core", name: "obcore", version: "1.8.2"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.8.2", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.9.0"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.9.0", classifier: 'tests'
+	implementation group: "com.onbelay.shared", name: "obshared", version: "1.0.0"
+	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "1.0.0", classifier: 'tests'
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation "com.fasterxml.jackson.core:jackson-core"

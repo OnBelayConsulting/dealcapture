@@ -1,0 +1,14 @@
+# Properties file with JDBC-related settings.
+# Applied by PropertyPlaceholderConfigurer from "applicationContext-*.xml".
+# Targeted at system administrators, to avoid touching the context XML files.
+
+# This jarfile works for ORACLE 11g databases (with backwards compatibility):
+jdbc.driverClassName=org.postgresql.Driver
+
+# Change the jdbc.url property to the database URL where your schema exists!
+jdbc.url=jdbc:postgresql://localhost:5432/ob_dealcapture_test
+
+# Change the username, password and connectString properties to your specific schema details:
+# Select one of the schemas from the VM Environment.
+jdbc.username=dealcapture
+jdbc.password=dealcapture

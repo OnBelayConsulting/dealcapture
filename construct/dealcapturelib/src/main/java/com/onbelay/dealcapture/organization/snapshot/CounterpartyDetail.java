@@ -16,14 +16,19 @@
 package com.onbelay.dealcapture.organization.snapshot;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationErrorCode;
+import com.onbelay.shared.enums.CurrencyCode;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CounterpartyDetail extends AbstractDetail {
 
-	private String settlementCurrencyCode;
+	private String settlementCurrencyCodeValue;
 	private boolean isSettlementCurrencyNull = false;
 
 	
@@ -32,30 +37,39 @@ public class CounterpartyDetail extends AbstractDetail {
 	
 	
 	
-	public CounterpartyDetail(String settlementCurrencyCode) {
-		this.settlementCurrencyCode = settlementCurrencyCode;
+	public CounterpartyDetail(String settlementCurrencyCodeValue) {
+		this.settlementCurrencyCodeValue = settlementCurrencyCodeValue;
 	}
 
+	@Transient
+	@JsonIgnore
+	public CurrencyCode  getSettlementCurrency() {
+		return CurrencyCode.lookUp(settlementCurrencyCodeValue);
+	}
+
+	public void setSettlementCurrency(CurrencyCode code) {
+		this.settlementCurrencyCodeValue = code.getCode();
+	}
 
 	@Column(name = "SETTLEMENT_CURRENCY_CODE")
-	public String getSettlementCurrencyCode() {
-		return settlementCurrencyCode;
+	public String getSettlementCurrencyCodeValue() {
+		return settlementCurrencyCodeValue;
 	}
 
-	public void setSettlementCurrencyCode(String settlementCurrencyCode) {
-		this.settlementCurrencyCode = settlementCurrencyCode;
+	public void setSettlementCurrencyCodeValue(String settlementCurrencyCodeValue) {
+		this.settlementCurrencyCodeValue = settlementCurrencyCodeValue;
 	}
 
 	public void validate() throws OBValidationException {
 		
-		if (settlementCurrencyCode  == null)
+		if (settlementCurrencyCodeValue == null)
 			throw new OBValidationException(OrganizationErrorCode.MISSING_CP_CURRENCY_AVAIL_CREDIT.getCode());
 		
 	}
 
 	public void copyFrom(CounterpartyDetail copy) {
-		if (copy.settlementCurrencyCode != null)
-			this.settlementCurrencyCode = copy.settlementCurrencyCode;
+		if (copy.settlementCurrencyCodeValue != null)
+			this.settlementCurrencyCodeValue = copy.settlementCurrencyCodeValue;
 	}
 
 }

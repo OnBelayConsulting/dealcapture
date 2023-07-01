@@ -50,7 +50,7 @@ public abstract class OrganizationRole extends TemporalAbstractEntity {
 
     protected OrganizationRoleDetail roleDetail = new OrganizationRoleDetail();
 
-	protected OrganizationRole() {
+	private OrganizationRole() {
 	}
 
 	protected OrganizationRole(OrganizationRoleType roleType) {
@@ -110,6 +110,7 @@ public abstract class OrganizationRole extends TemporalAbstractEntity {
     protected void createWith(
 			Organization organization,
 			OrganizationRoleSnapshot snapshot) {
+		roleDetail.setDefaults();
     	super.createWith(snapshot);
     	roleDetail.copyFrom(snapshot.getRoleDetail());
     }

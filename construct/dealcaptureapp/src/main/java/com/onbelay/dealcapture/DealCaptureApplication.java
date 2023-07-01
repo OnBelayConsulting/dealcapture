@@ -30,12 +30,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
-@EnableWebSecurity
-@ComponentScan("com.onbelay.*")
+@ComponentScan(basePackages = {"com.onbelay.core.*", "com.onbelay.shared.*","com.onbelay.dealcapture" })
 @EntityScan("com.onbelay.*")
-@EnableRabbit
 @SpringBootApplication
-@EnableConfigurationProperties(ApplicationConfigurationProperties.class)
 public class DealCaptureApplication implements ApplicationRunner {
 	private static final Logger logger = LogManager.getLogger(DealCaptureApplication.class);
 

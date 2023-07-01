@@ -15,70 +15,98 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.shared;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.onbelay.core.codes.annotations.CodeLabelSerializer;
+import com.onbelay.core.codes.annotations.InjectCodeLabel;
+import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.shared.enums.CurrencyCode;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
 
-import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.common.enums.CurrencyCode;
-import com.onbelay.dealcapture.common.enums.UnitOfMeasureCode;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DealCostDetail  {
 
-	private BigDecimal costValue;
+	private BigDecimal costPerUnitValue;
 	private String currencyCodeValue;
 	private String unitOfMeasureCodeValue;
 	private String name;
 	private String description; 
 
 	@Transient
-	public Price getPerUnitCost() {
+	public Price getCostPerUnit() {
 		return new Price(
 				CurrencyCode.lookUp(currencyCodeValue),
 				UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue),
-				costValue);
+				costPerUnitValue);
 	}
 	
-	public void setPerUnitCost(Price price) {
-		this.costValue = price.getValue();
+	public void setCostPerUnit(Price price) {
+		this.costPerUnitValue = price.getValue();
 		this.currencyCodeValue = price.getCurrency().getCode();
 		this.unitOfMeasureCodeValue = price.getUnitOfMeasure().getCode();
 	}
 
     @Column(name="COST_PER_UNIT")
-    private BigDecimal getCostPerUnitValue() {
-		return costValue;
+    public BigDecimal getCostPerUnitValue() {
+		return costPerUnitValue;
 	}
 
 
-	private void setCostPerUnitValue(BigDecimal costValue) {
-		this.costValue = costValue;
+	public void setCostPerUnitValue(BigDecimal costValue) {
+		this.costPerUnitValue = costValue;
 	}
 
+	@Transient
+	@JsonIgnore
+	public CurrencyCode getCurrency() {
+		return CurrencyCode.lookUp(currencyCodeValue);
+	}
+
+	public void setCurrency(CurrencyCode code) {
+		this.currencyCodeValue = code.getCode();
+	}
 
     @Column(name="COST_CURRENCY_CODE")
-	private String getCurrencyCodeValue() {
+	@InjectCodeLabel(codeFamily = "currencyCode", injectedPropertyName = "currencyCodeItem")
+	@JsonSerialize(using = CodeLabelSerializer.class)
+	public String getCurrencyCodeValue() {
 		return currencyCodeValue;
 	}
 
 
-	private void setCurrencyCodeValue(String currencyCodeValue) {
+	public void setCurrencyCodeValue(String currencyCodeValue) {
 		this.currencyCodeValue = currencyCodeValue;
 	}
 
 
+	@Transient
+	@JsonIgnore
+	public UnitOfMeasureCode getUnitOfMeasure() {
+		return UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue);
+	}
+
+	public void setUnitOfMeasure(UnitOfMeasureCode code) {
+		this.unitOfMeasureCodeValue = code.getCode();
+	}
+
     @Column(name="COST_UOM_CODE")
-    private String getUnitOfMeasureCodeValue() {
+	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "unitOfMeasureCodeItem")
+	@JsonSerialize(using = CodeLabelSerializer.class)
+    public String getUnitOfMeasureCodeValue() {
 		return unitOfMeasureCodeValue;
 	}
 
 
-    private void setUnitOfMeasureCodeValue(String costUoMValue) {
+    public void setUnitOfMeasureCodeValue(String costUoMValue) {
 		this.unitOfMeasureCodeValue = costUoMValue;
 	}
 
-	@Column(name = "NAME_TXT")
+	@Column(name = "COST_NAME")
 	public String getName() {
 		return name;
 	}
@@ -87,7 +115,7 @@ public class DealCostDetail  {
 		this.name = name;
 	}
 
-	@Column(name = "DESCRIPTION_TXT")
+	@Column(name = "COST_DESCRIPTION")
 	public String getDescription() {
 		return description;
 	}
@@ -99,7 +127,7 @@ public class DealCostDetail  {
 
 
     public void copyFrom(DealCostDetail copy) {
-    	this.costValue = copy.costValue;
+    	this.costPerUnitValue = copy.costPerUnitValue;
     	this.currencyCodeValue = copy.currencyCodeValue;
     	this.unitOfMeasureCodeValue = copy.unitOfMeasureCodeValue;
     	this.name = copy.name;

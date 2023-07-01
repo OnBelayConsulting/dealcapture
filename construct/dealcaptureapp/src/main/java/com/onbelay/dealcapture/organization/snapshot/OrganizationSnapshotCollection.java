@@ -21,7 +21,7 @@ import java.util.List;
 
 public class OrganizationSnapshotCollection extends AbstractSnapshotCollection<OrganizationSnapshot> {
 
-	public static final String ITEM_TYPE = "organizationRoles";
+	public static final String ITEM_TYPE = "organizations";
 
 	public OrganizationSnapshotCollection() {
 		super(ITEM_TYPE);

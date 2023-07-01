@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.organization.adapterimpl;
 
 import com.onbelay.core.controller.BaseRestAdapterBean;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
@@ -10,10 +11,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
 import com.onbelay.dealcapture.organization.adapter.OrganizationRestAdapter;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
-import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummary;
-import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummaryCollection;
-import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
-import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshotCollection;
+import com.onbelay.dealcapture.organization.snapshot.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +84,17 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
                 snapshots);
     }
 
+    @Override
+    public TransactionResult saveRoles(
+            Integer id,
+            List<OrganizationRoleSnapshot> snapshots) {
+
+        initializeSession();
+
+        return organizationService.saveOrganizationRoles(
+                new EntityId(id),
+                snapshots);
+    }
 
     @Override
     public OrganizationRoleSummaryCollection findSummaries(

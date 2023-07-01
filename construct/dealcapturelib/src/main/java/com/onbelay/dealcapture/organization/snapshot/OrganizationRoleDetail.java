@@ -19,9 +19,11 @@ import javax.persistence.Column;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleStatus;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationRoleDetail {
 	
 	private String organizationRoleStatusValue;

@@ -1,3 +1,4 @@
 rootProject.name = 'dealcapture'
 include ':construct:dealcapturelib',
-        ':construct:dealcaptureapp'
+        ':construct:dealcaptureapp',
+        'database'

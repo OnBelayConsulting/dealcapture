@@ -15,34 +15,27 @@
  */
 package com.onbelay.dealcapture.organization.controllers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.organization.controller.OrganizationRestController;
+import com.onbelay.dealcapture.organization.model.*;
 import com.onbelay.dealcapture.organization.snapshot.*;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.shared.enums.CurrencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onbelay.core.entity.persistence.TransactionalSpringTestCase;
-import com.onbelay.dealcapture.organization.controller.OrganizationRestController;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WithMockUser(username="test")
 public class OrganizationRestControllerTest extends DealCaptureSpringTestCase {
@@ -53,17 +46,19 @@ public class OrganizationRestControllerTest extends DealCaptureSpringTestCase {
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
 
+	private Organization otherOrganization;
+
 	
 	@Override
 	public void setUp() {
 		super.setUp();
+		otherOrganization = OrganizationFixture.createOrganization("CreationsByAnnalee");
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		
 		flush();
 	}
-	
-	
+
 	@Test
 	public void createOrganizationWithPost() throws Exception {
 
@@ -90,8 +85,45 @@ public class OrganizationRestControllerTest extends DealCaptureSpringTestCase {
 		logger.debug("Json: " + jsonStringResponse);
 		
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		
+		assertEquals(1, transactionResult.getEntityIds().size());
 	}
+
+
+	@Test
+	public void createOrganizationRolesWithPut() throws Exception {
+
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(organizationRestController)
+				.build();
+
+		List<OrganizationRoleSnapshot> snapshots = new ArrayList<>();
+		CompanyRoleSnapshot snapshot = new CompanyRoleSnapshot();
+		snapshot.getDetail().setIsHoldingParent(false);
+		snapshots.add(snapshot);
+
+		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		snapshots.add(counterpartyRoleSnapshot);
+
+
+		String jsonPayload = objectMapper.writeValueAsString(snapshots);
+
+		logger.error(jsonPayload);
+
+		ResultActions result = mvc.perform(put("/api/organizations/" + otherOrganization.getId() + "/roles")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonPayload));
+
+		MvcResult mvcResult = result.andReturn();
+
+		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
+
+		logger.debug("Json: " + jsonStringResponse);
+
+		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
+		assertEquals(2, transactionResult.getEntityIds().size());
+	}
+
 
 	@Test
 	public void fetchOrganizationsWithGet() throws Exception {
@@ -111,11 +143,11 @@ public class OrganizationRestControllerTest extends DealCaptureSpringTestCase {
 
 		OrganizationSnapshotCollection collection = objectMapper.readValue(jsonStringResponse, OrganizationSnapshotCollection.class);
 		
-		assertEquals(1, collection.getSnapshots().size());
+		assertEquals(2, collection.getSnapshots().size());
 		
-		assertEquals(1, collection.getCount());
+		assertEquals(2, collection.getCount());
 		
-		assertEquals(1, collection.getTotalItems());
+		assertEquals(2, collection.getTotalItems());
 	}
 
 	
@@ -138,11 +170,11 @@ public class OrganizationRestControllerTest extends DealCaptureSpringTestCase {
 
 		OrganizationSnapshotCollection collection = objectMapper.readValue(jsonStringResponse, OrganizationSnapshotCollection.class);
 		
-		assertEquals(1, collection.getSnapshots().size());
+		assertEquals(2, collection.getSnapshots().size());
 		
-		assertEquals(1, collection.getCount());
+		assertEquals(2, collection.getCount());
 		
-		assertEquals(1, collection.getTotalItems());
+		assertEquals(2, collection.getTotalItems());
 	}
 
 

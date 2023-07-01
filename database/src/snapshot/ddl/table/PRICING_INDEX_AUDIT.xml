@@ -1,0 +1,66 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/PRICING_INDEX_AUDIT.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="PRICING_INDEX_AUDIT_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="PRICING_INDEX_AUDIT" tablespace="${tblspace_data}">
+            <column name="AUDIT_ID" defaultValueSequenceNext="PRICING_INDEX_AUDIT_SEQ"
+                    remarks="Primary key for the PRICING_INDEX_AUDIT table." type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="PRICING_INDEX_AUDIT_PK" nullable="false"/>
+            </column>
+            <column name="ENTITY_ID" remarks="Primary key for the PRICING_INDEX table."
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INDEX_TYPE_CODE" remarks="index type (Hub or Basis)" type="java.sql.Types.VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INDEX_NAME" type="java.sql.Types.VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BENCH_PRICING_INDEX_ID" type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="BASE_PRICING_INDEX_ID" type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PRICING_LOCATION_ID" type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OFFSET_EXPIRY_DAYS" type="java.sql.Types.NUMERIC(2, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="INDEX_DESCRIPTION" type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="AUDIT_LOCK_NO" defaultValueNumeric="0" type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPTIMISTIC_LOCK_NO" defaultValueNumeric="0" type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPIRED_FLG" type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_FROM_DTTM" type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_TO_DTTM" type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_USER" type="java.sql.Types.VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,23 +1,23 @@
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealType;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 
 import java.util.List;
 
 public class ErrorDealSnapshot extends BaseDealSnapshot{
 
     public ErrorDealSnapshot() {
-        super(DealType.ERROR);
+        super(DealTypeCode.ERROR);
     }
 
     public ErrorDealSnapshot(String message) {
-        super(DealType.ERROR, message);
+        super(DealTypeCode.ERROR, message);
 
     }
 
     public ErrorDealSnapshot(String errorCode, boolean isPermissionException) {
         super(
-                DealType.ERROR,
+                DealTypeCode.ERROR,
                 errorCode,
                 isPermissionException);
     }
@@ -27,7 +27,7 @@ public class ErrorDealSnapshot extends BaseDealSnapshot{
             List<String> parameters) {
 
         super(
-                DealType.ERROR,
+                DealTypeCode.ERROR,
                 errorCode,
                 parameters);
     }

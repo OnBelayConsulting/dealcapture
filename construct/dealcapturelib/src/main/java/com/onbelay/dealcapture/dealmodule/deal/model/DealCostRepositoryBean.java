@@ -19,6 +19,9 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
+import com.onbelay.core.exception.OBRuntimeException;
 import org.springframework.stereotype.Repository;
 
 import com.onbelay.core.entity.repository.BaseRepository;
@@ -29,7 +32,37 @@ import com.onbelay.core.entity.repository.BaseRepository;
 public class DealCostRepositoryBean extends BaseRepository<DealCost> {
 	public static final String BEAN_NAME = "dealCostRepository";
 	public static final String FETCH_DEAL_COSTS = "DealCostRepository.FETCH_DEAL_COSTS";
+	public static final String FIND_BY_DEAL_AND_NAME = "DealCostRepository.FIND_BY_DEAL_AND_NAME";
 
+
+	public DealCost load(EntityId entityId) {
+		if (entityId == null)
+			throw new OBRuntimeException(CoreTransactionErrorCode.INVALID_ENTITY_ID.getCode());
+
+		if (entityId.isNull())
+			return null;
+
+		if (entityId.isInvalid())
+			throw new OBRuntimeException(CoreTransactionErrorCode.INVALID_ENTITY_ID.getCode());
+
+
+		if (entityId.isSet())
+			return (DealCost) find(DealCost.class, entityId.getId());
+		else
+			return null;
+	}
+
+	public DealCost findByDealAndName(
+			EntityId dealEntityId,
+			String name) {
+
+		String[] names = {"dealId", "name"};
+		Object[] parms = {dealEntityId.getId(), name};
+		return executeSingleResultQuery(
+				FIND_BY_DEAL_AND_NAME,
+				names,
+				parms);
+	}
 
 	public List<DealCost> fetchDealCosts(Integer dealId) {
 		

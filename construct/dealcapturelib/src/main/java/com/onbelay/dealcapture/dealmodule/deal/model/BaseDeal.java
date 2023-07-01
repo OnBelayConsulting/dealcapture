@@ -16,16 +16,16 @@
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
+import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
-import com.onbelay.dealcapture.dealmodule.deal.enums.BuySellType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatus;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealType;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
@@ -33,9 +33,11 @@ import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
 import com.onbelay.dealcapture.pricing.repository.PricingIndexRepository;
+import com.onbelay.shared.enums.BuySellCode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -76,7 +78,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	protected BaseDeal() {
 	}
 
-	protected BaseDeal(DealType dealType) {
+	protected BaseDeal(DealTypeCode dealType) {
 		super();
 		dealTypeValue = dealType.getCode();
 	}
@@ -140,8 +142,8 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
     }
 
 	@Transient
-	public DealType getDealType() {
-		return DealType.lookUp(dealTypeValue);
+	public DealTypeCode getDealType() {
+		return DealTypeCode.lookUp(dealTypeValue);
 	}
 	
 	@Column(name = "DEAL_TYPE_CODE")
@@ -164,8 +166,8 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	}
 	
 	public void setDealAttributes(
-			DealStatus dealStatus,
-			BuySellType buySell,
+			DealStatusCode dealStatus,
+			BuySellCode buySell,
 			LocalDate startDate,
 			LocalDate endDate,
 			Quantity volume) {
@@ -178,6 +180,33 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 				volume);
 		
 		
+	}
+
+	protected void addDealCost(DealCost cost) {
+		cost.setDeal(this);
+		cost.save();
+	}
+
+	public List<EntityId> saveDealCosts(List<DealCostSnapshot> costs) {
+		ArrayList<EntityId> ids = new ArrayList<>();
+		for (DealCostSnapshot snapshot : costs) {
+			if (snapshot.getEntityState() == EntityState.NEW) {
+				DealCost cost = DealCost.create(this, snapshot);
+				ids.add(cost.generateEntityId());
+			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
+				DealCost cost = getDealCostRepository().load(snapshot.getEntityId());
+				cost.updateWith(snapshot);
+				ids.add(cost.generateEntityId());
+			} else if (snapshot.getEntityState() == EntityState.DELETE) {
+				DealCost cost = getDealCostRepository().load(snapshot.getEntityId());
+				cost.delete();
+			}
+		}
+		return ids;
+	}
+
+	public List<DealCost> fetchDealCosts() {
+		return getDealCostRepository().fetchDealCosts(id);
 	}
 
 	@ManyToOne

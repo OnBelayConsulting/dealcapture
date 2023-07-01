@@ -19,6 +19,7 @@ import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.dealcapture.dealmodule.deal.shared.DealCostDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 
 import javax.persistence.*;
 
@@ -30,7 +31,13 @@ import javax.persistence.*;
        query = "SELECT dealCost " +
 			   "  FROM DealCost dealCost " +
        		 "   WHERE dealCost.deal.id = :dealId " +
-       	     "ORDER BY dealCost.detail.name DESC")
+       	     "ORDER BY dealCost.detail.name DESC"),
+    @NamedQuery(
+       name = DealCostRepositoryBean.FIND_BY_DEAL_AND_NAME,
+       query = "SELECT dealCost " +
+			   "  FROM DealCost dealCost " +
+       		 "   WHERE dealCost.deal.id = :dealId " +
+       	     "     AND dealCost.detail.name = :name ")
 })
 public class DealCost extends TemporalAbstractEntity {
 
@@ -43,18 +50,23 @@ public class DealCost extends TemporalAbstractEntity {
 		
 	}
 	
-	protected DealCost(BaseDeal deal) {
+	public DealCost(BaseDeal deal) {
 	}
 	
 	public static DealCost create(
 			BaseDeal deal,
-			DealCostDetail detailIn) {
+			DealCostSnapshot snapshot) {
 		
 		DealCost dealCost = new DealCost(deal);
-		dealCost.detail.copyFrom(detailIn);
-		deal.save();
+		dealCost.createWith(snapshot);
 		return dealCost;
 		
+	}
+
+	protected void createWith(DealCostSnapshot snapshot) {
+		super.createWith(snapshot);
+		detail.copyFrom(snapshot.getDetail());
+		deal.addDealCost(this);
 	}
 
 
