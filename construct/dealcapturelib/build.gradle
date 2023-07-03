@@ -43,8 +43,8 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
-	implementation group: "com.onbelay.core", name: "obcore", version: "1.9.0"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.9.0", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.0.0"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.0.0", classifier: 'tests'
 	implementation group: "com.onbelay.shared", name: "obshared", version: "1.0.0"
 	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "1.0.0", classifier: 'tests'
 	implementation("org.springframework.boot:spring-boot-starter-web")

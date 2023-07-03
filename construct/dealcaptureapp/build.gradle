@@ -59,8 +59,8 @@ targetCompatibility = 11
 dependencies {
 	implementation project(path: ':construct:dealcapturelib')
 	testImplementation project(path: ':construct:dealcapturelib', configuration: 'tests')
-	implementation group: "com.onbelay.core", name: "obcore", version: "1.9.0"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.9.0", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.0.0"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.0.0", classifier: 'tests'
 	implementation group: "com.onbelay.shared", name: "obshared", version: "1.0.0"
 	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "1.0.0", classifier: 'tests'
 
