@@ -78,9 +78,17 @@ jobs:
         GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
         GPR_USER: ${{ secrets.GPR_USER }}
 
-    - name: run gradle build
+    - name: run gradle build lib
       run: |
-        ./gradlew construct:obsharedlib:build
+        ./gradlew construct:dealcapturelib:build
+      env:
+        GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+        GPR_USER: ${{ secrets.GPR_USER }}
+
+
+    - name: run gradle build app
+      run: |
+        ./gradlew construct:dealcaptureapp:build
       env:
         GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
         GPR_USER: ${{ secrets.GPR_USER }}
