@@ -23,6 +23,22 @@ dependencies {
 	liquibaseRuntime group: 'com.onbelay.shared', name: 'obshareddb', version: '1.0.0', classifier: 'database'
 }
 
+jar {
+	archiveClassifier.set("database")
+	manifest {
+		attributes('Implementation-Title' : 'dealcapturedb')
+	}
+
+}
+
+configurations {
+	database
+}
+
+artifacts {
+	database jar
+}
+
 
 task deployNew() {
 	doLast{ liquibase.runList = "applySharedSnapshotActivity, applySnapshotActivity, applyChangesActivity" }
@@ -70,14 +86,14 @@ liquibase {
 
 
 		applySnapshotActivity {
-			changeLogFile '/src/snapshot/changelog.xml'
+			changeLogFile '/src/main/resources/dealcapture/snapshot/changelog.xml'
 			url jdbcProps.get("jdbc.url")
 			username jdbcProps.get("jdbc.username")
 			password jdbcProps.get("jdbc.password")
 		}
 
 		applyChangesActivity {
-			changeLogFile '/src/changes/changelog.xml'
+			changeLogFile '/src/main/resources/dealcapture/changes/changelog.xml'
 			url jdbcProps.get("jdbc.url")
 			username jdbcProps.get("jdbc.username")
 			password jdbcProps.get("jdbc.password")
@@ -90,19 +106,6 @@ liquibase {
 		runList = 'noChangeLogActivity'
 	}
 }
-
-task dbJar(type: Jar) {
-	archiveClassifier = ''
-	archiveBaseName = 'dealcapturedb'
-	from projectDir
-		include "*.txt"
-}
-
-
-artifacts {
-	dbJar
-}
-
 
 publishing {
 	repositories {
@@ -119,8 +122,8 @@ publishing {
 		dealcapturedblibrary(MavenPublication) {
 			groupId = 'com.onbelay.dealcapture'
 			artifactId = 'dealcapturedb'
-			version = 'SNAPSHOT'
-			artifact dbJar
+			version = System.getenv("SEMANTIC_VERSION") ?: project.findProperty("semantic_version")
+			artifact jar
 		}
 	}
 }

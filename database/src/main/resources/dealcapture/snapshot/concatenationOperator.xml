@@ -1,0 +1,27 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcaptureDb/concatenationOperator.xml"
+>
+    <!--
+        If you are using "concatenationOperator" in your changeset then you need to include the property
+        for each supported DBMS.
+    -->
+    <property
+            dbms="oracle"
+            name="concatenationOperator"
+            value="||"
+    />
+    <property
+            dbms="postgresql"
+            name="concatenationOperator"
+            value="||"
+    />
+    <property
+            dbms="mssql"
+            name="concatenationOperator"
+            value="+"
+    />
+</databaseChangeLog>
