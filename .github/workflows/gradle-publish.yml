@@ -1,0 +1,127 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+
+name: Tag and publish Main
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    services:
+      postgres:
+        image: postgres:latest
+
+        env:
+          POSTGRES_DB: coretest
+          POSTGRES_USER: coretest
+          POSTGRES_PASSWORD: coretest
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+
+    runs-on: ubuntu-latest
+    container: gradle:jdk11-focal
+
+    # necessary for tagging.
+    permissions: write-all
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Semver Conventional Commits
+      id: versioning
+      uses: ietf-tools/semver-action@v1
+      with:
+        token: ${{ github.token }}
+        skipInvalidTags: true
+
+    - name: show versioning
+      run: |
+        echo ${{ steps.versioning.outputs.next }}
+        echo ${{ steps.versioning.outputs.nextStrict }}
+
+    - name: install other utilities
+      run: |
+        apt-get update
+        apt-get install --yes postgresql-client
+
+    - name: query database
+      run: |
+        psql -h postgres -d coretest -U coretest -c 'SELECT 1;'
+      env:
+        PGPASSWORD: coretest
+
+    - name: set up gradlew for execution
+      run: |
+        chmod +x gradlew
+
+    - name: Copy overlays to support testing
+      run: |
+        ./gradlew copyAllOverlays
+
+    - name: list directory
+      run: |
+        ls database
+
+
+    - name: run gradle deployNew
+      run: |
+        cd database
+        ../gradlew deployNew
+        cd ..
+
+
+    - name: run gradle build
+      run: |
+        cd construct/dagclientlib
+        ls
+        ../../gradlew build
+        cd ../..
+      env:
+        GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+        GPR_USER: ${{ secrets.GPR_USER }}
+
+    - name: run gradle build
+      run: |
+        cd construct/dagclientapp
+        ls
+        ../../gradlew build
+        cd ../..
+      env:
+        GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+        GPR_USER: ${{ secrets.GPR_USER }}
+
+    - name: create release
+      uses: comnoco/create-release-action@v2.0.5
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag_name: ${{ steps.versioning.outputs.next }}
+        release_name: ${{ steps.versioning.outputs.next }}
+        prerelease: true
+
+    - name: run gradle publish liquibase scripts
+      run: |
+        echo version = ${{ steps.versioning.outputs.nextStrict }}
+        ./gradlew database:publish
+      env:
+        SEMANTIC_VERSION: ${{ steps.versioning.outputs.nextStrict }}
+        GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+        GPR_USER: ${{ secrets.GPR_USER }}
