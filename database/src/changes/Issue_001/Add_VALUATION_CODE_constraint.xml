@@ -1,0 +1,63 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/changes/ISSUE_001/VALUATION_CODE.xml">
+
+    <changeSet author="lefeuvrem"
+               id="1.0"
+               objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <addForeignKeyConstraint
+                baseColumnNames='DEAL_PRICE_VALUATION_CODE'
+                baseTableName='PHYSICAL_DEAL'
+                constraintName='PHYSICAL_DEAL_FK02'
+                deferrable='false'
+                initiallyDeferred='false'
+                onDelete='RESTRICT'
+                onUpdate='NO ACTION'
+                referencedColumnNames='CODE_ID'
+                referencedTableName='VALUATION_CODE'/>
+
+        <addForeignKeyConstraint
+                baseColumnNames='MARKET_VALUATION_CODE'
+                baseTableName='PHYSICAL_DEAL'
+                constraintName='PHYSICAL_DEAL_FK03'
+                deferrable='false'
+                initiallyDeferred='false'
+                onDelete='RESTRICT'
+                onUpdate='NO ACTION'
+                referencedColumnNames='CODE_ID'
+                referencedTableName='VALUATION_CODE'/>
+    </changeSet>
+
+
+    <changeSet author="lefeuvrem"
+               id="2.0"
+               objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+        <addForeignKeyConstraint
+                baseColumnNames='DEAL_PRICE_VALUATION_CODE'
+                baseTableName='PHYSICAL_POSITION'
+                constraintName='PHYSICAL_POSITION_FK02'
+                deferrable='false'
+                initiallyDeferred='false'
+                onDelete='RESTRICT'
+                onUpdate='NO ACTION'
+                referencedColumnNames='CODE_ID'
+                referencedTableName='VALUATION_CODE'/>
+
+        <addForeignKeyConstraint
+                baseColumnNames='MARKET_VALUATION_CODE'
+                baseTableName='PHYSICAL_POSITION'
+                constraintName='PHYSICAL_POSITION_FK03'
+                deferrable='false'
+                initiallyDeferred='false'
+                onDelete='RESTRICT'
+                onUpdate='NO ACTION'
+                referencedColumnNames='CODE_ID'
+                referencedTableName='VALUATION_CODE'/>
+    </changeSet>
+
+</databaseChangeLog>

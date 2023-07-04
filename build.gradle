@@ -1,0 +1,19 @@
+
+task copyOverlayConstruct(type: Copy, group: 'CI Test') {
+	description = "Copy the overlay to support testing."
+	from "overlays/construct"
+	into "construct"
+}
+
+
+task copyOverlayDatabase(type: Copy, group: 'CI Test') {
+	description = "Copy the overlay to support testing."
+	from "overlays/database"
+	into "database"
+}
+task copyAllOverlays(group: 'CI Test') {
+	dependsOn 'copyOverlayConstruct'
+	dependsOn 'copyOverlayDatabase'
+
+
+}

@@ -15,6 +15,6 @@
     <include file="../now.xml" relativeToChangelogFile="true"/>
     <include file="../concatenationOperator.xml" relativeToChangelogFile="true"/>
 
-    <!--include file="lefeuvremDb-xxxxx/lefeuvremDb-xxxxx-Changes.xml" relativeToChangelogFile="true"/-->
+    <include file="Issue_001/changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
