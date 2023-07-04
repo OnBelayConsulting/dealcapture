@@ -1,0 +1,17 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/changes/ISSUE_001.xml"
+>
+    <!--
+        Point to other change log files that contain the change(s)
+        This gives us flexibility to add future changes without changing
+        the MD5 checksum for changes that have already run.
+    -->
+    <include file="Update_PHYSICAL_DEAL_Columns.xml" relativeToChangelogFile="true"/>
+    <include file="Update_PHYSICAL_POSITION_Columns.xml" relativeToChangelogFile="true"/>
+    <include file="Add_PHYSICAL_POSITION_constraint.xml" relativeToChangelogFile="true"/>
+    <include file="Add_VALUATION_CODE_constraint.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

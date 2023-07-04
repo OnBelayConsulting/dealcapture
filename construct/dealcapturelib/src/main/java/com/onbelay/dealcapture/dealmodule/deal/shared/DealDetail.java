@@ -191,9 +191,6 @@ public class DealDetail {
 	}
 	
 	@Column(name = "START_DATE")
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-//	@JsonDeserialize(using = LocalDateDeserializer.class)
-//	@JsonSerialize(using = LocalDateSerializer.class)
 	public LocalDate getStartDate() {
 		return startDate;
 	}
@@ -202,9 +199,6 @@ public class DealDetail {
 	}
 	
 	@Column(name = "END_DATE")
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-//	@JsonDeserialize(using = LocalDateDeserializer.class)
-//	@JsonSerialize(using = LocalDateSerializer.class)
 	public LocalDate getEndDate() {
 		return endDate;
 	}
