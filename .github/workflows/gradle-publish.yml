@@ -11,7 +11,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
@@ -90,7 +89,7 @@ jobs:
 
     - name: run gradle build
       run: |
-        cd construct/dagclientlib
+        cd construct/dealcapturelib
         ls
         ../../gradlew build
         cd ../..
@@ -100,7 +99,7 @@ jobs:
 
     - name: run gradle build
       run: |
-        cd construct/dagclientapp
+        cd construct/dealcaptureapp
         ls
         ../../gradlew build
         cd ../..
