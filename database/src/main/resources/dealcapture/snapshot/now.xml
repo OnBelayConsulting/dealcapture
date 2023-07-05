@@ -1,0 +1,27 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcaptureDB/now.xml"
+>
+    <!--
+        If you are using "now" in your changeset then you need to include the property
+        for each supported DBMS.
+    -->
+    <property
+            dbms="oracle"
+            name="now"
+            value="sysdate"
+    />
+    <property
+            dbms="postgresql"
+            name="now"
+            value="current_date"
+    />
+    <property
+            dbms="mssql"
+            name="now"
+            value="getdate()"
+    />
+</databaseChangeLog>
