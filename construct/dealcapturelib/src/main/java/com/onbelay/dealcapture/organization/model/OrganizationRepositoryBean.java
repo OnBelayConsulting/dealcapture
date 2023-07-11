@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.organization.model;
 
+import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
@@ -34,6 +35,7 @@ import java.util.List;
 
 public class OrganizationRepositoryBean extends BaseRepository<Organization> implements OrganizationRepository {
 	public static final String FIND_BY_SHORT_NAME = "OrganizationRepository.FIND_BY_SHORT_NAME";
+	public static final String FIND_BY_EXTERNAL_REFERENCE = "OrganizationRepository.FIND_BY_EXTERNAL_REFERENCE";
 
 	@Autowired
 	private OrganizationColumnDefinitions organizationColumnDefinitions;
@@ -62,11 +64,20 @@ public class OrganizationRepositoryBean extends BaseRepository<Organization> imp
 
 
 	@Override
+	public Organization findByExternalReference(Integer externalReferenceId) {
+		return executeSingleResultQuery(
+					FIND_BY_EXTERNAL_REFERENCE,
+					"externalReferenceId",
+				externalReferenceId);
+	}
+
+
+	@Override
 	public Organization findByShortName(String shortName) {
 		return executeSingleResultQuery(
-					FIND_BY_SHORT_NAME,
-					"shortName",
-					shortName);
+				FIND_BY_SHORT_NAME,
+				"shortName",
+				shortName);
 	}
 
 

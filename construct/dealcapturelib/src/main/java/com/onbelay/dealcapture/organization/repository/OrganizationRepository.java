@@ -38,6 +38,6 @@ public interface OrganizationRepository {
 	
 	public Organization findByShortName(String name);
 		
-	
+	public Organization findByExternalReference(Integer externalReferenceId);
 
 }

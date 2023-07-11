@@ -23,3 +23,14 @@ spring.security.oauth2.client.registration.okta.client-id=dealcapture
 spring.security.oauth2.client.registration.okta.client-secret=FkN5Z0snfaN1sdwQgsfF6C9qSFm42QAu
 spring.security.oauth2.client.registration.okta.scope=openid, profile, email
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8080/realms/master/protocol/openid-connect/certs
+
+spring.profiles.active=messaging
+spring.cloud.function.definition=organizationConsumer
+spring.cloud.stream.rabbit.bindings.organizationConsumer-in-0.consumer.auto-bind-dlq=true
+spring.cloud.stream.rabbit.bindings.organizationConsumer-in-0.consumer.quorum.enabled=true
+spring.cloud.stream.rabbit.bindings.organizationConsumer-in-0.consumer.single-active-consumer=true
+spring.cloud.stream.bindings.organizationConsumer-in-0.destination=org.organization.save
+spring.cloud.stream.bindings.organizationConsumer-in-0.group=organization.dealcapture
+spring.cloud.stream.bindings.organizationConsumer-in-0.consumer.default-retryable=false
+spring.cloud.stream.bindings.organizationConsumer-in-0.consumer.retryable-exceptions.org.springframework.dao.NonTransientDataAccessResourceException=false
+spring.cloud.stream.bindings.organizationConsumer-in-0.consumer.retryable-exceptions.org.springframework.dao.TransientDataAccessResourceException=true

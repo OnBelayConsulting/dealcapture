@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface OrganizationService {
 
+    OrganizationSnapshot load(EntityId entityId);
+
     TransactionResult save(OrganizationSnapshot snapshot);
 
     TransactionResult save(List<OrganizationSnapshot> snapshots);
@@ -30,4 +32,5 @@ public interface OrganizationService {
 
     List<OrganizationRoleSummary> findOrganizationRoleSummariesByIds(QuerySelectedPage selectedPage);
 
+    OrganizationSnapshot findByExternalReference(Integer externalReferenceId);
 }
