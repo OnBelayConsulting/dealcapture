@@ -1,0 +1,47 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/PRICE_CURVE.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="PRICE_CURVE_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="PRICE_CURVE" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID" defaultValueSequenceNext="PRICE_CURVE_SEQ"
+                    remarks="Primary key for the PRICE_CURVE table." type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="PRICE_CURVE_PK" nullable="false"/>
+            </column>
+            <column name="PRICE_INDEX_ID" remarks="Primary key for the PRICE_INDEX table these prices are for."
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="FREQUENCY_CODE" type="java.sql.Types.VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRICE_DATE" remarks="Offset for calculating index expiry" type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRICE_VALUE" remarks="decimal price value" type="java.sql.Types.NUMERIC(6, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="OBSERVED_DATE_TIME" remarks="Observed date/time of price at price date"
+                    type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPTIMISTIC_LOCK_NO" remarks="Version number." defaultValueNumeric="0"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPIRED_FLG" remarks="logical delete Y or N" type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

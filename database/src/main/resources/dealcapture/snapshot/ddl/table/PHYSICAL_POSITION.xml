@@ -32,11 +32,14 @@
                 <constraints nullable="true"/>
             </column>
             <column name="MARKET_VALUATION_CODE" type="java.sql.Types.VARCHAR(32)"/>
-            <column name="PRICING_INDEX_ID"  type="java.sql.Types.NUMERIC(10, 0)">
+            <column name="MARKET_INDEX_ID"  type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
             <column name="MARKET_PRICE"  type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
+            </column>
+            <column name='VOLUME_UOM_CODE' type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
             </column>
             <column name="VOLUME_QUANTITY" type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>

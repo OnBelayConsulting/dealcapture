@@ -15,7 +15,7 @@
  */
 package com.onbelay.dealcapture.organization.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;

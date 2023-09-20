@@ -25,7 +25,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.PricingIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PricingIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
@@ -37,7 +37,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 	
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
-	private PricingIndex pricingIndex;
+	private PriceIndex priceIndex;
 
 	@Autowired
 	private DealRepository dealRepository;
@@ -51,7 +51,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		
-		pricingIndex = PricingIndexFixture.createPricingIndex(
+		priceIndex = PricingIndexFixture.createPricingIndex(
 				"AECO", 
 				PricingLocationFixture.createPricingLocation(
 						"west"));
@@ -64,8 +64,8 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		PhysicalDeal physicalDeal = DealFixture.createPhysicalDeal(
 				"myDeal", 
 				companyRole, 
-				counterpartyRole, 
-				pricingIndex);
+				counterpartyRole,
+                priceIndex);
 		flush();
 		clearCache();
 		
@@ -99,8 +99,8 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		PhysicalDealSnapshot dealSnapshot = DealFixture.createPhysicalDealSnapshot(
 				"mydeal",
 				companyRole, 
-				counterpartyRole, 
-				pricingIndex);
+				counterpartyRole,
+                priceIndex);
 		
 		TransactionResult result  = dealService.save(dealSnapshot);
 		flush();

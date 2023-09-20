@@ -23,7 +23,7 @@ import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleDetail;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table (name = "ORGANIZATION_ROLE")

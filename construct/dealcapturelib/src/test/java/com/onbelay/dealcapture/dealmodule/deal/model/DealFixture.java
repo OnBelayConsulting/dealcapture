@@ -25,7 +25,7 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.pricing.model.PricingIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
 
@@ -37,7 +37,7 @@ public class DealFixture {
 			String ticketNo,
 			CompanyRole companyRole,
 			CounterpartyRole counterpartyRole,
-			PricingIndex pricingIndex)  {
+			PriceIndex priceIndex)  {
 		
 		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
 		
@@ -50,7 +50,7 @@ public class DealFixture {
 		dealSnapshot.getDealDetail().setEndDate(LocalDate.of(2019, 12, 31));
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 		
-		dealSnapshot.setMarketPricingIndexId(pricingIndex.generateEntityId());
+		dealSnapshot.setMarketPricingIndexId(priceIndex.generateEntityId());
 		
 		dealSnapshot.getDealDetail().setVolume(
 				new Quantity(
@@ -71,14 +71,14 @@ public class DealFixture {
 			String ticketNo,
 			CompanyRole companyRole,
 			CounterpartyRole counterpartyRole,
-			PricingIndex pricingIndex)  {
+			PriceIndex priceIndex)  {
 		
 		return PhysicalDeal.create(
 				createPhysicalDealSnapshot(
 						ticketNo, 
 						companyRole, 
-						counterpartyRole, 
-						pricingIndex));
+						counterpartyRole,
+                        priceIndex));
 		
 	}
 	

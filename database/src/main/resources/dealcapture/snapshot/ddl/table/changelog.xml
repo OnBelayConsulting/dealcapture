@@ -23,12 +23,12 @@
     <include file="COMPANY_ROLE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="COUNTERPARTY_ROLE.xml" relativeToChangelogFile="true"/>
     <include file="COUNTERPARTY_ROLE_AUDIT.xml" relativeToChangelogFile="true"/>
-    <include file="PRICING_INDEX.xml" relativeToChangelogFile="true"/>
-    <include file="PRICING_INDEX_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="PRICE_INDEX.xml" relativeToChangelogFile="true"/>
+    <include file="PRICE_INDEX_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICING_LOCATION.xml" relativeToChangelogFile="true"/>
     <include file="PRICING_LOCATION_AUDIT.xml" relativeToChangelogFile="true"/>
-    <include file="INDEX_PRICE.xml" relativeToChangelogFile="true"/>
-    <include file="INDEX_PRICE_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="PRICE_CURVE.xml" relativeToChangelogFile="true"/>
+    <include file="PRICE_CURVE_AUDIT.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

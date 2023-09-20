@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.5'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'org.springframework.boot' version '3.1.1'
+	id 'io.spring.dependency-management' version "1.1.0"
 	id 'java'
 	id 'idea'
 	id 'com.google.cloud.tools.jib' version '3.2.1'
@@ -8,8 +8,8 @@ plugins {
 dependencyManagement {
 
 	imports {
-		mavenBom 'org.springframework.boot:spring-boot-dependencies:2.7.5'
-		mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2021.0.1'
+		mavenBom 'org.springframework.boot:spring-boot-dependencies:3.1.1'
+		mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2022.0.2'
 
 	}
 
@@ -18,16 +18,8 @@ dependencyManagement {
 	}
 }
 
-sourceCompatibility = 11
-targetCompatibility = 11
-
-task srcZip (type: Zip) {
-	
-	classifier = 'src'
-	from projectDir
-	include 'src/**/*'
-	
-}
+sourceCompatibility = 17
+targetCompatibility = 17
 
 task construct (dependsOn: ["build", "srcZip"])
 
@@ -53,16 +45,13 @@ repositories {
 
 }
 
-sourceCompatibility = 11
-targetCompatibility = 11
-
 dependencies {
 	implementation project(path: ':construct:dealcapturelib')
 	testImplementation project(path: ':construct:dealcapturelib', configuration: 'tests')
-	implementation group: "com.onbelay.core", name: "obcore", version: "1.0.0"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.0.0", classifier: 'tests'
-	implementation group: "com.onbelay.shared", name: "obshared", version: "1.0.0"
-	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "1.0.0", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "2.1.0"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "2.1.0", classifier: 'tests'
+	implementation group: "com.onbelay.shared", name: "obshared", version: "2.0.0"
+	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.0.0", classifier: 'tests'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
@@ -73,7 +62,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
 	implementation 'org.springframework.boot:spring-boot-starter-webflux' // For WebClient
-	implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'      // For WebClient
 
 	implementation "com.fasterxml.jackson.core:jackson-core"
 	implementation "com.fasterxml.jackson.core:jackson-databind"
@@ -82,7 +70,8 @@ dependencies {
 	implementation group: "org.apache.commons", name: "commons-collections4", version: "4.4"
 	implementation group: "org.apache.commons", name: "commons-text", version: "1.+"
 
-	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.4'
+	implementation group: 'com.microsoft.sqlserver', name: 'mssql-jdbc', version: '11.2.3.jre17'
 
 	implementation('org.springframework.boot:spring-boot-starter-log4j2')
 	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
@@ -115,8 +104,8 @@ bootRun {
 
 
 jar {
-	baseName = 'OBDealCaptureApp'
-	version = '1.0.0-SNAPSHOT'
+	archiveBaseName = 'OBDealCaptureApp'
+	archiveVersion = '1.0.0-SNAPSHOT'
 	manifest {
 		attributes("Implementation-Title": "OBDealCaptureApp", "Implementation-Version": "1.0", "Created-By": "OnBelay Consulting")
 	}
@@ -124,7 +113,7 @@ jar {
 
 jib {
 	from {
-		image = 'eclipse-temurin:11'
+		image = 'eclipse-temurin:17'
 	}
 	to {
 		image = 'lefeuvrem/obdealcapture:1'

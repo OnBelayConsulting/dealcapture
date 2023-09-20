@@ -32,10 +32,10 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
-import com.onbelay.dealcapture.pricing.repository.PricingIndexRepository;
+import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import com.onbelay.shared.enums.BuySellCode;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -254,8 +254,8 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	}
 	
 	@Transient
-	protected static PricingIndexRepository getPricingIndexRepository() {
-		return (PricingIndexRepository) ApplicationContextFactory.getBean(PricingIndexRepository.BEAN_NAME);
+	protected static PriceIndexRepository getPricingIndexRepository() {
+		return (PriceIndexRepository) ApplicationContextFactory.getBean(PriceIndexRepository.BEAN_NAME);
 	}
 	
 	@Transient

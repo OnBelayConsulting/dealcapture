@@ -23,7 +23,7 @@ import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "BASE_DEAL_AUDIT")

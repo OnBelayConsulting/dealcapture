@@ -16,18 +16,18 @@
 package com.onbelay.dealcapture.pricing.model;
 
 import com.onbelay.dealcapture.pricing.enums.IndexType;
-import com.onbelay.dealcapture.pricing.snapshot.PricingIndexSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 
 public class PricingIndexFixture {
 
 	
-	public static PricingIndex createPricingIndex(
+	public static PriceIndex createPricingIndex(
 			String name, 
 			PricingLocation pricingLocation) {
 		
-		 PricingIndex pricingIndex = new PricingIndex();
+		 PriceIndex priceIndex = new PriceIndex();
 
-		 PricingIndexSnapshot snapshot = new PricingIndexSnapshot();
+		 PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
 		 snapshot.getDetail().setDefaults();
 		 snapshot.getDetail().setDaysOffsetForExpiry(4);
 		 snapshot.getDetail().setName(name);
@@ -36,18 +36,18 @@ public class PricingIndexFixture {
 		 
 		 snapshot.setPricingLocationId(pricingLocation.generateEntityId());
 		 
-		 pricingIndex.createWith(snapshot);
+		 priceIndex.createWith(snapshot);
 		
-		 return pricingIndex;
+		 return priceIndex;
 	}
 	
 	
-	public static PricingIndexSnapshot createPricingIndexSnapshot(
+	public static PriceIndexSnapshot createPricingIndexSnapshot(
 			String name, 
 			PricingLocation pricingLocation) {
 		
 
-		 PricingIndexSnapshot snapshot = new PricingIndexSnapshot();
+		 PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
 		 snapshot.getDetail().setDefaults();
 		 snapshot.getDetail().setDaysOffsetForExpiry(4);
 		 snapshot.getDetail().setName(name);

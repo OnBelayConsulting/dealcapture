@@ -15,12 +15,12 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
@@ -30,13 +30,13 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
-import com.onbelay.dealcapture.pricing.model.PricingIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL")
 public class PhysicalDeal extends BaseDeal {
 
-	private PricingIndex marketPricingIndex;
+	private PriceIndex marketPriceIndex;
 	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
 	public PhysicalDeal() {
@@ -56,13 +56,13 @@ public class PhysicalDeal extends BaseDeal {
 	}
 
 	@ManyToOne
-	@JoinColumn(name ="MARKET_PRICING_INDEX_ID")
-	public PricingIndex getMarketPricingIndex() {
-		return marketPricingIndex;
+	@JoinColumn(name ="MARKET_PRICE_INDEX_ID")
+	public PriceIndex getMarketPricingIndex() {
+		return marketPriceIndex;
 	}
 
-	private void setMarketPricingIndex(PricingIndex pricingIndex) {
-		this.marketPricingIndex = pricingIndex;
+	private void setMarketPricingIndex(PriceIndex priceIndex) {
+		this.marketPriceIndex = priceIndex;
 	}
 	
 	public void updateWith(BaseDealSnapshot snapshot) {
@@ -89,7 +89,7 @@ public class PhysicalDeal extends BaseDeal {
 		super.validate();
 		detail.validate();
 		if (getDealDetail().getDealStatus() == DealStatusCode.VERIFIED) {
-			if (marketPricingIndex == null)
+			if (marketPriceIndex == null)
 				throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
 		}
 	}
@@ -102,7 +102,7 @@ public class PhysicalDeal extends BaseDeal {
 		super.setAssociationsFromSnapshot(snapshot);
 		
 		if (snapshot.getMarketPricingIndexId() != null) {
-			this.marketPricingIndex = getPricingIndexRepository().load(snapshot.getMarketPricingIndexId());
+			this.marketPriceIndex = getPricingIndexRepository().load(snapshot.getMarketPricingIndexId());
 		}
 	}
 	

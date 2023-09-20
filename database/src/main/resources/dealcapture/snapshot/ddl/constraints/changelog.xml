@@ -15,12 +15,18 @@
     <include file="FK_BASE_DEAL_TO_DEAL_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_BASE_DEAL_TO_FREQUENCY_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_BASE_DEAL_TO_UNIT_OF_MEASURE_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_BASE_DEAL_TO_VALUATION_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_COMPANY_ROLE_TO_ORG_ROLE.xml" relativeToChangelogFile="true"/>
     <include file="FK_COUNTERPARTY_ROLE_TO_ORG_ROLE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_COST_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="FK_PHYSICAL_DEAL_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
+    <include file="FK_PRICE_CURVE_TO_FREQUENCY_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_PRICE_INDEX_TO_CURRENCY_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_PRICE_INDEX_TO_FREQUENCY_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_PRICE_INDEX_TO_UOM_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_PHYSICAL_POSITION_TO_PHYS_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="UC_DEAL.xml" relativeToChangelogFile="true"/>
-    <include file="UC_PRICING_INDEX.xml" relativeToChangelogFile="true"/>
+    <include file="UC_PRICE_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="UC_PRICING_LOCATION.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 

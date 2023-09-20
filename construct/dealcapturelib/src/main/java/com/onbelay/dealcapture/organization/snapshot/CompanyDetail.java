@@ -15,12 +15,14 @@
  */
 package com.onbelay.dealcapture.organization.snapshot;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationErrorCode;
+import jakarta.persistence.Convert;
+import org.hibernate.type.YesNoConverter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CompanyDetail extends AbstractDetail {
@@ -28,7 +30,7 @@ public class CompanyDetail extends AbstractDetail {
 	private Boolean isHoldingParent;
 
 	@Column(name = "CO_IS_HOLDING_PARENT")
-    @org.hibernate.annotations.Type(type="yes_no")
+	@Convert(converter = YesNoConverter.class)
 	public Boolean getIsHoldingParent() {
 		return isHoldingParent;
 	}
