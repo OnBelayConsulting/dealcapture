@@ -44,6 +44,9 @@ targetCompatibility = 17
 
 dependencies {
 	implementation group: "com.onbelay.core", name: "obcore", version: "2.1.0"
+	implementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+	implementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+	implementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
 	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "2.1.0", classifier: 'tests'
 	implementation group: "com.onbelay.shared", name: "obshared", version: "2.0.0"
 	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.0.0", classifier: 'tests'
@@ -58,8 +61,8 @@ dependencies {
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.4'
 	implementation group: 'com.microsoft.sqlserver', name: 'mssql-jdbc', version: '11.2.3.jre17'
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
-	testImplementation("org.junit.vintage:junit-vintage-engine")
 	implementation('org.springframework.boot:spring-boot-starter-log4j2')
+
 
 }
 

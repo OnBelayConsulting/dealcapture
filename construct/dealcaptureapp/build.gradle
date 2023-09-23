@@ -78,9 +78,14 @@ dependencies {
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation("org.junit.vintage:junit-vintage-engine")
+	implementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+	implementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+	implementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
 
 	implementation "org.springframework.cloud:spring-cloud-stream-binder-rabbit"
+
+	testImplementation group: "com.github.dasniko", name: "testcontainers-keycloak", version: "3.0.0"
+	testImplementation group: "org.testcontainers", name: "testcontainers", version: "1.19.0"
 
 
 	/** Swagger dependencies **/

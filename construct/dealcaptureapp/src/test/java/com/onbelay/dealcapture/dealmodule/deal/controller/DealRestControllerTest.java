@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +46,7 @@ import com.onbelay.dealcapture.pricing.model.PricingIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 
 @WithMockUser(username="test")
-public class DealRestControllerTest extends DealCaptureSpringTestCase {
+public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 	private static final Logger logger = LogManager.getLogger(DealRestControllerTest.class);
 	
 	@Autowired
