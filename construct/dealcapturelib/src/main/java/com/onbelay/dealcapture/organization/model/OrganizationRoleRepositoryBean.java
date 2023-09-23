@@ -17,7 +17,7 @@ package com.onbelay.dealcapture.organization.model;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;

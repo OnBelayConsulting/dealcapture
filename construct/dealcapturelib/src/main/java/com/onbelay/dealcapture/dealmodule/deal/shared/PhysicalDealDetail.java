@@ -27,14 +27,15 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.shared.enums.CurrencyCode;
 
-import javax.persistence.Column;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 import java.math.BigDecimal;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PhysicalDealDetail  {
 
 	private String dealPriceValuationCodeValue;
+	private String marketValuationCodeValue;
 	private BigDecimal dealPriceValue;
 	private String dealPriceCurrencyCodeValue;
 	private String dealPriceUnitOfMeasureValue;
@@ -44,6 +45,7 @@ public class PhysicalDealDetail  {
 
 	public void setDefaults() {
 		dealPriceValuationCodeValue = ValuationCode.FIXED.getCode();
+		marketValuationCodeValue = ValuationCode.INDEX.getCode();
 	}
 	
 	public PhysicalDealDetail(
@@ -104,6 +106,25 @@ public class PhysicalDealDetail  {
 	@Column(name="DEAL_PRICE_VALUATION_CODE")
 	public String getDealPriceValuationCodeValue() {
 		return dealPriceValuationCodeValue;
+	}
+
+	@Transient
+	@JsonIgnore
+	public ValuationCode getMarketValuationCode() {
+		return ValuationCode.lookUp(marketValuationCodeValue);
+	}
+
+	public void setMarketValuationCode(ValuationCode code) {
+		this.marketValuationCodeValue = code.getCode();
+	}
+
+	@Column(name="MARKET_VALUATION_CODE")
+	public String getMarketValuationCodeValue() {
+		return marketValuationCodeValue;
+	}
+
+	public void setMarketValuationCodeValue(String marketValuationCodeValue) {
+		this.marketValuationCodeValue = marketValuationCodeValue;
 	}
 
 	public void setDealPriceValuationCodeValue(String dealPriceValuationCodeValue) {
@@ -169,7 +190,10 @@ public class PhysicalDealDetail  {
 		if (copy.dealPriceValuationCodeValue != null)
 			this.dealPriceValuationCodeValue = copy.dealPriceValuationCodeValue;
 
-    	if (copy.dealPriceValue != null)
+		if (copy.marketValuationCodeValue != null)
+			this.marketValuationCodeValue = copy.marketValuationCodeValue;
+
+		if (copy.dealPriceValue != null)
     		this.dealPriceValue = copy.dealPriceValue;
     	
     	if (copy.dealPriceCurrencyCodeValue != null)

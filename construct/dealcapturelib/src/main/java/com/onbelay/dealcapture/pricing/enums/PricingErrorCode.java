@@ -25,8 +25,8 @@ public enum PricingErrorCode {
 
     SUCCESS                       	 ("0", "Success: transaction was successful"),
     MISSING_PRICING_LOCATION         ("DC_OR-E0001", "Error: Missing pricing location."),
-    MISSING_PRICING_INDEX_NAME       ("DC_OR-E0002", "Error: Missing pricing index name."),
-    MISSING_PRICING_INDEX_TYPE       ("DC_OR-E0003", "Error: Missing pricing index type."),
+    MISSING_PRICE_INDEX_NAME       ("DC_OR-E0002", "Error: Missing pricing index name."),
+    MISSING_PRICE_INDEX_TYPE       ("DC_OR-E0003", "Error: Missing pricing index type."),
     MISSING_INDEX_DAYS_EXPIRY        ("DC_OR-E0004", "Error: Missing pricing index days offset for expiry."),
     MISSING_BASE_INDEX               ("DC_OR-E0010", "Error: Missing base index and Index type is BASIS"),
 

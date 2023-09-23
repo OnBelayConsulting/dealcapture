@@ -35,6 +35,16 @@ public class OrganizationServiceBean extends BaseDomainService implements Organi
     private OrganizationRoleRepository organizationRoleRepository;
 
     @Override
+    public OrganizationSnapshot load(EntityId entityId) {
+        Organization organization = organizationRepository.load(entityId);
+        if (organization == null)
+            return null;
+
+        OrganizationAssembler assembler = new OrganizationAssembler();
+        return assembler.assemble(organization);
+    }
+
+    @Override
     public QuerySelectedPage findOrganizationIds(DefinedQuery definedQuery) {
         List<Integer> ids = organizationRepository.findOrganizationIds(definedQuery);
         return new QuerySelectedPage(
@@ -93,6 +103,15 @@ public class OrganizationServiceBean extends BaseDomainService implements Organi
 
         List<OrganizationRole> roles = organization.getOrganizationRoles();
         return OrganizationRoleSnapshotAssemblerFactory.assemble(roles);
+    }
+
+    @Override
+    public OrganizationSnapshot findByExternalReference(Integer externalReferenceId) {
+        Organization organization = organizationRepository.findByExternalReference(externalReferenceId);
+        if (organization == null)
+            return null;
+        OrganizationAssembler assembler = new OrganizationAssembler();
+        return assembler.assemble(organization);
     }
 
     @Override

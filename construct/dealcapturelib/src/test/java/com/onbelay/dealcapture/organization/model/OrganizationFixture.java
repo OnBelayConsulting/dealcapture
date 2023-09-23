@@ -8,6 +8,7 @@ public class OrganizationFixture {
         OrganizationSnapshot snapshot = new OrganizationSnapshot();
         snapshot.getDetail().setShortName(shortName);
         snapshot.getDetail().setLegalName(shortName);
+        snapshot.getDetail().setExternalReferenceId(1);
         return new Organization(snapshot);
     }
 

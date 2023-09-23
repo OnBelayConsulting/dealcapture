@@ -17,7 +17,7 @@
                     remarks="Primary key for the PRICING_LOCATION_AUDIT table." type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints primaryKey="true" primaryKeyName="PRICING_LOCATION_AUDIT_PK" nullable="false"/>
             </column>
-            <column name="ENTITY_ID" remarks="Primary key for the PRICING_INDEX table."
+            <column name="ENTITY_ID" remarks="Primary key for the PRICE_INDEX table."
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="false"/>
             </column>

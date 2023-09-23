@@ -3,7 +3,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.dealcapture.dealmodule.deal.shared.DealPositionDetail;
 import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealPositionDetail;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 public class PhysicalDealPosition extends DealPosition {
 

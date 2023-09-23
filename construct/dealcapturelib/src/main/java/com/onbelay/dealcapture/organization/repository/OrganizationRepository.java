@@ -23,7 +23,7 @@ import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.Organization;
 import com.onbelay.dealcapture.organization.model.OrganizationRole;
 
-import javax.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 public interface OrganizationRepository {
@@ -38,6 +38,6 @@ public interface OrganizationRepository {
 	
 	public Organization findByShortName(String name);
 		
-	
+	public Organization findByExternalReference(Integer externalReferenceId);
 
 }

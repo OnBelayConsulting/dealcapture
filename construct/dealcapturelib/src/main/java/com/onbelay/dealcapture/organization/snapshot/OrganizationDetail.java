@@ -19,13 +19,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationErrorCode;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationDetail {
 
 	private String shortName;
 	private String legalName;
+
+	private Integer externalReferenceId;
 
 
 	public void validate() throws OBValidationException {
@@ -44,6 +46,9 @@ public class OrganizationDetail {
 
 		if (copy.legalName != null)
 			this.legalName = copy.legalName;
+
+		if (copy.externalReferenceId != null)
+			this.externalReferenceId = copy.externalReferenceId;
 	}
 
 	@Column(name = "SHORT_NAME")
@@ -62,5 +67,14 @@ public class OrganizationDetail {
 
 	public void setLegalName(String legalName) {
 		this.legalName = legalName;
+	}
+
+	@Column(name = "EXTERNAL_REF_ID")
+	public Integer getExternalReferenceId() {
+		return externalReferenceId;
+	}
+
+	public void setExternalReferenceId(Integer externalReferenceId) {
+		this.externalReferenceId = externalReferenceId;
 	}
 }

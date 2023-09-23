@@ -26,7 +26,7 @@ import com.onbelay.dealcapture.organization.snapshot.OrganizationDetail;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +37,13 @@ import java.util.List;
        name = OrganizationRepositoryBean.FIND_BY_SHORT_NAME,
        query = "SELECT organization " +
 			   "  FROM Organization organization " +
-       	     "   WHERE organization.detail.shortName = :shortName ")
+       	     "   WHERE organization.detail.shortName = :shortName "),
     
+    @NamedQuery(
+       name = OrganizationRepositoryBean.FIND_BY_EXTERNAL_REFERENCE,
+       query = "SELECT organization " +
+			   "  FROM Organization organization " +
+       	     "   WHERE organization.detail.externalReferenceId = :externalReferenceId ")
 })
 public class Organization extends TemporalAbstractEntity {
 
@@ -69,6 +74,13 @@ public class Organization extends TemporalAbstractEntity {
 	
 	public void updateWith(OrganizationSnapshot snapshot) {
 		detail.copyFrom(snapshot.getDetail());
+		update();
+	}
+
+
+	@Override
+	public void delete() {
+		setIsExpired(true);
 		update();
 	}
 

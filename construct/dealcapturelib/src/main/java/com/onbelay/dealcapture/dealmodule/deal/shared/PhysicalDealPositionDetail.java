@@ -1,6 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.deal.shared;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 import java.math.BigDecimal;
 
 public class PhysicalDealPositionDetail extends DealPositionDetail {

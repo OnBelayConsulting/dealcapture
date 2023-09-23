@@ -22,7 +22,7 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.shared.PricingLocationDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshot;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "PRICING_LOCATION")

@@ -17,7 +17,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.enums.CoreTransactionErrorCode;

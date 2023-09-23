@@ -15,10 +15,10 @@
  */
 package com.onbelay.dealcapture.organization.model;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;

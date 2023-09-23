@@ -27,6 +27,10 @@
             <column name="LEGAL_NAME" type="java.sql.Types.VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
+            <column name='EXTERNAL_REF_ID'
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable='true'/>
+            </column>
             <column name="EXPIRED_FLG" type="java.sql.Types.CHAR(1)">
                 <constraints nullable="false"/>
             </column>

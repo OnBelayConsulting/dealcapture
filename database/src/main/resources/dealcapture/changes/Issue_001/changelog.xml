@@ -10,8 +10,4 @@
         This gives us flexibility to add future changes without changing
         the MD5 checksum for changes that have already run.
     -->
-    <include file="Update_PHYSICAL_DEAL_Columns.xml" relativeToChangelogFile="true"/>
-    <include file="Update_PHYSICAL_POSITION_Columns.xml" relativeToChangelogFile="true"/>
-    <include file="Add_PHYSICAL_POSITION_constraint.xml" relativeToChangelogFile="true"/>
-    <include file="Add_VALUATION_CODE_constraint.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

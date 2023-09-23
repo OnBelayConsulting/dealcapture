@@ -15,7 +15,7 @@
  */
 package com.onbelay.dealcapture.pricing.shared;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;

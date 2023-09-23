@@ -15,21 +15,21 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
-import com.onbelay.dealcapture.pricing.model.PricingIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL_AUDIT")
 public class PhysicalDealAudit extends BaseDealAudit {
 
-	private PricingIndex marketPricingIndex;
+	private PriceIndex marketPriceIndex;
 	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
 	protected PhysicalDealAudit() {
@@ -48,13 +48,13 @@ public class PhysicalDealAudit extends BaseDealAudit {
 	}
 
 	@ManyToOne
-	@JoinColumn(name ="MARKET_PRICING_INDEX_ID")
-	public PricingIndex getMarketPricingIndex() {
-		return marketPricingIndex;
+	@JoinColumn(name ="MARKET_PRICE_INDEX_ID")
+	public PriceIndex getMarketPricingIndex() {
+		return marketPriceIndex;
 	}
 
-	private void setMarketPricingIndex(PricingIndex pricingIndex) {
-		this.marketPricingIndex = pricingIndex;
+	private void setMarketPricingIndex(PriceIndex priceIndex) {
+		this.marketPriceIndex = priceIndex;
 	}
 
 	@Embedded
@@ -71,7 +71,7 @@ public class PhysicalDealAudit extends BaseDealAudit {
 	public void copyFrom(TemporalAbstractEntity entity) {
 		super.copyFrom(entity);
 		PhysicalDeal physicalDeal = (PhysicalDeal) entity;
-		marketPricingIndex = physicalDeal.getMarketPricingIndex();
+		marketPriceIndex = physicalDeal.getMarketPricingIndex();
 		detail.copyFrom(physicalDeal.getDetail());
 	}
 

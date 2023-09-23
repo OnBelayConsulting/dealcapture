@@ -21,25 +21,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onbelay.core.entity.persistence.TransactionalSpringTestCase;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
@@ -47,12 +41,12 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.PricingIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PricingIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 
 @WithMockUser(username="test")
-public class DealRestControllerTest extends DealCaptureSpringTestCase {
+public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 	private static final Logger logger = LogManager.getLogger(DealRestControllerTest.class);
 	
 	@Autowired
@@ -64,7 +58,7 @@ public class DealRestControllerTest extends DealCaptureSpringTestCase {
 
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
-	private PricingIndex pricingIndex;
+	private PriceIndex priceIndex;
 
 	private PhysicalDeal physicalDeal;
 	
@@ -74,7 +68,7 @@ public class DealRestControllerTest extends DealCaptureSpringTestCase {
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		
-		pricingIndex = PricingIndexFixture.createPricingIndex(
+		priceIndex = PricingIndexFixture.createPricingIndex(
 				"AECO", 
 				PricingLocationFixture.createPricingLocation(
 						"west"));
@@ -84,8 +78,8 @@ public class DealRestControllerTest extends DealCaptureSpringTestCase {
 		physicalDeal = DealFixture.createPhysicalDeal(
 				"mine",
 				companyRole, 
-				counterpartyRole, 
-				pricingIndex);
+				counterpartyRole,
+                priceIndex);
 		flush();
 	}
 	
@@ -100,8 +94,8 @@ public class DealRestControllerTest extends DealCaptureSpringTestCase {
 		PhysicalDealSnapshot snapshot = DealFixture.createPhysicalDealSnapshot(
 				"hht-3", 
 				companyRole, 
-				counterpartyRole, 
-				pricingIndex);
+				counterpartyRole,
+                priceIndex);
 		
 		String jsonPayload = objectMapper.writeValueAsString(snapshot);
 		

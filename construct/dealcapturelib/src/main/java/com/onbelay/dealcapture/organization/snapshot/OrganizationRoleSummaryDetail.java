@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleStatus;
 
-import javax.persistence.Column;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationRoleSummaryDetail {

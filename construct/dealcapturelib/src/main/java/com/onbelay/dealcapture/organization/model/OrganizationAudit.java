@@ -20,7 +20,7 @@ import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationDetail;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "ORGANIZATION_AUDIT")
