@@ -35,7 +35,9 @@ jobs:
     
 
     runs-on: ubuntu-latest
-    container: gradle:jdk17-focal
+    container:
+      image: gradle:jdk17-focal
+      ports: 2375:2375
 
     permissions:
       contents: read
