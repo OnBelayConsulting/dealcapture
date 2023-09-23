@@ -37,7 +37,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: gradle:jdk17-focal
-      ports: 2375:2375
 
     permissions:
       contents: read
@@ -81,14 +80,6 @@ jobs:
     - name: run gradle build lib
       run: |
         ./gradlew construct:dealcapturelib:build
-      env:
-        GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
-        GPR_USER: ${{ secrets.GPR_USER }}
-
-
-    - name: run gradle build app
-      run: |
-        ./gradlew construct:dealcaptureapp:build
       env:
         GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
         GPR_USER: ${{ secrets.GPR_USER }}
