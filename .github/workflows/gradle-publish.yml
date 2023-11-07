@@ -16,6 +16,16 @@ jobs:
   build:
 
     services:
+
+      keycloak:
+        image: quay.io/keycloak/keycloak:21.1.1
+        options: --name keycloak --hostname keycloak
+        env:
+          KEYCLOAK_USER: "admin"
+          KEYCLOAK_PASSWORD: "admin"
+          JAVA_OPTS_APPEND: "start-dev"
+        ports:
+          - 8080:8080
       postgres:
         image: postgres:latest
 
@@ -43,6 +53,11 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+
+    - name: access keycloak
+      uses: enflo/curl-action@master
+      with:
+        curl: https://keycloak:8080/realms/master/.well-known/openid-configuration
 
     - name: Semver Conventional Commits
       id: versioning
