@@ -22,6 +22,7 @@ import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
@@ -34,20 +35,26 @@ public class DealFixture {
 	private DealFixture() { }
 
 	public static PhysicalDealSnapshot createPhysicalDealSnapshot(
+			LocalDate startDate,
+			LocalDate endDate,
+			DealStatusCode dealStatusCode,
+			CurrencyCode reportingCurrencyCode,
 			String ticketNo,
 			CompanyRole companyRole,
 			CounterpartyRole counterpartyRole,
-			PriceIndex priceIndex)  {
+			PriceIndex priceIndex,
+			Price dealPrice)  {
 		
 		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
 		
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 
-		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.PENDING);
+		dealSnapshot.getDealDetail().setDealStatus(dealStatusCode);
+		dealSnapshot.getDealDetail().setReportingCurrencyCode(reportingCurrencyCode);
 		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
-		dealSnapshot.getDealDetail().setStartDate(LocalDate.of(2019, 1, 1));
-		dealSnapshot.getDealDetail().setEndDate(LocalDate.of(2019, 12, 31));
+		dealSnapshot.getDealDetail().setStartDate(startDate);
+		dealSnapshot.getDealDetail().setEndDate(endDate);
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 		
 		dealSnapshot.setMarketPricingIndexId(priceIndex.generateEntityId());
@@ -56,12 +63,16 @@ public class DealFixture {
 				new Quantity(
 						UnitOfMeasureCode.GJ, 
 						BigDecimal.valueOf(34.78)));
-		
-		dealSnapshot.getPhysicalDealDetail().setDealPrice(
+
+		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.FIXED);
+
+		dealSnapshot.getDetail().setDealPrice(
 				new Price(
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ,
 						BigDecimal.valueOf(1.55)));
+
+		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
 
 		return dealSnapshot;
 	}
@@ -75,12 +86,47 @@ public class DealFixture {
 		
 		return PhysicalDeal.create(
 				createPhysicalDealSnapshot(
+						LocalDate.of(2023, 1, 1),
+						LocalDate.of(2023, 12, 31),
+						DealStatusCode.PENDING,
+						CurrencyCode.CAD,
 						ticketNo, 
 						companyRole, 
 						counterpartyRole,
-                        priceIndex));
+                        priceIndex,
+						new Price(
+								CurrencyCode.CAD,
+								UnitOfMeasureCode.GJ,
+								BigDecimal.ONE)
+				));
 		
 	}
-	
+
+
+
+	public static PhysicalDeal createPhysicalDeal(
+			String ticketNo,
+			CompanyRole companyRole,
+			CounterpartyRole counterpartyRole,
+			PriceIndex priceIndex,
+			LocalDate startDate,
+			LocalDate endDate,
+			CurrencyCode reportingCurrencyCode,
+			Price dealPrice)  {
+
+		return PhysicalDeal.create(
+				createPhysicalDealSnapshot(
+						startDate,
+						endDate,
+						DealStatusCode.VERIFIED,
+						reportingCurrencyCode,
+						ticketNo,
+						companyRole,
+						counterpartyRole,
+						priceIndex,
+						dealPrice));
+
+	}
+
 
 }

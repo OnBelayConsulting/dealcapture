@@ -15,37 +15,32 @@
  */
 package com.onbelay.dealcapture.pricing.controllers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onbelay.core.entity.persistence.TransactionalSpringTestCase;
 import com.onbelay.dealcapture.pricing.controller.PricingLocationRestController;
 import com.onbelay.dealcapture.pricing.model.PricingLocation;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshotCollection;
+import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
+import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WithMockUser(username="test")
-public class PricingLocationRestControllerTest extends DealCaptureSpringTestCase {
+public class PricingLocationRestControllerTest extends DealCaptureAppSpringTestCase {
 	private static final Logger logger = LogManager.getLogger(PricingLocationRestControllerTest.class);
 	
 	@Autowired

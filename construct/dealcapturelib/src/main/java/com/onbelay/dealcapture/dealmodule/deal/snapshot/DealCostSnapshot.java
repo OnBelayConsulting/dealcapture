@@ -18,7 +18,6 @@ package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.shared.DealCostDetail;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DealCostSnapshot extends AbstractSnapshot {

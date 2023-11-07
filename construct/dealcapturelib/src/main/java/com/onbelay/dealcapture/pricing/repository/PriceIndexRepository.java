@@ -26,6 +26,8 @@ public interface PriceIndexRepository {
 	public static final String BEAN_NAME = "priceIndexRepository";
 	
 	public PriceIndex findPriceIndexByName(String name);
+
+	public List<PriceIndex> loadAll();
 	
 	public PriceIndex load(EntityId id);
 	

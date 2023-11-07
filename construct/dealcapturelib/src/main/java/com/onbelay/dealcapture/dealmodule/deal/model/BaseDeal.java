@@ -26,9 +26,11 @@ import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
@@ -209,6 +211,26 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return getDealCostRepository().fetchDealCosts(id);
 	}
 
+	public List<EntityId> savePositions(List<DealPositionSnapshot> snapshots) {
+		ArrayList<EntityId> ids = new ArrayList<>();
+		for (DealPositionSnapshot snapshot : snapshots) {
+			EntityId id = savePosition(snapshot);
+			if (id != null)
+				ids.add(id);
+		}
+
+		return ids;
+	}
+
+	protected abstract EntityId savePosition(DealPositionSnapshot snapshot);
+
+
+	public void addPosition(DealPosition dealPosition) {
+		dealPosition.setDeal(this);
+		dealPosition.save();
+	}
+
+
 	@ManyToOne
 	@JoinColumn(name ="COUNTERPARTY_ROLE_ID")
 	public CounterpartyRole getCounterpartyRole() {
@@ -262,5 +284,4 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	protected static OrganizationRoleRepository getOrganizationRoleRepository() {
 		return (OrganizationRoleRepository) ApplicationContextFactory.getBean(OrganizationRoleRepository.BEAN_NAME);
 	}
-
 }

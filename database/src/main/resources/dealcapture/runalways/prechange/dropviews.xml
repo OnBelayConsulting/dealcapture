@@ -1,0 +1,28 @@
+<databaseChangeLog
+	xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+	xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+	logicalFilePath='/com/onbelay/dealcapture/runalways/prechange/views/dropviews.xml'
+>
+	<changeSet
+			author='lefeuvrem'
+			id='1'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='DEAL_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='DEAL_VIEW'
+		/>
+	</changeSet>
+
+</databaseChangeLog>

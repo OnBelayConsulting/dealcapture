@@ -18,17 +18,17 @@ package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
-import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
+import com.onbelay.shared.enums.CurrencyCode;
 
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PhysicalDealSnapshot extends BaseDealSnapshot {
 
-	private PhysicalDealDetail physicalDealDetail = new PhysicalDealDetail();
+	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
 	private EntityId marketPricingIndexId;
+	private CurrencyCode marketCurrencyCode;
 	
 	public PhysicalDealSnapshot() {
 		super(DealTypeCode.PHYSICAL_DEAL);
@@ -63,7 +63,7 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 			EntityId companyRoleSlot,
 			EntityId counterpartySlot,
 			DealDetail dealDetail,
-			PhysicalDealDetail physicalDealDetail) {
+			PhysicalDealDetail detail) {
 		
 		super(
 				DealTypeCode.PHYSICAL_DEAL,
@@ -71,16 +71,16 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 				counterpartySlot,
 				dealDetail);
 		
-		this.physicalDealDetail.copyFrom(physicalDealDetail);
+		this.detail.copyFrom(detail);
 	}
 			
 	
-	public PhysicalDealDetail getPhysicalDealDetail() {
-		return physicalDealDetail;
+	public PhysicalDealDetail getDetail() {
+		return detail;
 	}
 
-	public void setPhysicalDealDetail(PhysicalDealDetail physicalDealDetail) {
-		this.physicalDealDetail = physicalDealDetail;
+	public void setDetail(PhysicalDealDetail detail) {
+		this.detail = detail;
 	}
 
 	public EntityId getMarketPricingIndexId() {
@@ -91,6 +91,11 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 		this.marketPricingIndexId = marketPricingIndexId;
 	}
 
+	public CurrencyCode getMarketCurrencyCode() {
+		return marketCurrencyCode;
+	}
 
-	
+	public void setMarketCurrencyCode(CurrencyCode marketCurrencyCode) {
+		this.marketCurrencyCode = marketCurrencyCode;
+	}
 }

@@ -43,12 +43,12 @@ artifacts {
 
 
 task deployNew() {
-	doLast{ liquibase.runList = "applySharedSnapshotActivity, applySnapshotActivity, applyChangesActivity" }
+	doLast{ liquibase.runList = "applySharedSnapshotActivity, applySnapshotActivity, applyChangesActivity, applyPostChangeActivity" }
 }
 deployNew.finalizedBy update
 
 task deployChanges() {
-	doLast { liquibase.runList = "applyChangesActivity" }
+	doLast { liquibase.runList = "applyPreChangeActivity, applyChangesActivity, applyPostChangeActivity" }
 }
 deployChanges.finalizedBy update
 
@@ -87,6 +87,13 @@ liquibase {
 		}
 
 
+		applyPreChangeActivity {
+			changeLogFile '/src/main/resources/dealcapture/runalways/prechange/changelog.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
 		applySnapshotActivity {
 			changeLogFile '/src/main/resources/dealcapture/snapshot/changelog.xml'
 			url jdbcProps.get("jdbc.url")
@@ -96,6 +103,13 @@ liquibase {
 
 		applyChangesActivity {
 			changeLogFile '/src/main/resources/dealcapture/changes/changelog.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+		applyPostChangeActivity {
+			changeLogFile '/src/main/resources/dealcapture/runalways/postchange/changelog.xml'
 			url jdbcProps.get("jdbc.url")
 			username jdbcProps.get("jdbc.username")
 			password jdbcProps.get("jdbc.password")

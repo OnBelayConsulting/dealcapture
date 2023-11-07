@@ -69,6 +69,7 @@ public class DealRestController extends BaseRestController {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
 
+
 		TransactionResult result;
 		try {
 			  result = dealRestAdapter.save(dealSnapshot);

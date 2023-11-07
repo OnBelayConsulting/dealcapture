@@ -37,7 +37,14 @@ public abstract class CalculatedEntity {
     protected CalculatedEntity() {
     	
     }
-    
+
+
+    public abstract CalculatedEntity add(CalculatedEntity entity);
+    public abstract CalculatedEntity subtract(CalculatedEntity entity);
+    public abstract CalculatedEntity multiply(CalculatedEntity entity);
+    public abstract CalculatedEntity divide(CalculatedEntity entity);
+
+
     protected CalculatedEntity(CalculatedErrorType error) {
     	this.calculationErrorType = error;
     }
@@ -59,6 +66,7 @@ public abstract class CalculatedEntity {
 	public BigDecimal getValue() {
 		return value;
 	}
+
 
 
 }

@@ -15,6 +15,8 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.assembler;
 
+import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,14 +37,15 @@ public class PhysicalDealAssembler extends AbstractDealAssembler {
 		
 		if (deal instanceof PhysicalDeal == false) {
 			logger.fatal("Invalid class passed into assembler - expecting PhysicalDeal. dealNo=", deal.getDealDetail().getTicketNo());
+			throw new OBRuntimeException(DealErrorCode.INVALID_DEAL_ID.getCode());
 		}
 		
 		PhysicalDeal physicalDeal = (PhysicalDeal) deal;
-		snapshot.getPhysicalDealDetail().copyFrom(physicalDeal.getDetail());
+		snapshot.getDetail().copyFrom(physicalDeal.getDetail());
 		
 		snapshot.setMarketPricingIndexId(
 				physicalDeal.getMarketPricingIndex().generateEntityId());
-		
+		snapshot.setMarketCurrencyCode(physicalDeal.getMarketPricingIndex().getDetail().getCurrencyCode());
 		
 		return snapshot;
 	}

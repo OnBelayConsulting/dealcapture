@@ -38,7 +38,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@Service(value = "pricingIndexService")
+@Service(value = "priceIndexService")
 @Transactional
 public class PriceIndexServiceBean extends BaseDomainService implements PriceIndexService {
 
@@ -72,13 +72,27 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 	}
 
 	@Override
+	public PriceIndexSnapshot findPriceIndexByName(String indexName) {
+		PriceIndex index = priceIndexRepository.findPriceIndexByName(indexName);
+		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
+		return assembler.assemble(index);
+	}
+
+	@Override
+	public List<PriceIndexSnapshot> loadAll() {
+		List<PriceIndex> indices = priceIndexRepository.loadAll();
+		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
+		return assembler.assemble(indices);
+	}
+
+	@Override
 	public BigDecimal fetchPrice(
 			EntityId pricingIndexId,
 			LocalDate currentDate) {
 
 		PriceCurve priceCurve = priceCurveRepository.fetchCurrentPrice(new EntityId(pricingIndexId), currentDate);
 		if (priceCurve != null)
-			return priceCurve.getDetail().getPriceValue();
+			return priceCurve.getDetail().getCurveValue();
 		else
 			return null;
 	}
@@ -103,7 +117,18 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 		
 		return new TransactionResult(pricingIndexId);
 	}
-	
+
+	@Override
+	public TransactionResult save(List<PriceIndexSnapshot> snapshots) {
+
+		TransactionResult result = new TransactionResult();
+		for (PriceIndexSnapshot snapshot : snapshots) {
+			TransactionResult childResult = save(snapshot);
+			if (childResult.getEntityId() != null)
+				result.addEntityId(childResult.getEntityId());
+		}
+		return result;
+	}
 
 	@Override
 	public TransactionResult save(PriceIndexSnapshot snapshot) {
@@ -111,7 +136,7 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 		PriceIndex priceIndex;
 		
 		if (snapshot.getEntityState() == EntityState.NEW) {
-			priceIndex = new PriceIndex(snapshot);
+			priceIndex = PriceIndex.create(snapshot);
 			return new TransactionResult(priceIndex.generateEntityId());
 		} else if (snapshot.getEntityState() == EntityState.MODIFIED){
 			priceIndex = priceIndexRepository.load(snapshot.getEntityId());

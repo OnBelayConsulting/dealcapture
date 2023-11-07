@@ -1,0 +1,35 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/UC_FX_INDEX.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <addUniqueConstraint
+                columnNames='INDEX_NAME'
+                tableName='FX_INDEX'
+                constraintName='FX_INDEX_NAME_UC'/>
+
+        <addUniqueConstraint
+                columnNames='FROM_CURRENCY_CODE, TO_CURRENCY_CODE, FREQUENCY_CODE'
+                tableName='FX_INDEX'
+                constraintName='FX_INDEX_CURRENCY_UC'/>
+    </changeSet>
+    <changeSet author="lefeuvrem" id="2.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createIndex tableName="FX_INDEX" indexName="FX_INDEX_NAME_IDX">
+            <column name="INDEX_NAME"/>
+        </createIndex>
+
+        <createIndex tableName="FX_INDEX" indexName="FX_INDEX_FROM_CUR_IDX">
+            <column name="FROM_CURRENCY_CODE"/>
+        </createIndex>
+
+        <createIndex tableName="FX_INDEX" indexName="FX_INDEX_TO_CUR_IDX">
+            <column name="TO_CURRENCY_CODE"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

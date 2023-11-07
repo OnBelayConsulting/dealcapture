@@ -22,7 +22,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
-import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 
 @Entity

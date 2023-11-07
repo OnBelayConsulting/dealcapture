@@ -15,6 +15,12 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
+import com.onbelay.core.entity.component.ApplicationContextFactory;
+import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
+import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -27,7 +33,7 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
@@ -69,7 +75,7 @@ public class PhysicalDeal extends BaseDeal {
 		super.updateWith(snapshot);
 		setAssociationsFromSnapshot(snapshot);
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
-		this.detail.copyFrom(physicalDealSnapshot.getPhysicalDealDetail());
+		this.detail.copyFrom(physicalDealSnapshot.getDetail());
 		update();
 	}
 	
@@ -78,7 +84,7 @@ public class PhysicalDeal extends BaseDeal {
 		super.createWith(snapshot);
 		setAssociationsFromSnapshot(snapshot);
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
-		this.detail.copyFrom(physicalDealSnapshot.getPhysicalDealDetail());
+		this.detail.copyFrom(physicalDealSnapshot.getDetail());
 		save();
 	}
 	
@@ -105,8 +111,25 @@ public class PhysicalDeal extends BaseDeal {
 			this.marketPriceIndex = getPricingIndexRepository().load(snapshot.getMarketPricingIndexId());
 		}
 	}
-	
 
+	@Override
+	protected EntityId savePosition(DealPositionSnapshot snapshot) {
+		if (snapshot.getEntityState() == EntityState.NEW) {
+			PhysicalPosition position = new PhysicalPosition();
+			position.createWith(
+					this,
+					snapshot);
+			return position.generateEntityId();
+		} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
+			PhysicalPosition position = (PhysicalPosition) getDealPositionsRepository().load(snapshot.getEntityId());
+			position.updateWith(snapshot);
+			return position.generateEntityId();
+		} else if (snapshot.getEntityState() == EntityState.DELETE) {
+			PhysicalPosition position = (PhysicalPosition) getDealPositionsRepository().load(snapshot.getEntityId());
+			position.delete();
+		}
+		return null;
+	}
 
 	@Embedded
 	public PhysicalDealDetail getDetail() {
@@ -124,6 +147,9 @@ public class PhysicalDeal extends BaseDeal {
 		return PhysicalDealAudit.create(this);
 	}
 
-	
-	
+
+
+	private static DealPositionRepository getDealPositionsRepository() {
+		return (DealPositionRepository) ApplicationContextFactory.getBean(DealPositionRepository.BEAN_NAME);
+	}
 }

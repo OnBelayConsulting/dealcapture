@@ -1,0 +1,57 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/FX_INDEX.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="FX_INDEX_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="FX_INDEX" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID"
+                    defaultValueSequenceNext="FX_INDEX_SEQ"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="FX_INDEX_PK" nullable="false"/>
+            </column>
+            <column name="FROM_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TO_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FREQUENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INDEX_NAME"
+                    type="java.sql.Types.VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OFFSET_EXPIRY_DAYS"
+                    type="java.sql.Types.NUMERIC(2, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="INDEX_DESCRIPTION"
+                    type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="OPTIMISTIC_LOCK_NO"
+                    defaultValueNumeric="0"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPIRED_FLG"
+                    type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

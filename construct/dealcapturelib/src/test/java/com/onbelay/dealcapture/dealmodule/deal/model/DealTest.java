@@ -19,8 +19,8 @@ import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.shared.DealDetail;
-import com.onbelay.dealcapture.dealmodule.deal.shared.PhysicalDealDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
@@ -28,12 +28,16 @@ import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class DealTest extends DealCaptureSpringTestCase {
 	
 	@Autowired
@@ -66,7 +70,8 @@ public class DealTest extends DealCaptureSpringTestCase {
 							LocalDate.of(2019, 1, 1),
 							LocalDate.of(2019, 1, 1),
 							BigDecimal.valueOf(34.78),
-							UnitOfMeasureCode.GJ),
+							UnitOfMeasureCode.GJ,
+							CurrencyCode.US),
 						new PhysicalDealDetail(
 								BigDecimal.valueOf(1.55),
 								CurrencyCode.CAD,
@@ -103,7 +108,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 						UnitOfMeasureCode.GJ, 
 						BigDecimal.valueOf(34.78)));
 		
-		dealSnapshot.getPhysicalDealDetail().setDealPrice(
+		dealSnapshot.getDetail().setDealPrice(
 				new Price(
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ,

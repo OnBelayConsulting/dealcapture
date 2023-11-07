@@ -1,0 +1,74 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/PRICE_CURVE_AUDIT.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="PRICE_CURVE_AUDIT_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="PRICE_CURVE_AUDIT" tablespace="${tblspace_data}">
+            <column name="AUDIT_ID"
+                    defaultValueSequenceNext="PRICE_CURVE_AUDIT_SEQ"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="PRICE_CURVE_AUDIT_PK" nullable="false"/>
+            </column>
+            <column name="ENTITY_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRICE_INDEX_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="FREQUENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CURVE_DATE"
+                    type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CURVE_VALUE"
+                    type="java.sql.Types.NUMERIC(6, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="OBSERVED_DATE_TIME"
+                    type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AUDIT_LOCK_NO"
+                    defaultValueNumeric="0"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPTIMISTIC_LOCK_NO"
+                    defaultValueNumeric="0"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPIRED_FLG"
+                    type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_FROM_DTTM"
+                    type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_TO_DTTM"
+                    type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_USER"
+                    type="java.sql.Types.VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

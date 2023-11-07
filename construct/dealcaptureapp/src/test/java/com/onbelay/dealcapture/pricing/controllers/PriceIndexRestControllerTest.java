@@ -15,14 +15,17 @@
  */
 package com.onbelay.dealcapture.pricing.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,7 +37,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.onbelay.dealcapture.pricing.controller.PriceIndexRestController;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
-import com.onbelay.dealcapture.pricing.model.PricingIndexFixture;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocation;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
@@ -43,7 +46,7 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshotCollection;
 
 
 @WithMockUser(username="test")
-public class PriceIndexRestControllerTest extends DealCaptureSpringTestCase {
+public class PriceIndexRestControllerTest extends DealCaptureAppSpringTestCase {
 	private static final Logger logger = LogManager.getLogger(PriceIndexRestControllerTest.class);
 	
 	@Autowired
@@ -60,8 +63,8 @@ public class PriceIndexRestControllerTest extends DealCaptureSpringTestCase {
 		super.setUp();
 		pricingLocation = PricingLocationFixture.createPricingLocation("west");
 		
-		PricingIndexFixture.createPricingIndex("AADC", pricingLocation);
-		PricingIndexFixture.createPricingIndex("Bddd", pricingLocation);
+		PriceIndexFixture.createPriceIndex("AADC", pricingLocation);
+		PriceIndexFixture.createPriceIndex("Bddd", pricingLocation);
 
 		flush();
 		clearCache();
@@ -75,7 +78,7 @@ public class PriceIndexRestControllerTest extends DealCaptureSpringTestCase {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
 				.build();
 
-		PriceIndexSnapshot snapshot = PricingIndexFixture.createPricingIndexSnapshot(
+		PriceIndexSnapshot snapshot = PriceIndexFixture.createPriceIndexSnapshot(
 				"EBEE", 
 				pricingLocation);
 		
@@ -117,7 +120,7 @@ public class PriceIndexRestControllerTest extends DealCaptureSpringTestCase {
 
 		
 		
-		String jsonPayload = "{\"detail\":{\"name\":\"fred\"},\"pricingLocationId\":{\"id\":" + pricingLocation.getId() + "}}";
+		String jsonPayload = "{\"detail\":{\"name\":\"fred\",\"indexTypeValue\" : \"H\"},\"pricingLocationId\":{\"id\":" + pricingLocation.getId() + "}}";
 //		String jsonPayloadFull = "{\"entityState\":\"NEW\",\"entityId\":null,\"version\":-1,\"detail\":{\"name\":\"EBEE\",\"description\":\"EBEE-Desc\",\"daysOffsetForExpiry\":4,\"indexTypeValue\":\"H\"},\"benchmarkIndexSlot\":null,\"baseIndexSlot\":null,\"pricingLocationSlot\":{\"entityId\":{\"id\":44,\"status\":\"VALID\"},\"version\":0,\"code\":\"west\"},\"links\":[]}";
 		
 		logger.error(jsonPayload);
@@ -153,7 +156,7 @@ public class PriceIndexRestControllerTest extends DealCaptureSpringTestCase {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
 				.build();
 
-		String jsonPayload = "{\"detail\":{\"name\":\"fred\"}}";
+		String jsonPayload = "{\"detail\":{\"name\":\"fred\", \"indexTypeValue\" : \"H\" }}";
 		
 		logger.debug(jsonPayload);
 		

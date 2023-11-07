@@ -19,7 +19,7 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.pricing.shared.PricingLocationDetail;
+import com.onbelay.dealcapture.pricing.snapshot.PricingLocationDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshot;
 
 import jakarta.persistence.*;

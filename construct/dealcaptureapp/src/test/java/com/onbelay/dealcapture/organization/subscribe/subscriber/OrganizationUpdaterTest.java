@@ -5,13 +5,16 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
 import com.onbelay.dealcapture.organization.subscribe.snapshot.SubOrganizationSnapshot;
+import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 
-public class OrganizationUpdaterTest extends DealCaptureSpringTestCase {
+import static org.junit.jupiter.api.Assertions.*;
+
+public class OrganizationUpdaterTest extends DealCaptureAppSpringTestCase {
 
     @Autowired
     private OrganizationUpdater organizationUpdater;

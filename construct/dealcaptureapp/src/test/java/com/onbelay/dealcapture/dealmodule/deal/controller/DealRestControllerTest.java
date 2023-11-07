@@ -15,17 +15,28 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
+import com.onbelay.dealcapture.organization.model.CompanyRole;
+import com.onbelay.dealcapture.organization.model.CounterpartyRole;
+import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
+import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.shared.enums.CurrencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,16 +45,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import com.onbelay.dealcapture.pricing.model.PricingIndexFixture;
-import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WithMockUser(username="test")
 public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
@@ -54,7 +62,6 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 
 	@Autowired
 	private DealRestAdapter dealRestAdapter;
-
 
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
@@ -68,7 +75,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		
-		priceIndex = PricingIndexFixture.createPricingIndex(
+		priceIndex = PriceIndexFixture.createPriceIndex(
 				"AECO", 
 				PricingLocationFixture.createPricingLocation(
 						"west"));
@@ -92,10 +99,18 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 		
 
 		PhysicalDealSnapshot snapshot = DealFixture.createPhysicalDealSnapshot(
-				"hht-3", 
+				LocalDate.of(2023, 1, 1),
+				LocalDate.of(2023, 1, 31),
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"hht-3",
 				companyRole, 
 				counterpartyRole,
-                priceIndex);
+                priceIndex,
+				new Price(
+						CurrencyCode.US,
+						UnitOfMeasureCode.GJ,
+						BigDecimal.ONE));
 		
 		String jsonPayload = objectMapper.writeValueAsString(snapshot);
 		

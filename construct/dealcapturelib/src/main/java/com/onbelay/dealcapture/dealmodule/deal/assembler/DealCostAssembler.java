@@ -18,12 +18,13 @@ package com.onbelay.dealcapture.dealmodule.deal.assembler;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.onbelay.core.entity.assembler.EntityAssembler;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealCost;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 
-public class DealCostAssembler {
+public class DealCostAssembler extends EntityAssembler {
 	
 	private BaseDeal deal;
 
@@ -47,6 +48,7 @@ public class DealCostAssembler {
 	
 	public DealCostSnapshot assemble(DealCost dealCost) {
 		DealCostSnapshot snapshot = new DealCostSnapshot();
+		super.setEntityAttributes(dealCost, snapshot);
 		snapshot.setDealKey(new EntityId(deal.getId()));
 		snapshot.getDetail().copyFrom(dealCost.getDetail());
 		return snapshot;

@@ -11,6 +11,7 @@
     <include file="DEAL_STATUS_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="FREQUENCY_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="RISK_FACTOR_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="UNIT_OF_MEASURE_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="VALUATION_CODE_Insert.xml" relativeToChangelogFile="true"/>
 

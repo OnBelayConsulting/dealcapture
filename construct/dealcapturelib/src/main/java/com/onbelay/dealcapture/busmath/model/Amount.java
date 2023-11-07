@@ -31,7 +31,27 @@ public class Amount extends CalculatedEntity {
 		this.currency = currency;
 		this.value = value;
 	}
-	
+
+	@Override
+	public CalculatedEntity add(CalculatedEntity entity) {
+		return null;
+	}
+
+	@Override
+	public CalculatedEntity subtract(CalculatedEntity entity) {
+		return null;
+	}
+
+	@Override
+	public CalculatedEntity multiply(CalculatedEntity entity) {
+		return null;
+	}
+
+	@Override
+	public CalculatedEntity divide(CalculatedEntity entity) {
+		return null;
+	}
+
 	public Amount(CalculatedErrorType error) {
 		super(error);
 	}
@@ -46,5 +66,12 @@ public class Amount extends CalculatedEntity {
 		return currency;
 	}
 
+	public Quantity divide(Price price) {
+		return null;
+	}
+
+	public Price divide (Quantity quantity) {
+		return null;
+	}
 
 }

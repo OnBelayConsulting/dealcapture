@@ -30,15 +30,31 @@ public class Quantity extends CalculatedEntity{
 		this.unitOfMeasureCode = unitOfMeasureCode;
 		this.value = value;
 	}
-	
-	
 
 
-	protected Quantity(CalculatedErrorType error) {
-		super(error);
+	@Override
+	public CalculatedEntity add(CalculatedEntity entity) {
+		return null;
 	}
 
+	@Override
+	public CalculatedEntity subtract(CalculatedEntity entity) {
+		return null;
+	}
 
+	@Override
+	public CalculatedEntity multiply(CalculatedEntity entity) {
+		return null;
+	}
+
+	@Override
+	public CalculatedEntity divide(CalculatedEntity entity) {
+		return null;
+	}
+
+	public Quantity(CalculatedErrorType error) {
+		super(error);
+	}
 
 
 	public BigDecimal getValue() {

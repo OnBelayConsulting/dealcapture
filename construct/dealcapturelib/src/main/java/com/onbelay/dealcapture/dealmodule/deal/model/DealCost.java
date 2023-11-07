@@ -18,7 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
-import com.onbelay.dealcapture.dealmodule.deal.shared.DealCostDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 
 import jakarta.persistence.*;
@@ -71,7 +71,7 @@ public class DealCost extends TemporalAbstractEntity {
 
 
 	@Id
-    @Column(name="DEAL_COST_SK", insertable = false, updatable = false)
+    @Column(name="ENTITY_ID", insertable = false, updatable = false)
     @SequenceGenerator(name="DealCostGen", sequenceName="DEAL_COST_SEQ", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "DealCostGen")
 	public Integer getId() {
@@ -91,7 +91,7 @@ public class DealCost extends TemporalAbstractEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name ="DEAL_SK")
+	@JoinColumn(name ="DEAL_ID")
 
 	public BaseDeal getDeal() {
 		return deal;

@@ -19,7 +19,7 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
-import com.onbelay.dealcapture.pricing.shared.PriceCurveDetail;
+import com.onbelay.dealcapture.pricing.snapshot.CurveDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 
 import jakarta.persistence.*;
@@ -32,19 +32,19 @@ import jakarta.persistence.*;
        query = "SELECT price "
        		+ "   FROM PriceCurve price " +
        	     "   WHERE price.priceIndex.id = :priceIndexId "
-       	     + "   AND price.detail.priceDate = :priceDate "
+       	     + "   AND price.detail.curveDate = :priceDate "
        	     + "   AND price.detail.observedDateTime = "
        	     + "    (SELECT MAX(searchPrice.detail.observedDateTime)"
        	     + "       FROM PriceCurve searchPrice"
        	     + "      WHERE searchPrice.priceIndex.id = :priceIndexId"
-       	     + "        AND searchPrice.detail.priceDate = :priceDate"
+       	     + "        AND searchPrice.detail.curveDate = :priceDate"
        	     + "        AND searchPrice.detail.observedDateTime <= :currentDateTime"
        	     + "     )  ")
     
 })
 public class PriceCurve extends TemporalAbstractEntity {
 	
-	private PriceCurveDetail detail = new PriceCurveDetail();
+	private CurveDetail detail = new CurveDetail();
 
 	private Integer id;
 
@@ -83,12 +83,12 @@ public class PriceCurve extends TemporalAbstractEntity {
 
 
 	@Embedded
-	public PriceCurveDetail getDetail() {
+	public CurveDetail getDetail() {
 		return detail;
 	}
 
 
-	public void setDetail(PriceCurveDetail detail) {
+	public void setDetail(CurveDetail detail) {
 		this.detail = detail;
 	}
 

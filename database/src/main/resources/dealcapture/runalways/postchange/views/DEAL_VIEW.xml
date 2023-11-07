@@ -1,0 +1,43 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/runalways/postchange/views/DEAL_VIEW.xml'
+>
+    <changeSet
+            author='lefeuvrem'
+            id='1'
+            runAlways='true'
+            runOnChange='true'
+    >
+    <createView viewName="DEAL_VIEW">
+    SELECT
+            bd.START_DATE,
+            bd.END_DATE,
+            bd.BUY_SELL_CODE,
+            bd.DEAL_STATUS_CODE,
+            bd.REPORTING_CURRENCY_CODE,
+            bd.TICKET_NO,
+            bd.EXPIRED_FLG,
+            co_org.SHORT_NAME CO_SHORT_NAME,
+            co_org.LEGAL_NAME CO_LEGAL_NAME,
+            cp_org.SHORT_NAME CP_SHORT_NAME,
+            cp_org.LEGAL_NAME CP_LEGAL_NAME
+            FROM
+            BASE_DEAL bd
+            INNER JOIN ORGANIZATION_ROLE co_or ON
+                co_or.ENTITY_ID = bd.COMPANY_ROLE_ID
+            INNER JOIN OB_ORGANIZATION co_org ON
+                co_org.ENTITY_ID = co_or.ORGANIZATION_ID
+            INNER JOIN ORGANIZATION_ROLE cp_or ON
+                cp_or.ENTITY_ID = bd.COUNTERPARTY_ROLE_ID
+            INNER JOIN OB_ORGANIZATION cp_org ON
+                cp_org.ENTITY_ID = cp_or.ORGANIZATION_ID
+        </createView>
+    </changeSet>
+
+
+</databaseChangeLog>

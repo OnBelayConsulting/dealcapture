@@ -9,7 +9,7 @@
         logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/changelog.xml"
 >
     <include file="codes/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="table/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="tables/changelog.xml" relativeToChangelogFile="true"/>
     <include file="constraints/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 

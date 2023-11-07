@@ -20,9 +20,11 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.shared.enums.CurrencyCode;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 public class Price extends CalculatedEntity {
-    public static final int PRICE_SCALE = 8;
+    public static final int PRICE_SCALE = 4;
 	private CurrencyCode currency;
 	private UnitOfMeasureCode unitOfMeasure;
 	
@@ -34,9 +36,46 @@ public class Price extends CalculatedEntity {
 		this.value = value;
 	}
 
-	
+	public Price convertWith(FxRate rate) {
+		if (currency == rate.getFromCurrencyCode()) {
+			BigDecimal converted = getValue().multiply(rate.getFxRate(), MathContext.DECIMAL128);
+			converted = converted.setScale(PRICE_SCALE, RoundingMode.HALF_EVEN);
+			return new Price(
+					rate.getToCurrencyCode(),
+					unitOfMeasure,
+					converted);
+		} else {
+			BigDecimal converted = getValue().multiply(rate.getInvertedFxRate(), MathContext.DECIMAL128);
+			converted = converted.setScale(PRICE_SCALE, RoundingMode.HALF_EVEN);
+			return new Price(
+					rate.getToCurrencyCode(),
+					unitOfMeasure,
+					converted);
 
-	protected Price(CalculatedErrorType error) {
+		}
+	}
+
+	@Override
+	public CalculatedEntity add(CalculatedEntity entity) {
+		return null;
+	}
+
+	@Override
+	public CalculatedEntity subtract(CalculatedEntity entity) {
+		return null;
+	}
+
+	@Override
+	public CalculatedEntity multiply(CalculatedEntity entity) {
+		return null;
+	}
+
+	@Override
+	public CalculatedEntity divide(CalculatedEntity entity) {
+		return null;
+	}
+
+	public Price(CalculatedErrorType error) {
 		super(error);
 	}
 

@@ -1,0 +1,22 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/snapshot/dml/RISK_FACTOR_CODE_Insert.xml'
+>
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <insert tableName='RISK_FACTOR_CODE'>
+            <column name='CODE_ID' value='P'/>
+            <column name='CODE_LABEL' value='Price'/>
+            <column name='DISPLAY_ORDER_NO' value='10'/>
+        </insert>
+        <insert tableName='RISK_FACTOR_CODE'>
+            <column name='CODE_ID' value='FX'/>
+            <column name='CODE_LABEL' value='Foreign Exchange'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

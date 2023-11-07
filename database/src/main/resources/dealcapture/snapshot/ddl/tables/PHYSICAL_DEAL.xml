@@ -1,0 +1,40 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/DEAL_SD.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <createTable tableName="PHYSICAL_DEAL" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="MARKET_PRICE_INDEX_ID"  type="java.sql.Types.NUMERIC(10, 0)"/>
+            <column name='MARKET_VALUATION_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name="DEAL_PRICE_VALUATION_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEAL_PRICE_INDEX_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEAL_PRICE_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEAL_PRICE_UOM_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEAL_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

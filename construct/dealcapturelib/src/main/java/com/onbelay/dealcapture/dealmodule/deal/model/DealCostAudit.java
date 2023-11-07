@@ -29,12 +29,10 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
-import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.utils.DateUtils;
-import com.onbelay.dealcapture.dealmodule.deal.shared.DealCostDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostDetail;
 
 @Entity
 @Table (name = "DEAL_COST_AUDIT")
@@ -77,7 +75,7 @@ public class DealCostAudit extends AuditAbstractEntity {
 	
 
 	@Id
-    @Column(name="DEAL_COST_AUDIT_SK", insertable = false, updatable = false)
+    @Column(name="AUDIT_ID", insertable = false, updatable = false)
     @SequenceGenerator(name="DealCostAuditGen", sequenceName="DEAL_COST_AUDIT_SEQ", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "DealCostAuditGen")
 	public Integer getId() {
@@ -89,7 +87,7 @@ public class DealCostAudit extends AuditAbstractEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name ="DEAL_COST_SK")
+	@JoinColumn(name ="ENTITY_ID")
 	public DealCost getDealCost() {
 		return dealCost;
 	}
@@ -99,7 +97,7 @@ public class DealCostAudit extends AuditAbstractEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name ="DEAL_SK")
+	@JoinColumn(name ="DEAL_ID")
 
 	public BaseDeal getDea1() {
 		return dea1;

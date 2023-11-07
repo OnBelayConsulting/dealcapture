@@ -16,8 +16,10 @@
 package com.onbelay.dealcapture.pricing.model;
 
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PriceIndexTest extends DealCaptureSpringTestCase {
 	
@@ -37,7 +39,7 @@ public class PriceIndexTest extends DealCaptureSpringTestCase {
 	@Test
 	public void createIndex() {
 		
-		PriceIndex created = PricingIndexFixture.createPricingIndex(
+		PriceIndex created = PriceIndexFixture.createPriceIndex(
 				"westidx", 
 				pricingLocation);
 		flush();

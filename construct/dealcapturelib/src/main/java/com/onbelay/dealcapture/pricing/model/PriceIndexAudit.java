@@ -32,7 +32,7 @@ import jakarta.persistence.Transient;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
-import com.onbelay.dealcapture.pricing.shared.PriceIndexDetail;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexDetail;
 
 @Entity
 @Table(name = "PRICE_INDEX_AUDIT")

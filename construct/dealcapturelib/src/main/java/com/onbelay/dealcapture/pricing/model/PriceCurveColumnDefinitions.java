@@ -22,13 +22,13 @@ import com.onbelay.core.query.enums.ColumnDataType;
 import com.onbelay.core.query.model.ColumnDefinition;
 import com.onbelay.core.query.model.ColumnDefinitions;
 
-@Component(value = "indexPriceColumnDefinitions")
+@Component(value = "priceCurveColumnDefinitions")
 public class PriceCurveColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 
 	public static final ColumnDefinition id = new ColumnDefinition("id", ColumnDataType.INTEGER, "id");
-	public static final ColumnDefinition priceDate = new ColumnDefinition("priceDate", ColumnDataType.DATE, "detail.priceDate");
+	public static final ColumnDefinition priceDate = new ColumnDefinition("curveDate", ColumnDataType.DATE, "detail.curveDate");
 	public static final ColumnDefinition observedDateTime = new ColumnDefinition("observedDateTime", ColumnDataType.DATE_TIME, "detail.observedDateTime");
-	public static final ColumnDefinition indexName = new ColumnDefinition("indexName", ColumnDataType.STRING, "pricingIndex.detail.name");
+	public static final ColumnDefinition indexName = new ColumnDefinition("indexName", ColumnDataType.STRING, "priceIndex.detail.name");
 	
 	public PriceCurveColumnDefinitions() {
 		add(id);

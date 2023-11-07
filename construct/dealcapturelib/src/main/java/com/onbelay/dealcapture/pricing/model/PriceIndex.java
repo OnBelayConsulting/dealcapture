@@ -15,8 +15,14 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
+import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
+import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
+import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -40,7 +46,7 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
-import com.onbelay.dealcapture.pricing.shared.PriceIndexDetail;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 
@@ -51,8 +57,13 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
        name = PriceIndexRepositoryBean.FIND_BY_NAME,
        query = "SELECT priceIndex " +
 			   "  FROM PriceIndex priceIndex " +
-       	     "   WHERE priceIndex.detail.name = :name ")
+       	     "   WHERE priceIndex.detail.name = :name "),
     
+    @NamedQuery(
+       name = PriceIndexRepositoryBean.LOAD_ALL,
+       query = "SELECT priceIndex " +
+			   "  FROM PriceIndex priceIndex " +
+       	  "   ORDER BY priceIndex.detail.name ")
 })
 public class PriceIndex extends TemporalAbstractEntity {
 
@@ -71,9 +82,10 @@ public class PriceIndex extends TemporalAbstractEntity {
 		
 	}
 	
-	public PriceIndex(PriceIndexSnapshot snapshot) {
-		createWith(snapshot);
-		save();
+	public static PriceIndex create(PriceIndexSnapshot snapshot) {
+		PriceIndex index = new PriceIndex();
+		index.createWith(snapshot);
+		return index;
 	}
 	
 	
@@ -154,9 +166,46 @@ public class PriceIndex extends TemporalAbstractEntity {
 			}
 		}
 	}
-	
 
-	
+
+	public PriceRiskFactor getPriceRiskFactor(LocalDate marketDate) {
+		return getPriceRiskFactorRepository().fetchByMarketDate(generateEntityId(), marketDate);
+	}
+
+	public List<PriceRiskFactor> getPriceRiskFactorsByDates(
+			LocalDate fromMarketDate,
+			LocalDate toMarketDate) {
+
+		return getPriceRiskFactorRepository().fetchByDatesInclusive(
+				generateEntityId(),
+				toMarketDate,
+				fromMarketDate);
+	}
+
+
+	public List<EntityId> savePriceRiskFactors(List<PriceRiskFactorSnapshot> factors) {
+		ArrayList<EntityId> ids = new ArrayList<>();
+		for (PriceRiskFactorSnapshot snapshot : factors) {
+			if (snapshot.getEntityState() == EntityState.NEW) {
+				PriceRiskFactor factor = PriceRiskFactor.create(this, snapshot);
+				ids.add(factor.generateEntityId());
+			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
+				PriceRiskFactor factor = getPriceRiskFactorRepository().load(snapshot.getEntityId());
+				factor.updateWith(snapshot);
+				ids.add(factor.generateEntityId());
+			} else if (snapshot.getEntityState() == EntityState.DELETE) {
+				PriceRiskFactor factor = getPriceRiskFactorRepository().load(snapshot.getEntityId());
+				factor.delete();
+			}
+		}
+		return ids;
+	}
+
+	public void addPriceRiskFactor(PriceRiskFactor factor) {
+		factor.setIndex(this);
+		factor.save();
+	}
+
 	protected void validate() throws OBValidationException {
 		detail.validate();
 		
@@ -227,7 +276,12 @@ public class PriceIndex extends TemporalAbstractEntity {
 	protected PriceCurveRepositoryBean getPriceRepository() {
 		return (PriceCurveRepositoryBean) ApplicationContextFactory.getBean(PriceCurveRepositoryBean.BEAN_NAME);
 	}
-	
+
+	@Transient
+	protected PriceRiskFactorRepository getPriceRiskFactorRepository() {
+		return (PriceRiskFactorRepository) ApplicationContextFactory.getBean(PriceRiskFactorRepository.BEAN_NAME);
+	}
+
 	@Transient
 	protected PricingLocationRepository getLocationRepository() {
 		return (PricingLocationRepository) ApplicationContextFactory.getBean(PricingLocationRepository.BEAN_NAME);

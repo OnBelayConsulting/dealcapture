@@ -6,11 +6,12 @@
 	http://www.liquibase.org/xml/ns/dbchangelog
 	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/changelog.xml"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/codes/changelog.xml"
 >
     <include file="DEAL_STATUS_CODE.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FREQUENCY_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="RISK_FACTOR_CODE.xml" relativeToChangelogFile="true"/>
     <include file="UNIT_OF_MEASURE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="VALUATION_CODE.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

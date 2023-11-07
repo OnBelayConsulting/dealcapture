@@ -19,11 +19,12 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.organization.controller.OrganizationRestController;
 import com.onbelay.dealcapture.organization.model.*;
 import com.onbelay.dealcapture.organization.snapshot.*;
+import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -35,10 +36,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WithMockUser(username="test")
-public class OrganizationRestControllerTest extends DealCaptureSpringTestCase {
+public class OrganizationRestControllerTest extends DealCaptureAppSpringTestCase {
 	private static final Logger logger = LogManager.getLogger(OrganizationRestControllerTest.class);
 	
 	@Autowired

@@ -23,7 +23,6 @@ import java.util.Map;
 
 public enum DealErrorCode {
 
-    SUCCESS                       	 ("0", "Success: transaction was successful"),
     INVALID_DEAL_ID                  ("DC_DL-E0001", "Error: Invalid deal id."),
     MISSING_COMPANY_ROLE             ("DC_DL-E0101", "Error: Missing company."),
     MISSING_COUNTERPARTY_ROLE        ("DC_DL-E0102", "Error: Missing counterparty."),
@@ -38,9 +37,7 @@ public enum DealErrorCode {
     MISSING_MARKET_INDEX      		 ("DC_DL-E0501", "Error: Missing market index"),
     MISSING_DEAL_PRICE_VALUE   		 ("DC_DL-E0502", "Error: Missing deal price value"),
     MISSING_DEAL_PRICE_CURRENCY		 ("DC_DL-E0503", "Error: Missing deal price currency."),
-    MISSING_DEAL_PRICE_UOM		     ("DC_DL-E0504", "Error: Missing deal price unit of measure."),
-
-    SYSTEM_FAILURE                   ("E99999", "Error: Application error has occurred");
+    MISSING_DEAL_PRICE_UOM		     ("DC_DL-E0504", "Error: Missing deal price unit of measure.");
 
     private String code;
     private String description;

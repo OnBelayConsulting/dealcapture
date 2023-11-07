@@ -32,7 +32,7 @@ import jakarta.persistence.Transient;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
-import com.onbelay.dealcapture.pricing.shared.PriceCurveDetail;
+import com.onbelay.dealcapture.pricing.snapshot.CurveDetail;
 
 @Entity
 @Table(name = "PRICE_CURVE_AUDIT")
@@ -53,7 +53,7 @@ public class PriceCurveAudit extends AuditAbstractEntity {
 	
 	private PriceIndex priceIndex;
 
-	private PriceCurveDetail detail = new PriceCurveDetail();
+	private CurveDetail detail = new CurveDetail();
 	
 	
 	protected PriceCurveAudit() {
@@ -102,11 +102,11 @@ public class PriceCurveAudit extends AuditAbstractEntity {
 	}
 
 	@Embedded
-	public PriceCurveDetail getDetail() {
+	public CurveDetail getDetail() {
 		return detail;
 	}
 
-	private void setDetail(PriceCurveDetail detail) {
+	private void setDetail(CurveDetail detail) {
 		this.detail = detail;
 	}
 

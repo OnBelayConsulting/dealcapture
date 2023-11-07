@@ -15,17 +15,18 @@
  */
 package com.onbelay.dealcapture.common.model;
 
-import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 
 import com.onbelay.shared.enums.CurrencyCode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.onbelay.dealcapture.busmath.model.Amount;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ValueObjectTest {
 

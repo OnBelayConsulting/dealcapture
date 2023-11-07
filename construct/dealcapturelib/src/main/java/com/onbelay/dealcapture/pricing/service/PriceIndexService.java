@@ -27,10 +27,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PriceIndexService {
-	
+	public static String BEAN_NAME = "priceIndexService";
 	public PriceIndexSnapshot load(EntityId entityId);
 
-	public TransactionResult save(PriceIndexSnapshot snapshotIn);
+	public TransactionResult save(PriceIndexSnapshot snapshot);
+
+	public TransactionResult save(List<PriceIndexSnapshot> snapshots);
 
 	public QuerySelectedPage findPricingIndexIds(DefinedQuery definedQuery);
 
@@ -46,4 +48,8 @@ public interface PriceIndexService {
 			LocalDate currentDate);
 
 	List<PriceCurveSnapshot> fetchPricesByIds(QuerySelectedPage querySelectedPage);
+
+	PriceIndexSnapshot findPriceIndexByName(String indexName);
+
+	List<PriceIndexSnapshot> loadAll();
 }

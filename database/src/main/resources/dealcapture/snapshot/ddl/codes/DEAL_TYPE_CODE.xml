@@ -8,16 +8,21 @@
 
 
         <createTable tableName="DEAL_TYPE_CODE" tablespace="${tblspace_data}">
-            <column name="CODE_ID" type="java.sql.Types.VARCHAR(32)">
+            <column name="CODE_ID"
+                    type="java.sql.Types.VARCHAR(32)">
                 <constraints primaryKey="true" primaryKeyName="DEAL_TYPE_CODE_PK" nullable="false"/>
             </column>
-            <column name="CODE_LABEL" type="java.sql.Types.VARCHAR(100)">
+            <column name="CODE_LABEL"
+                    type="java.sql.Types.VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="IS_ACTIVE" defaultValue="Y" type="java.sql.Types.CHAR(1)">
+            <column name="IS_ACTIVE"
+                    defaultValue="Y"
+                    type="java.sql.Types.CHAR(1)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DISPLAY_ORDER_NO" type="java.sql.Types.NUMERIC(10, 0)">
+            <column name="DISPLAY_ORDER_NO"
+                    type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

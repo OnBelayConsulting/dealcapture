@@ -36,13 +36,19 @@ import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 
 public class PriceIndexRepositoryBean extends BaseRepository<PriceIndex> implements PriceIndexRepository {
 	public static final String FIND_BY_NAME = "PriceIndexRepository.FIND_BY_NAME";
-	
+	public static final String LOAD_ALL = "PriceIndexRepository.LOAD_ALL";
+
 	@Autowired
 	private PriceIndexColumnDefinitions priceIndexColumnDefinitions;
 
 	@Override
 	public PriceIndex findPriceIndexByName(String name) {
 		return (PriceIndex) executeSingleResultQuery(FIND_BY_NAME, "name", name);
+	}
+
+	@Override
+	public List<PriceIndex> loadAll() {
+		return executeQuery(LOAD_ALL);
 	}
 
 	@Override

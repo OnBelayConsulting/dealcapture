@@ -24,11 +24,11 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 
 public class PriceIndexSnapshotAssembler extends EntityAssembler {
 
-	public PriceIndexSnapshot assemble(PriceIndex location) {
+	public PriceIndexSnapshot assemble(PriceIndex index) {
 		
 		PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
-		super.setEntityAttributes(location, snapshot);
-		snapshot.getDetail().copyFrom(location.getDetail());
+		super.setEntityAttributes(index, snapshot);
+		snapshot.getDetail().copyFrom(index.getDetail());
 		return snapshot;
 	}
 	

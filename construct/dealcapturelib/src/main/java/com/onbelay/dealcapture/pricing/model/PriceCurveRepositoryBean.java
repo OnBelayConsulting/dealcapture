@@ -30,7 +30,7 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.repository.PriceCurveRepository;
 
-@Repository (value="indexPriceRepository")
+@Repository (value="priceCurveRepository")
 @Transactional
 
 

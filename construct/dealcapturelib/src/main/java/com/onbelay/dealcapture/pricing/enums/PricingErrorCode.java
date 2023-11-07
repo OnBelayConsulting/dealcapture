@@ -23,20 +23,27 @@ import java.util.Map;
 
 public enum PricingErrorCode {
 
-    SUCCESS                       	 ("0", "Success: transaction was successful"),
-    MISSING_PRICING_LOCATION         ("DC_OR-E0001", "Error: Missing pricing location."),
-    MISSING_PRICE_INDEX_NAME       ("DC_OR-E0002", "Error: Missing pricing index name."),
-    MISSING_PRICE_INDEX_TYPE       ("DC_OR-E0003", "Error: Missing pricing index type."),
-    MISSING_INDEX_DAYS_EXPIRY        ("DC_OR-E0004", "Error: Missing pricing index days offset for expiry."),
-    MISSING_BASE_INDEX               ("DC_OR-E0010", "Error: Missing base index and Index type is BASIS"),
+    MISSING_PRICING_LOCATION      ("DC_PR-E0001", "Error: Missing pricing location."),
+    MISSING_PRICING_LOCATION_NAME ("DC_PR-E0002", "Error: Missing pricing location name."),
 
-    MISSING_PRICE_DATE               ("DC_OR-E0020", "Error: Missing Price date."),
-    MISSING_OBSERVED_DATE_TIME       ("DC_OR-E0021", "Error: Missing Price observed date/time."),
-    MISSING_PRICE_VALUE              ("DC_OR-E0022", "Error: Missing Price value."),
+    MISSING_PRICE_INDEX_NAME      ("DC_PR-E0005", "Error: Missing pricing index name."),
+    MISSING_PRICE_INDEX_TYPE      ("DC_PR-E0006", "Error: Missing pricing index type."),
+    MISSING_INDEX_DAYS_EXPIRY     ("DC_PR-E0007", "Error: Missing pricing index days offset for expiry."),
+    MISSING_BASE_INDEX            ("DC_PR-E0010", "Error: Missing base index and Index type is BASIS"),
 
-    
-    MISSING_PRICING_LOCATION_NAME    ("DC_OR-E0030", "Error: Missing pricing location name."),
-    SYSTEM_FAILURE                   ("E99999", "Error: Application error has occurred");
+    MISSING_PRICE_DATE            ("DC_PR-E0120", "Error: Missing Price date."),
+    MISSING_PRICE_OBS_DATE_TIME   ("DC_PR-E0121", "Error: Missing Price observed date/time."),
+    MISSING_PRICE_VALUE           ("DC_PR-E0122", "Error: Missing Price value."),
+
+    MISSING_FX_INDEX                ("DC_FX-E0001", "Error: Missing FX index."),
+    MISSING_FX_INDEX_NAME           ("DC_FX-E0002", "Error: Missing FX index name."),
+    MISSING_FX_INDEX_TO_CURRENCY    ("DC_FX-E0003", "Error: Missing FX index to currency."),
+    MISSING_FX_INDEX_FROM_CURRENCY  ("DC_FX-E0004", "Error: Missing FX index from currency."),
+    MISSING_FX_DATE                 ("DC_FX-E0120", "Error: Missing FX date."),
+    MISSING_FX_OBS_DATE_TIME        ("DC_FX-E0121", "Error: Missing FX observed date/time."),
+    MISSING_FX_VALUE                ("DC_FX-E0122", "Error: Missing FX value."),
+
+    ;
 
     private String code;
     private String description;
