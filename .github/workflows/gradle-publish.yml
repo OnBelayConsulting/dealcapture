@@ -53,10 +53,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: access keycloak
-      uses: enflo/curl-action@master
-      with:
-        curl: http://keycloak:8080/realms/master/.well-known/openid-configuration
 
     - name: Semver Conventional Commits
       id: versioning
