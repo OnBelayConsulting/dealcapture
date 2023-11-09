@@ -18,7 +18,7 @@ jobs:
     services:
 
       keycloak:
-        image: mykeycloak:latest
+        image: ghcr.io/onbelayconsulting/mykeycloak:latest
         env:
           KEYCLOAK_USER: "admin"
           KEYCLOAK_PASSWORD: "admin"
@@ -56,7 +56,7 @@ jobs:
     - name: access keycloak
       uses: enflo/curl-action@master
       with:
-        curl: https://localhost:8080/realms/master/.well-known/openid-configuration
+        curl: https://keycloak:8080/realms/master/.well-known/openid-configuration
 
     - name: Semver Conventional Commits
       id: versioning
