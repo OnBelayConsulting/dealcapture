@@ -18,14 +18,13 @@ jobs:
     services:
 
       keycloak:
-        image: quay.io/keycloak/keycloak:22.0.5
+        image: ghcr.io/onbelayconsulting/mykeycloak:latest
         env:
           KEYCLOAK_USER: "admin"
           KEYCLOAK_PASSWORD: "admin"
         ports:
           - 8080:8080
-        options: >-
-          start_dev
+
       postgres:
         image: postgres:latest
 
