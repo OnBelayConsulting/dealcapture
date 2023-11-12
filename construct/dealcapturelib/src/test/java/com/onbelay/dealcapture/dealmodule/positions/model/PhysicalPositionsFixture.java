@@ -24,7 +24,7 @@ public class PhysicalPositionsFixture {
         ArrayList<DealPositionSnapshot> snapshots = new ArrayList<>();
         while (current.isAfter(deal.getDealDetail().getEndDate()) == false) {
             PhysicalPositionSnapshot snapshot = new PhysicalPositionSnapshot();
-
+            snapshot.setDealId(deal.generateEntityId());
             snapshot.setDealPriceFxRiskFactorId(fxRiskFactor.generateEntityId());
             snapshot.setMarketPriceRiskFactorId(marketPriceRiskFactor.generateEntityId());
 

@@ -14,9 +14,7 @@ public interface DealPositionRestAdapter {
             EntityId dealId,
             DealPositionSnapshot dealSnapshot);
 
-    TransactionResult save(
-            EntityId dealId,
-            List<DealPositionSnapshot> snapshots);
+    TransactionResult save(List<DealPositionSnapshot> snapshots);
 
     DealPositionSnapshot load(EntityId entityId);
 

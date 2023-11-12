@@ -62,7 +62,7 @@ public class PhysicalDealDetail  {
 	public void validate() throws OBValidationException {
 
 		if (dealPriceValuationCodeValue == null)
-			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUATION.getCode());
 
 		if (getDealPriceValuationCode() == ValuationCode.FIXED) {
 			if (dealPriceValue == null)
@@ -74,20 +74,26 @@ public class PhysicalDealDetail  {
 			if (dealPriceUnitOfMeasureValue == null)
 				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_UOM.getCode());
 		}
+
+		if (marketValuationCodeValue == null) {
+			throw new OBValidationException(DealErrorCode.MISSING_MARKET_PRICE_VALUATION.getCode());
+		}
 		
 	}
 	
 	@Transient
 	@JsonIgnore
 	public Price getDealPrice() {
-		return new Price(
+		if (dealPriceValue == null)
+			return null;
+		else
+			return new Price(
+					dealPriceValue,
 				CurrencyCode.lookUp(dealPriceCurrencyCodeValue),
-				UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureValue),
-				dealPriceValue);
+				UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureValue));
 	}
 	
 	public void setDealPrice(Price price) {
-		this.dealPriceValuationCodeValue = ValuationCode.FIXED.getCode();
 		this.dealPriceValue = price.getValue();
 		this.dealPriceCurrencyCodeValue = price.getCurrency().getCode();
 		this.dealPriceUnitOfMeasureValue = price.getUnitOfMeasure().getCode();

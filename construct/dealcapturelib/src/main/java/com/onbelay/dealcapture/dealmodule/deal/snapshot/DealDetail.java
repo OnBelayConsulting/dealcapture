@@ -73,7 +73,7 @@ public class DealDetail {
 			throw new OBValidationException(DealErrorCode.MISSING_VOL_UNIT_OF_MEASURE.getCode());
 
 		if (reportingCurrencyValue == null)
-			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_CURRENCY.getCode());
+			throw new OBValidationException(DealErrorCode.MISSING_REPORTING_CURRENCY.getCode());
 
 	}
 	
@@ -116,8 +116,8 @@ public class DealDetail {
 	@JsonIgnore
 	public Quantity getVolume() {
 		return new Quantity(
-				UnitOfMeasureCode.lookUp(volumeUnitOfMeasureValue),
-				volumeQuantity);
+				volumeQuantity,
+				UnitOfMeasureCode.lookUp(volumeUnitOfMeasureValue));
 	}
 	
 	public void setVolume(Quantity quantity) {

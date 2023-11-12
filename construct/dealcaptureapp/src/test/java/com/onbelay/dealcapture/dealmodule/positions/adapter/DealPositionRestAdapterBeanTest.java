@@ -1,13 +1,14 @@
-package com.onbelay.dealcapture.dealmodule.positions.service;
+package com.onbelay.dealcapture.dealmodule.positions.adapter;
 
+import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -16,24 +17,23 @@ import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DealPositionServiceTest extends DealCaptureSpringTestCase {
-
-    @Autowired
-    private DealRepositoryBean dealRepository;
+@WithMockUser
+public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
 
     @Autowired
-    private DealPositionService dealPositionService;
+    private DealPositionRestAdapter dealPositionRestAdapter;
 
     private PricingLocation location;
     private PriceIndex priceIndex;
@@ -81,32 +81,32 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
                         BigDecimal.ONE,
                         CurrencyCode.US,
                         UnitOfMeasureCode.GJ)
-                );
+        );
 
         priceRiskFactor = PriceRiskFactorFixture.createPriceRiskFactor(
                 priceIndex,
                 fromMarketDate);
 
+        flush();
     }
 
     @Test
-    public void createPositions() {
+    public void savePositions() {
         List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
                 physicalDeal,
                 priceRiskFactor,
                 fxRiskFactor);
 
-        dealPositionService.saveDealPositions(
-                physicalDeal.generateEntityId(),
-                snapshots);
+        TransactionResult result = dealPositionRestAdapter.save(snapshots);
 
-        flush();
-
-        List<DealPositionSnapshot> snapshots1 = dealPositionService.findByDeal(
-                physicalDeal.generateEntityId());
-
-        assertTrue(snapshots1.size() > 0);
+        DealPositionSnapshotCollection collection = dealPositionRestAdapter.find(
+                "WHERE ticketNo eq " + physicalDeal.getDealDetail().getTicketNo(),
+                0,
+                100);
+        assertEquals(31, collection.getCount());
 
     }
+
+
 
 }

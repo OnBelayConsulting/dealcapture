@@ -15,6 +15,9 @@ public interface DealPositionService {
             EntityId dealId,
             List<DealPositionSnapshot> positions);
 
+    public TransactionResult saveAllDealPositions(List<DealPositionSnapshot> positions);
+
+
     List<DealPositionSnapshot> findByDeal(EntityId entityId);
 
 

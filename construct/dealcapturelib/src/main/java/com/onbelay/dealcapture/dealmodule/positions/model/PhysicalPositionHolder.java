@@ -8,6 +8,7 @@ public class PhysicalPositionHolder extends PositionHolder {
 
     private PriceRiskFactorHolder marketRiskFactorHolder;
     private FxRiskFactorHolder marketFxRiskFactorHolder;
+    private PriceRiskFactorHolder dealPriceRiskFactorHolder;
     private FxRiskFactorHolder dealPriceFxRiskFactorHolder;
 
     public PhysicalPositionHolder(DealPositionSnapshot snapshot) {
@@ -28,6 +29,14 @@ public class PhysicalPositionHolder extends PositionHolder {
 
     public void setMarketFxRiskFactorHolder(FxRiskFactorHolder marketFxRiskFactorHolder) {
         this.marketFxRiskFactorHolder = marketFxRiskFactorHolder;
+    }
+
+    public PriceRiskFactorHolder getDealPriceRiskFactorHolder() {
+        return dealPriceRiskFactorHolder;
+    }
+
+    public void setDealPriceRiskFactorHolder(PriceRiskFactorHolder dealPriceRiskFactorHolder) {
+        this.dealPriceRiskFactorHolder = dealPriceRiskFactorHolder;
     }
 
     public FxRiskFactorHolder getDealPriceFxRiskFactorHolder() {

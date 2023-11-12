@@ -102,9 +102,9 @@ public class FxRiskFactor extends TemporalAbstractEntity {
     @Transient
     public FxRate getCurrentFxRate() {
         return new FxRate(
-                index.getDetail().getFromCurrencyCode(),
+                detail.getValue(),
                 index.getDetail().getToCurrencyCode(),
-                detail.getValue());
+                index.getDetail().getFromCurrencyCode());
     }
 
     @Override

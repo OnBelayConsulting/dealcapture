@@ -11,6 +11,8 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     private EntityId marketFxRiskFactorId;
 
+    private EntityId dealPriceRiskFactorId;
+
     private EntityId dealPriceFxRiskFactorId;
 
     public PhysicalPositionSnapshot() {
@@ -39,6 +41,14 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     public void setMarketFxRiskFactorId(EntityId marketFxRiskFactorId) {
         this.marketFxRiskFactorId = marketFxRiskFactorId;
+    }
+
+    public EntityId getDealPriceRiskFactorId() {
+        return dealPriceRiskFactorId;
+    }
+
+    public void setDealPriceRiskFactorId(EntityId dealPriceRiskFactorId) {
+        this.dealPriceRiskFactorId = dealPriceRiskFactorId;
     }
 
     public EntityId getDealPriceFxRiskFactorId() {

@@ -105,14 +105,14 @@ public class DealTest extends DealCaptureSpringTestCase {
 		
 		dealSnapshot.getDealDetail().setVolume(
 				new Quantity(
-						UnitOfMeasureCode.GJ, 
-						BigDecimal.valueOf(34.78)));
+						BigDecimal.valueOf(34.78),
+						UnitOfMeasureCode.GJ));
 		
 		dealSnapshot.getDetail().setDealPrice(
 				new Price(
+						BigDecimal.valueOf(1.55),
 						CurrencyCode.CAD,
-						UnitOfMeasureCode.GJ,
-						BigDecimal.valueOf(1.55)));
+						UnitOfMeasureCode.GJ));
 		
 		PhysicalDeal physicalDeal = PhysicalDeal.create(dealSnapshot);
 		

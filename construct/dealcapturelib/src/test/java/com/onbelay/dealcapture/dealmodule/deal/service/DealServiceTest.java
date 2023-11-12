@@ -18,8 +18,10 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
@@ -48,6 +50,11 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 	private CounterpartyRole counterpartyRole;
 	private PriceIndex priceIndex;
 
+	private PriceIndex dealPriceIndex;
+
+	private LocalDate startDate = LocalDate.of(2023, 1, 1);
+	private LocalDate endDate = LocalDate.of(2023, 12, 31);
+
 	@Autowired
 	private DealRepository dealRepository;
 	
@@ -64,13 +71,17 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 				"AECO", 
 				PricingLocationFixture.createPricingLocation(
 						"west"));
-		
+		dealPriceIndex = PriceIndexFixture.createPriceIndex(
+				"DDFF",
+				PricingLocationFixture.createPricingLocation(
+						"east"));
+
 		flush();
 	}
 
 	@Test
-	public void testUpdateDeal() {
-		PhysicalDeal physicalDeal = DealFixture.createPhysicalDeal(
+	public void testUpdatePhysicalDeal() {
+		PhysicalDeal physicalDeal = DealFixture.createFixedPricePhysicalDeal(
 				"myDeal", 
 				companyRole, 
 				counterpartyRole,
@@ -91,7 +102,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		
 		assertNotNull(physicalDeal.getCompanyRole());
 		assertNotNull(physicalDeal.getCounterpartyRole());
-		assertNotNull(physicalDeal.getMarketPricingIndex());
+		assertNotNull(physicalDeal.getMarketPriceIndex());
 		
 		assertEquals(BuySellCode.BUY, physicalDeal.getDealDetail().getBuySell());
 		
@@ -100,14 +111,13 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		
 		
 	}
-	
-	
-	@Test
-	public void testCreateDeal() {
 
-		PhysicalDealSnapshot dealSnapshot = DealFixture.createPhysicalDealSnapshot(
-				LocalDate.of(2023, 1, 1),
-				LocalDate.of(2023, 1, 31),
+	@Test
+	public void testCreateFixedPriceMarketIndexPhysicalDeal() {
+
+		PhysicalDealSnapshot dealSnapshot = DealFixture.createFixedPriceMarketIndexPhysicalDealSnapshot(
+				startDate,
+				endDate,
 				DealStatusCode.VERIFIED,
 				CurrencyCode.CAD,
 				"mydeal",
@@ -115,15 +125,91 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 				counterpartyRole,
                 priceIndex,
 				new Price(
+						BigDecimal.ONE,
 						CurrencyCode.US,
-						UnitOfMeasureCode.GJ,
-						BigDecimal.ONE));
+						UnitOfMeasureCode.GJ));
 		
 		TransactionResult result  = dealService.save(dealSnapshot);
 		flush();
 		clearCache();
-		
-		
+		PhysicalDeal physicalDeal = (PhysicalDeal) dealRepository.load(result.getEntityId());
+		assertEquals(companyRole.getId(), physicalDeal.getCompanyRole().getId());
+		assertEquals(counterpartyRole.getId(), physicalDeal.getCounterpartyRole().getId());
+		assertEquals(startDate, physicalDeal.getDealDetail().getStartDate());
+		assertEquals(endDate, physicalDeal.getDealDetail().getEndDate());
+		assertEquals(BuySellCode.SELL, physicalDeal.getDealDetail().getBuySell());
+		assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getReportingCurrencyCode());
+		assertEquals(DealStatusCode.VERIFIED, physicalDeal.getDealDetail().getDealStatus());
+		assertEquals(priceIndex.getId(), physicalDeal.getMarketPriceIndex().getId());
 	}
-	
+
+	@Test
+	public void testCreateIndexPriceMarketIndexPhysicalDeal() {
+
+		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
+
+		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
+		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+
+		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
+		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.US);
+		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
+		dealSnapshot.getDealDetail().setStartDate(startDate);
+		dealSnapshot.getDealDetail().setEndDate(endDate);
+		dealSnapshot.getDealDetail().setTicketNo("GHT");
+
+		dealSnapshot.setMarketPriceIndexId(priceIndex.generateEntityId());
+
+		dealSnapshot.getDealDetail().setVolume(
+				new Quantity(
+						BigDecimal.valueOf(34.78),
+						UnitOfMeasureCode.GJ));
+
+		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX);
+		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
+
+		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
+
+		TransactionResult result  = dealService.save(dealSnapshot);
+		flush();
+		clearCache();
+	}
+
+	@Test
+	public void testCreateIndexPlusPriceMarketIndexPhysicalDeal() {
+
+		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
+
+		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
+		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+
+		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
+		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.US);
+		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
+		dealSnapshot.getDealDetail().setStartDate(startDate);
+		dealSnapshot.getDealDetail().setEndDate(endDate);
+		dealSnapshot.getDealDetail().setTicketNo("GHT");
+
+		dealSnapshot.setMarketPriceIndexId(priceIndex.generateEntityId());
+
+		dealSnapshot.getDealDetail().setVolume(
+				new Quantity(
+						BigDecimal.valueOf(34.78),
+						UnitOfMeasureCode.GJ));
+
+		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX_PLUS);
+		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
+		dealSnapshot.getDetail().setDealPrice(
+				new Price(
+					BigDecimal.ONE,
+					CurrencyCode.US,
+					UnitOfMeasureCode.GJ));
+
+		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
+
+		TransactionResult result  = dealService.save(dealSnapshot);
+		flush();
+		clearCache();
+	}
+
 }

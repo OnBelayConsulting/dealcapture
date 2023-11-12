@@ -13,7 +13,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
     private String marketPriceValuationValue;
 
     private BigDecimal dealPrice;
-    private BigDecimal marketAdjustment;
 
 
     public void copyFrom(PhysicalPositionDetail copy) {
@@ -25,9 +24,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
         if (copy.dealPrice != null)
             this.dealPrice = copy.dealPrice;
-
-        if (copy.marketAdjustment != null)
-            this.marketAdjustment = copy.marketAdjustment;
     }
 
     @Transient
@@ -73,14 +69,5 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
     public void setDealPrice(BigDecimal dealPrice) {
         this.dealPrice = dealPrice;
-    }
-
-    @Column(name = "MARKET_ADJUSTMENT")
-    public BigDecimal getMarketAdjustment() {
-        return marketAdjustment;
-    }
-
-    public void setMarketAdjustment(BigDecimal marketAdjustment) {
-        this.marketAdjustment = marketAdjustment;
     }
 }

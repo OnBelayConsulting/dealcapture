@@ -110,8 +110,8 @@ public class PriceRiskFactor extends TemporalAbstractEntity {
 
     public Price fetchCurrentPrice() {
         return new Price(
+                detail.getValue(),
                 index.getDetail().getCurrencyCode(),
-                index.getDetail().getUnitOfMeasureCode(),
-                detail.getValue());
+                index.getDetail().getUnitOfMeasureCode());
     }
 }

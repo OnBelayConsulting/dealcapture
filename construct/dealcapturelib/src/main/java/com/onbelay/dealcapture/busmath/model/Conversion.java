@@ -4,21 +4,27 @@ import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Conversion extends CalculatedEntity {
     
-    private BigDecimal conversionValue;
-    private UnitOfMeasureCode fromCurrency;
-    private UnitOfMeasureCode toCurrency;
+    private UnitOfMeasureCode fromUnitOfMeasure;
+    private UnitOfMeasureCode toUnitOfMeasure;
 
     public Conversion(
-            final UnitOfMeasureCode fromCurrency, 
-            final UnitOfMeasureCode toCurrency,
-            final BigDecimal conversionValue) {
-        
-        this.conversionValue = conversionValue;
-        this.fromCurrency = fromCurrency;
-        this.toCurrency = toCurrency;
+            final BigDecimal conversionValue,
+            final UnitOfMeasureCode toUnitOfMeasure,
+            final UnitOfMeasureCode fromUnitOfMeasure) {
+        super(conversionValue);
+        this.fromUnitOfMeasure = fromUnitOfMeasure;
+        this.toUnitOfMeasure = toUnitOfMeasure;
+    }
+
+    public Conversion getInversion() {
+        return new Conversion(
+                BigDecimal.ONE.divide(value, divisorMathContext),
+                fromUnitOfMeasure,
+                toUnitOfMeasure);
     }
 
     public Conversion(final CalculatedErrorType error) {
@@ -27,33 +33,55 @@ public class Conversion extends CalculatedEntity {
 
     @Override
     public CalculatedEntity add(CalculatedEntity entity) {
-        return null;
+        return new Conversion(CalculatedErrorType.ERROR);
     }
 
     @Override
     public CalculatedEntity subtract(CalculatedEntity entity) {
-        return null;
+        return new Conversion(CalculatedErrorType.ERROR);
     }
 
     @Override
     public CalculatedEntity multiply(CalculatedEntity entity) {
-        return null;
+        return new Conversion(CalculatedErrorType.ERROR);
     }
 
     @Override
     public CalculatedEntity divide(CalculatedEntity entity) {
-        return null;
-    }
-
-    public BigDecimal getConversionValue() {
-        return this.conversionValue;
+        return new Conversion(CalculatedErrorType.ERROR);
     }
 
     public UnitOfMeasureCode getFromUnitOfMeasure() {
-        return this.fromCurrency;
+        return this.fromUnitOfMeasure;
     }
 
     public UnitOfMeasureCode getToUnitOfMeasure() {
-        return this.toCurrency;
+        return this.toUnitOfMeasure;
+    }
+
+    @Override
+    public String toFormula() {
+        if (isInError())
+            return "error";
+        return getValue().toPlainString() + " " + toUnitOfMeasure.getCode() + "/" + fromUnitOfMeasure.getCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Conversion that = (Conversion) o;
+        if (isInError() && that.isInError() == false)
+            return false;
+        if (isInError() == false && that.isInError())
+            return false;
+        if (value.compareTo(that.value) != 0)
+            return false;
+        return fromUnitOfMeasure == that.fromUnitOfMeasure && toUnitOfMeasure == that.toUnitOfMeasure;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, fromUnitOfMeasure, toUnitOfMeasure);
     }
 }

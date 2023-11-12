@@ -13,27 +13,55 @@ public class UnitOfMeasureConverter {
 
     static {
         conversions.put(
-                createKey(UnitOfMeasureCode.GJ, UnitOfMeasureCode.MMBTU),
-                new Conversion(UnitOfMeasureCode.GJ, UnitOfMeasureCode.MMBTU, BigDecimal.valueOf(2)));
+                createKey(
+                        UnitOfMeasureCode.MMBTU,
+                        UnitOfMeasureCode.GJ),
+                new Conversion(
+                        BigDecimal.valueOf(0.947817),
+                        UnitOfMeasureCode.MMBTU,
+                        UnitOfMeasureCode.GJ));
 
     }
 
-    protected static String createKey(UnitOfMeasureCode from, UnitOfMeasureCode to) {
-        return from.getCode() + "_" + to.getCode();
+    /**
+     * Create a key for conversion look up
+     * @param to    - unitOfMeasure to
+     * @param from  - unitOfMeasure from
+     * @return
+     */
+    protected static String createKey(
+            UnitOfMeasureCode to,
+            UnitOfMeasureCode from) {
+        return to.getCode() + "_" + from.getCode();
     }
 
-    public static Conversion findConversion(UnitOfMeasureCode from, UnitOfMeasureCode to) {
+    /**
+     * Find a conversion that will take a value in from and converted to to
+     * @param to unitOfMeasure to
+     * @param from - unitOfMeasure from
+     * @return a Conversion that will change the unit of measure to or
+     * null if no conversion exists.
+     */
+    public static Conversion findConversion(
+            UnitOfMeasureCode to,
+            UnitOfMeasureCode from) {
         Conversion conversion = conversions.get(
                 createKey(
-                        from,
-                        to));
+                        to,
+                        from));
 
-        if (conversion == null) {
-            return conversions.get(
-                    createKey(to, from));
-        } else{
+        if (conversion != null) {
             return conversion;
+        } else  {
+
+            Conversion other =  conversions.get(
+                                            createKey(
+                                                    from,
+                                                    to));
+            if (other != null)
+                return other.getInversion();
         }
+        return null;
     }
 
 }

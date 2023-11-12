@@ -73,7 +73,7 @@ public class PriceIndexRestControllerTest extends DealCaptureAppSpringTestCase {
 	
 	
 	@Test
-	public void createPricingIndexWithPost() throws Exception {
+	public void createPriceIndexWithPost() throws Exception {
 
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
 				.build();
@@ -106,7 +106,7 @@ public class PriceIndexRestControllerTest extends DealCaptureAppSpringTestCase {
 	
 	
 	@Test
-	public void createPricingIndexWithPostUsingJson() throws Exception {
+	public void createPriceIndexWithPostUsingJson() throws Exception {
 
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
 				.build();
@@ -151,7 +151,7 @@ public class PriceIndexRestControllerTest extends DealCaptureAppSpringTestCase {
 	/*
 	 * Should throw a missing location exception
 	 */
-	public void createPricingIndexWithPostUsingJsonProducing400Exception() throws Exception {
+	public void createPriceIndexWithPostUsingJsonProducing400Exception() throws Exception {
 
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
 				.build();
@@ -182,7 +182,7 @@ public class PriceIndexRestControllerTest extends DealCaptureAppSpringTestCase {
 	
 	
 	@Test
-	public void fetchPricingIndicesWithGet() throws Exception {
+	public void fetchPriceIndicesWithGet() throws Exception {
 		
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
 				.build();
@@ -212,7 +212,7 @@ public class PriceIndexRestControllerTest extends DealCaptureAppSpringTestCase {
 
 	
 	@Test
-	public void fetchPricingIndicesWithGetUsingQuery() throws Exception {
+	public void fetchPriceIndicesWithGetUsingQuery() throws Exception {
 		
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
 				.build();

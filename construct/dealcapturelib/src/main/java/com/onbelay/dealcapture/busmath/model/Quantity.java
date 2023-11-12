@@ -15,50 +15,118 @@
  */
 package com.onbelay.dealcapture.busmath.model;
 
-import java.math.BigDecimal;
-
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+
+import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Quantity extends CalculatedEntity{
 	
 	private UnitOfMeasureCode unitOfMeasureCode;
 	
 	
-	public Quantity(UnitOfMeasureCode unitOfMeasureCode, BigDecimal value) {
-		super();
+	public Quantity(
+			final BigDecimal value,
+			final UnitOfMeasureCode unitOfMeasureCode) {
+		super(value);
 		this.unitOfMeasureCode = unitOfMeasureCode;
-		this.value = value;
 	}
 
+	public Quantity(final CalculatedErrorType error) {
+		super(error);
+	}
 
 	@Override
 	public CalculatedEntity add(CalculatedEntity entity) {
-		return null;
+		if (entity instanceof Quantity == false)
+			return new Quantity(CalculatedErrorType.ERROR);
+		Quantity quantity = (Quantity) entity;
+		return add(quantity);
+	}
+
+	public Quantity add(Quantity quantity) {
+		if (isInError() || quantity.isInError())
+			return new Quantity(CalculatedErrorType.ERROR);
+
+		if (quantity.getUnitOfMeasureCode() != this.unitOfMeasureCode)
+			return new Quantity(CalculatedErrorType.ERROR_INCOMPAT_UOM);
+
+		return new Quantity(
+				value.add(quantity.value, mathContext),
+				unitOfMeasureCode);
 	}
 
 	@Override
 	public CalculatedEntity subtract(CalculatedEntity entity) {
-		return null;
+		if (entity instanceof Quantity == false)
+			return new Quantity(CalculatedErrorType.ERROR);
+		Quantity quantity = (Quantity) entity;
+		return subtract(quantity);
 	}
+
+
+	public Quantity subtract(Quantity quantity) {
+		if (isInError() || quantity.isInError())
+			return new Quantity(CalculatedErrorType.ERROR);
+
+		if (quantity.getUnitOfMeasureCode() != this.unitOfMeasureCode)
+			return new Quantity(CalculatedErrorType.ERROR_INCOMPAT_UOM);
+
+		return new Quantity(
+				value.subtract(quantity.value, mathContext),
+				unitOfMeasureCode);
+	}
+
 
 	@Override
 	public CalculatedEntity multiply(CalculatedEntity entity) {
-		return null;
+		if (entity instanceof Conversion conversion)
+			return apply(conversion);
+		if (entity instanceof Price price)
+			return multiply(price);
+
+		return new Quantity(CalculatedErrorType.ERROR);
+	}
+
+	public Quantity apply(Conversion conversion) {
+		if (isInError() || conversion.isInError())
+			return new Quantity(CalculatedErrorType.ERROR);
+
+		if (unitOfMeasureCode == conversion.getFromUnitOfMeasure()) {
+			return new Quantity(
+					value.multiply(conversion.getValue()),
+					conversion.getToUnitOfMeasure());
+		} else {
+			return new Quantity(CalculatedErrorType.ERROR_INCOMPAT_UOM);
+		}
 	}
 
 	@Override
 	public CalculatedEntity divide(CalculatedEntity entity) {
-		return null;
+		return new Quantity(CalculatedErrorType.ERROR);
 	}
 
-	public Quantity(CalculatedErrorType error) {
-		super(error);
+	@Override
+	public String toFormula() {
+		if (calculationErrorType == CalculatedErrorType.NO_ERROR) {
+			return getValue().toPlainString() + " " + unitOfMeasureCode.getCode();
+		}
+		return "error";
 	}
 
+	public Amount multiply(Price price) {
+		if (hasValue() && price.hasValue()) {
 
-	public BigDecimal getValue() {
-		return value;
+			return new Amount(
+					value.multiply(
+							price.getValue(),
+							mathContext),
+					price.getCurrency());
+		}
+		else {
+			return new Amount(CalculatedErrorType.ERROR);
+		}
 	}
 
 
@@ -66,7 +134,22 @@ public class Quantity extends CalculatedEntity{
 		return unitOfMeasureCode;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Quantity quantity = (Quantity) o;
+		if (isInError() && quantity.isInError() == false)
+			return false;
+		if (isInError() == false && quantity.isInError())
+			return false;
+		if (value.compareTo(quantity.value) != 0)
+			return false;
+		return unitOfMeasureCode == quantity.unitOfMeasureCode;
+	}
 
-	
-	
+	@Override
+	public int hashCode() {
+		return Objects.hash(value, unitOfMeasureCode);
+	}
 }

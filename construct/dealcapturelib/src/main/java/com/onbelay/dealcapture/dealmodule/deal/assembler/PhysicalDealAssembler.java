@@ -42,10 +42,14 @@ public class PhysicalDealAssembler extends AbstractDealAssembler {
 		
 		PhysicalDeal physicalDeal = (PhysicalDeal) deal;
 		snapshot.getDetail().copyFrom(physicalDeal.getDetail());
-		
-		snapshot.setMarketPricingIndexId(
-				physicalDeal.getMarketPricingIndex().generateEntityId());
-		snapshot.setMarketCurrencyCode(physicalDeal.getMarketPricingIndex().getDetail().getCurrencyCode());
+
+		if (physicalDeal.getDealPriceIndex() != null) {
+			snapshot.setDealPriceIndexId(physicalDeal.getDealPriceIndex().generateEntityId());
+		}
+
+		snapshot.setMarketPriceIndexId(
+				physicalDeal.getMarketPriceIndex().generateEntityId());
+		snapshot.setMarketCurrencyCode(physicalDeal.getMarketPriceIndex().getDetail().getCurrencyCode());
 		
 		return snapshot;
 	}

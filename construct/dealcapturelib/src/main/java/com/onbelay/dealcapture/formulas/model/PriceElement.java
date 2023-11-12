@@ -57,7 +57,10 @@ public class PriceElement extends BaseElement implements FormulaElement, Formula
 
     @Override
     public CalculatedEntity evaluate(EvaluationContext context) {
-        return new Price(currencyCode, unitOfMeasureCode, value);
+        return new Price(
+                value,
+                currencyCode,
+                unitOfMeasureCode);
     }
 
     @Override

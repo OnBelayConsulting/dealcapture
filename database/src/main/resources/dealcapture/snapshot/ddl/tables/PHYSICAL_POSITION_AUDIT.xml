@@ -15,9 +15,15 @@
                     type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
-            <column name="DEAL_PRICE_VALUATION_CODE" type="java.sql.Types.VARCHAR(32)"/>
+            <column name="DEAL_PRICE_VALUATION_CODE"
+                    type="java.sql.Types.VARCHAR(32)"/>
+
             <column name="DEAL_PRICE"
                     type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEAL_PRICE_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
             <column name="DEAL_PRICE_FX_RISK_FACTOR_ID"
@@ -27,10 +33,6 @@
             <column name="MARKET_VALUATION_CODE" type="java.sql.Types.VARCHAR(32)"/>
             <column name="MKT_RISK_FACTOR_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="MARKET_ADJUSTMENT"
-                    type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
             <column name="MKT_PRICE_FX_RISK_FACTOR_ID"
