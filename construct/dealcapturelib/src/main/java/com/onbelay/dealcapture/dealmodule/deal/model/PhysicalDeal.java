@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -42,6 +43,7 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 @Table (name = "PHYSICAL_DEAL")
 public class PhysicalDeal extends BaseDeal {
 
+	private PriceIndex dealPriceIndex;
 	private PriceIndex marketPriceIndex;
 	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
@@ -62,12 +64,22 @@ public class PhysicalDeal extends BaseDeal {
 	}
 
 	@ManyToOne
+	@JoinColumn(name ="DEAL_PRICE_INDEX_ID")
+	public PriceIndex getDealPriceIndex() {
+		return dealPriceIndex;
+	}
+
+	public void setDealPriceIndex(PriceIndex dealPriceIndex) {
+		this.dealPriceIndex = dealPriceIndex;
+	}
+
+	@ManyToOne
 	@JoinColumn(name ="MARKET_PRICE_INDEX_ID")
-	public PriceIndex getMarketPricingIndex() {
+	public PriceIndex getMarketPriceIndex() {
 		return marketPriceIndex;
 	}
 
-	private void setMarketPricingIndex(PriceIndex priceIndex) {
+	private void setMarketPriceIndex(PriceIndex priceIndex) {
 		this.marketPriceIndex = priceIndex;
 	}
 	
@@ -94,7 +106,26 @@ public class PhysicalDeal extends BaseDeal {
 	protected void validate() throws OBValidationException {
 		super.validate();
 		detail.validate();
+
+
 		if (getDealDetail().getDealStatus() == DealStatusCode.VERIFIED) {
+			if (getDetail().getDealPriceValuationCode() == ValuationCode.FIXED) {
+				if (dealPriceIndex != null)
+					throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_INDEX.getCode());
+				if (getDetail().getDealPrice() == null)
+					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+			} else if (getDetail().getDealPriceValuationCode() == ValuationCode.INDEX) {
+				if (dealPriceIndex == null)
+					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
+				if (getDetail().getDealPrice() != null)
+					throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_VALUE.getCode());
+			} else if (getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
+				if (dealPriceIndex == null)
+					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
+				if (getDetail().getDealPrice() == null)
+					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+			}
+
 			if (marketPriceIndex == null)
 				throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
 		}
@@ -107,9 +138,13 @@ public class PhysicalDeal extends BaseDeal {
 		
 		super.setAssociationsFromSnapshot(snapshot);
 		
-		if (snapshot.getMarketPricingIndexId() != null) {
-			this.marketPriceIndex = getPricingIndexRepository().load(snapshot.getMarketPricingIndexId());
+		if (snapshot.getMarketPriceIndexId() != null) {
+			this.marketPriceIndex = getPriceIndexRepository().load(snapshot.getMarketPriceIndexId());
 		}
+
+		if (snapshot.getDealPriceIndexId() != null)
+			this.dealPriceIndex = getPriceIndexRepository().load(snapshot.getDealPriceIndexId());
+
 	}
 
 	@Override

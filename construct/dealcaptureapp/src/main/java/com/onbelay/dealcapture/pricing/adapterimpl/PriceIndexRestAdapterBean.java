@@ -55,7 +55,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
             }
         }
 
-        QuerySelectedPage selectedPage  = priceIndexService.findPricingIndexIds(definedQuery);
+        QuerySelectedPage selectedPage  = priceIndexService.findPriceIndexIds(definedQuery);
         List<Integer> totalIds = selectedPage.getIds();
 
         int toIndex =  start.intValue() + limit;
@@ -112,7 +112,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
             }
         }
 
-        QuerySelectedPage selectedPage = priceIndexService.findPricingIndexIds(definedQuery);
+        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(definedQuery);
         List<Integer> totalIds = selectedPage.getIds();
 
         int toIndex =  start.intValue() + limit;

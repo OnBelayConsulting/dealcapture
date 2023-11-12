@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -46,6 +48,28 @@ public class DealPositionServiceBean implements DealPositionService {
         BaseDeal deal = dealRepository.load(dealId);
         List<EntityId> ids = deal.savePositions(positions);
         return new TransactionResult(ids);
+    }
+
+    @Override
+    public TransactionResult saveAllDealPositions(List<DealPositionSnapshot> positions) {
+        HashMap<Integer, List<DealPositionSnapshot>> dealPositionMap = new HashMap<>();
+        for (DealPositionSnapshot snapshot : positions) {
+            List<DealPositionSnapshot> list = dealPositionMap.get(snapshot.getDealId().getId());
+            if (list == null) {
+                list = new ArrayList<>();
+                dealPositionMap.put(snapshot.getDealId().getId(), list);
+            }
+            list.add(snapshot);
+        }
+        TransactionResult result = new TransactionResult();
+        for (Integer dealId : dealPositionMap.keySet()) {
+            BaseDeal deal = dealRepository.load(new EntityId(dealId));
+            result.addEntityIds(
+                    deal.savePositions(dealPositionMap.get(dealId))
+            );
+        }
+
+        return result;
     }
 
     @Override

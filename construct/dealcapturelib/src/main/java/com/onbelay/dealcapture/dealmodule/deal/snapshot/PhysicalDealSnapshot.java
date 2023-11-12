@@ -27,7 +27,8 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 
 	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
-	private EntityId marketPricingIndexId;
+	private EntityId marketPriceIndexId;
+	private EntityId dealPriceIndexId;
 	private CurrencyCode marketCurrencyCode;
 	
 	public PhysicalDealSnapshot() {
@@ -83,12 +84,20 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 		this.detail = detail;
 	}
 
-	public EntityId getMarketPricingIndexId() {
-		return marketPricingIndexId;
+	public EntityId getMarketPriceIndexId() {
+		return marketPriceIndexId;
 	}
 
-	public void setMarketPricingIndexId(EntityId marketPricingIndexId) {
-		this.marketPricingIndexId = marketPricingIndexId;
+	public void setMarketPriceIndexId(EntityId marketPriceIndexId) {
+		this.marketPriceIndexId = marketPriceIndexId;
+	}
+
+	public EntityId getDealPriceIndexId() {
+		return dealPriceIndexId;
+	}
+
+	public void setDealPriceIndexId(EntityId dealPriceIndexId) {
+		this.dealPriceIndexId = dealPriceIndexId;
 	}
 
 	public CurrencyCode getMarketCurrencyCode() {

@@ -21,6 +21,7 @@ public class PhysicalPosition extends DealPosition {
 
     private PhysicalPositionDetail detail = new PhysicalPositionDetail();
 
+    private PriceRiskFactor dealPriceRiskFactor;
     private FxRiskFactor dealPriceFxRiskFactor;
 
     private PriceRiskFactor marketPriceRiskFactor;
@@ -58,8 +59,13 @@ public class PhysicalPosition extends DealPosition {
     }
 
     private void setAssociations(PhysicalPositionSnapshot snapshot) {
+
+        if (snapshot.getDealPriceRiskFactorId() != null)
+            this.dealPriceRiskFactor = getPriceRiskFactorRepository().load(snapshot.getDealPriceRiskFactorId());
+
         if (snapshot.getDealPriceFxRiskFactorId() != null)
             this.dealPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getDealPriceFxRiskFactorId());
+
         if (snapshot.getMarketPriceRiskFactorId() != null)
             this.marketPriceRiskFactor = getPriceRiskFactorRepository().load(snapshot.getMarketPriceRiskFactorId());
 
@@ -67,6 +73,16 @@ public class PhysicalPosition extends DealPosition {
             this.marketPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getMarketFxRiskFactorId());
 
 
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "DEAL_PRICE_RISK_FACTOR_ID")
+    public PriceRiskFactor getDealPriceRiskFactor() {
+        return dealPriceRiskFactor;
+    }
+
+    public void setDealPriceRiskFactor(PriceRiskFactor dealPriceRiskFactor) {
+        this.dealPriceRiskFactor = dealPriceRiskFactor;
     }
 
     @ManyToOne

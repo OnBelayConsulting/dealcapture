@@ -40,9 +40,9 @@ public class DealCostDetail  {
 	@Transient
 	public Price getCostPerUnit() {
 		return new Price(
+				costPerUnitValue,
 				CurrencyCode.lookUp(currencyCodeValue),
-				UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue),
-				costPerUnitValue);
+				UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue));
 	}
 	
 	public void setCostPerUnit(Price price) {

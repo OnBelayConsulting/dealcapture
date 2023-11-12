@@ -49,11 +49,11 @@ public class PhysicalDealAudit extends BaseDealAudit {
 
 	@ManyToOne
 	@JoinColumn(name ="MARKET_PRICE_INDEX_ID")
-	public PriceIndex getMarketPricingIndex() {
+	public PriceIndex getMarketPriceIndex() {
 		return marketPriceIndex;
 	}
 
-	private void setMarketPricingIndex(PriceIndex priceIndex) {
+	private void setMarketPriceIndex(PriceIndex priceIndex) {
 		this.marketPriceIndex = priceIndex;
 	}
 
@@ -71,7 +71,7 @@ public class PhysicalDealAudit extends BaseDealAudit {
 	public void copyFrom(TemporalAbstractEntity entity) {
 		super.copyFrom(entity);
 		PhysicalDeal physicalDeal = (PhysicalDeal) entity;
-		marketPriceIndex = physicalDeal.getMarketPricingIndex();
+		marketPriceIndex = physicalDeal.getMarketPriceIndex();
 		detail.copyFrom(physicalDeal.getDetail());
 	}
 

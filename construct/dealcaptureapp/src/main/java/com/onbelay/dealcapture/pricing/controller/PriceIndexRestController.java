@@ -50,7 +50,7 @@ public class PriceIndexRestController extends BaseRestController {
 	
 	@Operation(summary="Create or update a priceIndex")
 	@RequestMapping(method=RequestMethod.POST, produces="application/json", consumes="application/json"  )
-	public ResponseEntity<TransactionResult> savePricingIndex(
+	public ResponseEntity<TransactionResult> savePriceIndex(
 			@RequestHeader Map<String, String> headers,
 			@RequestBody PriceIndexSnapshot snapshot,
 			BindingResult bindingResult) {
@@ -80,7 +80,7 @@ public class PriceIndexRestController extends BaseRestController {
 
 	@Operation(summary="fetch priceIndices")
 	@RequestMapping(method=RequestMethod.GET, produces="application/json" )
-	public ResponseEntity<PriceIndexSnapshotCollection> fetchPricingIndices(
+	public ResponseEntity<PriceIndexSnapshotCollection> fetchPriceIndices(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
 			@RequestParam(value = "start", defaultValue="0")Integer start,

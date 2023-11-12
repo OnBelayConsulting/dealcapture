@@ -38,11 +38,13 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
 
     private PricingLocation location;
     private PriceIndex priceIndex;
+    private PriceIndex secondPriceIndex;
 
     private CompanyRole companyRole;
     private CounterpartyRole counterpartyRole;
 
-    private PhysicalDeal physicalDeal;
+    private PhysicalDeal physicalDealWithFixedDealPrice;
+    private PhysicalDeal physicalDealWithIndexDealPrice;
 
     private FxIndex fxIndex;
 
@@ -65,7 +67,13 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
                 FrequencyCode.MONTHLY,
                 location);
 
-        physicalDeal = DealFixture.createPhysicalDeal(
+        secondPriceIndex = PriceIndexFixture.createPriceIndex(
+                "ADFS",
+                FrequencyCode.MONTHLY,
+                location);
+
+
+        physicalDealWithFixedDealPrice = DealFixture.createFixedPricePhysicalDeal(
                 "5566",
                 companyRole,
                 counterpartyRole,
@@ -74,15 +82,24 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
                 toMarketDate,
                 CurrencyCode.CAD,
                 new Price(
+                        BigDecimal.ONE,
                         CurrencyCode.US,
-                        UnitOfMeasureCode.GJ,
-                        BigDecimal.ONE)
+                        UnitOfMeasureCode.GJ)
                 );
 
+        physicalDealWithIndexDealPrice = DealFixture.createIndexedPricePhysicalDeal(
+                "5568",
+                companyRole,
+                counterpartyRole,
+                priceIndex,
+                fromMarketDate,
+                toMarketDate,
+                CurrencyCode.CAD,
+                secondPriceIndex);
     }
 
     @Test
-    public void generatePositions() {
+    public void generatePhysicalPositionsWithFixedDealPrice() {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
@@ -91,17 +108,48 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
 
         generatePositionsService.generatePositions(
                 context,
-                physicalDeal.getId());
+                physicalDealWithFixedDealPrice.getId());
 
         flush();
 
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
-                physicalDeal.generateEntityId());
+                physicalDealWithFixedDealPrice.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(physicalDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
+        assertEquals(physicalDealWithFixedDealPrice.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
+        assertEquals(physicalDealWithFixedDealPrice.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(0,
+                physicalDealWithFixedDealPrice.getDetail().getDealPrice().getValue().compareTo(
+                        positionSnapshot.getDetail().getDealPrice()));
+        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
+
+    }
+
+
+    @Test
+    public void generatePhysicalPositionsWithIndexDealPrice() {
+        EvaluationContext context = EvaluationContext
+                .build()
+                .withCurrency(CurrencyCode.CAD)
+                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
+                .withStartPositionDate(fromMarketDate);
+
+        generatePositionsService.generatePositions(
+                context,
+                physicalDealWithIndexDealPrice.getId());
+
+        flush();
+
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+                physicalDealWithIndexDealPrice.generateEntityId());
+
+        assertTrue(positionSnapshots.size() > 0);
+        PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
+        assertEquals(physicalDealWithIndexDealPrice.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
+        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 

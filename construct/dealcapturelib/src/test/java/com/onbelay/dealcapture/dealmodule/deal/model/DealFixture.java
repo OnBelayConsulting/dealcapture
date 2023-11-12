@@ -34,7 +34,7 @@ public class DealFixture {
 	
 	private DealFixture() { }
 
-	public static PhysicalDealSnapshot createPhysicalDealSnapshot(
+	public static PhysicalDealSnapshot createFixedPriceMarketIndexPhysicalDealSnapshot(
 			LocalDate startDate,
 			LocalDate endDate,
 			DealStatusCode dealStatusCode,
@@ -57,35 +57,69 @@ public class DealFixture {
 		dealSnapshot.getDealDetail().setEndDate(endDate);
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 		
-		dealSnapshot.setMarketPricingIndexId(priceIndex.generateEntityId());
+		dealSnapshot.setMarketPriceIndexId(priceIndex.generateEntityId());
 		
 		dealSnapshot.getDealDetail().setVolume(
 				new Quantity(
-						UnitOfMeasureCode.GJ, 
-						BigDecimal.valueOf(34.78)));
+						BigDecimal.valueOf(34.78),
+						UnitOfMeasureCode.GJ));
 
 		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.FIXED);
 
-		dealSnapshot.getDetail().setDealPrice(
-				new Price(
-						CurrencyCode.CAD,
-						UnitOfMeasureCode.GJ,
-						BigDecimal.valueOf(1.55)));
+		dealSnapshot.getDetail().setDealPrice(dealPrice);
 
 		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
 
 		return dealSnapshot;
 	}
 
-	
-	public static PhysicalDeal createPhysicalDeal(
+
+	public static PhysicalDealSnapshot createIndexPriceMarketIndexPhysicalDealSnapshot(
+			LocalDate startDate,
+			LocalDate endDate,
+			DealStatusCode dealStatusCode,
+			CurrencyCode reportingCurrencyCode,
+			String ticketNo,
+			CompanyRole companyRole,
+			CounterpartyRole counterpartyRole,
+			PriceIndex priceIndex,
+			PriceIndex dealPriceIndex)  {
+
+		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
+
+		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
+		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+
+		dealSnapshot.getDealDetail().setDealStatus(dealStatusCode);
+		dealSnapshot.getDealDetail().setReportingCurrencyCode(reportingCurrencyCode);
+		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
+		dealSnapshot.getDealDetail().setStartDate(startDate);
+		dealSnapshot.getDealDetail().setEndDate(endDate);
+		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
+
+		dealSnapshot.getDealDetail().setVolume(
+				new Quantity(
+						BigDecimal.valueOf(34.78),
+						UnitOfMeasureCode.GJ));
+
+		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX);
+		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
+
+		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
+		dealSnapshot.setMarketPriceIndexId(priceIndex.generateEntityId());
+
+		return dealSnapshot;
+	}
+
+
+	public static PhysicalDeal createFixedPricePhysicalDeal(
 			String ticketNo,
 			CompanyRole companyRole,
 			CounterpartyRole counterpartyRole,
 			PriceIndex priceIndex)  {
 		
 		return PhysicalDeal.create(
-				createPhysicalDealSnapshot(
+				createFixedPriceMarketIndexPhysicalDealSnapshot(
 						LocalDate.of(2023, 1, 1),
 						LocalDate.of(2023, 12, 31),
 						DealStatusCode.PENDING,
@@ -95,16 +129,14 @@ public class DealFixture {
 						counterpartyRole,
                         priceIndex,
 						new Price(
+								BigDecimal.ONE,
 								CurrencyCode.CAD,
-								UnitOfMeasureCode.GJ,
-								BigDecimal.ONE)
-				));
+								UnitOfMeasureCode.GJ)));
 		
 	}
 
 
-
-	public static PhysicalDeal createPhysicalDeal(
+	public static PhysicalDeal createFixedPricePhysicalDeal(
 			String ticketNo,
 			CompanyRole companyRole,
 			CounterpartyRole counterpartyRole,
@@ -115,7 +147,7 @@ public class DealFixture {
 			Price dealPrice)  {
 
 		return PhysicalDeal.create(
-				createPhysicalDealSnapshot(
+				createFixedPriceMarketIndexPhysicalDealSnapshot(
 						startDate,
 						endDate,
 						DealStatusCode.VERIFIED,
@@ -128,5 +160,29 @@ public class DealFixture {
 
 	}
 
+
+	public static PhysicalDeal createIndexedPricePhysicalDeal(
+			String ticketNo,
+			CompanyRole companyRole,
+			CounterpartyRole counterpartyRole,
+			PriceIndex priceIndex,
+			LocalDate startDate,
+			LocalDate endDate,
+			CurrencyCode reportingCurrencyCode,
+			PriceIndex dealPriceIndex)  {
+
+		return PhysicalDeal.create(
+				createIndexPriceMarketIndexPhysicalDealSnapshot(
+						startDate,
+						endDate,
+						DealStatusCode.VERIFIED,
+						reportingCurrencyCode,
+						ticketNo,
+						companyRole,
+						counterpartyRole,
+						priceIndex,
+						dealPriceIndex));
+
+	}
 
 }

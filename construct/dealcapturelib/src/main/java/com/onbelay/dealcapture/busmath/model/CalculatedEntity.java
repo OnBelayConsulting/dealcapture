@@ -17,6 +17,7 @@ package com.onbelay.dealcapture.busmath.model;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
@@ -24,31 +25,36 @@ import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 public abstract class CalculatedEntity {
 	protected static final MathContext mathContext = MathContext.UNLIMITED;
     protected static final MathContext divisorMathContext = MathContext.DECIMAL128;
-    protected static final BigDecimal ZERO;
-    protected BigDecimal value = null;
-    protected int roundingScale;
-    protected List<CalculatedEntity> parts;
+    protected static int roundingScale = 6;
+    protected static final BigDecimal ZERO = BigDecimal.ZERO;
+    protected BigDecimal value;
     protected CalculatedErrorType calculationErrorType = CalculatedErrorType.NO_ERROR;
 
-    static {
-        ZERO = new BigDecimal("0");
-    }
-    
-    protected CalculatedEntity() {
-    	
+
+    protected CalculatedEntity(final CalculatedErrorType error) {
+        this.calculationErrorType = error;
     }
 
+
+    protected CalculatedEntity(final BigDecimal value) {
+        if (value == null)
+            calculationErrorType = CalculatedErrorType.ERROR;
+        else
+    	    this.value = value.setScale(roundingScale, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getInvertedValue() {
+        BigDecimal inverted = BigDecimal.ONE.divide(value, MathContext.DECIMAL128);
+        return inverted.setScale(6, RoundingMode.HALF_UP);
+    }
 
     public abstract CalculatedEntity add(CalculatedEntity entity);
     public abstract CalculatedEntity subtract(CalculatedEntity entity);
     public abstract CalculatedEntity multiply(CalculatedEntity entity);
     public abstract CalculatedEntity divide(CalculatedEntity entity);
 
+    public abstract String toFormula();
 
-    protected CalculatedEntity(CalculatedErrorType error) {
-    	this.calculationErrorType = error;
-    }
-    
     public CalculatedErrorType getError() {
     	return calculationErrorType;
     }

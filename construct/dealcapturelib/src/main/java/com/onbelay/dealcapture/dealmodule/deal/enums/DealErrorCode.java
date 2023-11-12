@@ -33,9 +33,17 @@ public enum DealErrorCode {
     MISSING_END_DATE                 ("DC_DL-E0158", "Error: Missing end  date."),
     MISSING_VOL_QUANTITY             ("DC_DL-E0159", "Error: Missing volume quantity."),
     MISSING_VOL_UNIT_OF_MEASURE      ("DC_DL-E0160", "Error: Missing volume unit of measure."),
+    MISSING_REPORTING_CURRENCY		 ("DC_DL-E0180", "Error: Missing reporting currency."),
+
+    MISSING_DEAL_PRICE_VALUATION     ("DC_DL-E0200", "Error: Missing Deal Price Valuation Code."),
+    MISSING_MARKET_PRICE_VALUATION   ("DC_DL-E0201", "Error: Missing Market Price Valuation Code."),
+
+    INVALID_DEAL_PRICE_INDEX         ("DC_DL-E0300", "Error: Invalid deal price index.Deal is fixed."),
+    MISSING_DEAL_PRICE_INDEX         ("DC_DL-E0301", "Error: Missing deal price index.Deal is Indexed."),
+    INVALID_DEAL_PRICE_VALUE   		 ("DC_DL-E0302", "Error: Invalid deal price value"),
+    MISSING_DEAL_PRICE_VALUE   		 ("DC_DL-E0303", "Error: Missing deal price value"),
 
     MISSING_MARKET_INDEX      		 ("DC_DL-E0501", "Error: Missing market index"),
-    MISSING_DEAL_PRICE_VALUE   		 ("DC_DL-E0502", "Error: Missing deal price value"),
     MISSING_DEAL_PRICE_CURRENCY		 ("DC_DL-E0503", "Error: Missing deal price currency."),
     MISSING_DEAL_PRICE_UOM		     ("DC_DL-E0504", "Error: Missing deal price unit of measure.");
 

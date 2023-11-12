@@ -276,7 +276,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	}
 	
 	@Transient
-	protected static PriceIndexRepository getPricingIndexRepository() {
+	protected static PriceIndexRepository getPriceIndexRepository() {
 		return (PriceIndexRepository) ApplicationContextFactory.getBean(PriceIndexRepository.BEAN_NAME);
 	}
 	

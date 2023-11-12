@@ -40,7 +40,7 @@ public class IndexElement extends BaseElement implements FormulaElement, Formula
 
                 if (fxRiskFactorHolder != null) {
                     FxRate rate = fxRiskFactorHolder.getRiskFactor().getCurrentFxRate();
-                    return price.convertWith(rate);
+                    return price.apply(rate);
                 } else {
                     return price;
                 }

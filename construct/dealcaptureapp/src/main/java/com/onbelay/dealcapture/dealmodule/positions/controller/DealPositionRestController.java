@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Tag(name="Positions", description="Positions API")
+@Tag(name="Positions", description="Deal Positions API to support operations against all positions.")
 @RequestMapping("/api/positions")
 public class DealPositionRestController extends BaseRestController {
 	private static Logger logger = LogManager.getLogger();
@@ -87,13 +87,11 @@ public class DealPositionRestController extends BaseRestController {
 	
 	@Operation(summary="Save Positions")
 	@RequestMapping(
-			value ="/{dealId}",
 			method=RequestMethod.PUT,
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> savePositions(
 			@RequestHeader Map<String, String> headers,
-			@PathVariable Integer dealId,
 			@RequestBody List<DealPositionSnapshot> snapshots,
 			BindingResult bindingResult) {
 
@@ -107,9 +105,7 @@ public class DealPositionRestController extends BaseRestController {
 
 		TransactionResult result;
 		try {
-			result = dealPositionRestAdapter.save(
-					new EntityId(dealId),
-					snapshots);
+			result = dealPositionRestAdapter.save(snapshots);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
 			result = new TransactionResult(r.getErrorCode(), r.getParms());
@@ -151,7 +147,7 @@ public class DealPositionRestController extends BaseRestController {
 
 	@Operation(summary="get an existing position")
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<DealPositionSnapshot> getDeal(
+	public ResponseEntity<DealPositionSnapshot> getPosition(
 			@PathVariable Integer id) {
 
 		DealPositionSnapshot snapshot;

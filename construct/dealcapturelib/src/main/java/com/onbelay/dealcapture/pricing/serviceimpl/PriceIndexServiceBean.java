@@ -50,7 +50,7 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 
 
 	@Override
-	public QuerySelectedPage findPricingIndexIds(DefinedQuery definedQuery) {
+	public QuerySelectedPage findPriceIndexIds(DefinedQuery definedQuery) {
 
 		return new QuerySelectedPage(
 				priceIndexRepository.findPriceIndexIds(definedQuery),
@@ -87,10 +87,10 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 
 	@Override
 	public BigDecimal fetchPrice(
-			EntityId pricingIndexId,
+			EntityId priceIndexId,
 			LocalDate currentDate) {
 
-		PriceCurve priceCurve = priceCurveRepository.fetchCurrentPrice(new EntityId(pricingIndexId), currentDate);
+		PriceCurve priceCurve = priceCurveRepository.fetchCurrentPrice(new EntityId(priceIndexId), currentDate);
 		if (priceCurve != null)
 			return priceCurve.getDetail().getCurveValue();
 		else

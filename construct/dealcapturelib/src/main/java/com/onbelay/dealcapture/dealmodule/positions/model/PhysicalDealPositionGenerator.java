@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -57,21 +58,32 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
 
             // Deal Price
             position.getDetail().setDealPriceValuationCode(physicalDealSnapshot.getDetail().getDealPriceValuationCode());
-            position.getDetail().setDealPrice(physicalDealSnapshot.getDetail().getDealPriceValue());
 
-            if (physicalDealSnapshot.getDetail().getDealPriceCurrency() != context.getCurrencyCode()) {
-                physicalPositionHolder.setDealPriceFxRiskFactorHolder(
-                        riskFactorManager.determineFxRiskFactor(
-                                physicalDealSnapshot.getDetail().getDealPriceCurrency(),
-                                context.getCurrencyCode(),
-                                currentDate));
+            // if deal price valuation is fixed or INDEX Plus
+            if (position.getDetail().getDealPriceValuationCode() != ValuationCode.INDEX) {
+                position.getDetail().setDealPrice(physicalDealSnapshot.getDetail().getDealPriceValue());
+
+                if (physicalDealSnapshot.getDetail().getDealPriceCurrency() != context.getCurrencyCode()) {
+                    physicalPositionHolder.setDealPriceFxRiskFactorHolder(
+                            riskFactorManager.determineFxRiskFactor(
+                                    physicalDealSnapshot.getDetail().getDealPriceCurrency(),
+                                    context.getCurrencyCode(),
+                                    currentDate));
+                }
+            } else {
+                physicalPositionHolder.setDealPriceRiskFactorHolder(
+                        riskFactorManager.determinePriceRiskFactor(
+                                physicalDealSnapshot.getDealPriceIndexId().getCode(),
+                                currentDate)
+                );
+
             }
 
             // Market
             position.getDetail().setDealMarketValuationCode(physicalDealSnapshot.getDetail().getMarketValuationCode());
             physicalPositionHolder.setMarketRiskFactorHolder(
                     riskFactorManager.determinePriceRiskFactor(
-                            physicalDealSnapshot.getMarketPricingIndexId().getCode(),
+                            physicalDealSnapshot.getMarketPriceIndexId().getCode(),
                             currentDate)
             );
             if (physicalDealSnapshot.getMarketCurrencyCode() != context.getCurrencyCode()) {
@@ -94,10 +106,16 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
             PhysicalPositionHolder physicalPositionHolder = (PhysicalPositionHolder) holder;
 
             PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) holder.getDealPositionSnapshot();
+
             positionSnapshot.setMarketPriceRiskFactorId(physicalPositionHolder.getMarketRiskFactorHolder().getRiskFactor().getEntityId());
             if (physicalPositionHolder.getMarketFxRiskFactorHolder() != null) {
                 positionSnapshot.setMarketFxRiskFactorId(physicalPositionHolder.getMarketFxRiskFactorHolder().getRiskFactor().getFxIndexId());
             }
+
+            if (physicalPositionHolder.getDealPriceRiskFactorHolder() != null) {
+                positionSnapshot.setDealPriceRiskFactorId(physicalPositionHolder.getDealPriceRiskFactorHolder().getRiskFactor().getEntityId());
+            }
+
             if (physicalPositionHolder.getDealPriceFxRiskFactorHolder() != null) {
                 positionSnapshot.setDealPriceFxRiskFactorId(physicalPositionHolder.getDealPriceFxRiskFactorHolder().getRiskFactor().getEntityId());
             }

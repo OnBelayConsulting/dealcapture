@@ -34,7 +34,7 @@ public interface PriceIndexService {
 
 	public TransactionResult save(List<PriceIndexSnapshot> snapshots);
 
-	public QuerySelectedPage findPricingIndexIds(DefinedQuery definedQuery);
+	public QuerySelectedPage findPriceIndexIds(DefinedQuery definedQuery);
 
 	public List<PriceIndexSnapshot> findByIds(QuerySelectedPage selectedPage);
 

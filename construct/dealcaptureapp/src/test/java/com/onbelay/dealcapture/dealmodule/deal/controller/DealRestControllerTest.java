@@ -32,7 +32,6 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,7 +81,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 		
 		flush();
 
-		physicalDeal = DealFixture.createPhysicalDeal(
+		physicalDeal = DealFixture.createFixedPricePhysicalDeal(
 				"mine",
 				companyRole, 
 				counterpartyRole,
@@ -98,7 +97,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 				.build();
 		
 
-		PhysicalDealSnapshot snapshot = DealFixture.createPhysicalDealSnapshot(
+		PhysicalDealSnapshot snapshot = DealFixture.createFixedPriceMarketIndexPhysicalDealSnapshot(
 				LocalDate.of(2023, 1, 1),
 				LocalDate.of(2023, 1, 31),
 				DealStatusCode.VERIFIED,
@@ -108,9 +107,9 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 				counterpartyRole,
                 priceIndex,
 				new Price(
+						BigDecimal.ONE,
 						CurrencyCode.US,
-						UnitOfMeasureCode.GJ,
-						BigDecimal.ONE));
+						UnitOfMeasureCode.GJ));
 		
 		String jsonPayload = objectMapper.writeValueAsString(snapshot);
 		

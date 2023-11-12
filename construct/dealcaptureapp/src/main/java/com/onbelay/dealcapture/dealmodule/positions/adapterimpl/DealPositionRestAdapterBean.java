@@ -94,13 +94,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
-    public TransactionResult save(
-            EntityId dealId,
-            List<DealPositionSnapshot> snapshots) {
+    public TransactionResult save(List<DealPositionSnapshot> snapshots) {
         initializeSession();
-        TransactionResult result =  dealPositionService.saveDealPositions(
-                dealId,
-                snapshots);
+        TransactionResult result =  dealPositionService.saveAllDealPositions(snapshots);
         return result;
     }
 
