@@ -20,6 +20,9 @@ public interface DealPositionService {
 
     List<DealPositionSnapshot> findByDeal(EntityId entityId);
 
+    public TransactionResult valuePositions(EntityId dealId);
+
+    public TransactionResult valuePositions(DefinedQuery definedQuery);
 
     public QuerySelectedPage findPositionIds(DefinedQuery definedQuery);
 

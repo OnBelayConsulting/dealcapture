@@ -78,7 +78,7 @@ public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 		snapshots.add(snapshot);
 
 		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
-		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.USD);
 		snapshots.add(counterpartyRoleSnapshot);
 
 		TransactionResult result = organizationService.saveOrganizationRoles(
@@ -99,7 +99,7 @@ public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 		snapshots.add(snapshot);
 
 		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
-		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.USD);
 		snapshots.add(counterpartyRoleSnapshot);
 
 		TransactionResult result = organizationService.saveOrganizationRoles(
@@ -120,7 +120,7 @@ public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 		snapshots.add(snapshot);
 
 		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
-		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.USD);
 		snapshots.add(counterpartyRoleSnapshot);
 
 		TransactionResult result = organizationService.saveOrganizationRoles(

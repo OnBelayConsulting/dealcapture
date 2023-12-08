@@ -19,12 +19,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
+import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurveDetail extends AbstractDetail {
@@ -86,6 +89,19 @@ public class CurveDetail extends AbstractDetail {
 		this.curveValue = curveValue;
 	}
 
+	@Transient
+	@JsonIgnore
+	public FrequencyCode getFrequencyCode() {
+		return FrequencyCode.lookUp(frequencyCodeValue);
+	}
+
+	public void setFrequencyCode(FrequencyCode code) {
+		if (code != null)
+			this.frequencyCodeValue = code.getCode();
+		else
+			this.frequencyCodeValue = null;
+
+	}
 
 	@Column (name = "FREQUENCY_CODE")
 	public String getFrequencyCodeValue() {

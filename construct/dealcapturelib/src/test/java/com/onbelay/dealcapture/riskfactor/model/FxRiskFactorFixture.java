@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class FxRiskFactorFixture {
             while (current.isAfter(toMarketDate) == false) {
                 FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
                 snapshot.getDetail().setMarketDate(current);
+                snapshot.getDetail().setCreateUpdateDate(LocalDateTime.of(2023, 1, 1, 23, 10));
                 factors.add(
                         FxRiskFactor.create(
                                 index,
@@ -44,6 +46,7 @@ public class FxRiskFactorFixture {
             while (current.isAfter(toMarketDate) == false) {
                 FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
                 snapshot.getDetail().setMarketDate(current);
+                snapshot.getDetail().setCreateUpdateDate(LocalDateTime.of(2023, 1, 1, 23, 10));
                 factors.add(
                         FxRiskFactor.create(
                                 index,

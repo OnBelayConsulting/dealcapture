@@ -15,11 +15,19 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
+import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PriceIndexFixture {
 
@@ -36,7 +44,7 @@ public class PriceIndexFixture {
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc");
         snapshot.getDetail().setIndexType(IndexType.HUB);
-        snapshot.getDetail().setCurrencyCode(CurrencyCode.US);
+        snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
 
@@ -45,6 +53,49 @@ public class PriceIndexFixture {
         priceIndex.createWith(snapshot);
 
         return priceIndex;
+    }
+
+    public static List<EntityId> generateMonthlyPriceCurves(
+            PriceIndex priceIndex,
+            LocalDate startMarketDate,
+            LocalDate endMarketDate,
+            LocalDateTime observedDateTime) {
+
+        LocalDate currentDate = startMarketDate.withDayOfMonth(1);
+        ArrayList<PriceCurveSnapshot> prices = new ArrayList<>();
+        while (currentDate.isAfter(endMarketDate) == false) {
+            PriceCurveSnapshot curveSnapshot = new PriceCurveSnapshot();
+            curveSnapshot.getDetail().setCurveDate(currentDate);
+            curveSnapshot.getDetail().setCurveValue(BigDecimal.ONE);
+            curveSnapshot.getDetail().setObservedDateTime(observedDateTime);
+            curveSnapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
+            prices.add(curveSnapshot);
+
+            currentDate = currentDate.plusMonths(1);
+        }
+        return priceIndex.savePriceCurves(prices);
+    }
+
+
+    public static List<EntityId> generateDailyPriceCurves(
+            PriceIndex priceIndex,
+            LocalDate startMarketDate,
+            LocalDate endMarketDate,
+            LocalDateTime observedDateTime) {
+
+        LocalDate currentDate = startMarketDate;
+        ArrayList<PriceCurveSnapshot> prices = new ArrayList<>();
+        while (currentDate.isAfter(endMarketDate) == false) {
+            PriceCurveSnapshot curveSnapshot = new PriceCurveSnapshot();
+            curveSnapshot.getDetail().setCurveDate(currentDate);
+            curveSnapshot.getDetail().setCurveValue(BigDecimal.ONE);
+            curveSnapshot.getDetail().setObservedDateTime(observedDateTime);
+            curveSnapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
+            prices.add(curveSnapshot);
+
+            currentDate = currentDate.plusDays(1);
+        }
+        return priceIndex.savePriceCurves(prices);
     }
 
 
@@ -61,7 +112,7 @@ public class PriceIndexFixture {
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc");
         snapshot.getDetail().setIndexType(IndexType.HUB);
-        snapshot.getDetail().setCurrencyCode(CurrencyCode.US);
+        snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
         snapshot.getDetail().setFrequencyCode(frequencyCode);
 
@@ -108,7 +159,7 @@ public class PriceIndexFixture {
         snapshot.getDetail().setDaysOffsetForExpiry(4);
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc");
-        snapshot.getDetail().setCurrencyCode(CurrencyCode.US);
+        snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
         snapshot.getDetail().setIndexType(IndexType.HUB);

@@ -32,6 +32,14 @@ public class PricingLocationRestAdapterBean extends BaseRestAdapterBean implemen
     }
 
     @Override
+    public TransactionResult save(List<PricingLocationSnapshot> snapshots) {
+
+        initializeSession();
+
+        return pricingLocationService.save(snapshots);
+    }
+
+    @Override
     public PricingLocationSnapshotCollection find(
             String queryText,
             Integer start,

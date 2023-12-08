@@ -11,6 +11,7 @@ import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
+import com.onbelay.dealcapture.riskfactor.valuator.FxRiskFactorValuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,9 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
 
     @Autowired
     private FxIndexRepository fxIndexRepository;
+
+    @Autowired
+    private FxRiskFactorValuator fxRiskFactorValuator;
 
     @Override
     public FxRiskFactorSnapshot load(EntityId id) {
@@ -46,6 +50,11 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
 
         List<EntityId> ids = index.saveFxRiskFactors(riskFactors);
         return new TransactionResult(ids);
+    }
+
+    @Override
+    public void valueRiskFactors(EntityId fxIndexId) {
+        fxRiskFactorValuator.valueRiskFactors(fxIndexId);
     }
 
     @Override

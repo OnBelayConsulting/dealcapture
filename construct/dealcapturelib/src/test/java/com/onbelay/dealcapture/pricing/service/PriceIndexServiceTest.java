@@ -6,16 +6,20 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
-import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
-import com.onbelay.dealcapture.pricing.model.PricingLocation;
-import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
+import com.onbelay.dealcapture.pricing.model.*;
+import com.onbelay.dealcapture.pricing.repository.PriceCurveRepository;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
+import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,6 +35,10 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
 
     @Autowired
     private PriceIndexRepository priceIndexRepository;
+
+    @Autowired
+    private PriceCurveRepository priceCurveRepository;
+
 
     public void setUp() {
         super.setUp();
@@ -62,7 +70,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         snapshot.getDetail().setName("AAAA");
         snapshot.getDetail().setIndexType(IndexType.HUB);
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
-        snapshot.getDetail().setCurrencyCode(CurrencyCode.US);
+        snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
         snapshot.getDetail().setDaysOffsetForExpiry(6);
 
@@ -83,7 +91,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         snapshot.setBaseIndexId(priceDailyIndex.generateEntityId());
 
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
-        snapshot.getDetail().setCurrencyCode(CurrencyCode.US);
+        snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
         snapshot.getDetail().setDaysOffsetForExpiry(6);
 
@@ -106,7 +114,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         snapshot.getDetail().setIndexType(IndexType.BASIS);
 
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
-        snapshot.getDetail().setCurrencyCode(CurrencyCode.US);
+        snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
         snapshot.getDetail().setDaysOffsetForExpiry(6);
 
@@ -119,6 +127,26 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
             return;
         }
         fail("should have thrown exception");
+    }
+
+    @Test
+    public void savePriceCurves() {
+        PriceCurveSnapshot snapshot = new PriceCurveSnapshot();
+        snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
+        snapshot.getDetail().setObservedDateTime(LocalDateTime.of(2022, 1, 1, 12, 0));
+        snapshot.getDetail().setCurveDate(LocalDate.of(2022, 1, 1));
+        snapshot.getDetail().setCurveValue(BigDecimal.valueOf(1.34));
+        TransactionResult result = priceIndexService.savePrices(
+                priceIndex.generateEntityId(),
+                List.of(snapshot));
+        flush();
+        assertEquals(1, result.getEntityIds().size());
+
+        PriceCurve curve = priceCurveRepository.load(result.getEntityId());
+        assertEquals(LocalDate.of(2022, 1, 1), curve.getDetail().getCurveDate());
+        assertEquals(LocalDateTime.of(2022, 1, 1, 12, 0), curve.getDetail().getObservedDateTime());
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(curve.getDetail().getCurveValue()));
+        assertEquals(priceIndex.getId(), curve.getPriceIndex().getId());
     }
 
 }

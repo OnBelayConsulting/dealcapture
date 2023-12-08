@@ -50,8 +50,8 @@ dependencies {
 	testImplementation project(path: ':construct:dealcapturelib', configuration: 'tests')
 	implementation group: "com.onbelay.core", name: "obcore", version: "2.1.2"
 	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "2.1.2", classifier: 'tests'
-	implementation group: "com.onbelay.shared", name: "obshared", version: "2.0.2"
-	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.0.2", classifier: 'tests'
+	implementation group: "com.onbelay.shared", name: "obshared", version: "2.0.3"
+	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.0.3", classifier: 'tests'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')

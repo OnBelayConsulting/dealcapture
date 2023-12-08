@@ -74,7 +74,7 @@ public class BusMathTest{
     public void convertCurrency() {
         FxRate rateCADToUSD = new FxRate(
                 BigDecimal.valueOf(.94),
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
 
         logger.error(rateCADToUSD.toFormula());
@@ -88,7 +88,7 @@ public class BusMathTest{
 
         Price converted = price.apply(rateCADToUSD);
         logger.error(converted.toFormula());
-        assertEquals(CurrencyCode.US, converted.getCurrency());
+        assertEquals(CurrencyCode.USD, converted.getCurrency());
         assertEquals(UnitOfMeasureCode.GJ, converted.getUnitOfMeasure());
         assertEquals(0, BigDecimal.valueOf(0.94).compareTo(converted.value));
     }
@@ -119,7 +119,7 @@ public class BusMathTest{
         assertFalse(price.equals(
                 new Price(
                         BigDecimal.ONE,
-                        CurrencyCode.US,
+                        CurrencyCode.USD,
                         UnitOfMeasureCode.GJ)));
 
     }
@@ -213,12 +213,12 @@ public class BusMathTest{
 
         FxRate rate = new FxRate(
                 BigDecimal.valueOf(.94),
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
 
         Amount converted = amount.apply(rate);
         logger.error(converted.toFormula());
-        assertEquals(CurrencyCode.US, converted.getCurrency());
+        assertEquals(CurrencyCode.USD, converted.getCurrency());
         assertEquals(0, BigDecimal.valueOf(18.8).compareTo(converted.value));
 
     }
@@ -330,7 +330,7 @@ public class BusMathTest{
         Amount usAmount = amount.apply(
                 new FxRate(
                         BigDecimal.valueOf(0.97),
-                        CurrencyCode.US,
+                        CurrencyCode.USD,
                         CurrencyCode.CAD));
 
         logger.error(usAmount.toFormula());

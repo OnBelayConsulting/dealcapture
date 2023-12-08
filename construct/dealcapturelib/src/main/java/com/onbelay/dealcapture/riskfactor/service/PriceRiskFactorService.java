@@ -16,6 +16,8 @@ public interface PriceRiskFactorService {
             EntityId priceIndexId,
             List<PriceRiskFactorSnapshot> riskFactors);
 
+    public void valueRiskFactors(EntityId priceIndexId);
+
     PriceRiskFactorSnapshot findByMarketDate(
             EntityId priceIndexId,
             LocalDate marketDate);

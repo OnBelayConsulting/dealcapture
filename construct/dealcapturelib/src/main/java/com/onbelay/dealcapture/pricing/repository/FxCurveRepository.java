@@ -32,6 +32,8 @@ public interface FxCurveRepository {
 	
 	public List<FxCurve> fetchByIds(QuerySelectedPage selectedPage);
 
-	public FxCurve fetchCurrentFx(EntityId entityId, LocalDate currentDate);
+	public FxCurve fetchCurrentFxCurve(
+			EntityId fxIndexId,
+			LocalDate currentDate);
 
 }

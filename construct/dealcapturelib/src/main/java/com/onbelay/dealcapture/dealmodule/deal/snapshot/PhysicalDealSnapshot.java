@@ -60,22 +60,7 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 				parameters);
 	}
 
-	public PhysicalDealSnapshot(
-			EntityId companyRoleSlot,
-			EntityId counterpartySlot,
-			DealDetail dealDetail,
-			PhysicalDealDetail detail) {
-		
-		super(
-				DealTypeCode.PHYSICAL_DEAL,
-				companyRoleSlot,
-				counterpartySlot,
-				dealDetail);
-		
-		this.detail.copyFrom(detail);
-	}
-			
-	
+
 	public PhysicalDealDetail getDetail() {
 		return detail;
 	}

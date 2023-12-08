@@ -33,9 +33,10 @@ public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFacto
 	public static final String FETCH_RISK_FACTOR_BY_MARKET_DATE = "PriceRiskFactorRepository.FETCH_RISK_FACTOR_BY_MARKET_DATE";
 	public static final String FETCH_RISK_FACTORS_BY_DATES = "PriceRiskFactorRepository.FETCH_RISK_FACTORS_BY_DATES";
 	public static final String LOAD_ALL = "PriceRiskFactorRepository.LOAD_ALL";
+	public static final String FIND_BY_PRICE_INDEX_ID = "PriceRiskFactorRepository.FIND_BY_PRICE_INDEX_ID";
 
 	@Autowired
-	private riskFactorColumnDefinitions riskFactorColumnDefinitions;
+	private RiskFactorColumnDefinitions riskFactorColumnDefinitions;
 
 
 	@Override
@@ -54,6 +55,13 @@ public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFacto
 		return executeQuery(LOAD_ALL);
 	}
 
+	@Override
+	public List<PriceRiskFactor> fetchByPriceIndex(EntityId priceIndexId) {
+		return executeQuery(
+				FIND_BY_PRICE_INDEX_ID,
+				"indexId",
+				priceIndexId.getId());
+	}
 
 	@Override
 	public PriceRiskFactor fetchByMarketDate(EntityId entityId, LocalDate marketDate) {

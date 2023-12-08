@@ -9,6 +9,8 @@ import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.RiskFactorDetail;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "PRICE_RISK_FACTOR")
 @NamedQueries({
@@ -18,6 +20,12 @@ import jakarta.persistence.*;
                         "    FROM PriceRiskFactor riskFactor " +
                         "   WHERE riskFactor.index.id = :indexId " +
                         "     AND riskFactor.detail.marketDate = :marketDate "),
+        @NamedQuery(
+                name = PriceRiskFactorRepositoryBean.FIND_BY_PRICE_INDEX_ID,
+                query = "  SELECT riskFactor " +
+                        "    FROM PriceRiskFactor riskFactor " +
+                        "   WHERE riskFactor.index.id = :indexId " +
+                        "ORDER BY riskFactor.detail.marketDate "),
 
         @NamedQuery(
                 name = PriceRiskFactorRepositoryBean.LOAD_ALL,
@@ -107,6 +115,14 @@ public class PriceRiskFactor extends TemporalAbstractEntity {
         return PriceRiskFactorAudit.findRecentHistory(this);
     }
 
+    public void valueRiskFactor(LocalDateTime currentDateTime) {
+        Price price = index.getCurrentPrice(detail.getMarketDate());
+        detail.setCreateUpdateDate(currentDateTime);
+        if (price.isInError())
+            detail.setValue(null);
+        else
+            detail.setValue(price.getValue());
+    }
 
     public Price fetchCurrentPrice() {
         return new Price(

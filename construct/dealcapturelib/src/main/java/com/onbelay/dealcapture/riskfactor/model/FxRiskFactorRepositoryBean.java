@@ -20,9 +20,9 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
-import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -34,9 +34,10 @@ public class FxRiskFactorRepositoryBean extends BaseRepository<FxRiskFactor> imp
 	public static final String FETCH_RISK_FACTOR_BY_MARKET_DATE = "FxRiskFactorRepositoryBean.FETCH_RISK_FACTOR_BY_MARKET_DATE";
 	public static final String FETCH_RISK_FACTORS_BY_DATES = "FxRiskFactorRepositoryBean.FETCH_RISK_FACTORS_BY_DATES";
 	public static final String LOAD_ALL = "FxRiskFactorRepositoryBean.LOAD_ALL";
+	public static final String FIND_BY_INDEX_ID = "FxRiskFactorRepositoryBean.FIND_BY_INDEX_ID";
 
 	@Autowired
-	private riskFactorColumnDefinitions riskFactorColumnDefinitions;
+	private RiskFactorColumnDefinitions riskFactorColumnDefinitions;
 
 
 	@Override
@@ -46,6 +47,11 @@ public class FxRiskFactorRepositoryBean extends BaseRepository<FxRiskFactor> imp
 		else
 			return null;
 		
+	}
+
+	@Override
+	public List<FxRiskFactor> fetchByFxIndex(EntityId fxIndexId) {
+		return executeQuery(FIND_BY_INDEX_ID, "indexId", fxIndexId.getId());
 	}
 
 	@Override

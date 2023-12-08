@@ -52,8 +52,7 @@ public class OrganizationRestController extends BaseRestController {
 
 
 	@Operation(summary="Create or update an organization")
-	@RequestMapping(
-			method=RequestMethod.POST,
+	@PostMapping(
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveOrganization(
@@ -87,9 +86,8 @@ public class OrganizationRestController extends BaseRestController {
 
 
 	@Operation(summary="Create or update an organization roles for an organization.")
-	@RequestMapping(
+	@PutMapping(
 			value = "/{id}/roles",
-			method=RequestMethod.PUT,
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveOrganizationRoles(
@@ -126,7 +124,7 @@ public class OrganizationRestController extends BaseRestController {
 
 
 	@Operation(summary="fetch organizations")
-	@RequestMapping(method=RequestMethod.GET )
+	@GetMapping( )
 	public ResponseEntity<OrganizationSnapshotCollection> getOrganizations(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
@@ -155,7 +153,7 @@ public class OrganizationRestController extends BaseRestController {
 
 
 	@Operation(summary="fetch organization role summaries")
-	@RequestMapping(value="/roleSummaries", method=RequestMethod.GET )
+	@GetMapping(value="/roleSummaries" )
 	public ResponseEntity<OrganizationRoleSummaryCollection> getOrganizationRoleSummaries(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,

@@ -21,6 +21,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.assembler.PricingLocationSnapshotAssembler;
 import com.onbelay.dealcapture.pricing.model.PricingLocation;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
@@ -69,6 +70,17 @@ public class PricingLocationServiceBean extends BaseDomainService implements Pri
 		} else {
 			return new TransactionResult();
 		}
+	}
+
+	@Override
+	public TransactionResult save(List<PricingLocationSnapshot> snapshots) {
+		TransactionResult overallResult = new TransactionResult();
+		for (PricingLocationSnapshot snapshot : snapshots) {
+			TransactionResult result = save(snapshot);
+			if (result.getEntityId() != null)
+				overallResult.addEntityId(result.getEntityId());
+		}
+		return overallResult;
 	}
 
 	@Override

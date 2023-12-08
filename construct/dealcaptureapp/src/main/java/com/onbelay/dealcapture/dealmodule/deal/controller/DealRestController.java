@@ -53,8 +53,7 @@ public class DealRestController extends BaseRestController {
 	
 	
 	@Operation(summary="Create or update a deal")
-	@RequestMapping(
-			method=RequestMethod.POST,
+	@PostMapping(
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveDeal(
@@ -86,8 +85,7 @@ public class DealRestController extends BaseRestController {
 	
 	
 	@Operation(summary="Save deals")
-	@RequestMapping(
-			method=RequestMethod.PUT,
+	@PutMapping(
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveDeals(
@@ -119,7 +117,7 @@ public class DealRestController extends BaseRestController {
 	
 	
 	@Operation(summary="get deals")
-	@RequestMapping(method=RequestMethod.GET )
+	@GetMapping()
 	public ResponseEntity<DealSnapshotCollection> getDeals(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
@@ -146,7 +144,7 @@ public class DealRestController extends BaseRestController {
 	}
 
 	@Operation(summary="get an existing deal")
-	@RequestMapping(value="/{id}", method=RequestMethod.GET)
+	@GetMapping(value="/{id}")
 	public ResponseEntity<BaseDealSnapshot> getDeal(
 			@PathVariable Integer id) {
 

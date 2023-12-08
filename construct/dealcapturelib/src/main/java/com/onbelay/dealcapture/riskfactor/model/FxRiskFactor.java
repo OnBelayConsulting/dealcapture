@@ -3,13 +3,17 @@ package com.onbelay.dealcapture.riskfactor.model;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.FxRate;
+import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.riskfactor.enums.RiskFactorErrorCode;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.RiskFactorDetail;
 import jakarta.persistence.*;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "FX_RISK_FACTOR")
@@ -20,6 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
                         "    FROM FxRiskFactor riskFactor " +
                         "   WHERE riskFactor.index.id = :indexId " +
                         "     AND riskFactor.detail.marketDate = :marketDate "),
+        @NamedQuery(
+                name = FxRiskFactorRepositoryBean.FIND_BY_INDEX_ID,
+                query = "  SELECT riskFactor " +
+                        "    FROM FxRiskFactor riskFactor " +
+                        "   WHERE riskFactor.index.id = :indexId " +
+                        "ORDER BY riskFactor.detail.marketDate"),
 
         @NamedQuery(
                 name = FxRiskFactorRepositoryBean.LOAD_ALL,
@@ -74,6 +84,23 @@ public class FxRiskFactor extends TemporalAbstractEntity {
     @Embedded
     public RiskFactorDetail getDetail() {
         return this.detail;
+    }
+
+    @Transient
+    public FxRate getFxRate() {
+        return new FxRate(
+                detail.getValue(),
+                index.getDetail().getToCurrencyCode(),
+                index.getDetail().getFromCurrencyCode());
+    }
+
+    public void valueRiskFactor(LocalDateTime currentDateTime) {
+        FxRate rate = index.getCurrentRate(detail.getMarketDate());
+        detail.setCreateUpdateDate(currentDateTime);
+        if (rate.isInError())
+            detail.setValue(null);
+        else
+            detail.setValue(rate.getValue());
     }
 
     public void setDetail(final RiskFactorDetail detail) {

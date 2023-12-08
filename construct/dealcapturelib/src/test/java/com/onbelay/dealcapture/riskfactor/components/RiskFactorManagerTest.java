@@ -83,11 +83,11 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
         fxMonthlyIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
 
         fxDailyIndex = FxIndexFixture.createDailyFxIndex(
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
 
 
@@ -144,7 +144,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
         FxRiskFactorHolder holder = riskFactorManager.determineFxRiskFactor(
                 CurrencyCode.CAD,
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 LocalDate.of(2023, 2, 4));
 
         assertNotNull(holder);
@@ -162,7 +162,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
         FxRiskFactorHolder holder = riskFactorManager.determineFxRiskFactor(
                 CurrencyCode.CAD,
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 LocalDate.of(2024, 2, 4));
 
         assertNotNull(holder);
@@ -180,7 +180,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
                 fxRiskFactorService.loadAll());
 
         FxRiskFactorHolder holder = riskFactorManager.determineFxRiskFactor(
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD,
                 LocalDate.of(2023, 2, 4));
 

@@ -103,7 +103,7 @@ public class OrganizationRestControllerTest extends DealCaptureAppSpringTestCase
 		snapshots.add(snapshot);
 
 		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
-		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.US);
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.USD);
 		snapshots.add(counterpartyRoleSnapshot);
 
 

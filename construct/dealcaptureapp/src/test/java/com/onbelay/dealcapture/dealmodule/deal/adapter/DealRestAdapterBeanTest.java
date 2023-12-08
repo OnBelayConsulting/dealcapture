@@ -68,7 +68,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
                 priceIndex,
                 new Price(
                         BigDecimal.ONE,
-                        CurrencyCode.US,
+                        CurrencyCode.USD,
                         UnitOfMeasureCode.GJ));
 
         TransactionResult result = dealRestAdapter.save(dealSnapshot);
@@ -85,7 +85,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
         dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 
         dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
-        dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.US);
+        dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
         dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
         dealSnapshot.getDealDetail().setStartDate(startDate);
         dealSnapshot.getDealDetail().setEndDate(endDate);
@@ -102,7 +102,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
 
         dealSnapshot.getDetail().setDealPrice(new Price(
                 BigDecimal.ONE,
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 UnitOfMeasureCode.GJ));
 
         dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);

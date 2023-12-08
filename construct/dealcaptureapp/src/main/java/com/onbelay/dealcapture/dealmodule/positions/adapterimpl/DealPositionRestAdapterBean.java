@@ -26,6 +26,32 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     @Autowired
     private GeneratePositionsRequestPublisher generatePositionsRequestPublisher;
 
+
+    @Override
+    public TransactionResult valuePositions(String queryText) {
+        initializeSession();
+        DefinedQuery definedQuery;
+
+        if (queryText != null) {
+            if (queryText.equalsIgnoreCase("default")) {
+                definedQuery = new DefinedQuery("DealPosition");
+            } else {
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("DealPosition", queryText);
+                definedQuery = builder.build();
+            }
+        } else {
+            definedQuery = new DefinedQuery("DealPosition");
+        }
+
+        if (definedQuery.getOrderByClause().hasExpressions() == false) {
+            definedQuery.getOrderByClause().addOrderExpression(
+                    new DefinedOrderExpression(
+                            "ticketNo"));
+        }
+
+        return dealPositionService.valuePositions(definedQuery);
+    }
+
     @Override
     public DealPositionSnapshotCollection find(
             String queryText,
@@ -44,7 +70,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
                 definedQuery = builder.build();
             }
         } else {
-            definedQuery = new DefinedQuery("Deal");
+            definedQuery = new DefinedQuery("DealPosition");
         }
 
         if (definedQuery.getOrderByClause().hasExpressions() == false) {

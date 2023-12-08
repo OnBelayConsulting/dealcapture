@@ -21,6 +21,11 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.FxRate;
+import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
+import com.onbelay.dealcapture.pricing.repository.FxCurveRepository;
+import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexDetail;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
@@ -169,7 +174,43 @@ public class FxIndex extends TemporalAbstractEntity {
 	
 	private void setAssociations(FxIndexSnapshot snapshot) {
 	}
-	
+
+
+	public void add(FxRiskFactor fxRiskFactor) {
+		fxRiskFactor.setIndex(this);
+		fxRiskFactor.save();
+	}
+
+	public List<EntityId> saveFxCurves(List<FxCurveSnapshot> snapshots) {
+		ArrayList<EntityId> ids = new ArrayList<>();
+		for (FxCurveSnapshot snapshot : snapshots) {
+			if (snapshot.getEntityState() == EntityState.NEW) {
+				FxCurve curve = new FxCurve(this, snapshot);
+				ids.add(curve.generateEntityId());
+			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
+				FxCurve curve = getFxCurveRepository().load(snapshot.getEntityId());
+				curve.updateWith(snapshot);
+				ids.add(curve.generateEntityId());
+			} else if (snapshot.getEntityState() == EntityState.DELETE) {
+				FxCurve curve = getFxCurveRepository().load(snapshot.getEntityId());
+				curve.delete();
+			}
+		}
+		return ids;
+ 	}
+
+	public void addFxCurve(FxCurve curve) {
+		curve.setFxIndex(this);
+		curve.save();
+	}
+
+	public FxRate getCurrentRate(LocalDate marketDate) {
+		FxCurve curve = getFxCurveRepository().fetchCurrentFxCurve(generateEntityId(), marketDate);
+		if (curve != null)
+			return curve.generateFxRate();
+		else
+			return new FxRate(CalculatedErrorType.ERROR);
+	}
 
 	@Override
 	protected AuditAbstractEntity createHistory() {
@@ -189,12 +230,12 @@ public class FxIndex extends TemporalAbstractEntity {
 	}
 
 	@Transient
-	protected FxRiskFactorRepository getFxRiskFactorRepository() {
-		return (FxRiskFactorRepository) ApplicationContextFactory.getBean(FxRiskFactorRepository.BEAN_NAME);
+	protected FxCurveRepository getFxCurveRepository() {
+		return (FxCurveRepository) ApplicationContextFactory.getBean(FxCurveRepository.BEAN_NAME);
 	}
 
-	public void add(FxRiskFactor fxRiskFactor) {
-		fxRiskFactor.setIndex(this);
-		fxRiskFactor.save();
+	@Transient
+	protected FxRiskFactorRepository getFxRiskFactorRepository() {
+		return (FxRiskFactorRepository) ApplicationContextFactory.getBean(FxRiskFactorRepository.BEAN_NAME);
 	}
 }

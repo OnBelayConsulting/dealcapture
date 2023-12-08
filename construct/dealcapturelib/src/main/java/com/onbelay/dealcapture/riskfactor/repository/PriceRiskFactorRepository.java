@@ -25,4 +25,6 @@ public interface PriceRiskFactorRepository {
     List<Integer> findPriceRiskFactorIds(DefinedQuery definedQuery);
 
     List<PriceRiskFactor> fetchByIds(QuerySelectedPage selectedPage);
+
+    List<PriceRiskFactor> fetchByPriceIndex(EntityId priceIndexId);
 }

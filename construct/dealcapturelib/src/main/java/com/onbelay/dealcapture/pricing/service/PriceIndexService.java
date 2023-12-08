@@ -39,7 +39,7 @@ public interface PriceIndexService {
 	public List<PriceIndexSnapshot> findByIds(QuerySelectedPage selectedPage);
 
 	public TransactionResult savePrices(
-			EntityId pricingIndexId,
+			EntityId priceIndexId,
 			List<PriceCurveSnapshot> prices);
 
 

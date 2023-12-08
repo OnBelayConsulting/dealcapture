@@ -77,41 +77,6 @@ public class DealDetail {
 
 	}
 	
-	public DealDetail(
-			DealStatusCode status,
-			BuySellCode buySellType,
-			String ticketNo,
-			LocalDate startDate,
-			LocalDate endDate,
-			BigDecimal volumeQuantity,
-			UnitOfMeasureCode unitOfMeasure,
-			CurrencyCode reportingCurrencyCode) {
-		
-		this.dealStatusValue = status.getCode();
-		this.buySellCodeValue = buySellType.getCode();
-		this.ticketNo = ticketNo;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.volumeQuantity = volumeQuantity;
-		this.volumeUnitOfMeasureValue = unitOfMeasure.getCode();
-		this.reportingCurrencyValue = reportingCurrencyCode.getCode();
-		
-	}
-	
-	public void setDealAttributes(
-			DealStatusCode dealStatus,
-			BuySellCode buySell,
-			LocalDate startDate,
-			LocalDate endDate,
-			Quantity volume) {
-
-		setDealStatus(dealStatus);
-		setBuySell(buySell);
-		setStartDate(startDate);
-		setEndDate(endDate);
-		setVolume(volume);
-	}
-	
 	@Transient
 	@JsonIgnore
 	public Quantity getVolume() {

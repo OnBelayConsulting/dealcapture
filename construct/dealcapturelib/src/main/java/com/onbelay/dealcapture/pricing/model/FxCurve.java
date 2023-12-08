@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.pricing.model;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.snapshot.CurveDetail;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
@@ -101,7 +102,20 @@ public class FxCurve extends TemporalAbstractEntity {
 	protected void setFxIndex(FxIndex fxIndex) {
 		this.fxIndex = fxIndex;
 	}
-	
+
+	public FxRate generateFxRate() {
+		return new FxRate(
+				detail.getCurveValue(),
+				fxIndex.getDetail().getToCurrencyCode(),
+				fxIndex.getDetail().getFromCurrencyCode());
+	}
+
+	private void createWith(
+			FxIndex fxIndex,
+			FxCurveSnapshot snapshot) {
+		this.detail.copyFrom(snapshot.getDetail());
+		fxIndex.addFxCurve(this);
+	}
 	
 	public void updateWith(FxCurveSnapshot snapshot) {
 		this.detail.copyFrom(snapshot.getDetail());

@@ -17,8 +17,7 @@ package com.onbelay.dealcapture.pricing.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
@@ -43,6 +42,8 @@ import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshotCollection;
+
+import java.util.List;
 
 
 @WithMockUser(username="test")
@@ -103,8 +104,41 @@ public class PriceIndexRestControllerTest extends DealCaptureAppSpringTestCase {
 		assertTrue(transactionResult.isSuccessful());
 		
 	}
-	
-	
+
+
+	@Test
+	public void createPriceIndicesWithPut() throws Exception {
+
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(priceIndexRestController)
+				.build();
+
+		PriceIndexSnapshot snapshot = PriceIndexFixture.createPriceIndexSnapshot(
+				"EBEE",
+				pricingLocation);
+
+		String jsonPayload = objectMapper.writeValueAsString(List.of(snapshot));
+
+		logger.error(jsonPayload);
+
+		ResultActions result = mvc.perform(put("/api/priceIndices")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonPayload));
+
+		MvcResult mvcResult = result.andReturn();
+
+		logger.error(mvcResult.getResponse().getStatus());
+
+		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
+
+		logger.debug("Json: " + jsonStringResponse);
+
+		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
+		assertTrue(transactionResult.isSuccessful());
+
+	}
+
+
 	@Test
 	public void createPriceIndexWithPostUsingJson() throws Exception {
 

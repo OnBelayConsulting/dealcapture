@@ -42,10 +42,10 @@ public class FxRiskFactorServiceTest extends DealCaptureSpringTestCase {
 
         fxIndex = FxIndexFixture.createDailyFxIndex(
                 CurrencyCode.CAD,
-                CurrencyCode.US);
+                CurrencyCode.USD);
 
         fxDailyIndex = FxIndexFixture.createDailyFxIndex(
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
 
 
@@ -90,6 +90,25 @@ public class FxRiskFactorServiceTest extends DealCaptureSpringTestCase {
         assertNotNull(snapshot.getFxIndexId());
         assertEquals(LocalDate.of(2023, 2, 4),snapshot.getDetail().getMarketDate());
 
+    }
+
+
+    @Test
+    public void valueAssociatedRiskFactors() {
+        FxIndexFixture.generateDailyFxCurves(
+                fxIndex,
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 31),
+                LocalDateTime.of(2023, 1, 23, 23, 59));
+        flush();
+
+        fxRiskFactorService.valueRiskFactors(fxIndex.generateEntityId());
+        flush();
+        List<FxRiskFactor> factors = fxRiskFactorRepository.fetchByFxIndex(fxIndex.generateEntityId());
+        assertEquals(304, factors.size());
+        FxRiskFactor factor = factors.get(0);
+        assertEquals(LocalDate.of(2023, 1, 1), factor.getDetail().getMarketDate());
+        assertEquals(0, BigDecimal.ONE.compareTo(factor.getDetail().getValue()));
     }
 
 }

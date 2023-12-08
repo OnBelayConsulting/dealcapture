@@ -27,7 +27,9 @@ public interface PricingLocationService {
 	
 	public PricingLocationSnapshot load(EntityId entityId);
 
-	public TransactionResult save(PricingLocationSnapshot snapshotIn);
+	public TransactionResult save(PricingLocationSnapshot snapshot);
+
+	public TransactionResult save(List<PricingLocationSnapshot> snapshots);
 
 	public QuerySelectedPage findPricingLocationIds(DefinedQuery definedQuery);
 

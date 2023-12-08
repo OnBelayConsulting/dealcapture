@@ -13,6 +13,7 @@ import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.valuator.DealPositionValuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,6 +33,8 @@ public class DealPositionServiceBean implements DealPositionService {
     @Autowired
     private DealRepository dealRepository;
 
+    @Autowired
+    private DealPositionValuator dealPositionValuator;
 
     @Override
     public DealPositionSnapshot load(EntityId entityId) {
@@ -92,5 +96,22 @@ public class DealPositionServiceBean implements DealPositionService {
         List<DealPosition> positions = dealPositionRepository.fetchByIds(selectedPage);
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();
         return factory.assemble(positions);
+    }
+
+    @Override
+    public TransactionResult valuePositions(EntityId dealId) {
+        dealPositionValuator.valuePositions(dealId);
+        return new TransactionResult(dealId);
+    }
+
+    @Override
+    public TransactionResult valuePositions(DefinedQuery definedQuery) {
+        List<Integer> ids = dealPositionRepository.findPositionIds(definedQuery);
+        dealPositionValuator.valuePositions(new QuerySelectedPage(ids));
+        return new TransactionResult(
+                ids
+                        .stream()
+                        .map(c ->new EntityId(c))
+                        .collect(Collectors.toList()));
     }
 }

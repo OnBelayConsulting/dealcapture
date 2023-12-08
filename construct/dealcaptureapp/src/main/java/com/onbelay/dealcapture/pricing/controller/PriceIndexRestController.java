@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,7 +50,9 @@ public class PriceIndexRestController extends BaseRestController {
 	
 	
 	@Operation(summary="Create or update a priceIndex")
-	@RequestMapping(method=RequestMethod.POST, produces="application/json", consumes="application/json"  )
+	@PostMapping(
+			produces="application/json",
+			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> savePriceIndex(
 			@RequestHeader Map<String, String> headers,
 			@RequestBody PriceIndexSnapshot snapshot,
@@ -78,8 +81,40 @@ public class PriceIndexRestController extends BaseRestController {
 	}
 
 
+	@Operation(summary="Create or update a priceIndex")
+	@PutMapping(
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> savePriceIndices(
+			@RequestHeader Map<String, String> headers,
+			@RequestBody List<PriceIndexSnapshot> snapshots,
+			BindingResult bindingResult) {
+
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		TransactionResult result;
+		try {
+			result  = priceIndexRestAdapter.save(snapshots);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
 	@Operation(summary="fetch priceIndices")
-	@RequestMapping(method=RequestMethod.GET, produces="application/json" )
+	@GetMapping(produces="application/json" )
 	public ResponseEntity<PriceIndexSnapshotCollection> fetchPriceIndices(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
@@ -108,7 +143,7 @@ public class PriceIndexRestController extends BaseRestController {
 
 
 	@Operation(summary="fetch index prices")
-	@RequestMapping(value="/prices", method=RequestMethod.GET )
+	@GetMapping(value="/prices" )
 	public ResponseEntity<PriceCurveSnapshotCollection> getIndexPrices(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,

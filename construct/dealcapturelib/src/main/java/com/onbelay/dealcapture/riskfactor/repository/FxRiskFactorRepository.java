@@ -25,4 +25,6 @@ public interface FxRiskFactorRepository {
     List<Integer> findFxRiskFactorIds(DefinedQuery definedQuery);
 
     List<FxRiskFactor> fetchByIds(QuerySelectedPage selectedPage);
+
+    List<FxRiskFactor> fetchByFxIndex(EntityId fxIndexId);
 }

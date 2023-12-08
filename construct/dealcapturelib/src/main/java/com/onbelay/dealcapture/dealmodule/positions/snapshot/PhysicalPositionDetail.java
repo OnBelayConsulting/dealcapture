@@ -1,18 +1,21 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
+import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
 import java.math.BigDecimal;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PhysicalPositionDetail extends AbstractDetail {
 
     private String dealPriceValuationValue;
     private String marketPriceValuationValue;
 
-    private BigDecimal dealPrice;
+    private BigDecimal dealPriceValue;
 
 
     public void copyFrom(PhysicalPositionDetail copy) {
@@ -22,8 +25,8 @@ public class PhysicalPositionDetail extends AbstractDetail {
         if (copy.marketPriceValuationValue != null)
             this.marketPriceValuationValue = copy.marketPriceValuationValue;
 
-        if (copy.dealPrice != null)
-            this.dealPrice = copy.dealPrice;
+        if (copy.dealPriceValue != null)
+            this.dealPriceValue = copy.dealPriceValue;
     }
 
     @Transient
@@ -62,12 +65,13 @@ public class PhysicalPositionDetail extends AbstractDetail {
         this.marketPriceValuationValue = marketPriceValuationValue;
     }
 
+
     @Column(name = "DEAL_PRICE")
-    public BigDecimal getDealPrice() {
-        return dealPrice;
+    public BigDecimal getDealPriceValue() {
+        return dealPriceValue;
     }
 
-    public void setDealPrice(BigDecimal dealPrice) {
-        this.dealPrice = dealPrice;
+    public void setDealPriceValue(BigDecimal dealPriceValue) {
+        this.dealPriceValue = dealPriceValue;
     }
 }

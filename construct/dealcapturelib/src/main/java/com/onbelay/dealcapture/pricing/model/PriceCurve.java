@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.pricing.model;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.snapshot.CurveDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
@@ -57,9 +58,9 @@ public class PriceCurve extends TemporalAbstractEntity {
 	public PriceCurve(
 			PriceIndex priceIndex,
 			PriceCurveSnapshot snapshot) {
-		this.detail.copyFrom(snapshot.getDetail());
-		this.priceIndex = priceIndex;
-		save();
+		createWith(
+				priceIndex,
+				snapshot);
 	}
 	
 	@Override
@@ -82,6 +83,13 @@ public class PriceCurve extends TemporalAbstractEntity {
 	}
 
 
+	public Price generatePrice() {
+		return new Price(
+				detail.getCurveValue(),
+				priceIndex.getDetail().getCurrencyCode(),
+				priceIndex.getDetail().getUnitOfMeasureCode());
+	}
+
 	@Embedded
 	public CurveDetail getDetail() {
 		return detail;
@@ -103,7 +111,14 @@ public class PriceCurve extends TemporalAbstractEntity {
 		this.priceIndex = priceIndex;
 	}
 	
-	
+
+	private void createWith(
+			PriceIndex priceIndex,
+			PriceCurveSnapshot snapshot) {
+		this.detail.copyFrom(snapshot.getDetail());
+		priceIndex.addPriceCurve(this);
+	}
+
 	public void updateWith(PriceCurveSnapshot snapshot) {
 		this.detail.copyFrom(snapshot.getDetail());
 		update();

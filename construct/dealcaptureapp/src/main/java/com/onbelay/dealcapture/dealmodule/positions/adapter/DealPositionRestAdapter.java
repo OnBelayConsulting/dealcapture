@@ -22,4 +22,6 @@ public interface DealPositionRestAdapter {
             String queryText,
             Integer start,
             Integer limit);
+
+    public TransactionResult valuePositions(String queryText);
 }

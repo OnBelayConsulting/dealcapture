@@ -30,6 +30,11 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     }
 
     @Override
+    public TransactionResult save(List<PriceIndexSnapshot> snapshots) {
+        return priceIndexService.save(snapshots);
+    }
+
+    @Override
     public PriceIndexSnapshotCollection find(
             String queryText,
             Integer start,

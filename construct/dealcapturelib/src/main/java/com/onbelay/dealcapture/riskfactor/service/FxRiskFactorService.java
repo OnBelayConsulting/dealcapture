@@ -16,6 +16,7 @@ public interface FxRiskFactorService {
             EntityId fxIndexId,
             List<FxRiskFactorSnapshot> riskFactors);
 
+    public void valueRiskFactors(EntityId fxIndexId);
 
     FxRiskFactorSnapshot findByMarketDate(
             EntityId fxIndexId,

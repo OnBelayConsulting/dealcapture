@@ -52,8 +52,7 @@ public class DealPositionRestController extends BaseRestController {
 	
 	
 	@Operation(summary="Create or update a position")
-	@RequestMapping(
-			method=RequestMethod.POST,
+	@PostMapping(
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> savePosition(
@@ -86,8 +85,7 @@ public class DealPositionRestController extends BaseRestController {
 	
 	
 	@Operation(summary="Save Positions")
-	@RequestMapping(
-			method=RequestMethod.PUT,
+	@PutMapping(
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> savePositions(
@@ -119,7 +117,7 @@ public class DealPositionRestController extends BaseRestController {
 	
 	
 	@Operation(summary="get Positions")
-	@RequestMapping(method=RequestMethod.GET )
+	@GetMapping
 	public ResponseEntity<DealPositionSnapshotCollection> getPositions(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
@@ -145,8 +143,27 @@ public class DealPositionRestController extends BaseRestController {
 		return (ResponseEntity<DealPositionSnapshotCollection>) processResponse(collection);
 	}
 
+	@Operation(summary="value Positions selected by query")
+	@PostMapping(value="/value" )
+	public ResponseEntity<TransactionResult> valuePositions(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "query", defaultValue="default") String queryText) {
+		TransactionResult result;
+		try {
+			result = dealPositionRestAdapter.valuePositions(queryText);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return (ResponseEntity<TransactionResult>) processResponse(result);
+	}
+
 	@Operation(summary="get an existing position")
-	@RequestMapping(value="/{id}", method=RequestMethod.GET)
+	@GetMapping(value="/{id}")
 	public ResponseEntity<DealPositionSnapshot> getPosition(
 			@PathVariable Integer id) {
 

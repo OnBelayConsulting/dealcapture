@@ -1,30 +1,32 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.onbelay.core.codes.annotations.CodeLabelSerializer;
 import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 
 import com.onbelay.shared.enums.CurrencyCode;
 import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DealPositionDetail extends AbstractDetail {
 
     private String dealTypeCodeValue;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime createUpdateDateTime;
-    private BigDecimal volumeQuantity;
+    private BigDecimal volumeQuantityValue;
     private String volumeUnitOfMeasureValue;
     private String frequencyCodeValue;
 
@@ -57,8 +59,8 @@ public class DealPositionDetail extends AbstractDetail {
         if (copy.createUpdateDateTime != null)
             this.createUpdateDateTime = copy.createUpdateDateTime;
 
-        if (copy.volumeQuantity != null)
-            this.volumeQuantity = copy.volumeQuantity;
+        if (copy.volumeQuantityValue != null)
+            this.volumeQuantityValue = copy.volumeQuantityValue;
 
         if (copy.volumeUnitOfMeasureValue != null)
             this.volumeUnitOfMeasureValue = copy.volumeUnitOfMeasureValue;
@@ -77,6 +79,7 @@ public class DealPositionDetail extends AbstractDetail {
     }
 
     @Transient
+    @JsonIgnore
     public DealTypeCode getDealTypeCode() {
         return DealTypeCode.lookUp(dealTypeCodeValue);
     }
@@ -121,13 +124,20 @@ public class DealPositionDetail extends AbstractDetail {
         this.endDate = endDate;
     }
 
-    @Column(name = "VOLUME_QUANTITY")
-    public BigDecimal getVolumeQuantity() {
-        return volumeQuantity;
+    @Transient
+    public Quantity getQuantity() {
+        return new Quantity(
+                volumeQuantityValue,
+                getVolumeUnitOfMeasure());
     }
 
-    public void setVolumeQuantity(BigDecimal volumeQuantity) {
-        this.volumeQuantity = volumeQuantity;
+    @Column(name = "VOLUME_QUANTITY")
+    public BigDecimal getVolumeQuantityValue() {
+        return volumeQuantityValue;
+    }
+
+    public void setVolumeQuantityValue(BigDecimal volumeQuantityValue) {
+        this.volumeQuantityValue = volumeQuantityValue;
     }
 
     @Transient

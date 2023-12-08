@@ -57,6 +57,8 @@ public abstract class DealPosition extends TemporalAbstractEntity {
         this.dealPositionDetail = detail;
     }
 
+    public abstract void valuePosition();
+
     public void createWith(
             BaseDeal deal,
             DealPositionSnapshot snapshot) {

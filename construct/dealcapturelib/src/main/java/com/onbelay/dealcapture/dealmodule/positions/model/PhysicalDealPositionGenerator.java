@@ -47,7 +47,7 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
             PhysicalPositionSnapshot position = (PhysicalPositionSnapshot) physicalPositionHolder.getDealPositionSnapshot();
             position.getDealPositionDetail().setFrequencyCode(FrequencyCode.DAILY);
 
-            position.getDealPositionDetail().setVolumeQuantity(physicalDealSnapshot.getDealDetail().getVolumeQuantity());
+            position.getDealPositionDetail().setVolumeQuantityValue(physicalDealSnapshot.getDealDetail().getVolumeQuantity());
             position.getDealPositionDetail().setVolumeUnitOfMeasure(physicalDealSnapshot.getDealDetail().getVolumeUnitOfMeasure());
 
             position.getDealPositionDetail().setStartDate(currentDate);
@@ -61,7 +61,7 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
 
             // if deal price valuation is fixed or INDEX Plus
             if (position.getDetail().getDealPriceValuationCode() != ValuationCode.INDEX) {
-                position.getDetail().setDealPrice(physicalDealSnapshot.getDetail().getDealPriceValue());
+                position.getDetail().setDealPriceValue(physicalDealSnapshot.getDetail().getDealPriceValue());
 
                 if (physicalDealSnapshot.getDetail().getDealPriceCurrency() != context.getCurrencyCode()) {
                     physicalPositionHolder.setDealPriceFxRiskFactorHolder(

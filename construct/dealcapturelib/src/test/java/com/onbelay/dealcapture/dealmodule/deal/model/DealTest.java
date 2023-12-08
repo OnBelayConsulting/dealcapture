@@ -58,25 +58,28 @@ public class DealTest extends DealCaptureSpringTestCase {
 		
 		
 		flush();
-		
-		PhysicalDeal deal = PhysicalDeal.create(
-				new PhysicalDealSnapshot(
-						companyRole.generateEntityId(), 
-						counterpartyRole.generateEntityId(),
-						new DealDetail(
-							DealStatusCode.PENDING,
-							BuySellCode.BUY,
-							"deal-12n",
-							LocalDate.of(2019, 1, 1),
-							LocalDate.of(2019, 1, 1),
-							BigDecimal.valueOf(34.78),
-							UnitOfMeasureCode.GJ,
-							CurrencyCode.US),
-						new PhysicalDealDetail(
-								BigDecimal.valueOf(1.55),
-								CurrencyCode.CAD,
-								UnitOfMeasureCode.GJ)));
-		
+
+		PhysicalDealSnapshot snapshot = new PhysicalDealSnapshot();
+		snapshot.setCompanyRoleId(companyRole.generateEntityId());
+		snapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+
+		setDealAttributes(
+				snapshot.getDealDetail(),
+				DealStatusCode.PENDING,
+				BuySellCode.BUY,
+				"deal-12n",
+				LocalDate.of(2019, 1, 1),
+				LocalDate.of(2019, 1, 1),
+				BigDecimal.valueOf(34.78),
+				UnitOfMeasureCode.GJ,
+				CurrencyCode.USD);
+
+		snapshot.getDetail().setDealPriceValue(BigDecimal.valueOf(1.55));
+		snapshot.getDetail().setDealPriceCurrency(CurrencyCode.CAD);
+		snapshot.getDetail().setDealPriceUnitOfMeasure(UnitOfMeasureCode.GJ);
+
+		PhysicalDeal deal = PhysicalDeal.create(snapshot);
+
 		flush();
 		clearCache();
 		
@@ -86,6 +89,28 @@ public class DealTest extends DealCaptureSpringTestCase {
 		PhysicalDeal created = (PhysicalDeal) deals.get(0);
 		
 		assertTrue(created.getId().longValue() > 0);
+	}
+
+	private void setDealAttributes(
+			DealDetail detail,
+			DealStatusCode status,
+			BuySellCode buySellCode,
+			String ticketNo,
+			LocalDate startDate,
+			LocalDate endDate,
+			BigDecimal quantity,
+			UnitOfMeasureCode unitOfMeasureCode,
+			CurrencyCode currencyCode) {
+
+		detail.setDealStatus(status);
+		detail.setBuySell(buySellCode);
+		detail.setTicketNo(ticketNo);
+		detail.setStartDate(startDate);
+		detail.setEndDate(endDate);
+		detail.setVolumeQuantity(quantity);
+		detail.setReportingCurrencyCode(currencyCode);
+		detail.setVolumeUnitOfMeasure(unitOfMeasureCode);
+
 	}
 	
 	public void createDealFromSnapshot() {

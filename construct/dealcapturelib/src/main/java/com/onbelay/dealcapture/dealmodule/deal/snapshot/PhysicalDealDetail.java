@@ -47,18 +47,7 @@ public class PhysicalDealDetail  {
 		dealPriceValuationCodeValue = ValuationCode.FIXED.getCode();
 		marketValuationCodeValue = ValuationCode.INDEX.getCode();
 	}
-	
-	public PhysicalDealDetail(
-			BigDecimal dealPrice, 
-			CurrencyCode currency,
-			UnitOfMeasureCode unitOfMeasure) {
 
-		dealPriceValuationCodeValue = ValuationCode.FIXED.getCode();
-		this.dealPriceValue = dealPrice;
-		this.dealPriceCurrencyCodeValue = currency.getCode();
-		this.dealPriceUnitOfMeasureValue = unitOfMeasure.getCode();
-	}
-	
 	public void validate() throws OBValidationException {
 
 		if (dealPriceValuationCodeValue == null)

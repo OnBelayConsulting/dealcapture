@@ -19,7 +19,7 @@ public class DealCaptureCodeManagerTest extends DealCaptureSpringTestCase {
     @Test
     public void fetchCodes() {
         List<CodeLabel> labels = codeManager.findCodeLabels(CurrencyCodeEntity.codeFamily);
-        assertEquals(2, labels.size());
+        assertEquals(3, labels.size());
     }
 
 }

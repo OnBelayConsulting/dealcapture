@@ -126,7 +126,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
                 priceIndex,
 				new Price(
 						BigDecimal.ONE,
-						CurrencyCode.US,
+						CurrencyCode.USD,
 						UnitOfMeasureCode.GJ));
 		
 		TransactionResult result  = dealService.save(dealSnapshot);
@@ -152,7 +152,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 
 		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
-		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.US);
+		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
 		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
 		dealSnapshot.getDealDetail().setStartDate(startDate);
 		dealSnapshot.getDealDetail().setEndDate(endDate);
@@ -184,7 +184,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 
 		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
-		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.US);
+		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
 		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
 		dealSnapshot.getDealDetail().setStartDate(startDate);
 		dealSnapshot.getDealDetail().setEndDate(endDate);
@@ -202,7 +202,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		dealSnapshot.getDetail().setDealPrice(
 				new Price(
 					BigDecimal.ONE,
-					CurrencyCode.US,
+					CurrencyCode.USD,
 					UnitOfMeasureCode.GJ));
 
 		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);

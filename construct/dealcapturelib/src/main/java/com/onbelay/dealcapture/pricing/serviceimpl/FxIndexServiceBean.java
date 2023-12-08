@@ -8,8 +8,10 @@ import com.onbelay.dealcapture.pricing.assembler.FxIndexSnapshotAssembler;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.pricing.repository.FxIndexRepository;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
+import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
+import com.onbelay.dealcapture.riskfactor.valuator.FxRiskFactorValuator;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class FxIndexServiceBean extends BaseDomainService implements FxIndexServ
     @Autowired
     private FxIndexRepository fxIndexRepository;
 
+    private FxRiskFactorValuator fxRiskFactorValuator;
+
     @Override
     public FxIndexSnapshot load(EntityId id) {
         FxIndex fxIndex = fxIndexRepository.load(id);
@@ -36,6 +40,15 @@ public class FxIndexServiceBean extends BaseDomainService implements FxIndexServ
         FxIndex fxIndex = fxIndexRepository.findFxIndexByName(name);
         FxIndexSnapshotAssembler assembler = new FxIndexSnapshotAssembler();
         return assembler.assemble(fxIndex);
+    }
+
+    @Override
+    public TransactionResult saveFxCurves(
+            EntityId fxIndexId,
+            List<FxCurveSnapshot> snapshots) {
+        FxIndex fxIndex = fxIndexRepository.load(fxIndexId);
+        return new TransactionResult(
+                fxIndex.saveFxCurves(snapshots));
     }
 
     @Override

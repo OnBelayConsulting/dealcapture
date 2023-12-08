@@ -30,6 +30,7 @@ import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
+import com.onbelay.dealcapture.riskfactor.valuator.PriceRiskFactorValuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,9 +114,8 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 
 		PriceIndex priceIndex = priceIndexRepository.load(pricingIndexId);
 		
-		priceIndex.updatePricesWith(prices);
-		
-		return new TransactionResult(pricingIndexId);
+		return new TransactionResult(
+				priceIndex.savePriceCurves(prices));
 	}
 
 	@Override

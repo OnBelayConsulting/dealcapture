@@ -166,23 +166,6 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	protected void setDealDetail(DealDetail dealDetail) {
 		this.dealDetail = dealDetail;
 	}
-	
-	public void setDealAttributes(
-			DealStatusCode dealStatus,
-			BuySellCode buySell,
-			LocalDate startDate,
-			LocalDate endDate,
-			Quantity volume) {
-		
-		getDealDetail().setDealAttributes(
-				dealStatus,
-				buySell,
-				startDate,
-				endDate,
-				volume);
-		
-		
-	}
 
 	protected void addDealCost(DealCost cost) {
 		cost.setDeal(this);

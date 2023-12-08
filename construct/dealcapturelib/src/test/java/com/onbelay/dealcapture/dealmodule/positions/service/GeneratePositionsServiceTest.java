@@ -59,7 +59,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
         location = PricingLocationFixture.createPricingLocation("West");
         fxIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
 
         priceIndex = PriceIndexFixture.createPriceIndex(
@@ -83,7 +83,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
                 CurrencyCode.CAD,
                 new Price(
                         BigDecimal.ONE,
-                        CurrencyCode.US,
+                        CurrencyCode.USD,
                         UnitOfMeasureCode.GJ)
                 );
 
@@ -122,7 +122,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
         assertEquals(0,
                 physicalDealWithFixedDealPrice.getDetail().getDealPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getDealPrice()));
+                        positionSnapshot.getDetail().getDealPriceValue()));
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 

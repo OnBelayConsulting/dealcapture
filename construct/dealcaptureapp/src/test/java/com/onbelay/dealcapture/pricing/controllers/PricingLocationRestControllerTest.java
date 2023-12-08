@@ -34,10 +34,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WithMockUser(username="test")
 public class PricingLocationRestControllerTest extends DealCaptureAppSpringTestCase {
@@ -87,7 +88,36 @@ public class PricingLocationRestControllerTest extends DealCaptureAppSpringTestC
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
 		assertTrue(transactionResult.isSuccessful());
 	}
-	
+
+
+	@Test
+	public void createLocationsWithPut() throws Exception {
+
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(pricingLocationRestController)
+				.build();
+
+		PricingLocationSnapshot snapshot = PricingLocationFixture.createPricingLocationSnapshot("EBEE");
+
+		String jsonPayload = objectMapper.writeValueAsString(List.of(snapshot));
+
+		logger.error(jsonPayload);
+
+		ResultActions result = mvc.perform(put("/api/pricingLocations")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonPayload));
+
+		MvcResult mvcResult = result.andReturn();
+
+		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
+
+		logger.debug("Json: " + jsonStringResponse);
+
+		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
+		assertTrue(transactionResult.isSuccessful());
+	}
+
+
 	@Test
 	public void createLocationWithPostUsingJson() throws Exception {
 

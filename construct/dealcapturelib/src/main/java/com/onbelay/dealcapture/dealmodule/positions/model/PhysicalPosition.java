@@ -2,6 +2,9 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
+import com.onbelay.dealcapture.busmath.model.Amount;
+import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -56,6 +59,57 @@ public class PhysicalPosition extends DealPosition {
         detail.copyFrom(physicalPositionSnapshot.getDetail());
         setAssociations(physicalPositionSnapshot);
         update();
+    }
+
+    @Override
+    public void valuePosition() {
+        Price dealPrice =  switch (detail.getDealPriceValuationCode()) {
+
+            case FIXED -> getDealPrice();
+
+            case INDEX -> getDealIndexPrice();
+
+            case INDEX_PLUS -> getDealIndexPrice().add(getDealPrice());
+
+            default -> new Price(CalculatedErrorType.ERROR);
+        };
+
+        Price marketPrice = getMarketIndexPrice();
+
+        Price netPrice = dealPrice.subtract(marketPrice);
+        Amount amount = netPrice.multiply(getDealPositionDetail().getQuantity());
+
+        if (amount.isInError())
+            getDealPositionDetail().setErrorCode(amount.getError().getCode());
+        else
+            getDealPositionDetail().setMarkToMarketValuation(amount.getValue());
+    }
+
+    @Transient
+    public Price getMarketIndexPrice() {
+        Price price = marketPriceRiskFactor.fetchCurrentPrice();
+        if (marketPriceFxRiskFactor != null)
+            return price.apply(marketPriceFxRiskFactor.getFxRate());
+        else
+            return price;
+    }
+
+    @Transient
+    public Price getDealIndexPrice() {
+        Price price = dealPriceRiskFactor.fetchCurrentPrice();
+        if (dealPriceFxRiskFactor != null) {
+            return price.apply(this.dealPriceFxRiskFactor.getFxRate());
+        } else {
+            return price;
+        }
+    }
+
+    @Transient
+    public Price getDealPrice() {
+        return new Price(
+                detail.getDealPriceValue(),
+                getDealPositionDetail().getCurrencyCode(),
+                getDealPositionDetail().getVolumeUnitOfMeasure());
     }
 
     private void setAssociations(PhysicalPositionSnapshot snapshot) {

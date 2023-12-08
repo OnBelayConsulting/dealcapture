@@ -12,6 +12,7 @@ import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
+import com.onbelay.dealcapture.riskfactor.valuator.PriceRiskFactorValuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,9 @@ public class PriceRiskFactorServiceBean implements PriceRiskFactorService {
     @Autowired
     private PriceIndexRepository priceIndexRepository;
 
+    @Autowired
+    private PriceRiskFactorValuator priceRiskFactorValuator;
+
     @Override
     public PriceRiskFactorSnapshot load(EntityId id) {
         PriceRiskFactor factor =  priceRiskFactorRepository.load(id);
@@ -44,6 +48,10 @@ public class PriceRiskFactorServiceBean implements PriceRiskFactorService {
         return assembler.assemble(factors);
     }
 
+    @Override
+    public void valueRiskFactors(EntityId priceIndexId) {
+        priceRiskFactorValuator.valueRiskFactors(priceIndexId);
+    }
 
     @Override
     public TransactionResult savePriceRiskFactors(

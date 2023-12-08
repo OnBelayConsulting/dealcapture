@@ -108,7 +108,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
                 priceIndex,
 				new Price(
 						BigDecimal.ONE,
-						CurrencyCode.US,
+						CurrencyCode.USD,
 						UnitOfMeasureCode.GJ));
 		
 		String jsonPayload = objectMapper.writeValueAsString(snapshot);

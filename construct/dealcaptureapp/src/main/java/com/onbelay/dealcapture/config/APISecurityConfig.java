@@ -25,6 +25,6 @@ public class APISecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authHttpRequests -> authHttpRequests.requestMatchers("/api/*").authenticated()
-                ).oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt).build();
+                ).oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())).build();
     }
 }

@@ -7,8 +7,10 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
+import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
+import com.onbelay.dealcapture.formulas.model.EvaluationContext;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -17,6 +19,8 @@ import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
+import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
+import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.junit.jupiter.api.Test;
@@ -25,15 +29,26 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @WithMockUser
 public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
 
     @Autowired
     private DealPositionRestAdapter dealPositionRestAdapter;
+
+    @Autowired
+    private FxRiskFactorService fxRiskFactorService;
+
+    @Autowired
+    private PriceRiskFactorService priceRiskFactorService;
+
+    @Autowired
+    private GeneratePositionsService generatePositionsService;
 
     private PricingLocation location;
     private PriceIndex priceIndex;
@@ -57,10 +72,17 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
         companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
         counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
         location = PricingLocationFixture.createPricingLocation("West");
+
         fxIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
+
+        FxIndexFixture.generateDailyFxCurves(
+                fxIndex,
+                fromMarketDate,
+                toMarketDate,
+                LocalDateTime.of(10, 1, 1, 1, 1));
 
         fxRiskFactor = FxRiskFactorFixture.createFxRiskFactor(fxIndex, fromMarketDate);
 
@@ -68,6 +90,12 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                 "ACEE",
                 FrequencyCode.MONTHLY,
                 location);
+
+        PriceIndexFixture.generateMonthlyPriceCurves(
+                priceIndex,
+                fromMarketDate,
+                toMarketDate,
+                LocalDateTime.of(2023, 10, 1, 0, 0));
 
         physicalDeal = DealFixture.createFixedPricePhysicalDeal(
                 "5566",
@@ -79,7 +107,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                 CurrencyCode.CAD,
                 new Price(
                         BigDecimal.ONE,
-                        CurrencyCode.US,
+                        CurrencyCode.USD,
                         UnitOfMeasureCode.GJ)
         );
 
@@ -107,6 +135,27 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
 
     }
 
+    @Test
+    public void valuePositions() {
 
+        generatePositionsService.generatePositions(
+                EvaluationContext
+                        .build()
+                        .withCurrency(CurrencyCode.CAD)
+                        .withStartPositionDate(fromMarketDate)
+                        .withEndPositionDate(toMarketDate),
+                List.of(physicalDeal.getId()));
+
+        fxRiskFactorService.valueRiskFactors(fxIndex.generateEntityId());
+        priceRiskFactorService.valueRiskFactors(priceIndex.generateEntityId());
+        String query = "WHERE ticketNo eq '" + physicalDeal.getDealDetail().getTicketNo() + "'";
+        dealPositionRestAdapter.valuePositions(query);
+        flush();
+
+        DealPositionSnapshotCollection collection = dealPositionRestAdapter.find(query, 0, 500);
+        DealPositionSnapshot snapshot = collection.getSnapshots().get(0);
+        assertNotNull(snapshot.getDealPositionDetail().getMarkToMarketValuation());
+
+    }
 
 }

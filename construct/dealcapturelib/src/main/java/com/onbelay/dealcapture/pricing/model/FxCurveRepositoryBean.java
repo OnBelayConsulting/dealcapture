@@ -51,9 +51,11 @@ public class FxCurveRepositoryBean extends BaseRepository<FxCurve> implements Fx
 	
 
 	@Override
-	public FxCurve fetchCurrentFx(EntityId entityId, LocalDate fxDate) {
+	public FxCurve fetchCurrentFxCurve(
+			EntityId fxIndexId,
+			LocalDate fxDate) {
 		String[] names = {"fxIndexId", "fxDate", "currentDateTime"};
-		Object[] values = {entityId.getId(), fxDate, LocalDateTime.now()};
+		Object[] values = {fxIndexId.getId(), fxDate, LocalDateTime.now()};
 		return executeSingleResultQuery(FETCH_FX_BY_FX_DATE_OBS_DATE, names, values);
 	}
 

@@ -59,7 +59,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
         location = PricingLocationFixture.createPricingLocation("West");
         fxIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
-                CurrencyCode.US,
+                CurrencyCode.USD,
                 CurrencyCode.CAD);
 
         fxRiskFactor = FxRiskFactorFixture.createFxRiskFactor(fxIndex, fromMarketDate);
@@ -79,7 +79,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
                 CurrencyCode.CAD,
                 new Price(
                         BigDecimal.ONE,
-                        CurrencyCode.US,
+                        CurrencyCode.USD,
                         UnitOfMeasureCode.GJ)
                 );
 

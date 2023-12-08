@@ -22,12 +22,12 @@ import com.onbelay.core.query.model.ColumnDefinitions;
 import org.springframework.stereotype.Component;
 
 @Component(value = "riskFactorColumnDefinitions")
-public class riskFactorColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
+public class RiskFactorColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 
 	public static final ColumnDefinition marketDate = new ColumnDefinition("marketDate", ColumnDataType.DATE, "detail.marketDate");
 	public static final ColumnDefinition indexId = new ColumnDefinition("indexId", ColumnDataType.DATE, "index.id");
 
-	public riskFactorColumnDefinitions() {
+	public RiskFactorColumnDefinitions() {
 		add(indexId);
 		add(marketDate);
 	}

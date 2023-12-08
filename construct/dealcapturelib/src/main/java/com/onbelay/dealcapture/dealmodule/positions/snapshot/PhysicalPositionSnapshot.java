@@ -16,7 +16,7 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
     private EntityId dealPriceFxRiskFactorId;
 
     public PhysicalPositionSnapshot() {
-        super.setDealTypeValue(DealTypeCode.PHYSICAL_DEAL.getCode());
+        super(DealTypeCode.PHYSICAL_DEAL);
     }
 
     public PhysicalPositionDetail getDetail() {

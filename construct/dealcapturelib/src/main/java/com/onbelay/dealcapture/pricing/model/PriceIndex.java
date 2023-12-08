@@ -19,7 +19,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
+import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
@@ -135,7 +136,18 @@ public class PriceIndex extends TemporalAbstractEntity {
 	private void setDetail(PriceIndexDetail detail) {
 		this.detail = detail;
 	}
-	
+
+	@Transient
+	public Price getCurrentPrice(LocalDate marketDate) {
+		PriceCurve curve = getPriceRepository().fetchCurrentPrice(
+				generateEntityId(),
+				marketDate);
+		if (curve != null)
+			return curve.generatePrice();
+		else
+			return new Price(CalculatedErrorType.ERROR);
+	}
+
 	protected void createWith(PriceIndexSnapshot snapshot) {
 		super.createWith(snapshot);
 		detail.setDefaults();
@@ -152,21 +164,29 @@ public class PriceIndex extends TemporalAbstractEntity {
 	}
 	
 
-	public void updatePricesWith(List<PriceCurveSnapshot> prices) {
-		PriceCurve price = null;
+	public List<EntityId> savePriceCurves(List<PriceCurveSnapshot> prices) {
+
+		ArrayList<EntityId> ids = new ArrayList<>();
 		for (PriceCurveSnapshot s : prices) {
 			if (s.getEntityState() == EntityState.NEW) {
-				price = new PriceCurve(this, s);
+				PriceCurve price = new PriceCurve(this, s);
+				ids.add(price.generateEntityId());
 			} if (s.getEntityState() == EntityState.MODIFIED) {
-				price = getPriceRepository().load(s.getEntityId());
+				PriceCurve price = getPriceRepository().load(s.getEntityId());
 				price.updateWith(s);
+				ids.add(price.generateEntityId());
 			}  if (s.getEntityState() == EntityState.DELETE) {
-				price = getPriceRepository().load(s.getEntityId());
+				PriceCurve price = getPriceRepository().load(s.getEntityId());
 				price.delete();
 			}
 		}
+		return ids;
 	}
 
+	protected void addPriceCurve(PriceCurve curve) {
+		curve.setPriceIndex(this);
+		curve.save();
+	}
 
 	public PriceRiskFactor getPriceRiskFactor(LocalDate marketDate) {
 		return getPriceRiskFactorRepository().fetchByMarketDate(generateEntityId(), marketDate);
