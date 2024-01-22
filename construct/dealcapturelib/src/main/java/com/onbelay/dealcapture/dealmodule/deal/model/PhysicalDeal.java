@@ -22,12 +22,8 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
+import jakarta.persistence.*;
 
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
@@ -41,6 +37,16 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL")
+@NamedQueries({
+		@NamedQuery(
+				name = PriceIndexRepositoryBean.FIND_BY_DEAL_IDS,
+				query = "SELECT " +
+						"	new com.onbelay.dealcapture.common.snapshot.EntityIdCollection(" +
+						"			deal.dealPriceIndex.id,  " +
+						"			deal.marketPriceIndex.id)" +
+						"  FROM PhysicalDeal deal" +
+						" WHERE deal.id in (:dealIds)  ")
+})
 public class PhysicalDeal extends BaseDeal {
 
 	private PriceIndex dealPriceIndex;

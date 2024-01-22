@@ -1,8 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
@@ -17,7 +15,10 @@ import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,23 +60,28 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
         location = PricingLocationFixture.createPricingLocation("West");
         fxIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
-                CurrencyCode.USD,
-                CurrencyCode.CAD);
+                CurrencyCode.CAD,
+                CurrencyCode.USD);
 
         fxRiskFactor = FxRiskFactorFixture.createFxRiskFactor(fxIndex, fromMarketDate);
 
         priceIndex = PriceIndexFixture.createPriceIndex(
                 "ACEE",
                 FrequencyCode.MONTHLY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
 
         physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+                CommodityCode.CRUDE,
                 "5566",
                 companyRole,
                 counterpartyRole,
                 priceIndex,
                 fromMarketDate,
                 toMarketDate,
+                BigDecimal.valueOf(100),
+                UnitOfMeasureCode.GJ,
                 CurrencyCode.CAD,
                 new Price(
                         BigDecimal.ONE,
@@ -97,6 +103,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
                 fxRiskFactor);
 
         dealPositionService.saveDealPositions(
+                "test",
                 physicalDeal.generateEntityId(),
                 snapshots);
 

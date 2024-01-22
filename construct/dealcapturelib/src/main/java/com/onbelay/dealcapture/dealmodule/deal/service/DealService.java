@@ -19,7 +19,9 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 
 import java.util.List;
 
@@ -35,6 +37,11 @@ public interface DealService {
 	public TransactionResult save(List<BaseDealSnapshot> snapshots);
 	
 	public BaseDealSnapshot load(EntityId entityId);
-	
-	
+
+	public DealSummary getDealSummary(EntityId entityId);
+
+    public boolean updatePositionGenerationStatus(
+			String positionGenerationIdentifier,
+			EntityId entityId,
+			PositionGenerationStatusCode positionGenerationStatusCode);
 }

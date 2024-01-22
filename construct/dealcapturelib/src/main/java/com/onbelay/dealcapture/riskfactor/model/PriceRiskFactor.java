@@ -26,12 +26,13 @@ import java.time.LocalDateTime;
                         "    FROM PriceRiskFactor riskFactor " +
                         "   WHERE riskFactor.index.id = :indexId " +
                         "ORDER BY riskFactor.detail.marketDate "),
-
         @NamedQuery(
-                name = PriceRiskFactorRepositoryBean.LOAD_ALL,
+                name = PriceRiskFactorRepositoryBean.FETCH_BY_PRICE_INDEX_IDS,
                 query = "  SELECT riskFactor " +
                         "    FROM PriceRiskFactor riskFactor " +
-                        "ORDER BY riskFactor.detail.marketDate"),
+                        "   WHERE riskFactor.index.id in (:indexIds) " +
+                        "ORDER BY riskFactor.id, riskFactor.detail.marketDate "),
+
         @NamedQuery(
                 name = PriceRiskFactorRepositoryBean.FETCH_RISK_FACTORS_BY_DATES,
                 query = "  SELECT riskFactor " +
@@ -115,19 +116,23 @@ public class PriceRiskFactor extends TemporalAbstractEntity {
         return PriceRiskFactorAudit.findRecentHistory(this);
     }
 
-    public void valueRiskFactor(LocalDateTime currentDateTime) {
-        Price price = index.getCurrentPrice(detail.getMarketDate());
-        detail.setCreateUpdateDate(currentDateTime);
-        if (price.isInError())
-            detail.setValue(null);
-        else
+    @Transient
+    public void updatePrice(Price price) {
+        detail.setCreateUpdateDateTime(LocalDateTime.now());
+        if (price.isInError() == false)
             detail.setValue(price.getValue());
+        update();
     }
+
 
     public Price fetchCurrentPrice() {
         return new Price(
                 detail.getValue(),
                 index.getDetail().getCurrencyCode(),
                 index.getDetail().getUnitOfMeasureCode());
+    }
+
+    public boolean hasValue() {
+        return detail.getValue() != null;
     }
 }

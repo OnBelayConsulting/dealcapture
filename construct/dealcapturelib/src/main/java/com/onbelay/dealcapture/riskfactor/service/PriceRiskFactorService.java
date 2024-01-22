@@ -2,9 +2,12 @@ package com.onbelay.dealcapture.riskfactor.service;
 
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PriceRiskFactorService {
@@ -12,15 +15,23 @@ public interface PriceRiskFactorService {
 
     public PriceRiskFactorSnapshot load(EntityId id);
 
-    public TransactionResult savePriceRiskFactors(
+    public TransactionResult save(
             EntityId priceIndexId,
             List<PriceRiskFactorSnapshot> riskFactors);
 
     public void valueRiskFactors(EntityId priceIndexId);
 
+    public void valueRiskFactors(
+            DefinedQuery definedQuery,
+            LocalDateTime currentDateTime);
+
     PriceRiskFactorSnapshot findByMarketDate(
             EntityId priceIndexId,
             LocalDate marketDate);
 
-    List<PriceRiskFactorSnapshot> loadAll();
+    QuerySelectedPage findPriceRiskFactorIds(DefinedQuery definedQuery);
+
+    List<PriceRiskFactorSnapshot> findByIds(QuerySelectedPage querySelectedPage);
+
+    List<PriceRiskFactorSnapshot> findByPriceIndexIds(List<Integer> collect);
 }

@@ -15,6 +15,10 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     private EntityId dealPriceFxRiskFactorId;
 
+    private EntityId fixedDealPriceFxRiskFactorId;
+
+
+
     public PhysicalPositionSnapshot() {
         super(DealTypeCode.PHYSICAL_DEAL);
     }
@@ -41,6 +45,14 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     public void setMarketFxRiskFactorId(EntityId marketFxRiskFactorId) {
         this.marketFxRiskFactorId = marketFxRiskFactorId;
+    }
+
+    public EntityId getFixedDealPriceFxRiskFactorId() {
+        return fixedDealPriceFxRiskFactorId;
+    }
+
+    public void setFixedDealPriceFxRiskFactorId(EntityId fixedDealPriceFxRiskFactorId) {
+        this.fixedDealPriceFxRiskFactorId = fixedDealPriceFxRiskFactorId;
     }
 
     public EntityId getDealPriceRiskFactorId() {

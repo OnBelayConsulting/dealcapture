@@ -25,15 +25,19 @@ import org.springframework.stereotype.Component;
 public class FxCurveColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 
 	public static final ColumnDefinition id = new ColumnDefinition("id", ColumnDataType.INTEGER, "id");
-	public static final ColumnDefinition fxDate = new ColumnDefinition("curveDate", ColumnDataType.DATE, "detail.curveDate");
+	public static final ColumnDefinition fxIndexId = new ColumnDefinition("fxIndexId", ColumnDataType.INTEGER, "fxIndex.id");
+	public static final ColumnDefinition curveDate = new ColumnDefinition("curveDate", ColumnDataType.DATE, "detail.curveDate");
 	public static final ColumnDefinition observedDateTime = new ColumnDefinition("observedDateTime", ColumnDataType.DATE_TIME, "detail.observedDateTime");
 	public static final ColumnDefinition indexName = new ColumnDefinition("indexName", ColumnDataType.STRING, "fxIndex.detail.name");
-	
+	public static final ColumnDefinition frequency = new ColumnDefinition("frequency", ColumnDataType.STRING, "detail.frequencyCodeValue");
+
 	public FxCurveColumnDefinitions() {
 		add(id);
-		add(fxDate);
+		add(fxIndexId);
+		add(curveDate);
 		add(observedDateTime);
 		add(indexName);
+		add(frequency);
 	}
 
 	@Override

@@ -27,11 +27,21 @@
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
+            <column name="COMMODITY_CODE" type="java.sql.Types.VARCHAR(32)"/>
             <column name="BUY_SELL_CODE" type="java.sql.Types.VARCHAR(32)"/>
             <column name="START_DATE" type="java.sql.Types.TIMESTAMP"/>
             <column name="END_DATE" type="java.sql.Types.TIMESTAMP"/>
             <column name="DEAL_STATUS_CODE" type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
+            </column>
+            <column name="POSITION_GENERATION_STATUS_CODE" type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POSITION_GENERATION_IDENTIFIER" type="java.sql.Types.VARCHAR(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="POSITION_GENERATION_DATE_TIME" type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="true"/>
             </column>
             <column name="REPORTING_CURRENCY_CODE" type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>

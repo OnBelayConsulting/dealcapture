@@ -21,18 +21,23 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 
 public interface PriceIndexRepository {
 	public static final String BEAN_NAME = "priceIndexRepository";
 	
 	public PriceIndex findPriceIndexByName(String name);
 
-	public List<PriceIndex> loadAll();
-	
 	public PriceIndex load(EntityId id);
 	
 	public List<Integer> findPriceIndexIds(DefinedQuery definedQuery);
-	
+
+	public List<PriceIndex> findActivePriceIndices();
+
+	public List<PriceIndex> findByDealIds(List<Integer> dealIds);
+
 	public List<PriceIndex> fetchByIds(QuerySelectedPage selectedPage);
+
+	List<PriceIndexReport> fetchPriceIndexReports(List<Integer> indexIds);
 
 }

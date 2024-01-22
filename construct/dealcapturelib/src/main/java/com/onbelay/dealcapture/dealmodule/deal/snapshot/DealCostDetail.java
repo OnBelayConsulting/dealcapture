@@ -21,44 +21,46 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.onbelay.core.codes.annotations.CodeLabelSerializer;
 import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import com.onbelay.shared.enums.CurrencyCode;
-
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
+
 import java.math.BigDecimal;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DealCostDetail  {
 
-	private BigDecimal costPerUnitValue;
+	private BigDecimal costValue;
 	private String currencyCodeValue;
 	private String unitOfMeasureCodeValue;
-	private String name;
-	private String description; 
+	private String costNameCodeValue;
+	private String costTypeCodeValue;
 
 	@Transient
 	public Price getCostPerUnit() {
 		return new Price(
-				costPerUnitValue,
+				costValue,
 				CurrencyCode.lookUp(currencyCodeValue),
 				UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue));
 	}
 	
 	public void setCostPerUnit(Price price) {
-		this.costPerUnitValue = price.getValue();
+		this.costValue = price.getValue();
 		this.currencyCodeValue = price.getCurrency().getCode();
 		this.unitOfMeasureCodeValue = price.getUnitOfMeasure().getCode();
 	}
 
-    @Column(name="COST_PER_UNIT")
-    public BigDecimal getCostPerUnitValue() {
-		return costPerUnitValue;
+    @Column(name="COST_VALUE")
+    public BigDecimal getCostValue() {
+		return costValue;
 	}
 
 
-	public void setCostPerUnitValue(BigDecimal costValue) {
-		this.costPerUnitValue = costValue;
+	public void setCostValue(BigDecimal costValue) {
+		this.costValue = costValue;
 	}
 
 	@Transient
@@ -106,32 +108,62 @@ public class DealCostDetail  {
 		this.unitOfMeasureCodeValue = costUoMValue;
 	}
 
-	@Column(name = "COST_NAME")
-	public String getName() {
-		return name;
+	@Transient
+	@JsonIgnore
+	public CostNameCode getCostName() {
+		return CostNameCode.lookUp(costNameCodeValue);
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCostName(CostNameCode code) {
+		this.costNameCodeValue = code.getCode();
 	}
 
-	@Column(name = "COST_DESCRIPTION")
-	public String getDescription() {
-		return description;
+	@Column(name = "COST_NAME_CODE")
+	public String getCostNameCodeValue() {
+		return costNameCodeValue;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setCostNameCodeValue(String name) {
+		this.costNameCodeValue = name;
+	}
+
+
+	@Transient
+	@JsonIgnore
+	public CostTypeCode getCostType() {
+		return CostTypeCode.lookUp(costTypeCodeValue);
+	}
+
+	public void setCostType(CostTypeCode code) {
+		this.costTypeCodeValue = code.getCode();
+	}
+
+	@Column(name = "COST_TYPE_CODE")
+	public String getCostTypeCodeValue() {
+		return costTypeCodeValue;
+	}
+
+	public void setCostTypeCodeValue(String type) {
+		this.costTypeCodeValue = type;
 	}
 
 
 
     public void copyFrom(DealCostDetail copy) {
-    	this.costPerUnitValue = copy.costPerUnitValue;
-    	this.currencyCodeValue = copy.currencyCodeValue;
-    	this.unitOfMeasureCodeValue = copy.unitOfMeasureCodeValue;
-    	this.name = copy.name;
-    	this.description = copy.description;
+		if (copy.costValue != null)
+    		this.costValue = copy.costValue;
+
+		if (copy.currencyCodeValue != null)
+    		this.currencyCodeValue = copy.currencyCodeValue;
+
+		if (copy.unitOfMeasureCodeValue != null)
+    		this.unitOfMeasureCodeValue = copy.unitOfMeasureCodeValue;
+
+		if (copy.costNameCodeValue != null)
+    		this.costNameCodeValue = copy.costNameCodeValue;
+
+		if (copy.costTypeCodeValue != null)
+    		this.costTypeCodeValue = copy.costTypeCodeValue;
     }
 	
 }

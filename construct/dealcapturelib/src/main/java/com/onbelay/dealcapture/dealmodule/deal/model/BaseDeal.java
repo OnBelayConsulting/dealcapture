@@ -21,11 +21,10 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
@@ -35,10 +34,10 @@ import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
-import com.onbelay.shared.enums.BuySellCode;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,9 +57,25 @@ import java.util.List;
        		+ "          deal.dealDetail.ticketNo, "
        		+ "          deal.dealDetail.startDate,"
        		+ "          deal.companyRole.organization.detail.shortName, "
-       		+ "          deal.counterpartyRole.organization.detail.shortName) "
+       		+ "          deal.counterpartyRole.organization.detail.shortName," +
+			   "		 deal.dealDetail.dealStatusValue," +
+			   "         deal.dealDetail.positionGenerationStatusValue," +
+			   "         deal.dealDetail.positionGenerationIdentifier) "
        		+ "   FROM BaseDeal deal " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),
+    @NamedQuery(
+       name = DealRepositoryBean.GET_DEAL_SUMMARY,
+       query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary( "
+       		+ "          deal.id, "
+       		+ "          deal.dealDetail.ticketNo, "
+       		+ "          deal.dealDetail.startDate,"
+       		+ "          deal.companyRole.organization.detail.shortName, "
+       		+ "          deal.counterpartyRole.organization.detail.shortName," +
+			   "		 deal.dealDetail.dealStatusValue," +
+			   "         deal.dealDetail.positionGenerationStatusValue," +
+			   "         deal.dealDetail.positionGenerationIdentifier) "
+       		+ "   FROM BaseDeal deal " +
+       	     "   WHERE deal.id = :dealId"),
     @NamedQuery(
        name = DealRepositoryBean.FIND_DEAL_BY_TICKET_NO,
        query = "SELECT deal " +
@@ -87,6 +102,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	
 	public void createWith(BaseDealSnapshot snapshot) {
 		super.createWith(snapshot);
+		this.dealDetail.setDefaults();
 		this.dealDetail.copyFrom(snapshot.getDealDetail());
 		this.dealTypeValue = snapshot.getDealType().getCode();
 	}
@@ -194,9 +210,17 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return getDealCostRepository().fetchDealCosts(id);
 	}
 
-	public List<EntityId> savePositions(List<DealPositionSnapshot> snapshots) {
+	public List<EntityId> savePositions(
+			String positionGeneratorIdentifier,
+			List<DealPositionSnapshot> snapshots) {
+
+		dealDetail.setPositionGenerationStatusCode(PositionGenerationStatusCode.COMPLETE);
+		dealDetail.setPositionGenerationIdentifier(positionGeneratorIdentifier);
+		LocalDateTime currentDateTime = LocalDateTime.now();
+		dealDetail.setPositionGenerationDateTime(currentDateTime);
 		ArrayList<EntityId> ids = new ArrayList<>();
 		for (DealPositionSnapshot snapshot : snapshots) {
+			snapshot.getDealPositionDetail().setCreateUpdateDateTime(currentDateTime);
 			EntityId id = savePosition(snapshot);
 			if (id != null)
 				ids.add(id);

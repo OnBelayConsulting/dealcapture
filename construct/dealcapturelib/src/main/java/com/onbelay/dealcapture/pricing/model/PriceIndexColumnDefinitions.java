@@ -28,11 +28,17 @@ public class PriceIndexColumnDefinitions extends BaseColumnDefinitions implement
 	public static final ColumnDefinition name = new ColumnDefinition("name", ColumnDataType.STRING, "detail.name");
 	public static final ColumnDefinition description = new ColumnDefinition("description", ColumnDataType.STRING, "detail.description");
 	public static final ColumnDefinition indexType = new ColumnDefinition("indexType", ColumnDataType.STRING, "detail.indexTypeValue");
-	
+	public static final ColumnDefinition frequency = new ColumnDefinition("frequency", ColumnDataType.STRING, "detail.frequencyCodeValue");
+	public static final ColumnDefinition currency = new ColumnDefinition("currency", ColumnDataType.STRING, "detail.currencyCodeValue");
+	public static final ColumnDefinition unitOfMeasure = new ColumnDefinition("unitOfMeasure", ColumnDataType.STRING, "detail.unitOfMeasureCodeValue");
+
 	public PriceIndexColumnDefinitions() {
 		add(name);
 		add(description);
 		add(indexType);
+		add(frequency);
+		add(currency);
+		add(unitOfMeasure);
 	}
 
 	@Override

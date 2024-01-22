@@ -2,10 +2,10 @@ package com.onbelay.dealcapture.formulas.model;
 
 import com.onbelay.dealcapture.busmath.model.CalculatedEntity;
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.parsing.model.IsToken;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -28,15 +28,17 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.repository.PriceCurveRepository;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
+import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
-import com.onbelay.dealcapture.riskfactor.valuator.PriceRiskFactorValuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service(value = "priceIndexService")
@@ -51,11 +53,35 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 
 
 	@Override
+	public PriceIndexSnapshot load(EntityId entityId) {
+
+		PriceIndex priceIndex = priceIndexRepository.load(entityId);
+
+		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
+		return assembler.assemble(priceIndex);
+	}
+
+
+	@Override
 	public QuerySelectedPage findPriceIndexIds(DefinedQuery definedQuery) {
 
 		return new QuerySelectedPage(
 				priceIndexRepository.findPriceIndexIds(definedQuery),
 				definedQuery.getOrderByClause());
+	}
+
+	@Override
+	public List<PriceIndexSnapshot> findActivePriceIndicesBy(List<Integer> dealIds) {
+		List<PriceIndex> indices = priceIndexRepository.findByDealIds(dealIds);
+		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
+		return assembler.assemble(indices);
+	}
+
+	@Override
+	public List<PriceIndexSnapshot> findActivePriceIndices() {
+		List<PriceIndex> indices = priceIndexRepository.findActivePriceIndices();
+		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
+		return assembler.assemble(indices);
 	}
 
 	@Override
@@ -66,13 +92,6 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 	}
 
 	@Override
-	public List<PriceCurveSnapshot> fetchPricesByIds(QuerySelectedPage querySelectedPage) {
-		List<PriceCurve> prices = priceCurveRepository.fetchByIds(querySelectedPage);
-		PriceCurveSnapshotAssembler assembler = new PriceCurveSnapshotAssembler();
-		return assembler.assemble(prices);
-	}
-
-	@Override
 	public PriceIndexSnapshot findPriceIndexByName(String indexName) {
 		PriceIndex index = priceIndexRepository.findPriceIndexByName(indexName);
 		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
@@ -80,43 +99,10 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 	}
 
 	@Override
-	public List<PriceIndexSnapshot> loadAll() {
-		List<PriceIndex> indices = priceIndexRepository.loadAll();
-		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
-		return assembler.assemble(indices);
+	public List<PriceIndexReport> fetchPriceIndexReports(QuerySelectedPage priceIndices) {
+		return priceIndexRepository.fetchPriceIndexReports(priceIndices.getIds());
 	}
 
-	@Override
-	public BigDecimal fetchPrice(
-			EntityId priceIndexId,
-			LocalDate currentDate) {
-
-		PriceCurve priceCurve = priceCurveRepository.fetchCurrentPrice(new EntityId(priceIndexId), currentDate);
-		if (priceCurve != null)
-			return priceCurve.getDetail().getCurveValue();
-		else
-			return null;
-	}
-
-	@Override
-	public PriceIndexSnapshot load(EntityId entityId) {
-
-		PriceIndex priceIndex = priceIndexRepository.load(entityId);
-		
-		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
-		return assembler.assemble(priceIndex);
-	}
-
-	@Override
-	public TransactionResult savePrices(
-			EntityId pricingIndexId,
-			List<PriceCurveSnapshot> prices) {
-
-		PriceIndex priceIndex = priceIndexRepository.load(pricingIndexId);
-		
-		return new TransactionResult(
-				priceIndex.savePriceCurves(prices));
-	}
 
 	@Override
 	public TransactionResult save(List<PriceIndexSnapshot> snapshots) {
@@ -134,7 +120,7 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 	public TransactionResult save(PriceIndexSnapshot snapshot) {
 
 		PriceIndex priceIndex;
-		
+
 		if (snapshot.getEntityState() == EntityState.NEW) {
 			priceIndex = PriceIndex.create(snapshot);
 			return new TransactionResult(priceIndex.generateEntityId());
@@ -147,7 +133,64 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 			priceIndex.delete();
 			return new TransactionResult();
 		}
-		
+
 		return new TransactionResult();
+	}
+
+
+	/////////////// Price Curves ///////////////////////
+
+
+	@Override
+	public QuerySelectedPage findPriceCurveIds(DefinedQuery definedQuery) {
+
+		return new QuerySelectedPage(
+				priceCurveRepository.findPriceCurveIds(definedQuery),
+				definedQuery.getOrderByClause());
+	}
+
+	@Override
+	public List<PriceCurveSnapshot> fetchPriceCurvesByIds(QuerySelectedPage querySelectedPage) {
+		List<PriceCurve> prices = priceCurveRepository.fetchByIds(querySelectedPage);
+		PriceCurveSnapshotAssembler assembler = new PriceCurveSnapshotAssembler();
+		return assembler.assemble(prices);
+	}
+
+
+	@Override
+	public List<CurveReport> fetchPriceCurveReports(
+			QuerySelectedPage priceIndices,
+			LocalDate fromCurveDate,
+			LocalDate toCurveDate,
+			LocalDateTime observedDateTime) {
+
+		return priceCurveRepository.fetchPriceCurveReports(
+				priceIndices.getIds(),
+				fromCurveDate,
+				toCurveDate,
+				observedDateTime);
+	}
+
+	@Override
+	public BigDecimal fetchPrice(
+			EntityId priceIndexId,
+			LocalDate currentDate) {
+
+		PriceCurve priceCurve = priceCurveRepository.fetchCurrentPrice(new EntityId(priceIndexId), currentDate);
+		if (priceCurve != null)
+			return priceCurve.getDetail().getCurveValue();
+		else
+			return null;
+	}
+
+	@Override
+	public TransactionResult savePrices(
+			EntityId pricingIndexId,
+			List<PriceCurveSnapshot> prices) {
+
+		PriceIndex priceIndex = priceIndexRepository.load(pricingIndexId);
+		
+		return new TransactionResult(
+				priceIndex.savePriceCurves(prices));
 	}
 }

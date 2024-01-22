@@ -25,10 +25,13 @@ import org.springframework.stereotype.Component;
 public class RiskFactorColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 
 	public static final ColumnDefinition marketDate = new ColumnDefinition("marketDate", ColumnDataType.DATE, "detail.marketDate");
-	public static final ColumnDefinition indexId = new ColumnDefinition("indexId", ColumnDataType.DATE, "index.id");
+	public static final ColumnDefinition createUpdateDateTime = new ColumnDefinition("createUpdateDateTime", ColumnDataType.DATE_TIME, "detail.createUpdateDateTime");
+	public static final ColumnDefinition indexId = new ColumnDefinition("indexId", ColumnDataType.INTEGER, "index.id");
+	public static final ColumnDefinition indexName = new ColumnDefinition("indexName", ColumnDataType.STRING, "index.detail.name");
 
 	public RiskFactorColumnDefinitions() {
 		add(indexId);
+		add(indexName);
 		add(marketDate);
 	}
 

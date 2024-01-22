@@ -20,13 +20,26 @@ import java.util.List;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 
 public interface DealRepository {
 	
 	public static final String BEAN_NAME = "dealRepository";
-	
+
+	/**
+	 * Update position generation status fields
+	 * @param dealId
+	 * @param positionGeneratorId - owning generator process name;
+	 * @param code - PositionGenerationStatus to set
+	 * @return true if update succeeded.
+	 */
+	public boolean executeUpdateOfPositionGenerationStatus(
+			Integer dealId,
+			String positionGeneratorId,
+			PositionGenerationStatusCode code);
+
 	/**
 	 * Fetch a list of deals by ids. This is usually used in paging.
 	 * @param querySelectedPage
@@ -40,8 +53,8 @@ public interface DealRepository {
 	 * @return
 	 */
 	public List<Integer> findDealIds(DefinedQuery definedQuery);
-	
 
+	public DealSummary getDealSummary(EntityId id);
 	/**
 	 * Find deals using a defined query
 	 * @param query

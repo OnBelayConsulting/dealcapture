@@ -26,13 +26,17 @@ import com.onbelay.core.query.model.ColumnDefinitions;
 public class PriceCurveColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 
 	public static final ColumnDefinition id = new ColumnDefinition("id", ColumnDataType.INTEGER, "id");
-	public static final ColumnDefinition priceDate = new ColumnDefinition("curveDate", ColumnDataType.DATE, "detail.curveDate");
+	public static final ColumnDefinition priceIndexId = new ColumnDefinition("priceIndexId", ColumnDataType.INTEGER, "priceIndex.id");
+	public static final ColumnDefinition frequencyCode = new ColumnDefinition("frequencyCode", ColumnDataType.STRING, "detail.frequencyCodeValue");
+	public static final ColumnDefinition curveDate = new ColumnDefinition("curveDate", ColumnDataType.DATE, "detail.curveDate");
 	public static final ColumnDefinition observedDateTime = new ColumnDefinition("observedDateTime", ColumnDataType.DATE_TIME, "detail.observedDateTime");
 	public static final ColumnDefinition indexName = new ColumnDefinition("indexName", ColumnDataType.STRING, "priceIndex.detail.name");
 	
 	public PriceCurveColumnDefinitions() {
 		add(id);
-		add(priceDate);
+		add(priceIndexId);
+		add(frequencyCode);
+		add(curveDate);
 		add(observedDateTime);
 		add(indexName);
 	}

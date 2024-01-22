@@ -19,7 +19,6 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
@@ -32,7 +31,9 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -82,6 +83,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 		flush();
 
 		physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+				CommodityCode.CRUDE,
 				"mine",
 				companyRole, 
 				counterpartyRole,
@@ -98,6 +100,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 		
 
 		PhysicalDealSnapshot snapshot = DealFixture.createFixedPriceMarketIndexPhysicalDealSnapshot(
+				CommodityCode.CRUDE,
 				LocalDate.of(2023, 1, 1),
 				LocalDate.of(2023, 1, 31),
 				DealStatusCode.VERIFIED,

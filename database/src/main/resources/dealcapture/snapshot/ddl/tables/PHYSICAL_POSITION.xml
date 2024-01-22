@@ -23,12 +23,28 @@
                     type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
+            <column name="DEAL_PRICE_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEAL_PRICE_UOM_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="FIXED_PRICE_FX_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
             <column name="DEAL_PRICE_RISK_FACTOR_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
             <column name="DEAL_PRICE_FX_RISK_FACTOR_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEAL_PRICE_UOM_CONVERSION"
+                    type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
             <column name="MARKET_VALUATION_CODE" type="java.sql.Types.VARCHAR(32)"/>
@@ -42,6 +58,10 @@
             </column>
             <column name="MKT_PRICE_RISK_FACTOR_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MKT_PRICE_UOM_CONVERSION"
+                    type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
         </createTable>

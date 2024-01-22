@@ -17,8 +17,11 @@ package com.onbelay.dealcapture.pricing.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +38,9 @@ import com.onbelay.dealcapture.pricing.repository.PriceCurveRepository;
 
 
 public class PriceCurveRepositoryBean extends BaseRepository<PriceCurve> implements PriceCurveRepository {
-	public static final String FETCH_PRICE_BY_PRICE_DATE_OBS_DATE = "FETCH_PRICE_BY_PRICE_DATE_OBS_DATE";
-	
+	public static final String FETCH_PRICE_BY_PRICE_DATE_OBS_DATE = "PriceCurveRepository.FETCH_PRICE_BY_PRICE_DATE_OBS_DATE";
+	public static final String FETCH_PRICE_REPORTS = "PriceCurveRepository.FETCH_PRICE_REPORTS";
+
 	@Autowired
 	private PriceCurveColumnDefinitions priceCurveColumnDefinitions;
 
@@ -49,12 +53,40 @@ public class PriceCurveRepositoryBean extends BaseRepository<PriceCurve> impleme
 			return null;
 		
 	}
-	
-	
+
+	@Override
+	public List<CurveReport> fetchPriceCurveReports(
+			List<Integer> priceIndexIds,
+			LocalDate fromCurveDate,
+			LocalDate toCurveDate,
+			LocalDateTime observedDateTime) {
+
+
+		String[] names = {"indexIds", "fromCurveDate", "toCurveDate", "observedDateTime"};
+		if (priceIndexIds.size() < 2000) {
+			Object[] parms =  {priceIndexIds, fromCurveDate, toCurveDate, observedDateTime};
+			return (List<CurveReport>) executeReportQuery(
+					FETCH_PRICE_REPORTS,
+					names,
+					parms);
+		} else {
+			ArrayList<CurveReport> reports = new ArrayList<>();
+			SubLister<Integer> subLister = new SubLister<>(priceIndexIds, 2000);
+			Object[] parms =  {subLister.nextList(), fromCurveDate, toCurveDate, observedDateTime};
+			while (subLister.moreElements()) {
+				reports.addAll(
+						(List<CurveReport>) executeReportQuery(
+								FETCH_PRICE_REPORTS,
+								names,
+								parms));
+			}
+			return reports;
+ 		}
+	}
 
 	@Override
 	public PriceCurve fetchCurrentPrice(EntityId entityId, LocalDate priceDate) {
-		String[] names = {"priceIndexId", "priceDate", "currentDateTime"};
+		String[] names = {"priceIndexId", "curveDate", "currentDateTime"};
 		Object[] values = {entityId.getId(), priceDate, LocalDateTime.now()};
 		return executeSingleResultQuery(FETCH_PRICE_BY_PRICE_DATE_OBS_DATE, names, values);
 	}

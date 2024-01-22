@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/UC_PRICE_CURVE.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <addUniqueConstraint
+                columnNames='PRICE_INDEX_ID, FREQUENCY_CODE, CURVE_DATE, OBSERVED_DATE_TIME'
+                tableName='PRICE_CURVE'
+                constraintName='PRICE_CURVE_DATES_UC'/>
+
+    </changeSet>
+    <changeSet author="lefeuvrem" id="2.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createIndex tableName="PRICE_CURVE" indexName="PRICE_CURVE_INDEX_IDX">
+            <column name="PRICE_INDEX_ID"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

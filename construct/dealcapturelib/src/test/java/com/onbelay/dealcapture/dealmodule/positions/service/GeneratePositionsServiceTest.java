@@ -1,8 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
@@ -15,7 +13,10 @@ import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
 import com.onbelay.dealcapture.pricing.model.*;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,27 +60,34 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
         location = PricingLocationFixture.createPricingLocation("West");
         fxIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
-                CurrencyCode.USD,
-                CurrencyCode.CAD);
+                CurrencyCode.CAD,
+                CurrencyCode.USD);
 
         priceIndex = PriceIndexFixture.createPriceIndex(
                 "ACEE",
                 FrequencyCode.MONTHLY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
 
         secondPriceIndex = PriceIndexFixture.createPriceIndex(
                 "ADFS",
                 FrequencyCode.MONTHLY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
 
 
         physicalDealWithFixedDealPrice = DealFixture.createFixedPricePhysicalDeal(
+                CommodityCode.CRUDE,
                 "5566",
                 companyRole,
                 counterpartyRole,
                 priceIndex,
                 fromMarketDate,
                 toMarketDate,
+                BigDecimal.valueOf(100),
+                UnitOfMeasureCode.GJ,
                 CurrencyCode.CAD,
                 new Price(
                         BigDecimal.ONE,
@@ -88,6 +96,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
                 );
 
         physicalDealWithIndexDealPrice = DealFixture.createIndexedPricePhysicalDeal(
+                CommodityCode.CRUDE,
                 "5568",
                 companyRole,
                 counterpartyRole,
@@ -107,6 +116,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
                 .withStartPositionDate(fromMarketDate);
 
         generatePositionsService.generatePositions(
+                "test",
                 context,
                 physicalDealWithFixedDealPrice.getId());
 
@@ -138,6 +148,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
                 .withStartPositionDate(fromMarketDate);
 
         generatePositionsService.generatePositions(
+                "test",
                 context,
                 physicalDealWithIndexDealPrice.getId());
 

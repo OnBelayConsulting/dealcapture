@@ -1,14 +1,15 @@
 package com.onbelay.dealcapture.riskfactor.components;
 
 import com.onbelay.core.exception.OBRuntimeException;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
+import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
-import com.onbelay.dealcapture.riskfactor.enums.RiskFactorErrorCode;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,9 +45,18 @@ public class ConcurrentRiskFactorManager implements RiskFactorManager {
 
     private void initializePriceIndices(List<PriceIndexSnapshot> priceIndexSnapshots) {
         for (PriceIndexSnapshot snapshot : priceIndexSnapshots) {
-            priceIndexContainerMap.put(
-                    snapshot.getDetail().getName(),
-                    new PriceIndexPositionDateContainer(snapshot));
+            PriceIndexPositionDateContainer container = new PriceIndexPositionDateContainer(snapshot);
+            priceIndexContainerMap.put(snapshot.getDetail().getName(), container);
+        }
+
+        for (PriceIndexPositionDateContainer container : priceIndexContainerMap.values()) {
+            if (container.getPriceIndex().getDetail().getIndexType() == IndexType.BASIS) {
+                PriceIndexPositionDateContainer basisToHubContainer = priceIndexContainerMap.get(
+                        container.getPriceIndex().getBaseIndexId().getCode());
+                if (basisToHubContainer == null)
+                    throw new OBRuntimeException(PositionErrorCode.MISSING_BASIS_CONTAINER.getCode());
+                container.setBasisToHubContainer(basisToHubContainer);
+            }
         }
     }
 
@@ -103,21 +113,44 @@ public class ConcurrentRiskFactorManager implements RiskFactorManager {
     }
 
     @Override
-    public PriceRiskFactorHolder determinePriceRiskFactor(String indexName, LocalDate marketDate) {
+    public PriceIndexPositionDateContainer findPriceIndexContainer(String priceIndexCode) {
+        return priceIndexContainerMap.get(priceIndexCode);
+    }
+
+    @Override
+    public PriceRiskFactorHolder determinePriceRiskFactor(
+            String indexName,
+            LocalDate marketDate) {
 
         PriceIndexPositionDateContainer container = priceIndexContainerMap.get(indexName);
+        return determinePriceRiskFactor(container, marketDate);
+    }
 
-        PriceRiskFactorSnapshot riskFactor = container.findRiskFactor(marketDate);
+    @Override
+    public PriceRiskFactorHolder determinePriceRiskFactor(
+            PriceIndexPositionDateContainer container,
+            LocalDate marketDate) {
+
+        LocalDate correctedDate;
+        if (container.getPriceIndex().getDetail().getFrequencyCode() == FrequencyCode.DAILY)
+            correctedDate = marketDate;
+        else
+            correctedDate = marketDate.withDayOfMonth(1);
+
+        PriceRiskFactorSnapshot riskFactor = container.findRiskFactor(correctedDate);
         if (riskFactor != null) {
-            return new PriceRiskFactorHolder(riskFactor);
+            return new PriceRiskFactorHolder(
+                    riskFactor,
+                    container.getPriceIndex());
         } else {
             PriceRiskFactorHolder holder =  new PriceRiskFactorHolder(
                     container.getPriceIndex(),
-                    marketDate);
+                    correctedDate);
             priceRiskFactorHolderQueue.add(holder);
             return holder;
         }
     }
+
 
     @Override
     public FxRiskFactorHolder determineFxRiskFactor(

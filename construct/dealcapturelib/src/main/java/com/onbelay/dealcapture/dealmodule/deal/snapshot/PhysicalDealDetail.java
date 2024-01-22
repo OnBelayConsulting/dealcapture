@@ -23,12 +23,12 @@ import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.shared.enums.CurrencyCode;
-
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
+
 import java.math.BigDecimal;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -24,6 +24,7 @@ import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdap
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.ErrorDealPositionSnapshot;
+import com.onbelay.dealcapture.formulas.model.EvaluationContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -49,8 +50,43 @@ public class DealPositionRestController extends BaseRestController {
 	
 	@Autowired
 	private DealPositionRestAdapter dealPositionRestAdapter;
-	
-	
+
+
+
+	@Operation(summary="value Positions selected by query")
+	@PostMapping(value="/generated" )
+	public ResponseEntity<TransactionResult> generatePositions(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "query", defaultValue="default") String queryText,
+			@RequestBody EvaluationContext evaluationContext,
+			BindingResult bindingResult) {
+
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		TransactionResult result;
+		try {
+			result = dealPositionRestAdapter.generatePositions(
+					queryText,
+					evaluationContext);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return (ResponseEntity<TransactionResult>) processResponse(result);
+	}
+
+
+
 	@Operation(summary="Create or update a position")
 	@PostMapping(
 			produces="application/json",
@@ -144,7 +180,7 @@ public class DealPositionRestController extends BaseRestController {
 	}
 
 	@Operation(summary="value Positions selected by query")
-	@PostMapping(value="/value" )
+	@PostMapping(value="/valued" )
 	public ResponseEntity<TransactionResult> valuePositions(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText) {
@@ -152,7 +188,7 @@ public class DealPositionRestController extends BaseRestController {
 		try {
 			result = dealPositionRestAdapter.valuePositions(queryText);
 		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			logger.error(userMarker,"Value positions failed ", r.getErrorCode(), r);
 			result = new TransactionResult(r.getErrorCode(), r.getParms());
 			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (RuntimeException e) {

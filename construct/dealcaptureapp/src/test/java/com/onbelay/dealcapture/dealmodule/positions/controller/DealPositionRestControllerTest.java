@@ -17,15 +17,8 @@ package com.onbelay.dealcapture.dealmodule.positions.controller;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
@@ -43,7 +36,10 @@ import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -60,8 +56,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WithMockUser(username="test")
@@ -85,7 +80,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 	private PricingLocation location;
 	private PriceIndex priceIndex;
-	private PriceRiskFactor priceRiskFactor;
+	private List<PriceRiskFactor> priceRiskFactors;
 
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
@@ -94,7 +89,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 	private FxIndex fxIndex;
 
-	private FxRiskFactor fxRiskFactor;
+	private List<FxRiskFactor> fxRiskFactors;
 
 	private LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
 	private LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
@@ -107,7 +102,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		location = PricingLocationFixture.createPricingLocation("West");
 
 		fxIndex = FxIndexFixture.createFxIndex(
-				FrequencyCode.MONTHLY,
+				FrequencyCode.DAILY,
 				CurrencyCode.USD,
 				CurrencyCode.CAD);
 
@@ -116,12 +111,15 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 				fromMarketDate,
 				toMarketDate,
 				LocalDateTime.of(10, 1, 1, 1, 1));
-
-		fxRiskFactor = FxRiskFactorFixture.createFxRiskFactor(fxIndex, fromMarketDate);
+		flush();
+		fxRiskFactors = FxRiskFactorFixture.createFxRiskFactors(fxIndex, fromMarketDate, toMarketDate);
+		fxRiskFactorService.valueRiskFactors(fxIndex.generateEntityId());
 
 		priceIndex = PriceIndexFixture.createPriceIndex(
 				"ACEE",
 				FrequencyCode.MONTHLY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
 				location);
 
 		PriceIndexFixture.generateMonthlyPriceCurves(
@@ -131,12 +129,15 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 				LocalDateTime.of(2023, 10, 1, 0, 0));
 
 		physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+				CommodityCode.CRUDE,
 				"5566",
 				companyRole,
 				counterpartyRole,
 				priceIndex,
 				fromMarketDate,
 				toMarketDate,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
 				CurrencyCode.CAD,
 				new Price(
 						BigDecimal.ONE,
@@ -144,9 +145,12 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 						UnitOfMeasureCode.GJ)
 		);
 
-		priceRiskFactor = PriceRiskFactorFixture.createPriceRiskFactor(
+		priceRiskFactors = PriceRiskFactorFixture.createPriceRiskFactors(
 				priceIndex,
-				fromMarketDate);
+				fromMarketDate,
+				toMarketDate);
+		flush();
+		priceRiskFactorService.valueRiskFactors(priceIndex.generateEntityId());
 
 		flush();
 	}
@@ -157,10 +161,11 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(dealPositionRestController)
 				.build();
 
+
 		List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
 				physicalDeal,
-				priceRiskFactor,
-				fxRiskFactor);
+				priceRiskFactors.get(0),
+				fxRiskFactors.get(0));
 
 		String jsonPayload = objectMapper.writeValueAsString(snapshots.get(0));
 		
@@ -194,8 +199,8 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 		List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
 				physicalDeal,
-				priceRiskFactor,
-				fxRiskFactor);
+				priceRiskFactors.get(0),
+				fxRiskFactors.get(0));
 
 		String jsonPayload = objectMapper.writeValueAsString(snapshots);
 
@@ -228,6 +233,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 				.build();
 
 		generatePositionsService.generatePositions(
+				"test",
 				EvaluationContext
 						.build()
 						.withCurrency(CurrencyCode.CAD)
@@ -260,8 +266,17 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(dealPositionRestController)
 				.build();
 
-		
-		ResultActions result = mvc.perform(post("/api/positions/value"));
+		generatePositionsService.generatePositions(
+				"test",
+				EvaluationContext
+						.build()
+						.withCurrency(CurrencyCode.CAD)
+						.withStartPositionDate(fromMarketDate)
+						.withEndPositionDate(toMarketDate),
+				List.of(physicalDeal.getId()));
+		flush();
+
+		ResultActions result = mvc.perform(post("/api/positions/valued"));
 		
 		MvcResult mvcResult = result.andReturn();
 		
@@ -272,7 +287,48 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
 		
 		assertEquals(true, transactionResult.isSuccessful());
-		
+
+
+		List<DealPositionSnapshot> snapshots = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+		DealPositionSnapshot snapshot = snapshots.get(0);
+		assertNotNull(snapshot.getDealPositionDetail().getMarkToMarketValuation());
+
 	}
+
+
+	@Test
+	@WithMockUser(username="test")
+	public void generatePositions() throws Exception {
+
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(dealPositionRestController)
+				.build();
+
+		EvaluationContext context = EvaluationContext
+				.build()
+				.withCurrency(CurrencyCode.CAD)
+				.withObservedDateTime(LocalDateTime.now());
+
+		String jsonPayload = objectMapper.writeValueAsString(context);
+
+		ResultActions result = mvc.perform(post("/api/positions/generated")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonPayload));
+
+
+		MvcResult mvcResult = result.andReturn();
+
+		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
+
+		logger.debug("Json: " + jsonStringResponse);
+
+		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
+
+		assertEquals(true, transactionResult.isSuccessful());
+		List<DealPositionSnapshot> created = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+		assertTrue(created.size() > 0);
+
+	}
+
 
 }

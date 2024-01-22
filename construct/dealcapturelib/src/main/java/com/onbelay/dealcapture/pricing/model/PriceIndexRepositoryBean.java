@@ -15,8 +15,12 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.common.snapshot.EntityIdCollection;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import jakarta.transaction.Transactional;
 
 import com.onbelay.core.enums.CoreTransactionErrorCode;
@@ -36,6 +40,8 @@ import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 
 public class PriceIndexRepositoryBean extends BaseRepository<PriceIndex> implements PriceIndexRepository {
 	public static final String FIND_BY_NAME = "PriceIndexRepository.FIND_BY_NAME";
+	public static final String FIND_BY_DEAL_IDS = "PriceIndexRepository.FIND_BY_DEAL_IDS";
+	public static final String FETCH_PRICE_INDEX_REPORTS = "PriceIndexRepository.FETCH_PRICE_INDEX_REPORTS";
 	public static final String LOAD_ALL = "PriceIndexRepository.LOAD_ALL";
 
 	@Autowired
@@ -47,8 +53,63 @@ public class PriceIndexRepositoryBean extends BaseRepository<PriceIndex> impleme
 	}
 
 	@Override
-	public List<PriceIndex> loadAll() {
+	public List<PriceIndex> findActivePriceIndices() {
 		return executeQuery(LOAD_ALL);
+	}
+
+	@Override
+	public List<PriceIndexReport> fetchPriceIndexReports(List<Integer> indexIds) {
+		if (indexIds.size() < 2000) {
+			return (List<PriceIndexReport>) executeReportQuery(
+					FETCH_PRICE_INDEX_REPORTS,
+					"indexIds",
+					indexIds);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(indexIds, 2000);
+			ArrayList<PriceIndexReport> reports = new ArrayList<>();
+			while (subLister.moreElements()) {
+				reports.addAll(
+						(Collection<? extends PriceIndexReport>) executeReportQuery(
+								FETCH_PRICE_INDEX_REPORTS,
+								"indexIds",
+								subLister.nextList()));
+			}
+			return reports;
+		}
+
+	}
+
+	@Override
+	public List<PriceIndex> findByDealIds(List<Integer> dealIds) {
+		Set<Integer> priceIndexIdSet = new HashSet<>();
+
+		if (dealIds.size() < 2000) {
+			List<EntityIdCollection> idLists = (List<EntityIdCollection>) executeReportQuery(
+					FIND_BY_DEAL_IDS,
+					"dealIds",
+					dealIds);
+			priceIndexIdSet.addAll(
+					idLists
+							.stream()
+							.flatMap( c-> c.getList().stream())
+							.collect(Collectors.toList()));
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+			while (subLister.moreElements()) {
+				List<Integer> subList = subLister.nextList();
+				List<EntityIdCollection> idLists = (List<EntityIdCollection>) executeReportQuery(
+						FIND_BY_DEAL_IDS,
+						"dealIds",
+						subList);
+				priceIndexIdSet.addAll(
+						idLists
+								.stream()
+								.flatMap( c-> c.getList().stream())
+								.collect(Collectors.toList()));
+			}
+		}
+		List<Integer> ids =  priceIndexIdSet.stream().toList();
+		return fetchByIds(new QuerySelectedPage(ids));
 	}
 
 	@Override

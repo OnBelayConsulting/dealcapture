@@ -9,12 +9,12 @@ import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
-
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

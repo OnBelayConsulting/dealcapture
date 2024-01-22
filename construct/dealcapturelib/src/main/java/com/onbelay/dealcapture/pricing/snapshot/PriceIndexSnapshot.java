@@ -19,9 +19,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceIndexSnapshot extends AbstractSnapshot {
-	
+
 	private PriceIndexDetail detail = new PriceIndexDetail();
 	
 	private EntityId benchmarkIndexId;
@@ -29,6 +31,25 @@ public class PriceIndexSnapshot extends AbstractSnapshot {
 	private EntityId baseIndexId;
 	
 	private EntityId pricingLocationId;
+
+	public PriceIndexSnapshot() {
+	}
+
+	public PriceIndexSnapshot(EntityId entityId) {
+		super(entityId);
+	}
+
+	public PriceIndexSnapshot(String errorCode) {
+		super(errorCode);
+	}
+
+	public PriceIndexSnapshot(String errorCode, boolean isPermissionException) {
+		super(errorCode, isPermissionException);
+	}
+
+	public PriceIndexSnapshot(String errorCode, List<String> parameters) {
+		super(errorCode, parameters);
+	}
 
 	public PriceIndexDetail getDetail() {
 		return detail;

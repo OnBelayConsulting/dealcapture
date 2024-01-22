@@ -3,8 +3,12 @@ package com.onbelay.dealcapture.riskfactor.serviceimpl;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.pricing.assembler.PriceIndexSnapshotAssembler;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.repository.FxIndexRepository;
 import com.onbelay.dealcapture.riskfactor.assembler.FxRiskFactorAssembler;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service("fxRiskFactorService")
@@ -32,6 +37,28 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
     @Autowired
     private FxRiskFactorValuator fxRiskFactorValuator;
 
+
+    @Override
+    public QuerySelectedPage findFxRiskFactorIds(DefinedQuery definedQuery) {
+        return new QuerySelectedPage(
+                fxRiskFactorRepository.findFxRiskFactorIds(definedQuery),
+                definedQuery.getOrderByClause());
+    }
+
+    @Override
+    public List<FxRiskFactorSnapshot> findByIds(QuerySelectedPage selectedPage) {
+        List<FxRiskFactor> riskFactors = fxRiskFactorRepository.fetchByIds(selectedPage);
+        FxRiskFactorAssembler assembler = new FxRiskFactorAssembler();
+        return assembler.assemble(riskFactors);
+    }
+
+    @Override
+    public List<FxRiskFactorSnapshot> findByFxIndexIds(List<Integer> fxIndexIds) {
+        List<FxRiskFactor> riskFactors = fxRiskFactorRepository.fetchByFxIndices(fxIndexIds);
+        FxRiskFactorAssembler assembler = new FxRiskFactorAssembler();
+        return assembler.assemble(riskFactors);
+    }
+
     @Override
     public FxRiskFactorSnapshot load(EntityId id) {
         FxRiskFactor factor =  fxRiskFactorRepository.load(id);
@@ -40,7 +67,7 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
     }
 
     @Override
-    public TransactionResult saveFxRiskFactors(
+    public TransactionResult save(
             EntityId fxIndexId,
             List<FxRiskFactorSnapshot> riskFactors) {
 
@@ -58,10 +85,12 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
     }
 
     @Override
-    public List<FxRiskFactorSnapshot> loadAll() {
-        List<FxRiskFactor> factors = fxRiskFactorRepository.loadAll();
-        FxRiskFactorAssembler assembler = new FxRiskFactorAssembler();
-        return assembler.assemble(factors);
+    public void valueRiskFactors(
+            DefinedQuery definedQuery,
+            LocalDateTime currentDateTime) {
+        fxRiskFactorValuator.valueRiskFactors(
+                definedQuery,
+                currentDateTime);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package com.onbelay.dealcapture.riskfactor.components;
 
-import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
-import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
+import com.onbelay.shared.enums.FrequencyCode;
 
 import java.time.LocalDate;
 import java.util.concurrent.ConcurrentHashMap;

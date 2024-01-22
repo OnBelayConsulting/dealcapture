@@ -20,7 +20,6 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
@@ -34,7 +33,9 @@ import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.BuySellCode;
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -82,6 +83,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 	@Test
 	public void testUpdatePhysicalDeal() {
 		PhysicalDeal physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+				CommodityCode.CRUDE,
 				"myDeal", 
 				companyRole, 
 				counterpartyRole,
@@ -116,6 +118,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 	public void testCreateFixedPriceMarketIndexPhysicalDeal() {
 
 		PhysicalDealSnapshot dealSnapshot = DealFixture.createFixedPriceMarketIndexPhysicalDealSnapshot(
+				CommodityCode.CRUDE,
 				startDate,
 				endDate,
 				DealStatusCode.VERIFIED,
@@ -159,6 +162,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 		dealSnapshot.getDealDetail().setTicketNo("GHT");
 
 		dealSnapshot.setMarketPriceIndexId(priceIndex.generateEntityId());
+		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
 
 		dealSnapshot.getDealDetail().setVolume(
 				new Quantity(
@@ -182,7 +186,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
-
+		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
 		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
 		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
 		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);

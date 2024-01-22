@@ -33,15 +33,36 @@ import jakarta.persistence.*;
        query = "SELECT price "
        		+ "   FROM PriceCurve price " +
        	     "   WHERE price.priceIndex.id = :priceIndexId "
-       	     + "   AND price.detail.curveDate = :priceDate "
+       	     + "   AND price.detail.curveDate = :curveDate "
        	     + "   AND price.detail.observedDateTime = "
        	     + "    (SELECT MAX(searchPrice.detail.observedDateTime)"
        	     + "       FROM PriceCurve searchPrice"
-       	     + "      WHERE searchPrice.priceIndex.id = :priceIndexId"
-       	     + "        AND searchPrice.detail.curveDate = :priceDate"
+       	     + "      WHERE searchPrice.priceIndex.id = price.priceIndex.id "
+       	     + "        AND searchPrice.detail.curveDate = price.detail.curveDate "
+		    +  "        AND searchPrice.detail.frequencyCodeValue = price.detail.frequencyCodeValue "
        	     + "        AND searchPrice.detail.observedDateTime <= :currentDateTime"
-       	     + "     )  ")
-    
+       	     + "     )  "),
+    @NamedQuery(
+       name = PriceCurveRepositoryBean.FETCH_PRICE_REPORTS,
+       query = "SELECT new com.onbelay.dealcapture.pricing.snapshot.CurveReport(" +
+			   "		price.priceIndex.id, " +
+			   "		price.detail.curveDate, " +
+			   "		price.detail.curveValue, " +
+			   "        price.detail.frequencyCodeValue) "
+       		+ "   FROM PriceCurve price " +
+       	     "   WHERE price.priceIndex.id in (:indexIds) "
+       	     + "   AND price.detail.curveDate >= :fromCurveDate "
+ 		   + "     AND price.detail.curveDate <= :toCurveDate "
+       	     + "   AND price.detail.observedDateTime = "
+       	     + "    (SELECT MAX(searchPrice.detail.observedDateTime)"
+       	     + "       FROM PriceCurve searchPrice"
+       	     + "      WHERE searchPrice.priceIndex.id = price.priceIndex.id "
+			   + "      AND searchPrice.detail.curveDate = price.detail.curveDate "
+			   + "      AND searchPrice.detail.frequencyCodeValue = price.detail.frequencyCodeValue "
+       	     + "        AND searchPrice.detail.observedDateTime <= :observedDateTime"
+       	     + "     )  " +
+			   "   ORDER BY price.priceIndex.id, price.detail.curveDate, price.detail.frequencyCodeValue")
+
 })
 public class PriceCurve extends TemporalAbstractEntity {
 	

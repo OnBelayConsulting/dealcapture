@@ -19,6 +19,7 @@ import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository (value="fxRiskFactorRepository")
@@ -33,8 +35,8 @@ import java.util.List;
 public class FxRiskFactorRepositoryBean extends BaseRepository<FxRiskFactor> implements FxRiskFactorRepository {
 	public static final String FETCH_RISK_FACTOR_BY_MARKET_DATE = "FxRiskFactorRepositoryBean.FETCH_RISK_FACTOR_BY_MARKET_DATE";
 	public static final String FETCH_RISK_FACTORS_BY_DATES = "FxRiskFactorRepositoryBean.FETCH_RISK_FACTORS_BY_DATES";
-	public static final String LOAD_ALL = "FxRiskFactorRepositoryBean.LOAD_ALL";
 	public static final String FIND_BY_INDEX_ID = "FxRiskFactorRepositoryBean.FIND_BY_INDEX_ID";
+	public static final String FETCH_BY_FX_INDEX_IDS =  "FxRiskFactorRepositoryBean.FETCH_BY_FX_INDEX_IDS"; ;
 
 	@Autowired
 	private RiskFactorColumnDefinitions riskFactorColumnDefinitions;
@@ -55,6 +57,28 @@ public class FxRiskFactorRepositoryBean extends BaseRepository<FxRiskFactor> imp
 	}
 
 	@Override
+	public List<FxRiskFactor> fetchByFxIndices(List<Integer> fxIndexIds) {
+		List<FxRiskFactor> riskFactors = new ArrayList<>();
+		if (fxIndexIds.size() < 2000) {
+			riskFactors = executeQuery(
+					FETCH_BY_FX_INDEX_IDS,
+					"indexIds",
+					fxIndexIds);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(fxIndexIds, 2000);
+			while (subLister.moreElements()) {
+				riskFactors.addAll(
+						executeQuery(
+								FETCH_BY_FX_INDEX_IDS,
+								"indexIds",
+								subLister.nextList()));
+			}
+		}
+		return riskFactors;
+	}
+
+
+	@Override
 	public FxRiskFactor fetchByMarketDate(EntityId entityId, LocalDate marketDate) {
 		String[] names = {"indexId", "marketDate"};
 		Object[] values = {entityId.getId(), marketDate};
@@ -62,11 +86,11 @@ public class FxRiskFactorRepositoryBean extends BaseRepository<FxRiskFactor> imp
 	}
 
 	@Override
-	public List<FxRiskFactor> loadAll() {
-		
-		return executeQuery(LOAD_ALL);
+	public List<FxRiskFactor> find(DefinedQuery definedQuery) {
+		return executeDefinedQuery(
+				riskFactorColumnDefinitions,
+				definedQuery);
 	}
-
 
 	@Override
 	public List<FxRiskFactor> fetchByDatesInclusive(

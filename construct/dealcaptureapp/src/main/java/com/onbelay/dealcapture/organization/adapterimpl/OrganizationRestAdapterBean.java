@@ -86,13 +86,13 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
 
     @Override
     public TransactionResult saveRoles(
-            Integer id,
+            EntityId organizationId,
             List<OrganizationRoleSnapshot> snapshots) {
 
         initializeSession();
 
         return organizationService.saveOrganizationRoles(
-                new EntityId(id),
+                organizationId,
                 snapshots);
     }
 

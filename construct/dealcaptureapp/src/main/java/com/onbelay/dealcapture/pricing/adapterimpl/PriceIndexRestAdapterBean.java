@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.pricing.adapterimpl;
 
 import com.onbelay.core.controller.BaseRestAdapterBean;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
@@ -32,6 +33,12 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     @Override
     public TransactionResult save(List<PriceIndexSnapshot> snapshots) {
         return priceIndexService.save(snapshots);
+    }
+
+    @Override
+    public PriceIndexSnapshot load(EntityId priceIndexId) {
+        initializeSession();
+        return priceIndexService.load(priceIndexId);
     }
 
     @Override
@@ -93,6 +100,19 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     }
 
     @Override
+    public TransactionResult savePrices(
+            Integer priceIndexId,
+            List<PriceCurveSnapshot> snapshots) {
+
+        initializeSession();
+
+        return priceIndexService.savePrices(
+                new EntityId(priceIndexId),
+                snapshots);
+
+    }
+
+    @Override
     public PriceCurveSnapshotCollection findPrices(
             String queryText,
             Integer start,
@@ -140,7 +160,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
                 definedQuery.getOrderByClause());
 
 
-        List<PriceCurveSnapshot> snapshots = priceIndexService.fetchPricesByIds(querySelectedPage);
+        List<PriceCurveSnapshot> snapshots = priceIndexService.fetchPriceCurvesByIds(querySelectedPage);
 
         return new PriceCurveSnapshotCollection(
                 start,

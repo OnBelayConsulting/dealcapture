@@ -1,7 +1,7 @@
 package com.onbelay.dealcapture.formulas.tokens;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.parsing.model.IsToken;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 public class UnitOfMeasureNameToken extends FormulaWordToken {
     public UnitOfMeasureNameToken(String word) {

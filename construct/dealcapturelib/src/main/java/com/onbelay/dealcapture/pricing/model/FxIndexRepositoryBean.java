@@ -21,12 +21,17 @@ import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.pricing.repository.FxIndexRepository;
+import com.onbelay.dealcapture.pricing.snapshot.FxIndexReport;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.shared.enums.CurrencyCode;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Repository (value="fxIndexRepository")
@@ -37,6 +42,7 @@ public class FxIndexRepositoryBean extends BaseRepository<FxIndex> implements Fx
 	public static final String FIND_BY_NAME = "FxIndexRepository.FIND_BY_NAME";
 	public static final String LOAD_ALL = "FxIndexRepository.LOAD_ALL";
 	public static final String FIND_BY_FROM_TO_CURRENCIES = "FxIndexRepository.FIND_BY_FROM_TO_CURRENCIES";
+	public static final String FETCH_FX_INDEX_REPORTS = "FxIndexRepository.FETCH_FX_INDEX_REPORTS";
 
 	@Autowired
 	private FxIndexColumnDefinitions fxIndexColumnDefinitions;
@@ -47,7 +53,7 @@ public class FxIndexRepositoryBean extends BaseRepository<FxIndex> implements Fx
 	}
 
 	@Override
-	public List<FxIndex> loadAll() {
+	public List<FxIndex> findActiveFxIndices() {
 		return executeQuery(LOAD_ALL);
 	}
 
@@ -79,6 +85,27 @@ public class FxIndexRepositoryBean extends BaseRepository<FxIndex> implements Fx
 		else
 			return null;
 		
+	}
+
+	@Override
+	public List<FxIndexReport> fetchFxIndexReports(List<Integer> indexIds) {
+		if (indexIds.size() < 2000) {
+			return (List<FxIndexReport>) executeReportQuery(
+					FETCH_FX_INDEX_REPORTS,
+					"indexIds",
+					indexIds);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(indexIds, 2000);
+			ArrayList<FxIndexReport> reports = new ArrayList<>();
+			while (subLister.moreElements()) {
+				reports.addAll(
+						(List<FxIndexReport>) executeReportQuery(
+								FETCH_FX_INDEX_REPORTS,
+								"indexIds",
+								subLister.nextList()));
+			}
+			return reports;
+		}
 	}
 
 	@Override

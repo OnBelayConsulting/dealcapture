@@ -1,0 +1,22 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/snapshot/dml/COST_TYPE_CODE_Insert.xml'
+>
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <insert tableName='COST_TYPE_CODE'>
+            <column name='CODE_ID' value='Fixed'/>
+            <column name='CODE_LABEL' value='Fixed Cost'/>
+            <column name='DISPLAY_ORDER_NO' value='10'/>
+        </insert>
+        <insert tableName='COST_TYPE_CODE'>
+            <column name='CODE_ID' value='PerUnit'/>
+            <column name='CODE_LABEL' value='Per-Unit Cost'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

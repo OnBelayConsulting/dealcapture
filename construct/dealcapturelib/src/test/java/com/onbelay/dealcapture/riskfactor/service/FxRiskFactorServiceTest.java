@@ -61,9 +61,9 @@ public class FxRiskFactorServiceTest extends DealCaptureSpringTestCase {
         FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
         snapshot.getDetail().setDefaults();
         snapshot.getDetail().setMarketDate(LocalDate.of(2023, 6, 23));
-        snapshot.getDetail().setCreateUpdateDate(LocalDateTime.of(2023, 7, 1, 11, 6));
+        snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 7, 1, 11, 6));
         snapshot.getDetail().setValue(BigDecimal.ONE);
-        fxRiskFactorService.saveFxRiskFactors(
+        fxRiskFactorService.save(
                 fxDailyIndex.generateEntityId(),
                 List.of(snapshot));
         flush();
@@ -76,7 +76,7 @@ public class FxRiskFactorServiceTest extends DealCaptureSpringTestCase {
                 LocalDate.of(2023, 6, 23));
         assertNotNull(factor);
         assertEquals(0, BigDecimal.ONE.compareTo(factor.getDetail().getValue()));
-        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreateUpdateDate());
+        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreateUpdateDateTime());
         FxRiskFactorAudit audit = FxRiskFactorAudit.findRecentHistory(factor);
         assertNotNull(audit);
     }

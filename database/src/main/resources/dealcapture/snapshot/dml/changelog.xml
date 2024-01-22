@@ -8,11 +8,14 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         logicalFilePath="/com/onbelay/dealcapture/snapshot/changelog.xml"
 >
+    <include file="COST_NAME_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="COST_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_STATUS_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
-    <include file="FREQUENCY_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="INDEX_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="POSITION_GENERATION_STATUS_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="PRICE_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="RISK_FACTOR_CODE_Insert.xml" relativeToChangelogFile="true"/>
-    <include file="UNIT_OF_MEASURE_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="VALUATION_CODE_Insert.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

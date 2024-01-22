@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -19,14 +20,18 @@ public class DealPositionValuatorBean implements DealPositionValuator {
     private DealPositionRepository dealPositionRepository;
 
     @Override
-    public void valuePositions(EntityId dealId) {
+    public void valuePositions(
+            EntityId dealId,
+            LocalDateTime currentDateTime) {
             List<DealPosition> positions = dealPositionRepository.findByDeal(dealId);
-            positions.forEach(p -> p.valuePosition());
+            positions.forEach(p -> p.valuePosition(currentDateTime));
     }
 
     @Override
-    public void valuePositions(QuerySelectedPage page) {
+    public void valuePositions(
+            QuerySelectedPage page,
+            LocalDateTime currentDateTime) {
         List<DealPosition> positions = dealPositionRepository.fetchByIds(page);
-        positions.forEach(p -> p.valuePosition());
+        positions.forEach(p -> p.valuePosition(currentDateTime));
     }
 }

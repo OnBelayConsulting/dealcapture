@@ -24,19 +24,26 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.shared.enums.BuySellCode;
-
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DealDetail {
 
+	private String commodityCodeValue;
 	private String dealStatusValue;
+	private String positionGenerationStatusValue;
+	private String positionGenerationIdentifier;
+	private LocalDateTime positionGenerationDateTime;
 	private String buySellCodeValue;
 	private String ticketNo;
 	private LocalDate startDate;
@@ -48,11 +55,24 @@ public class DealDetail {
 	public DealDetail() {
 		
 	}
-	
+
+
+	public void setDefaults() {
+		this.setPositionGenerationStatusCode(PositionGenerationStatusCode.NONE);
+	}
+
+
 	public void validate() throws OBValidationException {
-		
+
+		if (commodityCodeValue == null)
+			throw new OBValidationException(DealErrorCode.MISSING_COMMODITY_CODE.getCode());
+
 		if (dealStatusValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_STATUS.getCode());
+
+		if (positionGenerationStatusValue == null)
+			throw new OBValidationException((DealErrorCode.MISSING_POSITION_GEN_STATUS.getCode()));
+
 		
 		if (buySellCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_BUY_SELL.getCode());
@@ -76,7 +96,26 @@ public class DealDetail {
 			throw new OBValidationException(DealErrorCode.MISSING_REPORTING_CURRENCY.getCode());
 
 	}
-	
+
+	@Transient
+	@JsonIgnore
+	public CommodityCode getCommodityCode() {
+		return CommodityCode.lookUp(commodityCodeValue);
+	}
+
+	public void setCommodityCode(CommodityCode code) {
+		this.commodityCodeValue = code.getCode();
+	}
+
+	@Column(name = "COMMODITY_CODE")
+	public String getCommodityCodeValue() {
+		return commodityCodeValue;
+	}
+
+	public void setCommodityCodeValue(String commodityCodeValue) {
+		this.commodityCodeValue = commodityCodeValue;
+	}
+
 	@Transient
 	@JsonIgnore
 	public Quantity getVolume() {
@@ -163,6 +202,46 @@ public class DealDetail {
 
 	@Transient
 	@JsonIgnore
+	public PositionGenerationStatusCode getPositionGenerationStatusCode() {
+		return PositionGenerationStatusCode.lookUp(positionGenerationStatusValue);
+	}
+
+	public void setPositionGenerationStatusCode(PositionGenerationStatusCode code) {
+		if (code != null)
+			this.positionGenerationStatusValue = code.getCode();
+		else
+			this.positionGenerationStatusValue = null;
+	}
+
+	@Column(name = "POSITION_GENERATION_STATUS_CODE")
+	public String getPositionGenerationStatusValue() {
+		return positionGenerationStatusValue;
+	}
+
+	public void setPositionGenerationStatusValue(String positionGenerationStatusValue) {
+		this.positionGenerationStatusValue = positionGenerationStatusValue;
+	}
+
+	@Column(name = "POSITION_GENERATION_IDENTIFIER")
+	public String getPositionGenerationIdentifier() {
+		return positionGenerationIdentifier;
+	}
+
+	public void setPositionGenerationIdentifier(String positionGenerationIdentifier) {
+		this.positionGenerationIdentifier = positionGenerationIdentifier;
+	}
+
+	@Column(name = "POSITION_GENERATION_DATE_TIME")
+	public LocalDateTime getPositionGenerationDateTime() {
+		return positionGenerationDateTime;
+	}
+
+	public void setPositionGenerationDateTime(LocalDateTime positionGenerationDateTime) {
+		this.positionGenerationDateTime = positionGenerationDateTime;
+	}
+
+	@Transient
+	@JsonIgnore
 	public BuySellCode getBuySell() {
 		return BuySellCode.lookUp(buySellCodeValue);
 	}
@@ -206,10 +285,22 @@ public class DealDetail {
 	}
 	
 	public void copyFrom(DealDetail copy) {
-		
+
+		if (copy.commodityCodeValue != null)
+			this.commodityCodeValue = copy.commodityCodeValue;
+
 		if (copy.dealStatusValue != null)
 			this.dealStatusValue = copy.dealStatusValue;
-		
+
+		if (copy.positionGenerationStatusValue != null)
+			this.positionGenerationStatusValue = copy.positionGenerationStatusValue;
+
+		if (copy.positionGenerationIdentifier != null)
+			this.positionGenerationIdentifier = copy.positionGenerationIdentifier;
+
+		if (copy.positionGenerationDateTime != null)
+			this.positionGenerationDateTime = copy.positionGenerationDateTime;
+
 		if (copy.endDate != null)
 			this.endDate = copy.endDate;
 		
@@ -231,5 +322,4 @@ public class DealDetail {
 		if (copy.reportingCurrencyValue != null)
 			this.reportingCurrencyValue = copy.reportingCurrencyValue;
 	}
-	
 }

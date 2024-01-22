@@ -35,11 +35,17 @@ public class IndexElement extends BaseElement implements FormulaElement, Formula
     @Override
     public CalculatedEntity evaluate(EvaluationContext context) {
         if (priceRiskFactorHolder != null) {
-            Price price = priceRiskFactorHolder.getRiskFactor().fetchCurrentPrice();
+            Price price =  new Price(
+                    priceRiskFactorHolder.getRiskFactor().getDetail().getValue(),
+                    priceRiskFactorHolder.getPriceIndex().getDetail().getCurrencyCode(),
+                    priceRiskFactorHolder.getPriceIndex().getDetail().getUnitOfMeasureCode());
             if (price != null) {
 
                 if (fxRiskFactorHolder != null) {
-                    FxRate rate = fxRiskFactorHolder.getRiskFactor().getCurrentFxRate();
+                    FxRate rate = new FxRate(
+                            fxRiskFactorHolder.getRiskFactor().getDetail().getValue(),
+                            fxRiskFactorHolder.getFxIndex().getDetail().getToCurrencyCode(),
+                            fxRiskFactorHolder.getFxIndex().getDetail().getFromCurrencyCode());
                     return price.apply(rate);
                 } else {
                     return price;

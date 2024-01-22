@@ -19,12 +19,14 @@ import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository (value="priceRiskFactorRepository")
@@ -32,10 +34,10 @@ import java.util.List;
 public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFactor> implements PriceRiskFactorRepository {
 	public static final String FETCH_RISK_FACTOR_BY_MARKET_DATE = "PriceRiskFactorRepository.FETCH_RISK_FACTOR_BY_MARKET_DATE";
 	public static final String FETCH_RISK_FACTORS_BY_DATES = "PriceRiskFactorRepository.FETCH_RISK_FACTORS_BY_DATES";
-	public static final String LOAD_ALL = "PriceRiskFactorRepository.LOAD_ALL";
 	public static final String FIND_BY_PRICE_INDEX_ID = "PriceRiskFactorRepository.FIND_BY_PRICE_INDEX_ID";
+    public static final String FETCH_BY_PRICE_INDEX_IDS =  "PriceRiskFactorRepository.FETCH_BY_PRICE_INDEX_IDS"; ;
 
-	@Autowired
+    @Autowired
 	private RiskFactorColumnDefinitions riskFactorColumnDefinitions;
 
 
@@ -48,11 +50,11 @@ public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFacto
 		
 	}
 
-
 	@Override
-	public List<PriceRiskFactor> loadAll() {
-
-		return executeQuery(LOAD_ALL);
+	public List<PriceRiskFactor> find(DefinedQuery definedQuery) {
+		return executeDefinedQuery(
+				riskFactorColumnDefinitions,
+				definedQuery);
 	}
 
 	@Override
@@ -61,6 +63,27 @@ public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFacto
 				FIND_BY_PRICE_INDEX_ID,
 				"indexId",
 				priceIndexId.getId());
+	}
+
+	@Override
+	public List<PriceRiskFactor> fetchByPriceIndices(List<Integer> priceIndexIds) {
+		List<PriceRiskFactor> riskFactors = new ArrayList<>();
+		if (priceIndexIds.size() < 2000) {
+			riskFactors = executeQuery(
+					FETCH_BY_PRICE_INDEX_IDS,
+					"indexIds",
+					priceIndexIds);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(priceIndexIds, 2000);
+			while (subLister.moreElements()) {
+				riskFactors.addAll(
+						executeQuery(
+						FETCH_BY_PRICE_INDEX_IDS,
+						"indexIds",
+						subLister.nextList()));
+			}
+		}
+		return riskFactors;
 	}
 
 	@Override

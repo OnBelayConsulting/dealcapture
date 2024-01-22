@@ -1,17 +1,15 @@
 package com.onbelay.dealcapture.riskfactor.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.FxRate;
-import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
-import com.onbelay.dealcapture.riskfactor.enums.RiskFactorErrorCode;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.RiskFactorDetail;
+import com.onbelay.shared.enums.CurrencyCode;
 import jakarta.persistence.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -32,10 +30,11 @@ import java.time.LocalDateTime;
                         "ORDER BY riskFactor.detail.marketDate"),
 
         @NamedQuery(
-                name = FxRiskFactorRepositoryBean.LOAD_ALL,
+                name = FxRiskFactorRepositoryBean.FETCH_BY_FX_INDEX_IDS,
                 query = "  SELECT riskFactor " +
                         "    FROM FxRiskFactor riskFactor " +
-                        "ORDER BY riskFactor.detail.marketDate"),
+                        "   WHERE riskFactor.index.id in (:indexIds) " +
+                        "ORDER BY riskFactor.id, riskFactor.detail.marketDate "),
         @NamedQuery(
                 name = FxRiskFactorRepositoryBean.FETCH_RISK_FACTORS_BY_DATES,
                 query = "  SELECT riskFactor " +
@@ -87,21 +86,24 @@ public class FxRiskFactor extends TemporalAbstractEntity {
     }
 
     @Transient
-    public FxRate getFxRate() {
-        return new FxRate(
-                detail.getValue(),
-                index.getDetail().getToCurrencyCode(),
-                index.getDetail().getFromCurrencyCode());
+    @JsonIgnore
+    public FxRate fetchFxRate(
+            CurrencyCode toCurrencyCode,
+            CurrencyCode fromCurrencyCode) {
+        if (getIndex().getDetail().getToCurrencyCode() == toCurrencyCode) {
+            return new FxRate(
+                    detail.getValue(),
+                    index.getDetail().getToCurrencyCode(),
+                    index.getDetail().getFromCurrencyCode());
+        } else {
+            FxRate rate = new FxRate(
+                    detail.getValue(),
+                    index.getDetail().getToCurrencyCode(),
+                    index.getDetail().getFromCurrencyCode());
+            return rate.getInversion();
+        }
     }
 
-    public void valueRiskFactor(LocalDateTime currentDateTime) {
-        FxRate rate = index.getCurrentRate(detail.getMarketDate());
-        detail.setCreateUpdateDate(currentDateTime);
-        if (rate.isInError())
-            detail.setValue(null);
-        else
-            detail.setValue(rate.getValue());
-    }
 
     public void setDetail(final RiskFactorDetail detail) {
         this.detail = detail;
@@ -126,7 +128,15 @@ public class FxRiskFactor extends TemporalAbstractEntity {
         index.add(this);
     }
 
+
+    public void updateRate(FxRate fxRate) {
+        detail.setValue(fxRate.getValue());
+        detail.setCreateUpdateDateTime(LocalDateTime.now());
+        update();
+    }
+
     @Transient
+    @JsonIgnore
     public FxRate getCurrentFxRate() {
         return new FxRate(
                 detail.getValue(),
@@ -144,7 +154,4 @@ public class FxRiskFactor extends TemporalAbstractEntity {
     public AuditAbstractEntity fetchRecentHistory() {
         return FxRiskFactorAudit.findRecentHistory(this);
     }
-
-
-
 }

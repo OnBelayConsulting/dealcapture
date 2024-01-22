@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,16 +47,22 @@ public class DealPositionServiceBean implements DealPositionService {
 
     @Override
     public TransactionResult saveDealPositions(
+            String positionGeneratorIdentifier,
             EntityId dealId,
             List<DealPositionSnapshot> positions) {
 
         BaseDeal deal = dealRepository.load(dealId);
-        List<EntityId> ids = deal.savePositions(positions);
+        List<EntityId> ids = deal.savePositions(
+                positionGeneratorIdentifier,
+                positions);
         return new TransactionResult(ids);
     }
 
     @Override
-    public TransactionResult saveAllDealPositions(List<DealPositionSnapshot> positions) {
+    public TransactionResult saveAllDealPositions(
+            String positionGenerationIdentifier,
+            List<DealPositionSnapshot> positions) {
+
         HashMap<Integer, List<DealPositionSnapshot>> dealPositionMap = new HashMap<>();
         for (DealPositionSnapshot snapshot : positions) {
             List<DealPositionSnapshot> list = dealPositionMap.get(snapshot.getDealId().getId());
@@ -69,7 +76,9 @@ public class DealPositionServiceBean implements DealPositionService {
         for (Integer dealId : dealPositionMap.keySet()) {
             BaseDeal deal = dealRepository.load(new EntityId(dealId));
             result.addEntityIds(
-                    deal.savePositions(dealPositionMap.get(dealId))
+                    deal.savePositions(
+                            positionGenerationIdentifier,
+                            dealPositionMap.get(dealId))
             );
         }
 
@@ -99,15 +108,24 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
-    public TransactionResult valuePositions(EntityId dealId) {
-        dealPositionValuator.valuePositions(dealId);
+    public TransactionResult valuePositions(
+            EntityId dealId,
+            LocalDateTime currentDateTime) {
+        dealPositionValuator.valuePositions(
+                dealId,
+                currentDateTime);
         return new TransactionResult(dealId);
     }
 
     @Override
-    public TransactionResult valuePositions(DefinedQuery definedQuery) {
+    public TransactionResult valuePositions(
+            DefinedQuery definedQuery,
+            LocalDateTime currentDateTime) {
+
         List<Integer> ids = dealPositionRepository.findPositionIds(definedQuery);
-        dealPositionValuator.valuePositions(new QuerySelectedPage(ids));
+        dealPositionValuator.valuePositions(
+                new QuerySelectedPage(ids),
+                currentDateTime);
         return new TransactionResult(
                 ids
                         .stream()

@@ -7,10 +7,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.ErrorDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
+import jakarta.persistence.Transient;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -28,6 +30,7 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
 
+    private List<PositionRiskFactorMappingSnapshot> riskFactorMappingSnapshots = new ArrayList<>();
 
     private String dealTypeValue;
 
@@ -89,5 +92,29 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     public void setDealPositionDetail(DealPositionDetail dealPositionDetail) {
         this.dealPositionDetail = dealPositionDetail;
+    }
+
+    public void addRiskFactorMappingSnapshot(PositionRiskFactorMappingSnapshot snapshot) {
+        riskFactorMappingSnapshots.add(snapshot);
+    }
+
+    public List<PositionRiskFactorMappingSnapshot> getRiskFactorMappingSnapshots() {
+        return riskFactorMappingSnapshots;
+    }
+
+    public void setRiskFactorMappingSnapshots(List<PositionRiskFactorMappingSnapshot> riskFactorMappingSnapshots) {
+        this.riskFactorMappingSnapshots = riskFactorMappingSnapshots;
+    }
+
+    @Transient
+    @JsonIgnore
+    public List<PositionRiskFactorMappingSnapshot> getDealPriceMappings() {
+        return riskFactorMappingSnapshots.stream().filter( c-> c.getDetail().getPriceTypeCode() == PriceTypeCode.DEAL_PRICE).collect(Collectors.toList());
+    }
+
+    @Transient
+    @JsonIgnore
+    public List<PositionRiskFactorMappingSnapshot> getMarketPriceMappings() {
+        return riskFactorMappingSnapshots.stream().filter( c-> c.getDetail().getPriceTypeCode() == PriceTypeCode.MARKET_PRICE).collect(Collectors.toList());
     }
 }

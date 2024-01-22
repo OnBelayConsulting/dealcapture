@@ -26,13 +26,13 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="COST_NAME"
-                    type="java.sql.Types.VARCHAR(20)">
+            <column name="COST_NAME_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
-            <column name="COST_DESCRIPTION"
-                    type="java.sql.Types.VARCHAR(100)">
-                <constraints nullable="true"/>
+            <column name="COST_TYPE_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
             </column>
             <column name="COST_CURRENCY_CODE"
                     type="java.sql.Types.VARCHAR(32)">
@@ -40,9 +40,9 @@
             </column>
             <column name="COST_UOM_CODE"
                     type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
-            <column name="COST_PER_UNIT"
+            <column name="COST_VALUE"
                     type="java.sql.Types.NUMERIC(8, 3)"/>
             <column name="AUDIT_LOCK_NO"
                     defaultValueNumeric="0"

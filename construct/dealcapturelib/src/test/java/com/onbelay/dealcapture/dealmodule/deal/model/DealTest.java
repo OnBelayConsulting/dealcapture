@@ -17,17 +17,17 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.BuySellCode;
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -62,7 +62,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 		PhysicalDealSnapshot snapshot = new PhysicalDealSnapshot();
 		snapshot.setCompanyRoleId(companyRole.generateEntityId());
 		snapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
-
+		snapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
 		setDealAttributes(
 				snapshot.getDealDetail(),
 				DealStatusCode.PENDING,

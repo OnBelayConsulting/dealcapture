@@ -15,19 +15,18 @@
  */
 package com.onbelay.dealcapture.pricing.snapshot;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import jakarta.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurveDetail extends AbstractDetail {
@@ -56,13 +55,16 @@ public class CurveDetail extends AbstractDetail {
 	
 	public void validate() throws OBValidationException {
 		if (curveDate == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_DATE.getCode());
+			throw new OBValidationException(PricingErrorCode.MISSING_CURVE_DATE.getCode());
 		
 		if (observedDateTime == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_OBS_DATE_TIME.getCode());
+			throw new OBValidationException(PricingErrorCode.MISSING_CURVE_OBS_DATE_TIME.getCode());
 		
+		if (frequencyCodeValue == null)
+			throw new OBValidationException(PricingErrorCode.MISSING_CURVE_VALUE.getCode());
+
 		if (curveValue == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_VALUE.getCode());
+			throw new OBValidationException(PricingErrorCode.MISSING_CURVE_VALUE.getCode());
 	}
 	
 	@Column (name = "CURVE_DATE")

@@ -19,11 +19,14 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PriceIndexService {
@@ -38,18 +41,31 @@ public interface PriceIndexService {
 
 	public List<PriceIndexSnapshot> findByIds(QuerySelectedPage selectedPage);
 
+	PriceIndexSnapshot findPriceIndexByName(String indexName);
+
+	List<PriceIndexSnapshot> findActivePriceIndicesBy(List<Integer> collect);
+
+	public List<PriceIndexReport> fetchPriceIndexReports(QuerySelectedPage priceIndices);
+
+	//////////////// Price Curves /////////////////
+
 	public TransactionResult savePrices(
 			EntityId priceIndexId,
 			List<PriceCurveSnapshot> prices);
 
+	public List<CurveReport> fetchPriceCurveReports(
+			QuerySelectedPage priceIndices,
+			LocalDate fromCurveDate,
+			LocalDate toCurveDate,
+			LocalDateTime observedDateTime);
 
 	public BigDecimal fetchPrice(
 			EntityId pricingIndexId,
 			LocalDate currentDate);
 
-	List<PriceCurveSnapshot> fetchPricesByIds(QuerySelectedPage querySelectedPage);
+	public QuerySelectedPage findPriceCurveIds(DefinedQuery definedQuery);
 
-	PriceIndexSnapshot findPriceIndexByName(String indexName);
+	List<PriceCurveSnapshot> fetchPriceCurvesByIds(QuerySelectedPage querySelectedPage);
 
-	List<PriceIndexSnapshot> loadAll();
+    List<PriceIndexSnapshot> findActivePriceIndices();
 }

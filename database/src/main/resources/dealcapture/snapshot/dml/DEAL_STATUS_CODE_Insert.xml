@@ -9,17 +9,17 @@
 >
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
         <insert tableName='DEAL_STATUS_CODE'>
-            <column name='CODE_ID' value='P'/>
+            <column name='CODE_ID' value='Pending'/>
             <column name='CODE_LABEL' value='Pending'/>
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
         <insert tableName='DEAL_STATUS_CODE'>
-            <column name='CODE_ID' value='V'/>
+            <column name='CODE_ID' value='Verified'/>
             <column name='CODE_LABEL' value='Verified'/>
             <column name='DISPLAY_ORDER_NO' value='20'/>
         </insert>
         <insert tableName='DEAL_STATUS_CODE'>
-            <column name='CODE_ID' value='S'/>
+            <column name='CODE_ID' value='Suspended'/>
             <column name='CODE_LABEL' value='Suspended'/>
             <column name='DISPLAY_ORDER_NO' value='30'/>
         </insert>

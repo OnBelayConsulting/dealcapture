@@ -1,19 +1,21 @@
 package com.onbelay.dealcapture.pricing.service;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.pricing.model.FxCurve;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.pricing.model.FxIndexFixture;
-import com.onbelay.dealcapture.pricing.model.FxCurve;
 import com.onbelay.dealcapture.pricing.repository.FxCurveRepository;
 import com.onbelay.dealcapture.pricing.repository.FxIndexRepository;
-import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
+import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,8 +33,10 @@ public class FxIndexServiceTest extends DealCaptureSpringTestCase {
 
     private FxIndex fxUSDEUROIndex;
 
-
     private FxIndex fxMonthlyIndex;
+
+    private LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
+    private LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
 
     @Autowired
     private FxIndexService fxIndexService;
@@ -53,6 +57,18 @@ public class FxIndexServiceTest extends DealCaptureSpringTestCase {
         fxIndex = FxIndexFixture.createDailyFxIndex(
                 CurrencyCode.CAD,
                 CurrencyCode.USD);
+
+        flush();
+
+        FxIndexFixture.generateDailyFxCurves(
+                fxIndex,
+                fromMarketDate,
+                toMarketDate,
+                LocalDateTime.of(2023, 1, 1, 0, 1))
+
+
+        ;
+
 
         fxMonthlyIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
@@ -82,11 +98,42 @@ public class FxIndexServiceTest extends DealCaptureSpringTestCase {
     }
 
     @Test
+    public void findFxIndices() {
+        QuerySelectedPage selectedPage = fxIndexService.findFxIndexIds(new DefinedQuery("FxIndex"));
+        List<FxIndexSnapshot> snapshots = fxIndexService.findByIds(selectedPage);
+        assertEquals(3, snapshots.size());
+    }
+
+    @Test
     public void findIndexByCurrencyCodes() {
         List<FxIndexSnapshot> snapshots = fxIndexService.findFxIndexByFromToCurrencyCodes(
                 fxIndex.getDetail().getFromCurrencyCode(),
                 fxIndex.getDetail().getToCurrencyCode());
         assertEquals(2, snapshots.size());
+    }
+
+    @Test
+    public  void findFxCurves() {
+        QuerySelectedPage selectedPage = fxIndexService.findFxCurveIds(new DefinedQuery("FxCurve"));
+        List<FxCurveSnapshot> snapshots = fxIndexService.fetchFxCurvesByIds(selectedPage);
+        assertEquals(31, snapshots.size());
+    }
+
+    @Test
+    public void fetchFxCurveReports() {
+        DefinedQuery definedQuery = new DefinedQuery("FxIndex");
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression(
+                        "name",
+                        ExpressionOperator.EQUALS,
+                        fxIndex.getDetail().getName()));
+
+        QuerySelectedPage selectedPage = fxIndexService.findFxIndexIds(definedQuery);
+        fxIndexService.fetchFxCurveReports(
+                selectedPage,
+                fromMarketDate,
+                toMarketDate,
+                LocalDateTime.now());
     }
     
     @Test

@@ -26,10 +26,16 @@ public class FxIndexColumnDefinitions extends BaseColumnDefinitions implements C
 
 	public static final ColumnDefinition name = new ColumnDefinition("name", ColumnDataType.STRING, "detail.name");
 	public static final ColumnDefinition description = new ColumnDefinition("description", ColumnDataType.STRING, "detail.description");
+	public static final ColumnDefinition toCurrency = new ColumnDefinition("toCurrency", ColumnDataType.STRING, "detail.toCurrencyCodeValue");
+	public static final ColumnDefinition fromCurrency = new ColumnDefinition("fromCurrency", ColumnDataType.STRING, "detail.fromCurrencyCodeValue");
+	public static final ColumnDefinition frequency = new ColumnDefinition("frequency", ColumnDataType.STRING, "detail.frequencyCodeValue");
 
 	public FxIndexColumnDefinitions() {
 		add(name);
 		add(description);
+		add(toCurrency);
+		add(fromCurrency);
+		add(frequency);
 	}
 
 	@Override

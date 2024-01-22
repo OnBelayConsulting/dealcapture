@@ -18,6 +18,8 @@ package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 import java.time.LocalDate;
 
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 
 
 public class DealSummary {
@@ -27,7 +29,9 @@ public class DealSummary {
 	private LocalDate startDate;
 	private String companyName;
 	private String counterpartyName;
-	
+	private String dealStatusValue;
+	private String positionGenerationStatusValue;
+	private String positionGenerationIdentifier;
 	
 	
 	
@@ -36,7 +40,10 @@ public class DealSummary {
 			String ticketNo, 
 			LocalDate startDate, 
 			String companyName,
-			String counterpartyName) {
+			String counterpartyName,
+			String dealStatusValue,
+			String positionGenerationStatusValue,
+			String positionGenerationIdentifier) {
 		
 		super();
 		this.dealId = new EntityId(dealKey, ticketNo, ticketNo, false);
@@ -44,6 +51,9 @@ public class DealSummary {
 		this.startDate = startDate;
 		this.companyName = companyName;
 		this.counterpartyName = counterpartyName;
+		this.dealStatusValue = dealStatusValue;
+		this.positionGenerationStatusValue = positionGenerationStatusValue;
+		this.positionGenerationIdentifier = positionGenerationIdentifier;
 	}
 	
 	public EntityId getDealId() {
@@ -62,7 +72,15 @@ public class DealSummary {
 		return counterpartyName;
 	}
 	
-	
-	
-	
+	public DealStatusCode getDealStatusCode() {
+		return DealStatusCode.lookUp(dealStatusValue);
+	}
+
+	public PositionGenerationStatusCode getPositionGenerationStatusCode() {
+		return PositionGenerationStatusCode.lookUp(positionGenerationStatusValue);
+	}
+
+	public String getPositionGenerationIdentifier() {
+		return positionGenerationIdentifier;
+	}
 }

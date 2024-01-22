@@ -29,10 +29,14 @@ import com.onbelay.core.query.model.ColumnDefinitions;
 public class PricingLocationColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 	public static final ColumnDefinition name = new ColumnDefinition("name", ColumnDataType.STRING, "detail.name");
 	public static final ColumnDefinition description = new ColumnDefinition("description", ColumnDataType.STRING, "detail.description");
+	public static final ColumnDefinition countryCode = new ColumnDefinition("countryCode", ColumnDataType.STRING, "detail.countryCode");
+	public static final ColumnDefinition provinceStateCode = new ColumnDefinition("provinceStateCode", ColumnDataType.STRING, "detail.provinceStateCode");
 
 	public PricingLocationColumnDefinitions() {
 		add(name);
 		add(description);
+		add(countryCode);
+		add(provinceStateCode);
 	}
 
 	@Override

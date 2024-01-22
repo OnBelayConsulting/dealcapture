@@ -2,17 +2,26 @@ package com.onbelay.dealcapture.pricing.service;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.core.query.enums.ExpressionConnector;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.enums.ExpressionOrder;
+import com.onbelay.core.query.snapshot.DefinedOrderExpression;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.model.*;
 import com.onbelay.dealcapture.pricing.repository.PriceCurveRepository;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
+import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,9 +35,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
 
     private PricingLocation location;
-    private PriceIndex priceIndex;
+    private PriceIndex monthlyPriceIndex;
     private PriceIndex priceDailyIndex;
 
+    private LocalDate fromCurveDate = LocalDate.of(2023, 1, 1);
+    private LocalDate toCurveDate = LocalDate.of(2023, 3, 31);
+    private LocalDateTime firstObserveDateTime = LocalDateTime.of(2023, 1, 1, 12, 59);
+    private LocalDateTime secondObserveDateTime = LocalDateTime.of(2023, 1, 2, 12, 59);
+
+    private BigDecimal firstBigDecimal = BigDecimal.valueOf(2.56);
+    private BigDecimal secondBigDecimal = BigDecimal.valueOf(4.00);
 
     @Autowired
     private PriceIndexService priceIndexService;
@@ -44,16 +60,50 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         super.setUp();
 
         location = PricingLocationFixture.createPricingLocation("West");
-        priceIndex = PriceIndexFixture.createPriceIndex(
+        monthlyPriceIndex = PriceIndexFixture.createPriceIndex(
                 "ACEE",
                 FrequencyCode.MONTHLY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
 
         priceDailyIndex = PriceIndexFixture.createPriceIndex(
                 "ADDLY",
                 FrequencyCode.DAILY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
 
+        PriceIndexFixture.generateDailyPriceCurves(
+                priceDailyIndex,
+                fromCurveDate,
+                toCurveDate,
+                firstBigDecimal,
+                firstObserveDateTime);
+        flush();
+        PriceIndexFixture.generateDailyPriceCurves(
+                priceDailyIndex,
+                fromCurveDate,
+                toCurveDate,
+                secondBigDecimal,
+                secondObserveDateTime);
+
+
+        PriceIndexFixture.generateMonthlyPriceCurves(
+                priceDailyIndex,
+                fromCurveDate,
+                toCurveDate,
+                BigDecimal.ONE,
+                firstObserveDateTime);
+        flush();
+        PriceIndexFixture.generateMonthlyPriceCurves(
+                priceDailyIndex,
+                fromCurveDate,
+                toCurveDate,
+                BigDecimal.TEN,
+                secondObserveDateTime);
+
+        flush();
     }
 
     @Test
@@ -61,6 +111,19 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         PriceIndexSnapshot snapshot = priceIndexService.findPriceIndexByName("ACEE");
         assertNotNull(snapshot);
         assertEquals(FrequencyCode.MONTHLY, snapshot.getDetail().getFrequencyCode());
+    }
+
+    @Test
+    public void fetchPriceIndexReports() {
+        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(new DefinedQuery("PriceIndex"));
+        List<PriceIndexReport> reports = priceIndexService.fetchPriceIndexReports(selectedPage);
+        assertEquals(2, reports.size());
+
+        PriceIndexReport firstReport = reports.stream().filter(c-> c.getId().equals(priceDailyIndex.getId())).findFirst().get();
+        assertNotNull(firstReport);
+        PriceIndexReport secondReport = reports.stream().filter(c-> c.getId().equals(monthlyPriceIndex.getId())).findFirst().get();
+        assertNotNull(secondReport);
+
     }
 
     @Test
@@ -130,6 +193,88 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
     }
 
     @Test
+    public void fetchPrices() {
+        DefinedQuery definedQuery = new DefinedQuery("PriceCurve");
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression(
+                        "priceIndexId",
+                        ExpressionOperator.EQUALS,
+                        priceDailyIndex.getId()));
+        definedQuery.getWhereClause().addConnector(ExpressionConnector.AND);
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression(
+                        "curveDate",
+                        ExpressionOperator.GREATER_THAN_OR_EQUALS,
+                        LocalDate.of(2023, 1, 1)));
+        definedQuery.getWhereClause().addConnector(ExpressionConnector.AND);
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression(
+                        "frequencyCode",
+                        ExpressionOperator.EQUALS,
+                        FrequencyCode.DAILY.getCode()));
+        definedQuery.getWhereClause().addConnector(ExpressionConnector.AND);
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression(
+                        "curveDate",
+                        ExpressionOperator.LESS_THAN_OR_EQUALS,
+                        LocalDate.of(2023, 1, 31)));
+        definedQuery.getOrderByClause().addOrderExpression(
+                new DefinedOrderExpression("curveDate", ExpressionOrder.ASCENDING));
+        definedQuery.getOrderByClause().addOrderExpression(
+                new DefinedOrderExpression("observedDateTime", ExpressionOrder.ASCENDING));
+
+        QuerySelectedPage selectedPage = priceIndexService.findPriceCurveIds(definedQuery);
+        List<PriceCurveSnapshot> curves = priceIndexService.fetchPriceCurvesByIds(selectedPage);
+        assertEquals(62, curves.size());
+    }
+
+    @Test
+    public void fetchPriceCurveReports() {
+        DefinedQuery definedQuery = new DefinedQuery("PriceIndex");
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression("name", ExpressionOperator.EQUALS, priceDailyIndex.getDetail().getName()));
+
+        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(definedQuery);
+        List<CurveReport> reports = priceIndexService.fetchPriceCurveReports(
+                selectedPage,
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 31),
+                firstObserveDateTime);
+
+        assertEquals(32, reports.size());
+        CurveReport report = reports.get(0);
+        assertEquals(0, firstBigDecimal.compareTo(report.getValue()));
+
+        CurveReport monthlyReport = reports.get(1);
+        assertEquals(FrequencyCode.MONTHLY, monthlyReport.getFrequencyCode());
+
+    }
+
+    @Test
+    public void fetchPriceCurveReportsLatest() {
+        DefinedQuery definedQuery = new DefinedQuery("PriceIndex");
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression("name", ExpressionOperator.EQUALS, priceDailyIndex.getDetail().getName()));
+
+        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(definedQuery);
+        List<CurveReport> reports = priceIndexService.fetchPriceCurveReports(
+                selectedPage,
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 31),
+                LocalDateTime.now());
+
+        assertEquals(32, reports.size());
+        CurveReport report = reports.get(0);
+        assertEquals(0, secondBigDecimal.compareTo(report.getValue()));
+
+        CurveReport monthlyReport = reports.get(1);
+        assertEquals(FrequencyCode.MONTHLY, monthlyReport.getFrequencyCode());
+
+    }
+
+
+
+    @Test
     public void savePriceCurves() {
         PriceCurveSnapshot snapshot = new PriceCurveSnapshot();
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
@@ -137,7 +282,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         snapshot.getDetail().setCurveDate(LocalDate.of(2022, 1, 1));
         snapshot.getDetail().setCurveValue(BigDecimal.valueOf(1.34));
         TransactionResult result = priceIndexService.savePrices(
-                priceIndex.generateEntityId(),
+                monthlyPriceIndex.generateEntityId(),
                 List.of(snapshot));
         flush();
         assertEquals(1, result.getEntityIds().size());
@@ -146,7 +291,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         assertEquals(LocalDate.of(2022, 1, 1), curve.getDetail().getCurveDate());
         assertEquals(LocalDateTime.of(2022, 1, 1, 12, 0), curve.getDetail().getObservedDateTime());
         assertEquals(0, BigDecimal.valueOf(1.34).compareTo(curve.getDetail().getCurveValue()));
-        assertEquals(priceIndex.getId(), curve.getPriceIndex().getId());
+        assertEquals(monthlyPriceIndex.getId(), curve.getPriceIndex().getId());
     }
 
 }

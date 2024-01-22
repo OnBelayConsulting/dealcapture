@@ -19,8 +19,10 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.FxCurve;
+import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FxCurveRepository {
@@ -32,7 +34,14 @@ public interface FxCurveRepository {
 	
 	public List<FxCurve> fetchByIds(QuerySelectedPage selectedPage);
 
-	public FxCurve fetchCurrentFxCurve(
+	public List<CurveReport> fetchFxCurveReports(
+			List<Integer> indexIds,
+			LocalDate fromCurveDate,
+			LocalDate toCurveDate,
+			LocalDateTime observedDateTime);
+
+
+		public FxCurve fetchCurrentFxCurve(
 			EntityId fxIndexId,
 			LocalDate currentDate);
 

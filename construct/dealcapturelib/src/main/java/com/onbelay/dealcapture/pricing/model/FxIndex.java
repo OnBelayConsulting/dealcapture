@@ -52,7 +52,17 @@ import java.util.List;
 			   "  FROM FxIndex fxIndex " +
        	     "   WHERE fxIndex.detail.fromCurrencyCodeValue = :from " +
 			   "   AND fxIndex.detail.toCurrencyCodeValue = :to " +
- 		   "  ORDER BY fxIndex.detail.frequencyValue " ),
+ 		   "  ORDER BY fxIndex.detail.frequencyCodeValue " ),
+    @NamedQuery(
+       name = FxIndexRepositoryBean.FETCH_FX_INDEX_REPORTS,
+       query = "SELECT new com.onbelay.dealcapture.pricing.snapshot.FxIndexReport(" +
+			   "	fxIndex.id," +
+			   "	fxIndex.detail.frequencyCodeValue," +
+			   "	fxIndex.detail.toCurrencyCodeValue," +
+			   "	fxIndex.detail.fromCurrencyCodeValue" +
+			   ") " +
+			   "  FROM FxIndex fxIndex " +
+       	     "   WHERE fxIndex.id in (:indexIds) "),
     @NamedQuery(
        name = FxIndexRepositoryBean.LOAD_ALL,
        query = "SELECT fxIndex " +
@@ -120,6 +130,12 @@ public class FxIndex extends TemporalAbstractEntity {
 		super.createWith(snapshot);
 		detail.setDefaults();
 		detail.copyFrom(snapshot.getDetail());
+
+		if (detail.getName() == null)
+			detail.setName(detail.composeName());
+		if (detail.getDescription() == null)
+			detail.setDescription(detail.getName());
+
 		setAssociations(snapshot);
 		save();
 	}

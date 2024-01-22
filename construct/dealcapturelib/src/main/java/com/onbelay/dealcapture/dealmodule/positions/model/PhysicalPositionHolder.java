@@ -4,12 +4,18 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapsho
 import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PhysicalPositionHolder extends PositionHolder {
 
     private PriceRiskFactorHolder marketRiskFactorHolder;
-    private FxRiskFactorHolder marketFxRiskFactorHolder;
+    private List<PriceRiskFactorHolder> basisToHubMarketHolders = new ArrayList<>();
+
+    private FxRiskFactorHolder fixedDealPriceFxHolder;
+
     private PriceRiskFactorHolder dealPriceRiskFactorHolder;
-    private FxRiskFactorHolder dealPriceFxRiskFactorHolder;
+    private List<PriceRiskFactorHolder> basisToHubDealPriceHolders = new ArrayList<>();
 
     public PhysicalPositionHolder(DealPositionSnapshot snapshot) {
         super(snapshot);
@@ -23,12 +29,16 @@ public class PhysicalPositionHolder extends PositionHolder {
         this.marketRiskFactorHolder = marketRiskFactorHolder;
     }
 
-    public FxRiskFactorHolder getMarketFxRiskFactorHolder() {
-        return marketFxRiskFactorHolder;
+    public FxRiskFactorHolder getMarketFxHolder() {
+        return marketRiskFactorHolder.getFxRiskFactorHolder();
     }
 
-    public void setMarketFxRiskFactorHolder(FxRiskFactorHolder marketFxRiskFactorHolder) {
-        this.marketFxRiskFactorHolder = marketFxRiskFactorHolder;
+    public void addBasisToHubMarketRiskFactorHolder(PriceRiskFactorHolder holder) {
+        basisToHubMarketHolders.add(holder);
+    }
+
+    public List<PriceRiskFactorHolder> getBasisToHubMarketHolders() {
+        return basisToHubMarketHolders;
     }
 
     public PriceRiskFactorHolder getDealPriceRiskFactorHolder() {
@@ -39,11 +49,23 @@ public class PhysicalPositionHolder extends PositionHolder {
         this.dealPriceRiskFactorHolder = dealPriceRiskFactorHolder;
     }
 
-    public FxRiskFactorHolder getDealPriceFxRiskFactorHolder() {
-        return dealPriceFxRiskFactorHolder;
+    public FxRiskFactorHolder getDealPriceFxHolder() {
+        return dealPriceRiskFactorHolder.getFxRiskFactorHolder();
     }
 
-    public void setDealPriceFxRiskFactorHolder(FxRiskFactorHolder dealPriceFxRiskFactorHolder) {
-        this.dealPriceFxRiskFactorHolder = dealPriceFxRiskFactorHolder;
+    public void setFixedDealPriceFxHolder(FxRiskFactorHolder fixedDealPriceFxHolder) {
+        this.fixedDealPriceFxHolder = fixedDealPriceFxHolder;
+    }
+
+    public FxRiskFactorHolder getFixedDealPriceFxHolder() {
+        return fixedDealPriceFxHolder;
+    }
+
+    public void addBasisToHubDealPriceRiskFactorHolder(PriceRiskFactorHolder holder) {
+        basisToHubDealPriceHolders.add(holder);
+    }
+
+    public List<PriceRiskFactorHolder> getBasisToHubDealPriceHolders() {
+        return basisToHubDealPriceHolders;
     }
 }

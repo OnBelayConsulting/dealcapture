@@ -1,8 +1,8 @@
 package com.onbelay.dealcapture.riskfactor.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
+import com.onbelay.shared.enums.FrequencyCode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

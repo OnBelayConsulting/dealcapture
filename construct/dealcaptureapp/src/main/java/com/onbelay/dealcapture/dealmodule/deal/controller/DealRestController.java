@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.hibernate.sql.exec.spi.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -168,5 +169,38 @@ public class DealRestController extends BaseRestController {
 		return (ResponseEntity<BaseDealSnapshot>) processResponse(snapshot);
 	}
 
+
+	@Operation(summary="Create or update a deal")
+	@PostMapping(
+			value = "/{id}/positions",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> generatePositions(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@RequestBody ExecutionContext context,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+
+		TransactionResult result;
+		try {
+			result = dealRestAdapter.generatePositions(id, context);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
 
 }

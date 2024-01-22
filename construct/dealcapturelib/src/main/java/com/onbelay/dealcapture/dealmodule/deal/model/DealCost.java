@@ -31,13 +31,13 @@ import jakarta.persistence.*;
        query = "SELECT dealCost " +
 			   "  FROM DealCost dealCost " +
        		 "   WHERE dealCost.deal.id = :dealId " +
-       	     "ORDER BY dealCost.detail.name DESC"),
+       	     "ORDER BY dealCost.detail.costNameCodeValue DESC"),
     @NamedQuery(
        name = DealCostRepositoryBean.FIND_BY_DEAL_AND_NAME,
        query = "SELECT dealCost " +
 			   "  FROM DealCost dealCost " +
        		 "   WHERE dealCost.deal.id = :dealId " +
-       	     "     AND dealCost.detail.name = :name ")
+       	     "     AND dealCost.detail.costNameCodeValue = :name ")
 })
 public class DealCost extends TemporalAbstractEntity {
 

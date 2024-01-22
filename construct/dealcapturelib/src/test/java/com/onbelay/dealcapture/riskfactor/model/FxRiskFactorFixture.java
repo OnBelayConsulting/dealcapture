@@ -1,10 +1,8 @@
 package com.onbelay.dealcapture.riskfactor.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
-import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
+import com.onbelay.shared.enums.FrequencyCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,7 +32,7 @@ public class FxRiskFactorFixture {
             while (current.isAfter(toMarketDate) == false) {
                 FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
                 snapshot.getDetail().setMarketDate(current);
-                snapshot.getDetail().setCreateUpdateDate(LocalDateTime.of(2023, 1, 1, 23, 10));
+                snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 1, 1, 23, 10));
                 factors.add(
                         FxRiskFactor.create(
                                 index,
@@ -46,7 +44,7 @@ public class FxRiskFactorFixture {
             while (current.isAfter(toMarketDate) == false) {
                 FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
                 snapshot.getDetail().setMarketDate(current);
-                snapshot.getDetail().setCreateUpdateDate(LocalDateTime.of(2023, 1, 1, 23, 10));
+                snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 1, 1, 23, 10));
                 factors.add(
                         FxRiskFactor.create(
                                 index,

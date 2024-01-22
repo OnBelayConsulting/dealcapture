@@ -7,14 +7,17 @@ import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.dealmodule.deal.publish.publisher.GeneratePositionsRequestPublisher;
+import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
+import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
+import com.onbelay.dealcapture.formulas.model.EvaluationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,13 +27,44 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     private DealPositionService dealPositionService;
 
     @Autowired
-    private GeneratePositionsRequestPublisher generatePositionsRequestPublisher;
+    private GeneratePositionsService generatePositionsService;
 
+    @Autowired
+    private DealService dealService;
+
+    @Override
+    public TransactionResult generatePositions(
+            String queryText,
+            EvaluationContext evaluationContext) {
+
+        DefinedQuery definedQuery;
+
+        if (queryText != null) {
+            if (queryText.equalsIgnoreCase("default")) {
+                definedQuery = new DefinedQuery("BaseDeal");
+            } else {
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("BaseDeal", queryText);
+                definedQuery = builder.build();
+            }
+        } else {
+            definedQuery = new DefinedQuery("BaseDeal");
+        }
+
+        QuerySelectedPage selection = dealService.findDealIds(definedQuery);
+
+        String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
+
+        return generatePositionsService.generatePositions(
+                positionGenerationIdentifier,
+                evaluationContext,
+                selection.getIds());
+    }
 
     @Override
     public TransactionResult valuePositions(String queryText) {
         initializeSession();
         DefinedQuery definedQuery;
+        LocalDateTime currentDateTime = LocalDateTime.now();
 
         if (queryText != null) {
             if (queryText.equalsIgnoreCase("default")) {
@@ -49,7 +83,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
                             "ticketNo"));
         }
 
-        return dealPositionService.valuePositions(definedQuery);
+        return dealPositionService.valuePositions(
+                definedQuery,
+                currentDateTime);
     }
 
     @Override
@@ -112,7 +148,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
             EntityId dealId,
             DealPositionSnapshot dealSnapshot) {
         initializeSession();
+        String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
         TransactionResult result = dealPositionService.saveDealPositions(
+                positionGenerationIdentifier,
                 dealId,
                 List.of(dealSnapshot));
 
@@ -122,7 +160,10 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     @Override
     public TransactionResult save(List<DealPositionSnapshot> snapshots) {
         initializeSession();
-        TransactionResult result =  dealPositionService.saveAllDealPositions(snapshots);
+        String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
+        TransactionResult result =  dealPositionService.saveAllDealPositions(
+                positionGenerationIdentifier,
+                snapshots);
         return result;
     }
 

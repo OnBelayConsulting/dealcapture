@@ -15,8 +15,6 @@ public interface PriceRiskFactorRepository {
 
     PriceRiskFactor fetchByMarketDate(EntityId entityId, LocalDate marketDate);
 
-    List<PriceRiskFactor> loadAll();
-
     List<PriceRiskFactor> fetchByDatesInclusive(
             EntityId entityId,
             LocalDate fromMarketDate,
@@ -27,4 +25,8 @@ public interface PriceRiskFactorRepository {
     List<PriceRiskFactor> fetchByIds(QuerySelectedPage selectedPage);
 
     List<PriceRiskFactor> fetchByPriceIndex(EntityId priceIndexId);
+
+    List<PriceRiskFactor> find(DefinedQuery definedQuery);
+
+    List<PriceRiskFactor> fetchByPriceIndices(List<Integer> priceIndexIds);
 }

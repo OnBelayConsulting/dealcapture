@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.riskfactor.components;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
 import com.onbelay.dealcapture.pricing.model.*;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
@@ -13,10 +14,12 @@ import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,12 +86,12 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
         fxMonthlyIndex = FxIndexFixture.createFxIndex(
                 FrequencyCode.MONTHLY,
-                CurrencyCode.USD,
-                CurrencyCode.CAD);
+                CurrencyCode.CAD,
+                CurrencyCode.USD);
 
         fxDailyIndex = FxIndexFixture.createDailyFxIndex(
-                CurrencyCode.USD,
-                CurrencyCode.CAD);
+                CurrencyCode.CAD,
+                CurrencyCode.USD);
 
 
         FxRiskFactorFixture.createFxRiskFactors(
@@ -101,11 +104,18 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     @Test
     public void determineRiskFactorsFound() {
+        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(new DefinedQuery("PriceIndex"));
+
         ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
-                priceIndexService.loadAll(),
-                fxIndexService.loadAll(),
-                priceRiskFactorService.loadAll(),
-                fxRiskFactorService.loadAll());
+                priceIndexService.findByIds(selectedPage),
+                fxIndexService.findActiveFxIndices(),
+                priceRiskFactorService.findByPriceIndexIds(selectedPage.getIds()),
+                fxRiskFactorService.findByFxIndexIds(
+                        fxIndexService.findActiveFxIndices()
+                                .stream()
+                                .map(c->c.getEntityId().getId())
+                                .collect(Collectors.toList())
+                ));
 
         PriceRiskFactorHolder holder = riskFactorManager.determinePriceRiskFactor(
                 "ACEE",
@@ -118,11 +128,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     @Test
     public void determineRiskFactorsNotFound() {
-        ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
-                priceIndexService.loadAll(),
-                fxIndexService.loadAll(),
-                priceRiskFactorService.loadAll(),
-                fxRiskFactorService.loadAll());
+        ConcurrentRiskFactorManager riskFactorManager = createConcurrentRiskFactorManager();
 
         PriceRiskFactorHolder holder = riskFactorManager.determinePriceRiskFactor(
                 "ACEE",
@@ -136,11 +142,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     @Test
     public void determineFxRiskFactorsFound() {
-        ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
-                priceIndexService.loadAll(),
-                fxIndexService.loadAll(),
-                priceRiskFactorService.loadAll(),
-                fxRiskFactorService.loadAll());
+        ConcurrentRiskFactorManager riskFactorManager = createConcurrentRiskFactorManager();
 
         FxRiskFactorHolder holder = riskFactorManager.determineFxRiskFactor(
                 CurrencyCode.CAD,
@@ -154,11 +156,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     @Test
     public void determineFxRiskFactorsNotFound() {
-        ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
-                priceIndexService.loadAll(),
-                fxIndexService.loadAll(),
-                priceRiskFactorService.loadAll(),
-                fxRiskFactorService.loadAll());
+        ConcurrentRiskFactorManager riskFactorManager = createConcurrentRiskFactorManager();
 
         FxRiskFactorHolder holder = riskFactorManager.determineFxRiskFactor(
                 CurrencyCode.CAD,
@@ -173,11 +171,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     @Test
     public void findFxRiskFactorsReversed() {
-        ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
-                priceIndexService.loadAll(),
-                fxIndexService.loadAll(),
-                priceRiskFactorService.loadAll(),
-                fxRiskFactorService.loadAll());
+        ConcurrentRiskFactorManager riskFactorManager = createConcurrentRiskFactorManager();
 
         FxRiskFactorHolder holder = riskFactorManager.determineFxRiskFactor(
                 CurrencyCode.USD,
@@ -188,5 +182,21 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     }
 
+
+    private ConcurrentRiskFactorManager createConcurrentRiskFactorManager() {
+        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(new DefinedQuery("PriceIndex"));
+
+        return new ConcurrentRiskFactorManager(
+                priceIndexService.findByIds(selectedPage),
+                fxIndexService.findActiveFxIndices(),
+                priceRiskFactorService.findByPriceIndexIds(selectedPage.getIds()),
+                fxRiskFactorService.findByFxIndexIds(
+                        fxIndexService.findActiveFxIndices()
+                                .stream()
+                                .map(c->c.getEntityId().getId())
+                                .collect(Collectors.toList())
+                ));
+
+    }
 
 }

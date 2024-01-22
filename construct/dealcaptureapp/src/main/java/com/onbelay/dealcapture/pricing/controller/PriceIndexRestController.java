@@ -16,10 +16,12 @@
 package com.onbelay.dealcapture.pricing.controller;
 
 import com.onbelay.core.controller.BaseRestController;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.pricing.adapter.PriceIndexRestAdapter;
+import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshotCollection;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshotCollection;
@@ -113,6 +115,44 @@ public class PriceIndexRestController extends BaseRestController {
 	}
 
 
+
+	@Operation(summary="Create or update priceCurves for a PriceIndex")
+	@PutMapping(
+			value = "/{id}/prices",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> savePriceCurves(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@RequestBody List<PriceCurveSnapshot> snapshots,
+			BindingResult bindingResult) {
+
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		TransactionResult result;
+		try {
+			result  = priceIndexRestAdapter.savePrices(
+					id,
+					snapshots);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
+
 	@Operation(summary="fetch priceIndices")
 	@GetMapping(produces="application/json" )
 	public ResponseEntity<PriceIndexSnapshotCollection> fetchPriceIndices(
@@ -141,8 +181,31 @@ public class PriceIndexRestController extends BaseRestController {
 	}
 
 
+	@Operation(summary="load priceIndex")
+	@GetMapping(
+			value = "/{id}",
+			produces="application/json" )
+	public ResponseEntity<PriceIndexSnapshot> loadPriceIndex(
+			@PathVariable Integer id) {
 
-	@Operation(summary="fetch index prices")
+		PriceIndexSnapshot snapshot;
+
+		try {
+			snapshot = priceIndexRestAdapter.load(new EntityId(id));
+		} catch (OBRuntimeException r) {
+			snapshot = new PriceIndexSnapshot(r.getErrorCode(), r.getParms());
+			snapshot.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			snapshot = new PriceIndexSnapshot(r.getMessage());
+		} catch (RuntimeException r) {
+			snapshot = new PriceIndexSnapshot(r.getMessage());
+		}
+
+		return (ResponseEntity<PriceIndexSnapshot>) processResponse(snapshot);
+	}
+
+
+	@Operation(summary="fetch all index prices")
 	@GetMapping(value="/prices" )
 	public ResponseEntity<PriceCurveSnapshotCollection> getIndexPrices(
 			@RequestHeader Map<String, String> headers,

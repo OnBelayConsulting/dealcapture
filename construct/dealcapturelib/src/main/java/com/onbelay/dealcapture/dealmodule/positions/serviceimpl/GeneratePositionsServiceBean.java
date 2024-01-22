@@ -2,8 +2,9 @@ package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGeneratorFactory;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
@@ -13,12 +14,17 @@ import com.onbelay.dealcapture.formulas.model.EvaluationContext;
 import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
+import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.components.ConcurrentRiskFactorManager;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
+import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +37,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class GeneratePositionsServiceBean implements GeneratePositionsService {
+    private static final Logger logger = LogManager.getLogger();
 
     @Autowired
     private DealService dealService;
@@ -51,35 +58,90 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
     private DealPositionService dealPositionService;
 
     @Override
-    public void generatePositions(
+    public TransactionResult generatePositions(
+            String positionGenerationIdentifier,
             EvaluationContext context,
             Integer dealId) {
 
-        generatePositions(
-                context,
-                List.of(dealId));
-    }
+           return generatePositions(
+                   positionGenerationIdentifier,
+                   context,
+                   List.of(dealId));
 
+    }
     @Override
-    public void generatePositions(
+    public TransactionResult generatePositions(
+            String positionGenerationIdentifier,
             EvaluationContext context,
             List<Integer> dealIds) {
 
+        ArrayList<EntityId> entityIds = new ArrayList<>();
+
+        for (Integer dealId : dealIds) {
+            DealSummary summary = dealService.getDealSummary(new EntityId(dealId));
+            if (summary.getPositionGenerationStatusCode().isGenerating() == false) {
+                boolean success = dealService.updatePositionGenerationStatus(
+                        positionGenerationIdentifier,
+                        new EntityId(dealId),
+                        PositionGenerationStatusCode.GENERATING);
+               if (success)
+                   entityIds.add(new EntityId(dealId));
+            }
+        }
+
+        return createAndSavePositions(
+                positionGenerationIdentifier,
+                context,
+                entityIds);
+
+    }
+
+    private TransactionResult createAndSavePositions(
+            String positionGenerationIdentifier,
+            EvaluationContext context,
+            List<EntityId> dealIds) {
+
+        List<PriceIndexSnapshot> activePriceIndices = priceIndexService.findActivePriceIndices();
+
+        List<FxIndexSnapshot> activeFxIndices = fxIndexService.findActiveFxIndices();
+
+        List<PriceRiskFactorSnapshot> activePriceRiskFactors = priceRiskFactorService.findByPriceIndexIds(
+                activePriceIndices
+                        .stream()
+                        .map(c-> c.getEntityId().getId())
+                        .collect(Collectors.toList()));
+
+        List<FxRiskFactorSnapshot> activeFxRiskFactors = fxRiskFactorService.findByFxIndexIds(
+                activeFxIndices
+                        .stream()
+                        .map(c -> c.getEntityId().getId())
+                        .collect(Collectors.toList()));
+
         ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
-                priceIndexService.loadAll(),
-                fxIndexService.loadAll(),
-                priceRiskFactorService.loadAll(),
-                fxRiskFactorService.loadAll());
+                activePriceIndices,
+                activeFxIndices,
+                activePriceRiskFactors,
+                activeFxRiskFactors);
 
         DealPositionGeneratorFactory factory = new DealPositionGeneratorFactory();
 
         List<DealPositionGenerator> dealPositionGenerators = new ArrayList<>(dealIds.size());
 
-        for (Integer dealId : dealIds) {
-            BaseDealSnapshot deal = dealService.load(new EntityId(dealId));
+        for (EntityId entityId : dealIds) {
+            DealSummary summary = dealService.getDealSummary(entityId);
+            if (summary.getPositionGenerationIdentifier().equals(positionGenerationIdentifier) == false) {
+                logger.error("Positions are currently being generated using "
+                        + summary.getPositionGenerationIdentifier()
+                        + " for this deal. Skipping. Current PGIdentifier: " +
+                        positionGenerationIdentifier);
+                continue;
+            }
+            if (summary.getPositionGenerationStatusCode() != PositionGenerationStatusCode.GENERATING) {
+                continue;
+            }
 
             DealPositionGenerator dealPositionGenerator = factory.newGenerator(
-                        deal,
+                        dealService.load(entityId),
                         riskFactorManager);
             dealPositionGenerators.add(dealPositionGenerator);
 
@@ -111,7 +173,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         }
 
         for (Integer priceIndexId : newPriceRiskFactors.keySet()) {
-            TransactionResult result = priceRiskFactorService.savePriceRiskFactors(
+            TransactionResult result = priceRiskFactorService.save(
                     new EntityId(priceIndexId),
                     newPriceRiskFactors.get(priceIndexId).values().stream().collect(Collectors.toList()));
         }
@@ -148,7 +210,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         }
 
         for (Integer fxIndexId : newFxRiskFactors.keySet()) {
-            TransactionResult result = fxRiskFactorService.saveFxRiskFactors(
+            TransactionResult result = fxRiskFactorService.save(
                     new EntityId(fxIndexId),
                     newFxRiskFactors.get(fxIndexId).values().stream().collect(Collectors.toList()));
         }
@@ -162,14 +224,17 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
             }
         }
 
+        TransactionResult overallResult = new TransactionResult();
         for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
             List<DealPositionSnapshot> positions = dealPositionGenerator.generateDealPositionSnapshots();
 
-            dealPositionService.saveDealPositions(
+            TransactionResult childResult = dealPositionService.saveDealPositions(
+                    positionGenerationIdentifier,
                     dealPositionGenerator.getDealSnapshot().getEntityId(),
                     positions);
+            overallResult.addEntityIds(childResult.getEntityIds());
         }
-
+        return overallResult;
     }
 
 }

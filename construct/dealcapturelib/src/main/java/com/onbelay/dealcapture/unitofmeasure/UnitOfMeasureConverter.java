@@ -1,7 +1,7 @@
 package com.onbelay.dealcapture.unitofmeasure;
 
 import com.onbelay.dealcapture.busmath.model.Conversion;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

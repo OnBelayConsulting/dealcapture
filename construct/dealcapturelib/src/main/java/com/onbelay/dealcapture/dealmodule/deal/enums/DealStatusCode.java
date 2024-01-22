@@ -25,9 +25,9 @@ import java.util.Map;
  *
  */
 public enum DealStatusCode {
-	PENDING 	("P"),
-    VERIFIED    ("V"),
-    SUSPENDED   ("S");
+	PENDING 	("Pending"),
+    VERIFIED    ("Verified"),
+    SUSPENDED   ("Suspended");
 
 	private final String code;
 

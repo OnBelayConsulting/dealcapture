@@ -13,11 +13,11 @@ public class RiskFactorDetail {
 
     private BigDecimal value;
     private LocalDate marketDate;
-    private LocalDateTime createUpdateDate;
+    private LocalDateTime createUpdateDateTime;
 
     @Transient
     public  void setDefaults() {
-        createUpdateDate = LocalDateTime.now();
+        createUpdateDateTime = LocalDateTime.now();
     }
 
     @Column(name = "MARKET_VALUE")
@@ -44,20 +44,20 @@ public class RiskFactorDetail {
     }
 
     @Column(name = "CREATE_UPDATE_DATETIME")
-    public LocalDateTime getCreateUpdateDate() {
-        return createUpdateDate;
+    public LocalDateTime getCreateUpdateDateTime() {
+        return createUpdateDateTime;
     }
 
-    public void setCreateUpdateDate(LocalDateTime createUpdateDate) {
-        this.createUpdateDate = createUpdateDate;
+    public void setCreateUpdateDateTime(LocalDateTime createUpdateDateTime) {
+        this.createUpdateDateTime = createUpdateDateTime;
     }
 
     public void copyFrom(RiskFactorDetail copy) {
         if (copy.marketDate != null)
             this.marketDate = copy.marketDate;
 
-        if (copy.createUpdateDate != null)
-            this.createUpdateDate = copy.createUpdateDate;
+        if (copy.createUpdateDateTime != null)
+            this.createUpdateDateTime = copy.createUpdateDateTime;
 
         if (copy.value != null)
             this.value = copy.value;

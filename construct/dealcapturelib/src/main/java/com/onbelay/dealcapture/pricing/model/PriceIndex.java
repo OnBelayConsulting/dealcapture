@@ -61,6 +61,19 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
        	     "   WHERE priceIndex.detail.name = :name "),
     
     @NamedQuery(
+       name = PriceIndexRepositoryBean.FETCH_PRICE_INDEX_REPORTS,
+       query = "SELECT new com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport(" +
+			   "	priceIndex.id," +
+			   "	priceIndex.detail.indexTypeValue," +
+			   "	priceIndex.benchmarkPricingIndex.id," +
+			   "	priceIndex.basePricingIndex.id," +
+			   "	priceIndex.detail.frequencyCodeValue," +
+			   "	priceIndex.detail.currencyCodeValue," +
+			   "	priceIndex.detail.unitOfMeasureCodeValue" +
+			   ") " +
+			   "  FROM PriceIndex priceIndex " +
+       	     "   WHERE priceIndex.id in (:indexIds) "),
+    @NamedQuery(
        name = PriceIndexRepositoryBean.LOAD_ALL,
        query = "SELECT priceIndex " +
 			   "  FROM PriceIndex priceIndex " +

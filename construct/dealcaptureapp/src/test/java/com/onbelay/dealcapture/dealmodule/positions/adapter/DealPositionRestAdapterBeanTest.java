@@ -1,9 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.positions.adapter;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
@@ -22,7 +21,10 @@ import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
+import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -74,7 +76,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
         location = PricingLocationFixture.createPricingLocation("West");
 
         fxIndex = FxIndexFixture.createFxIndex(
-                FrequencyCode.MONTHLY,
+                FrequencyCode.DAILY,
                 CurrencyCode.USD,
                 CurrencyCode.CAD);
 
@@ -89,6 +91,8 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
         priceIndex = PriceIndexFixture.createPriceIndex(
                 "ACEE",
                 FrequencyCode.MONTHLY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
 
         PriceIndexFixture.generateMonthlyPriceCurves(
@@ -98,12 +102,15 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                 LocalDateTime.of(2023, 10, 1, 0, 0));
 
         physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+                CommodityCode.CRUDE,
                 "5566",
                 companyRole,
                 counterpartyRole,
                 priceIndex,
                 fromMarketDate,
                 toMarketDate,
+                BigDecimal.TEN,
+                UnitOfMeasureCode.GJ,
                 CurrencyCode.CAD,
                 new Price(
                         BigDecimal.ONE,
@@ -139,6 +146,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
     public void valuePositions() {
 
         generatePositionsService.generatePositions(
+                "Test",
                 EvaluationContext
                         .build()
                         .withCurrency(CurrencyCode.CAD)
@@ -146,8 +154,14 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                         .withEndPositionDate(toMarketDate),
                 List.of(physicalDeal.getId()));
 
-        fxRiskFactorService.valueRiskFactors(fxIndex.generateEntityId());
-        priceRiskFactorService.valueRiskFactors(priceIndex.generateEntityId());
+        priceRiskFactorService.valueRiskFactors(
+                new DefinedQuery("PriceRiskFactor"),
+                LocalDateTime.now());
+
+        fxRiskFactorService.valueRiskFactors(
+                new DefinedQuery("FxRiskFactor"),
+                LocalDateTime.now());
+
         String query = "WHERE ticketNo eq '" + physicalDeal.getDealDetail().getTicketNo() + "'";
         dealPositionRestAdapter.valuePositions(query);
         flush();

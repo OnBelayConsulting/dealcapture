@@ -18,9 +18,9 @@ package com.onbelay.dealcapture.pricing.snapshot;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
@@ -31,28 +31,39 @@ public class FxIndexDetail {
 	private String description;
 	private String fromCurrencyCodeValue;
 	private String toCurrencyCodeValue;
-	private String frequencyValue;
+	private String frequencyCodeValue;
 	private Integer daysOffsetForExpiry;
 
 	public FxIndexDetail() {
 
 	}
 
+	public String composeName() {
+		return toCurrencyCodeValue + " _ " + fromCurrencyCodeValue + ":" + frequencyCodeValue;
+	}
+
 	@JsonIgnore
 	public void setDefaults() {
-		frequencyValue = FrequencyCode.MONTHLY.getCode();
+		frequencyCodeValue = FrequencyCode.MONTHLY.getCode();
+		daysOffsetForExpiry = 0;
 	}
 
 	public void validate() throws OBValidationException {
 
 		if (name == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_INDEX_NAME.getCode());
+			throw new OBValidationException(PricingErrorCode.MISSING_FX_INDEX_NAME.getCode());
 
 		if (fromCurrencyCodeValue == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_INDEX_TYPE.getCode());
+			throw new OBValidationException(PricingErrorCode.MISSING_FX_INDEX_FREQUENCY.getCode());
+
+		if (fromCurrencyCodeValue == null)
+			throw new OBValidationException(PricingErrorCode.MISSING_FX_INDEX_FROM_CURRENCY.getCode());
 
 		if (toCurrencyCodeValue == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_INDEX_DAYS_EXPIRY.getCode());
+			throw new OBValidationException(PricingErrorCode.MISSING_FX_INDEX_TO_CURRENCY.getCode());
+
+		if (daysOffsetForExpiry == null)
+			throw new OBValidationException(PricingErrorCode.MISSING_FX_INDEX_DAYS_EXPIRY.getCode());
 
 	}
 
@@ -104,23 +115,23 @@ public class FxIndexDetail {
 	@Transient
 	@JsonIgnore
 	public FrequencyCode getFrequencyCode() {
-		return FrequencyCode.lookUp(frequencyValue);
+		return FrequencyCode.lookUp(frequencyCodeValue);
 	}
 
 	public void setFrequencyCode(FrequencyCode code) {
 		if (code != null)
-			this.frequencyValue = code.getCode();
+			this.frequencyCodeValue = code.getCode();
 		else
-			this.frequencyValue = null;
+			this.frequencyCodeValue = null;
 	}
 
 	@Column(name = "FREQUENCY_CODE")
-	public String getFrequencyValue() {
-		return frequencyValue;
+	public String getFrequencyCodeValue() {
+		return frequencyCodeValue;
 	}
 
-	public void setFrequencyValue(String frequencyValue) {
-		this.frequencyValue = frequencyValue;
+	public void setFrequencyCodeValue(String frequencyCodeValue) {
+		this.frequencyCodeValue = frequencyCodeValue;
 	}
 
 	@Column(name = "INDEX_NAME")
@@ -161,8 +172,8 @@ public class FxIndexDetail {
 		if (copy.name != null)
 			this.name = copy.name;
 		
-		if (copy.frequencyValue != null)
-			this.frequencyValue = copy.frequencyValue;
+		if (copy.frequencyCodeValue != null)
+			this.frequencyCodeValue = copy.frequencyCodeValue;
 
 		if (copy.toCurrencyCodeValue != null)
 			this.toCurrencyCodeValue = copy.toCurrencyCodeValue;

@@ -2,7 +2,6 @@ package com.onbelay.dealcapture.riskfactor.service;
 
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocation;
@@ -14,6 +13,9 @@ import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
     private static final Logger logger = LogManager.getLogger();
     private PricingLocation location;
-    private PriceIndex priceIndex;
+    private PriceIndex aceeDailyPriceIndex;
     
     private PriceIndex priceDailyIndex;
 
@@ -49,18 +51,32 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
         super.setUp();
 
         location = PricingLocationFixture.createPricingLocation("West");
-        priceIndex = PriceIndexFixture.createPriceIndex(
+        aceeDailyPriceIndex = PriceIndexFixture.createPriceIndex(
                 "ACEE",
+                FrequencyCode.DAILY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
         
         priceDailyIndex = PriceIndexFixture.createPriceIndex(
                 "ADDLY",
                 FrequencyCode.DAILY,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
                 location);
+
         PriceRiskFactorFixture.createPriceRiskFactors(
-                priceIndex,
+                aceeDailyPriceIndex,
                 fromMarketDate,
                 toMarketDate);
+
+        PriceIndexFixture.generateDailyPriceCurves(
+                aceeDailyPriceIndex,
+                fromMarketDate,
+                toMarketDate,
+                BigDecimal.valueOf(1.23),
+                LocalDateTime.now());
+
         flush();
     }
 
@@ -69,9 +85,9 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
         PriceRiskFactorSnapshot snapshot = new PriceRiskFactorSnapshot();
         snapshot.getDetail().setDefaults();
         snapshot.getDetail().setMarketDate(LocalDate.of(2023, 6, 23));
-        snapshot.getDetail().setCreateUpdateDate(LocalDateTime.of(2023, 7, 1, 11, 6));
+        snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 7, 1, 11, 6));
         snapshot.getDetail().setValue(BigDecimal.ONE);
-        priceRiskFactorService.savePriceRiskFactors(
+        priceRiskFactorService.save(
                 priceDailyIndex.generateEntityId(),
                 List.of(snapshot));
         flush();
@@ -84,7 +100,7 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
                 LocalDate.of(2023, 6, 23));
         assertNotNull(factor);
         assertEquals(0, BigDecimal.ONE.compareTo(factor.getDetail().getValue()));
-        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreateUpdateDate());
+        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreateUpdateDateTime());
         PriceRiskFactorAudit audit = PriceRiskFactorAudit.findRecentHistory(factor);
         assertNotNull(audit);
         assertEquals(factor.getDetail().getMarketDate(), audit.getDetail().getMarketDate());
@@ -98,7 +114,7 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
         snapshot.getDetail().setValue(BigDecimal.ONE);
 
         try {
-            priceRiskFactorService.savePriceRiskFactors(
+            priceRiskFactorService.save(
                     priceDailyIndex.generateEntityId(),
                     List.of(snapshot));
             flush();
@@ -114,12 +130,23 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
     @Test
     public void testFindByMarketDate() {
         PriceRiskFactorSnapshot snapshot = priceRiskFactorService.findByMarketDate(
-                priceIndex.generateEntityId(),
+                aceeDailyPriceIndex.generateEntityId(),
                 LocalDate.of(2023, 2, 4));
 
         assertNotNull(snapshot.getPriceIndexId());
         assertEquals(LocalDate.of(2023, 2, 4),snapshot.getDetail().getMarketDate());
 
+    }
+
+    @Test
+    public void valueRiskFactors() {
+        priceRiskFactorService.valueRiskFactors(aceeDailyPriceIndex.generateEntityId());
+        PriceRiskFactorSnapshot snapshot = priceRiskFactorService.findByMarketDate(
+                aceeDailyPriceIndex.generateEntityId(),
+                LocalDate.of(2023, 2, 4));
+
+        assertNotNull(snapshot.getPriceIndexId());
+        assertEquals(0, BigDecimal.valueOf(1.23).compareTo(snapshot.getDetail().getValue()));
     }
 
 }

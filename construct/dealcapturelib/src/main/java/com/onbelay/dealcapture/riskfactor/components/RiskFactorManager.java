@@ -12,6 +12,10 @@ public interface RiskFactorManager {
             String indexName,
             LocalDate positionDate);
 
+    PriceRiskFactorHolder determinePriceRiskFactor(
+            PriceIndexPositionDateContainer container,
+            LocalDate marketDate);
+
     public FxRiskFactorHolder determineFxRiskFactor(
             CurrencyCode fromCurrencyCode,
             CurrencyCode toCurrencyCode,
@@ -21,4 +25,6 @@ public interface RiskFactorManager {
     Queue<PriceRiskFactorHolder> getPriceRiskFactorHolderQueue();
 
     Queue<FxRiskFactorHolder> getFxRiskFactorHolderQueue();
+
+    PriceIndexPositionDateContainer findPriceIndexContainer(String priceIndexCode);
 }

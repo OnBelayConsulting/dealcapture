@@ -17,8 +17,6 @@ public class DealCaptureCodeManagerConfig implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         codeManager.addCodeEntity(DealStatusCodeEntity.codeFamily, "DealStatusCodeEntity");
         codeManager.addCodeEntity(DealTypeCodeEntity.codeFamily, "DealTypeCodeEntity");
-        codeManager.addCodeEntity(FrequencyCodeEntity.codeFamily, "FrequencyCodeEntity");
-        codeManager.addCodeEntity(UnitOfMeasureCodeEntity.codeFamily, "UnitOfMeasureCodeEntity");
 
     }
 }

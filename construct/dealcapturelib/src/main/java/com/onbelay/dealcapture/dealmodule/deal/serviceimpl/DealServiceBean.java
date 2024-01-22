@@ -25,11 +25,13 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.AbstractDealAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealSnapshotAssemblerFactory;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.CreateDealFactory;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -93,7 +95,22 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 		return new TransactionResult(ids);
 	}
 
+	@Override
+	public boolean updatePositionGenerationStatus(
+			String positionGenerationIdentifier,
+			EntityId entityId,
+			PositionGenerationStatusCode positionGenerationStatusCode) {
 
+		return dealRepository.executeUpdateOfPositionGenerationStatus(
+				entityId.getId(),
+				positionGenerationIdentifier,
+				positionGenerationStatusCode);
+	}
+
+	@Override
+	public DealSummary getDealSummary(EntityId entityId) {
+		return dealRepository.getDealSummary(entityId);
+	}
 
 	@Override
 	public TransactionResult save(BaseDealSnapshot snapshot) {

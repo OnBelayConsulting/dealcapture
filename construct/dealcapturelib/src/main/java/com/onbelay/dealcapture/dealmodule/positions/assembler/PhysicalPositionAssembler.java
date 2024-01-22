@@ -24,6 +24,8 @@ public class PhysicalPositionAssembler extends DealPositionAssembler implements 
         if (position.getMarketPriceFxRiskFactor() != null)
             snapshot.setMarketFxRiskFactorId(position.getMarketPriceFxRiskFactor().generateEntityId());
 
+        setChildren(position, snapshot);
+
         return snapshot;
     }
 

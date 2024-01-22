@@ -19,13 +19,16 @@ import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.pricing.repository.FxCurveRepository;
+import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository (value="fxCurveRepository")
@@ -33,9 +36,10 @@ import java.util.List;
 
 
 public class FxCurveRepositoryBean extends BaseRepository<FxCurve> implements FxCurveRepository {
-	public static final String FETCH_FX_BY_FX_DATE_OBS_DATE = "FETCH_FX_BY_FX_DATE_OBS_DATE";
-	
-	@Autowired
+	public static final String FETCH_FX_BY_FX_DATE_OBS_DATE = "FxCurveRepository.FETCH_FX_BY_FX_DATE_OBS_DATE";
+    public static final String FETCH_RATE_REPORTS = "FxCurveRepository.FETCH_RATE_REPORTS";
+
+    @Autowired
 	private FxCurveColumnDefinitions fxCurveColumnDefinitions;
 
 
@@ -47,15 +51,46 @@ public class FxCurveRepositoryBean extends BaseRepository<FxCurve> implements Fx
 			return null;
 		
 	}
-	
-	
+
+
+	@Override
+	public List<CurveReport> fetchFxCurveReports(
+			List<Integer> indexIds,
+			LocalDate fromCurveDate,
+			LocalDate toCurveDate,
+			LocalDateTime observedDateTime) {
+
+
+		String[] names = {"indexIds", "fromCurveDate", "toCurveDate", "observedDateTime"};
+		if (indexIds.size() < 2000) {
+			Object[] parms =  {indexIds, fromCurveDate, toCurveDate, observedDateTime};
+			return (List<CurveReport>) executeReportQuery(
+					FETCH_RATE_REPORTS,
+					names,
+					parms);
+		} else {
+			ArrayList<CurveReport> reports = new ArrayList<>();
+			SubLister<Integer> subLister = new SubLister<>(indexIds, 2000);
+			Object[] parms =  {subLister.nextList(), fromCurveDate, toCurveDate, observedDateTime};
+			while (subLister.moreElements()) {
+				reports.addAll(
+						(List<CurveReport>) executeReportQuery(
+								FETCH_RATE_REPORTS,
+								names,
+								parms));
+			}
+			return reports;
+		}
+	}
+
+
 
 	@Override
 	public FxCurve fetchCurrentFxCurve(
 			EntityId fxIndexId,
-			LocalDate fxDate) {
-		String[] names = {"fxIndexId", "fxDate", "currentDateTime"};
-		Object[] values = {fxIndexId.getId(), fxDate, LocalDateTime.now()};
+			LocalDate curveDate) {
+		String[] names = {"fxIndexId", "curveDate", "currentDateTime"};
+		Object[] values = {fxIndexId.getId(), curveDate, LocalDateTime.now()};
 		return executeSingleResultQuery(FETCH_FX_BY_FX_DATE_OBS_DATE, names, values);
 	}
 

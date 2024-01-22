@@ -19,6 +19,8 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
+import com.onbelay.dealcapture.pricing.snapshot.FxIndexReport;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.shared.enums.CurrencyCode;
 
 import java.util.List;
@@ -32,10 +34,13 @@ public interface FxIndexRepository {
 	
 	public FxIndex load(EntityId id);
 
-	public List<FxIndex> loadAll();
+	public List<FxIndex> findActiveFxIndices();
 	
 	public List<Integer> findFxIndexIds(DefinedQuery definedQuery);
 	
 	public List<FxIndex> fetchByIds(QuerySelectedPage selectedPage);
+
+	List<FxIndexReport> fetchFxIndexReports(List<Integer> indexIds);
+
 
 }

@@ -109,7 +109,7 @@ public class OrganizationRestController extends BaseRestController {
 
 		try {
 			result = organizationRestAdapter.saveRoles(
-					id,
+					new EntityId(id),
 					snapshots);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);

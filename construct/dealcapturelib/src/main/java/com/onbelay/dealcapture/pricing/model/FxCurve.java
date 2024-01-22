@@ -29,17 +29,38 @@ import jakarta.persistence.*;
 @NamedQueries({
     @NamedQuery(
        name = FxCurveRepositoryBean.FETCH_FX_BY_FX_DATE_OBS_DATE,
-       query = "SELECT fx "
-       		+ "   FROM FxCurve fx " +
-       	     "   WHERE fx.fxIndex.id = :fxIndexId "
-       	     + "   AND fx.detail.curveDate = :fxDate "
-       	     + "   AND fx.detail.observedDateTime = "
+       query = "SELECT curve "
+       		+ "   FROM FxCurve curve " +
+       	     "   WHERE curve.fxIndex.id = :fxIndexId "
+       	     + "   AND curve.detail.curveDate = :curveDate "
+       	     + "   AND curve.detail.observedDateTime = "
        	     + "    (SELECT MAX(searchFx.detail.observedDateTime)"
        	     + "       FROM FxCurve searchFx"
-       	     + "      WHERE searchFx.fxIndex.id = :fxIndexId"
-       	     + "        AND searchFx.detail.curveDate = :fxDate"
+       	     + "      WHERE searchFx.fxIndex.id = curve.fxIndex.id"
+       	     + "        AND searchFx.detail.curveDate = curve.detail.curveDate "
        	     + "        AND searchFx.detail.observedDateTime <= :currentDateTime"
-       	     + "     )  ")
+       	     + "     )  "),
+    @NamedQuery(
+       name = FxCurveRepositoryBean.FETCH_RATE_REPORTS,
+       query = "SELECT new com.onbelay.dealcapture.pricing.snapshot.CurveReport(" +
+			   "		curve.fxIndex.id, " +
+			   "		curve.detail.curveDate, " +
+			   "		curve.detail.curveValue, " +
+			   "        curve.detail.frequencyCodeValue) "
+       		+ "   FROM FxCurve curve " +
+       	     "   WHERE curve.fxIndex.id in (:indexIds) "
+       	     + "   AND curve.detail.curveDate >= :fromCurveDate "
+ 		   + "     AND curve.detail.curveDate <= :toCurveDate "
+       	     + "   AND curve.detail.observedDateTime = "
+       	     + "    (SELECT MAX(searchFx.detail.observedDateTime)"
+       	     + "       FROM FxCurve searchFx"
+       	     + "      WHERE searchFx.fxIndex.id = curve.fxIndex.id "
+			   + "      AND searchFx.detail.curveDate = curve.detail.curveDate "
+			   + "      AND searchFx.detail.frequencyCodeValue = curve.detail.frequencyCodeValue "
+       	     + "        AND searchFx.detail.observedDateTime <= :observedDateTime"
+       	     + "     )  " +
+			   "   ORDER BY curve.fxIndex.id, curve.detail.curveDate, curve.detail.frequencyCodeValue")
+
     
 })
 public class FxCurve extends TemporalAbstractEntity {

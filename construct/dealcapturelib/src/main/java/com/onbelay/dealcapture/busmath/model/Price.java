@@ -15,10 +15,9 @@
  */
 package com.onbelay.dealcapture.busmath.model;
 
-import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -55,6 +54,13 @@ public class Price extends CalculatedEntity {
 		} else {
 			return new Price(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
 		}
+	}
+
+	public Price roundPrice() {
+		return new Price(
+				value.setScale(PRICE_SCALE, RoundingMode.HALF_EVEN),
+				currency,
+				unitOfMeasure);
 	}
 
 	@Override

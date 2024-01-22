@@ -15,17 +15,16 @@
  */
 package com.onbelay.dealcapture.pricing.snapshot;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
+import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceIndexDetail {
@@ -35,8 +34,8 @@ public class PriceIndexDetail {
 	private Integer daysOffsetForExpiry;
 	private String indexTypeValue;
 	private String currencyCodeValue;
-	private String unitOfMeasureValue;
-	private String frequencyValue;
+	private String unitOfMeasureCodeValue;
+	private String frequencyCodeValue;
 	
 	public PriceIndexDetail() {
 		
@@ -57,7 +56,7 @@ public class PriceIndexDetail {
 			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_INDEX_TYPE.getCode());
 		
 		if (daysOffsetForExpiry == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_INDEX_DAYS_EXPIRY.getCode());
+			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_INDEX_DAYS_EXPIRY.getCode());
 		
 	}
 	
@@ -107,45 +106,45 @@ public class PriceIndexDetail {
 	@Transient
 	@JsonIgnore
 	public FrequencyCode getFrequencyCode() {
-		return FrequencyCode.lookUp(frequencyValue);
+		return FrequencyCode.lookUp(frequencyCodeValue);
 	}
 
 	public void setFrequencyCode(FrequencyCode code) {
 		if (code != null)
-			this.frequencyValue = code.getCode();
+			this.frequencyCodeValue = code.getCode();
 		else
-			this.frequencyValue = null;
+			this.frequencyCodeValue = null;
 	}
 
 	@Column(name = "FREQUENCY_CODE")
-	public String getFrequencyValue() {
-		return frequencyValue;
+	public String getFrequencyCodeValue() {
+		return frequencyCodeValue;
 	}
 
-	public void setFrequencyValue(String frequencyValue) {
-		this.frequencyValue = frequencyValue;
+	public void setFrequencyCodeValue(String frequencyCodeValue) {
+		this.frequencyCodeValue = frequencyCodeValue;
 	}
 
 	@Transient
 	@JsonIgnore
 	public UnitOfMeasureCode getUnitOfMeasureCode() {
-		return UnitOfMeasureCode.lookUp(unitOfMeasureValue);
+		return UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue);
 	}
 	
 	public void setUnitOfMeasureCode(UnitOfMeasureCode code) {
 		if (code != null)
-			this.unitOfMeasureValue = code.getCode();
+			this.unitOfMeasureCodeValue = code.getCode();
 		else 
-			this.unitOfMeasureValue = null;
+			this.unitOfMeasureCodeValue = null;
 	}
 
 	@Column(name = "UNIT_OF_MEASURE_CODE")
-	public String getUnitOfMeasureValue() {
-		return unitOfMeasureValue;
+	public String getUnitOfMeasureCodeValue() {
+		return unitOfMeasureCodeValue;
 	}
 
-	public void setUnitOfMeasureValue(String unitOfMeasureValue) {
-		this.unitOfMeasureValue = unitOfMeasureValue;
+	public void setUnitOfMeasureCodeValue(String unitOfMeasureCodeValue) {
+		this.unitOfMeasureCodeValue = unitOfMeasureCodeValue;
 	}
 
 	@Column(name = "INDEX_TYPE_CODE")
@@ -195,14 +194,14 @@ public class PriceIndexDetail {
 		if (copy.name != null)
 			this.name = copy.name;
 		
-		if (copy.frequencyValue != null)
-			this.frequencyValue = copy.frequencyValue;
+		if (copy.frequencyCodeValue != null)
+			this.frequencyCodeValue = copy.frequencyCodeValue;
 
 		if (copy.currencyCodeValue != null)
 			this.currencyCodeValue = copy.currencyCodeValue;
 
-		if (copy.unitOfMeasureValue != null)
-			this.unitOfMeasureValue = copy.unitOfMeasureValue;
+		if (copy.unitOfMeasureCodeValue != null)
+			this.unitOfMeasureCodeValue = copy.unitOfMeasureCodeValue;
 		
 		if (copy.description != null)
 			this.description = copy.description;

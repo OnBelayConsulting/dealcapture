@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.organization.adapter;
 
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummaryCollection;
@@ -23,6 +24,6 @@ public interface OrganizationRestAdapter {
             Integer limit);
 
     TransactionResult saveRoles(
-            Integer id,
+            EntityId organizationId,
             List<OrganizationRoleSnapshot> snapshots);
 }

@@ -17,6 +17,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import java.util.List;
 
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import jakarta.transaction.Transactional;
 
 import com.onbelay.core.enums.CoreTransactionErrorCode;
@@ -38,10 +39,33 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 	public static final String FETCH_ALL_DEALS = "DealRepository.FETCH_ALL_DEALS";
 	public static final String FETCH_DEAL_SUMMARIES = "DealRepository.FETCH_DEAL_SUMMARIES";
 	public static final String FIND_DEAL_BY_TICKET_NO = "DealRepository.FIND_DEAL_BY_TICKET_NO";
+	public static final String GET_DEAL_SUMMARY = "DealRepository.GET_DEAL_SUMMARY";
+
+	private static final String UPDATE_POSITION_GENERATION_STATUS_STATEMENT
+			= "UPDATE BaseDeal  SET dealDetail.positionGenerationStatusValue = :status, " +
+			" dealDetail.positionGenerationIdentifier = :identifier " +
+			"  WHERE id = :dealId " +
+			"   AND dealDetail.positionGenerationStatusValue in ('Completed', 'Cancelled', 'None')";
 
 	@Autowired
 	private DealColumnDefinitions dealColumnDefinitions;
-	
+
+
+	public boolean executeUpdateOfPositionGenerationStatus(
+			Integer dealId,
+			String positionGeneratorId,
+			PositionGenerationStatusCode code) {
+
+		String[] names = {"identifier", "status", "dealId"};
+		Object[] parms = {positionGeneratorId, code.getCode(), dealId};
+
+		int result = executeUpdate(
+				UPDATE_POSITION_GENERATION_STATUS_STATEMENT,
+				names,
+				parms);
+
+		return result > 0;
+	}
 
 	/*
 	 * Defined in bean only for testing.
@@ -79,7 +103,14 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 		else
 			return null;
 	}
-	
+
+	public DealSummary getDealSummary(EntityId id) {
+		return (DealSummary) executeSingleResultReportQuery(
+				GET_DEAL_SUMMARY,
+				"dealId",
+				id.getId());
+	}
+
 	public BaseDeal findDealByTicketNo(String ticketNo) {
 		return (BaseDeal) executeSingleResultQuery(
 				FIND_DEAL_BY_TICKET_NO, 

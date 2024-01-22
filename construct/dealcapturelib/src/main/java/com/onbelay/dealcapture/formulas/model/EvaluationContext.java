@@ -1,7 +1,7 @@
 package com.onbelay.dealcapture.formulas.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.UnitOfMeasureCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ public class EvaluationContext {
     private CurrencyCode currencyCode;
     private UnitOfMeasureCode unitOfMeasureCode = UnitOfMeasureCode.GJ;
 
-    protected EvaluationContext() {
+    public EvaluationContext() {
 
     }
 
@@ -66,5 +66,25 @@ public class EvaluationContext {
 
     public UnitOfMeasureCode getUnitOfMeasureCode() {
         return unitOfMeasureCode;
+    }
+
+    public void setStartPositionDate(LocalDate startPositionDate) {
+        this.startPositionDate = startPositionDate;
+    }
+
+    public void setEndPositionDate(LocalDate endPositionDate) {
+        this.endPositionDate = endPositionDate;
+    }
+
+    public void setObservedDateTime(LocalDateTime observedDateTime) {
+        this.observedDateTime = observedDateTime;
+    }
+
+    public void setCurrencyCode(CurrencyCode currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public void setUnitOfMeasureCode(UnitOfMeasureCode unitOfMeasureCode) {
+        this.unitOfMeasureCode = unitOfMeasureCode;
     }
 }

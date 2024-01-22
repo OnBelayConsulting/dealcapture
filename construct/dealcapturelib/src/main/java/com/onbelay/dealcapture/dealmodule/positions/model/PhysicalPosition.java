@@ -7,15 +7,21 @@ import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionDetail;
 
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
+import com.onbelay.shared.enums.BuySellCode;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table (name = "PHYSICAL_POSITION")
@@ -23,6 +29,8 @@ public class PhysicalPosition extends DealPosition {
 
 
     private PhysicalPositionDetail detail = new PhysicalPositionDetail();
+
+    private FxRiskFactor fixedPriceFxRiskFactor;
 
     private PriceRiskFactor dealPriceRiskFactor;
     private FxRiskFactor dealPriceFxRiskFactor;
@@ -51,18 +59,22 @@ public class PhysicalPosition extends DealPosition {
         detail.copyFrom(physicalPositionSnapshot.getDetail());
         setAssociations(physicalPositionSnapshot);
         deal.addPosition(this);
+        postCreateWith(snapshot);
     }
+
+
 
     public void updateWith(DealPositionSnapshot snapshot) {
         super.updateWith(snapshot);
         PhysicalPositionSnapshot physicalPositionSnapshot = (PhysicalPositionSnapshot) snapshot;
         detail.copyFrom(physicalPositionSnapshot.getDetail());
         setAssociations(physicalPositionSnapshot);
+        postCreateWith(snapshot);
         update();
     }
 
     @Override
-    public void valuePosition() {
+    public void valuePosition(LocalDateTime currentDateTime) {
         Price dealPrice =  switch (detail.getDealPriceValuationCode()) {
 
             case FIXED -> getDealPrice();
@@ -75,9 +87,16 @@ public class PhysicalPosition extends DealPosition {
         };
 
         Price marketPrice = getMarketIndexPrice();
-
-        Price netPrice = dealPrice.subtract(marketPrice);
+        dealPrice = dealPrice.roundPrice();
+        marketPrice = marketPrice.roundPrice();
+        Price netPrice;
+        if (getDeal().getDealDetail().getBuySell() == BuySellCode.BUY)
+            netPrice = marketPrice.subtract(dealPrice);
+        else
+            netPrice = dealPrice.subtract(marketPrice);
         Amount amount = netPrice.multiply(getDealPositionDetail().getQuantity());
+
+        getDealPositionDetail().setCreateUpdateDateTime(currentDateTime);
 
         if (amount.isInError())
             getDealPositionDetail().setErrorCode(amount.getError().getCode());
@@ -87,32 +106,70 @@ public class PhysicalPosition extends DealPosition {
 
     @Transient
     public Price getMarketIndexPrice() {
+
         Price price = marketPriceRiskFactor.fetchCurrentPrice();
-        if (marketPriceFxRiskFactor != null)
-            return price.apply(marketPriceFxRiskFactor.getFxRate());
-        else
-            return price;
+        price = price.multiply(detail.getMarketPriceUOMConversion());
+
+        if (marketPriceFxRiskFactor != null) {
+            price =  price.apply(
+                    marketPriceFxRiskFactor.fetchFxRate(
+                            getDealPositionDetail().getCurrencyCode(),
+                            price.getCurrency()));
+        }
+        List<PositionRiskFactorMappingSummary> summaries = findMappingSummaries(PriceTypeCode.MARKET_PRICE);
+        if (summaries.isEmpty() == false) {
+            for (PositionRiskFactorMappingSummary summary : summaries) {
+                price = price.add(summary.calculateConvertedPrice(
+                        price.getCurrency(),
+                        price.getUnitOfMeasure()));
+            }
+        }
+        return price;
     }
 
     @Transient
     public Price getDealIndexPrice() {
         Price price = dealPriceRiskFactor.fetchCurrentPrice();
+        price = price.multiply(detail.getDealPriceUOMConversion());
+
         if (dealPriceFxRiskFactor != null) {
-            return price.apply(this.dealPriceFxRiskFactor.getFxRate());
-        } else {
-            return price;
+            price = price.multiply(this.dealPriceFxRiskFactor.getDetail().getValue());
         }
+
+        List<PositionRiskFactorMappingSummary> summaries = findMappingSummaries(PriceTypeCode.DEAL_PRICE);
+        if (summaries.isEmpty() == false) {
+            for (PositionRiskFactorMappingSummary summary : summaries) {
+                price = price.add(summary.calculateConvertedPrice(
+                        price.getCurrency(),
+                        price.getUnitOfMeasure()));
+            }
+        }
+
+        return price;
     }
 
     @Transient
     public Price getDealPrice() {
-        return new Price(
-                detail.getDealPriceValue(),
-                getDealPositionDetail().getCurrencyCode(),
-                getDealPositionDetail().getVolumeUnitOfMeasure());
+        Price dealPrice = detail.getDealPrice();
+        if (getDealPositionDetail().getCurrencyCode() != dealPrice.getCurrency()) {
+            dealPrice = dealPrice.apply(
+                    getFixedPriceFxRiskFactor()
+                            .fetchFxRate(
+                                    getDealPositionDetail().getCurrencyCode(),
+                                    dealPrice.getCurrency()));
+        }
+
+        if (getDealPositionDetail().getVolumeUnitOfMeasure() != dealPrice.getUnitOfMeasure()) {
+            dealPrice = dealPrice.multiply(detail.getDealPriceUOMConversion());
+        }
+        return dealPrice;
     }
 
     private void setAssociations(PhysicalPositionSnapshot snapshot) {
+
+
+        if (snapshot.getFixedDealPriceFxRiskFactorId() != null)
+            this.fixedPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getFixedDealPriceFxRiskFactorId());
 
         if (snapshot.getDealPriceRiskFactorId() != null)
             this.dealPriceRiskFactor = getPriceRiskFactorRepository().load(snapshot.getDealPriceRiskFactorId());
@@ -128,6 +185,18 @@ public class PhysicalPosition extends DealPosition {
 
 
     }
+
+
+    @ManyToOne
+    @JoinColumn(name = "FIXED_PRICE_FX_RISK_FACTOR_ID")
+    public FxRiskFactor getFixedPriceFxRiskFactor() {
+        return fixedPriceFxRiskFactor;
+    }
+
+    public void setFixedPriceFxRiskFactor(FxRiskFactor fixedDealPriceFxRiskFactor) {
+        this.fixedPriceFxRiskFactor = fixedDealPriceFxRiskFactor;
+    }
+
 
     @ManyToOne
     @JoinColumn(name = "DEAL_PRICE_RISK_FACTOR_ID")

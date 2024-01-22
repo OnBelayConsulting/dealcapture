@@ -12,7 +12,7 @@
         <addForeignKeyConstraint
                 baseColumnNames="VOLUME_FREQUENCY_CODE"
                 baseTableName="BASE_DEAL"
-                constraintName="BASE_DEAL_FK06"
+                constraintName="BASE_DEAL_FK07"
                 deferrable="false"
                 initiallyDeferred="false"
                 onDelete="RESTRICT"

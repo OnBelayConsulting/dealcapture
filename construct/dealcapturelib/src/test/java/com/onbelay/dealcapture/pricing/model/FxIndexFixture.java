@@ -1,10 +1,10 @@
 package com.onbelay.dealcapture.pricing.model;
 
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.enums.FrequencyCode;
-import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import java.util.List;
 public class FxIndexFixture {
 
 
-    public static FxIndex createDailyFxIndex(CurrencyCode from, CurrencyCode to) {
+    public static FxIndex createDailyFxIndex(CurrencyCode to, CurrencyCode from) {
         String name = from.getCode()
                 + "_"
                 + to.getCode()
@@ -41,8 +41,8 @@ public class FxIndexFixture {
 
     public static FxIndex createFxIndex(
             FrequencyCode frequencyCode,
-            CurrencyCode from,
-            CurrencyCode to) {
+            CurrencyCode to,
+            CurrencyCode from) {
         String name = from.getCode()
                 + "_"
                 + to.getCode()
@@ -66,6 +66,31 @@ public class FxIndexFixture {
         return fxIndex;
     }
 
+    public static FxIndexSnapshot createFxIndexSnapshot(
+            FrequencyCode frequencyCode,
+            CurrencyCode to,
+            CurrencyCode from) {
+        String name = from.getCode()
+                + "_"
+                + to.getCode()
+                + ":"
+                + frequencyCode.getCode();
+
+        FxIndexSnapshot snapshot = new FxIndexSnapshot();
+        snapshot.getDetail().setFrequencyCode(frequencyCode);
+        snapshot.getDetail().setFromCurrencyCode(from);
+        snapshot.getDetail().setToCurrencyCode(to);
+        snapshot.getDetail().setDescription( "From: "
+                + from.getCode()
+                + " To:"
+                + to.getCode()
+                + ":"
+                + frequencyCode.getCode() );
+        snapshot.getDetail().setName(name);
+        return snapshot;
+    }
+
+
 
     public static List<EntityId> generateDailyFxCurves(
             FxIndex fxIndex,
@@ -84,6 +109,51 @@ public class FxIndexFixture {
             fxs.add(curveSnapshot);
 
             currentDate = currentDate.plusDays(1);
+        }
+        return fxIndex.saveFxCurves(fxs);
+    }
+
+    public static List<EntityId> generateDailyFxCurves(
+            FxIndex fxIndex,
+            LocalDate startMarketDate,
+            LocalDate endMarketDate,
+            BigDecimal fxRate,
+            LocalDateTime observedDateTime) {
+
+        LocalDate currentDate = startMarketDate;
+        ArrayList<FxCurveSnapshot> fxs = new ArrayList<>();
+        while (currentDate.isAfter(endMarketDate) == false) {
+            FxCurveSnapshot curveSnapshot = new FxCurveSnapshot();
+            curveSnapshot.getDetail().setCurveDate(currentDate);
+            curveSnapshot.getDetail().setCurveValue(fxRate);
+            curveSnapshot.getDetail().setObservedDateTime(observedDateTime);
+            curveSnapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
+            fxs.add(curveSnapshot);
+
+            currentDate = currentDate.plusDays(1);
+        }
+        return fxIndex.saveFxCurves(fxs);
+    }
+
+
+    public static List<EntityId> generateMonthlyFxCurves(
+            FxIndex fxIndex,
+            LocalDate startMarketDate,
+            LocalDate endMarketDate,
+            BigDecimal fxRate,
+            LocalDateTime observedDateTime) {
+
+        LocalDate currentDate = startMarketDate;
+        ArrayList<FxCurveSnapshot> fxs = new ArrayList<>();
+        while (currentDate.isAfter(endMarketDate) == false) {
+            FxCurveSnapshot curveSnapshot = new FxCurveSnapshot();
+            curveSnapshot.getDetail().setCurveDate(currentDate);
+            curveSnapshot.getDetail().setCurveValue(fxRate);
+            curveSnapshot.getDetail().setObservedDateTime(observedDateTime);
+            curveSnapshot.getDetail().setFrequencyCode(FrequencyCode.MONTHLY);
+            fxs.add(curveSnapshot);
+
+            currentDate = currentDate.plusMonths(1);
         }
         return fxIndex.saveFxCurves(fxs);
     }
