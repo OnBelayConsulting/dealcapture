@@ -32,6 +32,7 @@ public class FxIndexRestAdapterBean extends BaseRestAdapterBean implements FxInd
 
     @Override
     public TransactionResult save(List<FxIndexSnapshot> snapshots) {
+        initializeSession();
         return fxIndexService.save(snapshots);
     }
 

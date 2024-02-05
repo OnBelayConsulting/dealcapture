@@ -118,7 +118,7 @@ public class PriceIndexRestController extends BaseRestController {
 
 	@Operation(summary="Create or update priceCurves for a PriceIndex")
 	@PutMapping(
-			value = "/{id}/prices",
+			value = "/{id}/curves",
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> savePriceCurves(
@@ -206,7 +206,7 @@ public class PriceIndexRestController extends BaseRestController {
 
 
 	@Operation(summary="fetch all index prices")
-	@GetMapping(value="/prices" )
+	@GetMapping(value="/curves" )
 	public ResponseEntity<PriceCurveSnapshotCollection> getIndexPrices(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,

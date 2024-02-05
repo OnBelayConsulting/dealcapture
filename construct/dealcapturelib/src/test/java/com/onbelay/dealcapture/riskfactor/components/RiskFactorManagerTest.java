@@ -2,7 +2,6 @@ package com.onbelay.dealcapture.riskfactor.components;
 
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
 import com.onbelay.dealcapture.pricing.model.*;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
@@ -104,21 +103,10 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     @Test
     public void determineRiskFactorsFound() {
-        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(new DefinedQuery("PriceIndex"));
-
-        ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
-                priceIndexService.findByIds(selectedPage),
-                fxIndexService.findActiveFxIndices(),
-                priceRiskFactorService.findByPriceIndexIds(selectedPage.getIds()),
-                fxRiskFactorService.findByFxIndexIds(
-                        fxIndexService.findActiveFxIndices()
-                                .stream()
-                                .map(c->c.getEntityId().getId())
-                                .collect(Collectors.toList())
-                ));
+        ConcurrentRiskFactorManager riskFactorManager = createConcurrentRiskFactorManager();
 
         PriceRiskFactorHolder holder = riskFactorManager.determinePriceRiskFactor(
-                "ACEE",
+                dailyCADPriceIndex.getId(),
                 LocalDate.of(2023, 2, 4));
 
         assertNotNull(holder);
@@ -131,7 +119,7 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
         ConcurrentRiskFactorManager riskFactorManager = createConcurrentRiskFactorManager();
 
         PriceRiskFactorHolder holder = riskFactorManager.determinePriceRiskFactor(
-                "ACEE",
+                dailyCADPriceIndex.getId(),
                 LocalDate.of(2024, 2, 4));
 
         assertNotNull(holder);
@@ -185,18 +173,20 @@ public class RiskFactorManagerTest extends DealCaptureSpringTestCase {
 
     private ConcurrentRiskFactorManager createConcurrentRiskFactorManager() {
         QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(new DefinedQuery("PriceIndex"));
+        QuerySelectedPage fxSelectedPage =fxIndexService.findFxIndexIds(new DefinedQuery("FxIndex"));
 
-        return new ConcurrentRiskFactorManager(
+        ConcurrentRiskFactorManager riskFactorManager = new ConcurrentRiskFactorManager(
                 priceIndexService.findByIds(selectedPage),
                 fxIndexService.findActiveFxIndices(),
-                priceRiskFactorService.findByPriceIndexIds(selectedPage.getIds()),
+                priceRiskFactorService.findByPriceIndexIds(
+                        selectedPage.getIds(),
+                        fromMarketDate,
+                        toMarketDate),
                 fxRiskFactorService.findByFxIndexIds(
-                        fxIndexService.findActiveFxIndices()
-                                .stream()
-                                .map(c->c.getEntityId().getId())
-                                .collect(Collectors.toList())
-                ));
-
+                        fxSelectedPage.getIds(),
+                        fromMarketDate,
+                        toMarketDate));
+        return riskFactorManager;
     }
 
 }

@@ -17,6 +17,7 @@ package com.onbelay.dealcapture.organization.model;
 
 import java.util.List;
 
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import jakarta.transaction.Transactional;
 
 import com.onbelay.core.enums.CoreTransactionErrorCode;
@@ -34,9 +35,9 @@ import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepositor
 @Transactional
 
 public class OrganizationRoleRepositoryBean extends BaseRepository<OrganizationRole> implements OrganizationRoleRepository {
-	public static final String FIND_BY_SHORT_NAME = "FIND_DEAL_ORG_ROLE_BY_SHORT_NAME";
-	public static final String FIND_BY_ORGANIZATION_ID = "FIND_DEAL_ORG_ROLE_BY_ORGANIZATION_ID";
-	public static final String FETCH_SUMMARIES = "FETCH_ORG_ROLE_SUMMARIES";
+	public static final String FIND_BY_SHORT_NAME = "OrganizationRoleRepository.FIND_BY_SHORT_NAME";
+	public static final String GET_BY_SHORT_NAME_ROLE_TYPE = "OrganizationRoleRepository.GET_BY_SHORT_NAME_ROLE_TYPE";
+	public static final String FIND_BY_ORGANIZATION_ID = "OrganizationRoleRepository.FIND_BY_ORGANIZATION_ID";
 
 	@Autowired
 	private OrganizationRoleColumnDefinitions organizationRoleColumnDefinitions;
@@ -68,6 +69,16 @@ public class OrganizationRoleRepositoryBean extends BaseRepository<OrganizationR
 					shortName);
 	}
 
+	@Override
+	public OrganizationRole getByShortNameAndRoleType(
+			String organizationShortName,
+			OrganizationRoleType organizationRoleType) {
+
+		String[] names = {"shortName", "roleType"};
+		Object[] parms = {organizationShortName, organizationRoleType.getCode()};
+
+		return executeSingleResultQuery(GET_BY_SHORT_NAME_ROLE_TYPE, names, parms);
+	}
 
 	@Override
 	public List<OrganizationRole> fetchByOrganizationId(Integer organizationId) {

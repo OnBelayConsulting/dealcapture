@@ -23,6 +23,8 @@ public interface OrganizationRestAdapter {
             Integer start,
             Integer limit);
 
+    OrganizationSnapshot get(Integer id);
+
     TransactionResult saveRoles(
             EntityId organizationId,
             List<OrganizationRoleSnapshot> snapshots);

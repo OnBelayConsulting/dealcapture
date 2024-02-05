@@ -30,6 +30,12 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
+    public OrganizationSnapshot get(Integer id) {
+        initializeSession();
+        return organizationService.load(new EntityId(id));
+    }
+
+    @Override
     public OrganizationSnapshotCollection find(
             String queryText,
             Integer start,

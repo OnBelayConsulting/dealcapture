@@ -2,6 +2,7 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.function.BiFunction;
 
 public class DealPositionGeneratorFactory {
 
-    private Map<DealTypeCode, BiFunction<BaseDealSnapshot, RiskFactorManager, DealPositionGenerator>> generatorMap = new HashMap<>();
+    private Map<DealTypeCode, BiFunction<DealSummary, RiskFactorManager, DealPositionGenerator>> generatorMap = new HashMap<>();
 
 
     public DealPositionGeneratorFactory() {
@@ -22,10 +23,10 @@ public class DealPositionGeneratorFactory {
     }
 
     public DealPositionGenerator newGenerator(
-            BaseDealSnapshot dealSnapshot,
+            DealSummary dealSummary,
             RiskFactorManager riskFactorManager) {
-         return generatorMap.get(dealSnapshot.getDealType()).apply(
-                 dealSnapshot,
+         return generatorMap.get(dealSummary.getDealTypeCode()).apply(
+                 dealSummary,
                  riskFactorManager);
     }
 

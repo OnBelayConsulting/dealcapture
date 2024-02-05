@@ -58,11 +58,11 @@ public class PricingLocationServiceBean extends BaseDomainService implements Pri
 		
 		if (snapshot.getEntityState() == EntityState.NEW) {
 			pricingLocation = new PricingLocation(snapshot);
-			return new TransactionResult(pricingLocation.generateEntityId());
+			return new TransactionResult(pricingLocation.getId());
 		} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 			pricingLocation = pricingLocationRepository.load(snapshot.getEntityId());
 			pricingLocation.updateWith(snapshot);
-			return new TransactionResult(pricingLocation.generateEntityId());
+			return new TransactionResult(pricingLocation.getId());
 		} else if (snapshot.getEntityState() == EntityState.DELETE) {
 			pricingLocation = pricingLocationRepository.load(snapshot.getEntityId());
 			pricingLocation.delete();
@@ -78,7 +78,7 @@ public class PricingLocationServiceBean extends BaseDomainService implements Pri
 		for (PricingLocationSnapshot snapshot : snapshots) {
 			TransactionResult result = save(snapshot);
 			if (result.getEntityId() != null)
-				overallResult.addEntityId(result.getEntityId());
+				overallResult.getIds().add(result.getId());
 		}
 		return overallResult;
 	}

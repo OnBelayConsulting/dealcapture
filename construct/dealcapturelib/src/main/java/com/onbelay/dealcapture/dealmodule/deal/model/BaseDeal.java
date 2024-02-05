@@ -30,6 +30,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
@@ -51,29 +52,32 @@ import java.util.List;
 			   "  FROM BaseDeal deal " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),
     @NamedQuery(
-       name = DealRepositoryBean.FETCH_DEAL_SUMMARIES,
+       name = DealRepositoryBean.FETCH_ASSIGNED_DEAL_SUMMARIES,
        query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary( "
-       		+ "          deal.id, "
-       		+ "          deal.dealDetail.ticketNo, "
-       		+ "          deal.dealDetail.startDate,"
-       		+ "          deal.companyRole.organization.detail.shortName, "
-       		+ "          deal.counterpartyRole.organization.detail.shortName," +
-			   "		 deal.dealDetail.dealStatusValue," +
-			   "         deal.dealDetail.positionGenerationStatusValue," +
-			   "         deal.dealDetail.positionGenerationIdentifier) "
-       		+ "   FROM BaseDeal deal " +
+			   + "          deal.id, "
+			   + "          deal.dealDetail.ticketNo, "
+			   + "          deal.dealDetail.startDate,"
+			   + "          deal.dealDetail.endDate,"
+			   + "          deal.dealTypeValue, "
+			   + "          deal.dealDetail.buySellCodeValue,"
+			   + "          deal.dealDetail.reportingCurrencyCodeValue," +
+			   "		 deal.dealDetail.volumeQuantity," +
+			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue)"
+			   + "   FROM BaseDeal deal " +
+			   " WHERE deal.dealDetail.positionGenerationIdentifier = :identifier " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),
     @NamedQuery(
        name = DealRepositoryBean.GET_DEAL_SUMMARY,
        query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary( "
-       		+ "          deal.id, "
-       		+ "          deal.dealDetail.ticketNo, "
-       		+ "          deal.dealDetail.startDate,"
-       		+ "          deal.companyRole.organization.detail.shortName, "
-       		+ "          deal.counterpartyRole.organization.detail.shortName," +
-			   "		 deal.dealDetail.dealStatusValue," +
-			   "         deal.dealDetail.positionGenerationStatusValue," +
-			   "         deal.dealDetail.positionGenerationIdentifier) "
+			   + "          deal.id, "
+			   + "          deal.dealDetail.ticketNo, "
+			   + "          deal.dealDetail.startDate,"
+			   + "          deal.dealDetail.endDate,"
+			   + "          deal.dealTypeValue, "
+			   + "          deal.dealDetail.buySellCodeValue,"
+			   + "          deal.dealDetail.reportingCurrencyCodeValue," +
+			   "		 deal.dealDetail.volumeQuantity," +
+			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue)"
        		+ "   FROM BaseDeal deal " +
        	     "   WHERE deal.id = :dealId"),
     @NamedQuery(
@@ -131,10 +135,20 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		
 		if (snapshot.getCompanyRoleId() != null) {
 			this.companyRole = (CompanyRole) getOrganizationRoleRepository().load(snapshot.getCompanyRoleId());
+			if (this.companyRole == null) {
+				this.companyRole = (CompanyRole) getOrganizationRoleRepository().getByShortNameAndRoleType(
+						snapshot.getCompanyRoleId().getCode(),
+						OrganizationRoleType.COMPANY_ROLE);
+			}
 		}
 		
 		if (snapshot.getCounterpartyRoleId() != null) {
 			this.counterpartyRole = (CounterpartyRole) getOrganizationRoleRepository().load(snapshot.getCounterpartyRoleId());
+			if (this.counterpartyRole == null) {
+				this.counterpartyRole = (CounterpartyRole) getOrganizationRoleRepository().getByShortNameAndRoleType(
+						snapshot.getCounterpartyRoleId().getCode(),
+						OrganizationRoleType.COUNTERPARTY_ROLE);
+			}
 		}
 	}
 	
@@ -188,16 +202,16 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		cost.save();
 	}
 
-	public List<EntityId> saveDealCosts(List<DealCostSnapshot> costs) {
-		ArrayList<EntityId> ids = new ArrayList<>();
+	public List<Integer> saveDealCosts(List<DealCostSnapshot> costs) {
+		ArrayList<Integer> ids = new ArrayList<>();
 		for (DealCostSnapshot snapshot : costs) {
 			if (snapshot.getEntityState() == EntityState.NEW) {
 				DealCost cost = DealCost.create(this, snapshot);
-				ids.add(cost.generateEntityId());
+				ids.add(cost.getId());
 			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 				DealCost cost = getDealCostRepository().load(snapshot.getEntityId());
 				cost.updateWith(snapshot);
-				ids.add(cost.generateEntityId());
+				ids.add(cost.getId());
 			} else if (snapshot.getEntityState() == EntityState.DELETE) {
 				DealCost cost = getDealCostRepository().load(snapshot.getEntityId());
 				cost.delete();
@@ -210,7 +224,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return getDealCostRepository().fetchDealCosts(id);
 	}
 
-	public List<EntityId> savePositions(
+	public List<Integer> savePositions(
 			String positionGeneratorIdentifier,
 			List<DealPositionSnapshot> snapshots) {
 
@@ -218,10 +232,10 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		dealDetail.setPositionGenerationIdentifier(positionGeneratorIdentifier);
 		LocalDateTime currentDateTime = LocalDateTime.now();
 		dealDetail.setPositionGenerationDateTime(currentDateTime);
-		ArrayList<EntityId> ids = new ArrayList<>();
+		ArrayList<Integer> ids = new ArrayList<>();
 		for (DealPositionSnapshot snapshot : snapshots) {
 			snapshot.getDealPositionDetail().setCreateUpdateDateTime(currentDateTime);
-			EntityId id = savePosition(snapshot);
+			Integer id = savePosition(snapshot);
 			if (id != null)
 				ids.add(id);
 		}
@@ -229,7 +243,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return ids;
 	}
 
-	protected abstract EntityId savePosition(DealPositionSnapshot snapshot);
+	protected abstract Integer savePosition(DealPositionSnapshot snapshot);
 
 
 	public void addPosition(DealPosition dealPosition) {

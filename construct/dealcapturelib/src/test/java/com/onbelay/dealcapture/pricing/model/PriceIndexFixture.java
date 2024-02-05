@@ -56,7 +56,7 @@ public class PriceIndexFixture {
     }
 
 
-    public static List<EntityId> generateMonthlyPriceCurves(
+    public static List<Integer> generateMonthlyPriceCurves(
             PriceIndex priceIndex,
             LocalDate startMarketDate,
             LocalDate endMarketDate,
@@ -70,7 +70,7 @@ public class PriceIndexFixture {
                 observedDateTime);
     }
 
-    public static List<EntityId> generateMonthlyPriceCurves(
+    public static List<Integer> generateMonthlyPriceCurves(
             PriceIndex priceIndex,
             LocalDate startMarketDate,
             LocalDate endMarketDate,
@@ -92,7 +92,7 @@ public class PriceIndexFixture {
         return priceIndex.savePriceCurves(prices);
     }
 
-    public static List<EntityId> generateDailyPriceCurves(
+    public static List<Integer> generateDailyPriceCurves(
             PriceIndex priceIndex,
             LocalDate startMarketDate,
             LocalDate endMarketDate,
@@ -106,7 +106,7 @@ public class PriceIndexFixture {
                     observedDateTime);
     }
 
-        public static List<EntityId> generateDailyPriceCurves(
+        public static List<Integer> generateDailyPriceCurves(
             PriceIndex priceIndex,
             LocalDate startMarketDate,
             LocalDate endMarketDate,

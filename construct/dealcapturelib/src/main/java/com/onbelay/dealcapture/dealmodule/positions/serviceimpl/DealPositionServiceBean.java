@@ -52,10 +52,10 @@ public class DealPositionServiceBean implements DealPositionService {
             List<DealPositionSnapshot> positions) {
 
         BaseDeal deal = dealRepository.load(dealId);
-        List<EntityId> ids = deal.savePositions(
+        deal.savePositions(
                 positionGeneratorIdentifier,
                 positions);
-        return new TransactionResult(ids);
+        return new TransactionResult();
     }
 
     @Override
@@ -72,17 +72,14 @@ public class DealPositionServiceBean implements DealPositionService {
             }
             list.add(snapshot);
         }
-        TransactionResult result = new TransactionResult();
         for (Integer dealId : dealPositionMap.keySet()) {
             BaseDeal deal = dealRepository.load(new EntityId(dealId));
-            result.addEntityIds(
-                    deal.savePositions(
-                            positionGenerationIdentifier,
-                            dealPositionMap.get(dealId))
-            );
+            deal.savePositions(
+                positionGenerationIdentifier,
+                dealPositionMap.get(dealId));
         }
 
-        return result;
+        return new TransactionResult();
     }
 
     @Override
@@ -114,7 +111,7 @@ public class DealPositionServiceBean implements DealPositionService {
         dealPositionValuator.valuePositions(
                 dealId,
                 currentDateTime);
-        return new TransactionResult(dealId);
+        return new TransactionResult();
     }
 
     @Override
@@ -126,10 +123,6 @@ public class DealPositionServiceBean implements DealPositionService {
         dealPositionValuator.valuePositions(
                 new QuerySelectedPage(ids),
                 currentDateTime);
-        return new TransactionResult(
-                ids
-                        .stream()
-                        .map(c ->new EntityId(c))
-                        .collect(Collectors.toList()));
+        return new TransactionResult();
     }
 }

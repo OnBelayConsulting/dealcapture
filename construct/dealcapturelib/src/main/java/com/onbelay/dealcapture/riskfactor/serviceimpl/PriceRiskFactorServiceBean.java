@@ -56,8 +56,15 @@ public class PriceRiskFactorServiceBean implements PriceRiskFactorService {
     }
 
     @Override
-    public List<PriceRiskFactorSnapshot> findByPriceIndexIds(List<Integer> priceIndexIds) {
-        List<PriceRiskFactor> riskFactors = priceRiskFactorRepository.fetchByPriceIndices(priceIndexIds);
+    public List<PriceRiskFactorSnapshot> findByPriceIndexIds(
+            List<Integer> priceIndexIds,
+            LocalDate fromDate,
+            LocalDate toDate) {
+        List<PriceRiskFactor> riskFactors = priceRiskFactorRepository.fetchByPriceIndices(
+                priceIndexIds,
+                fromDate,
+                toDate);
+
         PriceRiskFactorAssembler assembler = new PriceRiskFactorAssembler();
         return assembler.assemble(riskFactors);
     }
@@ -82,7 +89,7 @@ public class PriceRiskFactorServiceBean implements PriceRiskFactorService {
             List<PriceRiskFactorSnapshot> riskFactors) {
 
         PriceIndex index = priceIndexRepository.load(priceIndexId);
-        List<EntityId> ids = index.savePriceRiskFactors(riskFactors);
+        List<Integer> ids = index.savePriceRiskFactors(riskFactors);
         return new TransactionResult(ids);
     }
 

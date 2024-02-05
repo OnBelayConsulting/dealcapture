@@ -86,7 +86,7 @@ public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 				snapshots);
 		flush();
 
-		assertEquals(2, result.getEntityIds().size());
+		assertEquals(2, result.getIds().size());
 	}
 
 
@@ -130,10 +130,7 @@ public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 		List<OrganizationRoleSummary> roleSnapshots = organizationService.findOrganizationRoleSummariesByIds(
 
 				new QuerySelectedPage(
-						result.getEntityIds()
-								.stream()
-								.map(c -> c.getId())
-								.collect(Collectors.toList()),
+						result.getIds(),
 						new DefinedOrderByClause()));
 
 		assertEquals(2, roleSnapshots.size());

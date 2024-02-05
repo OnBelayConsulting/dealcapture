@@ -38,6 +38,29 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 @Entity
 @Table (name = "PHYSICAL_DEAL")
 @NamedQueries({
+    @NamedQuery(
+       name = DealRepositoryBean.FETCH_PHYSICAL_DEAL_SUMMARIES,
+       query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary( "
+       		+ "          deal.id, "
+       		+ "          deal.dealDetail.ticketNo, "
+       		+ "          deal.dealDetail.startDate,"
+	  	    + "          deal.dealDetail.endDate,"
+       		+ "          deal.dealTypeValue, "
+       		+ "          deal.dealDetail.buySellCodeValue,"
+		    +  "         deal.dealDetail.reportingCurrencyCodeValue," +
+			   "		 deal.dealDetail.volumeQuantity," +
+			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue," +
+			   "         deal.detail.dealPriceValuationCodeValue," +
+			   "         deal.dealPriceIndex.id," +
+			   "         deal.detail.dealPriceValue," +
+			   "         deal.detail.dealPriceUnitOfMeasureCodeValue," +
+			   "         deal.detail.dealPriceCurrencyCodeValue," +
+			   "         deal.detail.marketValuationCodeValue," +
+			   "         deal.marketPriceIndex.id" +
+			   "         ) "
+       		+ "   FROM PhysicalDeal deal " +
+			   " WHERE deal.id in (:dealIds) " +
+       	     "ORDER BY deal.dealDetail.ticketNo DESC"),
 		@NamedQuery(
 				name = PriceIndexRepositoryBean.FIND_BY_DEAL_IDS,
 				query = "SELECT " +
@@ -144,9 +167,8 @@ public class PhysicalDeal extends BaseDeal {
 		
 		super.setAssociationsFromSnapshot(snapshot);
 		
-		if (snapshot.getMarketPriceIndexId() != null) {
+		if (snapshot.getMarketPriceIndexId() != null)
 			this.marketPriceIndex = getPriceIndexRepository().load(snapshot.getMarketPriceIndexId());
-		}
 
 		if (snapshot.getDealPriceIndexId() != null)
 			this.dealPriceIndex = getPriceIndexRepository().load(snapshot.getDealPriceIndexId());
@@ -154,17 +176,17 @@ public class PhysicalDeal extends BaseDeal {
 	}
 
 	@Override
-	protected EntityId savePosition(DealPositionSnapshot snapshot) {
+	protected Integer savePosition(DealPositionSnapshot snapshot) {
 		if (snapshot.getEntityState() == EntityState.NEW) {
 			PhysicalPosition position = new PhysicalPosition();
 			position.createWith(
 					this,
 					snapshot);
-			return position.generateEntityId();
+			return position.getId();
 		} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 			PhysicalPosition position = (PhysicalPosition) getDealPositionsRepository().load(snapshot.getEntityId());
 			position.updateWith(snapshot);
-			return position.generateEntityId();
+			return position.getId();
 		} else if (snapshot.getEntityState() == EntityState.DELETE) {
 			PhysicalPosition position = (PhysicalPosition) getDealPositionsRepository().load(snapshot.getEntityId());
 			position.delete();

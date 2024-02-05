@@ -1,4 +1,4 @@
-package com.onbelay.dealcapture.formulas.model;
+package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;

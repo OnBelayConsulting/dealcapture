@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
@@ -85,6 +86,7 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 		this.dealPriceIndexId = dealPriceIndexId;
 	}
 
+	@JsonIgnore
 	public CurrencyCode getMarketCurrencyCode() {
 		return marketCurrencyCode;
 	}

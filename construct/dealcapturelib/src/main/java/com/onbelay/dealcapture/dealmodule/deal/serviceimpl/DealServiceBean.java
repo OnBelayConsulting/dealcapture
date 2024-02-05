@@ -32,6 +32,8 @@ import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.ErrorDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -69,9 +71,14 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
+	public List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds) {
+		return dealRepository.findPhysicalDealSummariesByIds(physicalDealIds);
+	}
+
+	@Override
 	public TransactionResult save(List<BaseDealSnapshot> snapshots) {
 
-		ArrayList<EntityId> ids = new ArrayList<EntityId>();
+		ArrayList<Integer> ids = new ArrayList<>();
 		
 		for (BaseDealSnapshot snapshot: snapshots) {
 
@@ -89,27 +96,36 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 				 logger.debug(userMarker, "Update deal # ", deal.getDealDetail().getTicketNo());
 				 deal.updateWith(snapshot);
 			}
-			ids.add(deal.generateEntityId());
+			ids.add(deal.getId());
 		}
 		
 		return new TransactionResult(ids);
 	}
 
 	@Override
-	public boolean updatePositionGenerationStatus(
+	public void assignPositionIdentifierToDeals(
 			String positionGenerationIdentifier,
-			EntityId entityId,
-			PositionGenerationStatusCode positionGenerationStatusCode) {
+			List<Integer> entityIds) {
 
-		return dealRepository.executeUpdateOfPositionGenerationStatus(
-				entityId.getId(),
-				positionGenerationIdentifier,
-				positionGenerationStatusCode);
+		dealRepository.executeDealUpdateAssignForPositionGeneration(
+				entityIds,
+				positionGenerationIdentifier);
 	}
 
 	@Override
 	public DealSummary getDealSummary(EntityId entityId) {
 		return dealRepository.getDealSummary(entityId);
+	}
+
+	@Override
+	public List<DealSummary> getAssignedDealSummaries(String positionGenerationIdentifier) {
+
+		return dealRepository.findAssignedDealSummaries(positionGenerationIdentifier);
+	}
+
+	@Override
+	public void updateDealPositionGenerationStatusToPending(List<Integer> dealIds) {
+		dealRepository.executeDealUpdateSetPositionGenerationToPending(dealIds);
 	}
 
 	@Override
@@ -127,13 +143,18 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 			 deal.updateWith(snapshot);
 		}
 		
-		return new TransactionResult(deal.generateEntityId());
+		return new TransactionResult(deal.getId());
 	}
 	
 	@Override
 	public BaseDealSnapshot load(EntityId entityId) {
 
 		BaseDeal deal = dealRepository.load(entityId);
+
+		if (deal == null) {
+			BaseDealSnapshot snapshot = new ErrorDealSnapshot(DealErrorCode.INVALID_DEAL_ID.getCode());
+			snapshot.setErrorMessage("Invalid or missing deal id");
+		}
 		
 		AbstractDealAssembler assembler = DealSnapshotAssemblerFactory.newAssembler(deal.getDealType());
 		

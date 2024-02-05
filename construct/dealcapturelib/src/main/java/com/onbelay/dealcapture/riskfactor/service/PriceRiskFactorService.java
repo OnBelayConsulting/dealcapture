@@ -33,5 +33,8 @@ public interface PriceRiskFactorService {
 
     List<PriceRiskFactorSnapshot> findByIds(QuerySelectedPage querySelectedPage);
 
-    List<PriceRiskFactorSnapshot> findByPriceIndexIds(List<Integer> collect);
+    List<PriceRiskFactorSnapshot> findByPriceIndexIds(
+            List<Integer> priceIndexIds,
+            LocalDate fromDate,
+            LocalDate toDate);
 }

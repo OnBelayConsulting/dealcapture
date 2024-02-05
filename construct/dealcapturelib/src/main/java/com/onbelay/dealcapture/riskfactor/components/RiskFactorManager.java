@@ -1,15 +1,17 @@
 package com.onbelay.dealcapture.riskfactor.components;
 
-import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
 import com.onbelay.shared.enums.CurrencyCode;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 public interface RiskFactorManager {
 
     public PriceRiskFactorHolder determinePriceRiskFactor(
-            String indexName,
+            Integer priceIndexId,
             LocalDate positionDate);
 
     PriceRiskFactorHolder determinePriceRiskFactor(
@@ -26,5 +28,7 @@ public interface RiskFactorManager {
 
     Queue<FxRiskFactorHolder> getFxRiskFactorHolderQueue();
 
-    PriceIndexPositionDateContainer findPriceIndexContainer(String priceIndexCode);
+    PriceIndexPositionDateContainer findPriceIndexContainer(Integer priceIndexId);
+
+    public HashMap<Integer, List<PriceRiskFactorHolder>> getPriceRiskFactorsSearch();
 }

@@ -86,7 +86,7 @@ public class OrganizationRestController extends BaseRestController {
 
 
 	@Operation(summary="Create or update an organization roles for an organization.")
-	@PutMapping(
+	@PostMapping(
 			value = "/{id}/roles",
 			produces="application/json",
 			consumes="application/json"  )
@@ -148,6 +148,29 @@ public class OrganizationRestController extends BaseRestController {
 		}
 
 		return (ResponseEntity<OrganizationSnapshotCollection>) processResponse(collection);
+	}
+
+
+	@Operation(summary="Get an organization")
+	@GetMapping( value = "/{id}")
+	public ResponseEntity<OrganizationSnapshot> getOrganization(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id) {
+
+		OrganizationSnapshot snapshot ;
+
+		try {
+			snapshot = organizationRestAdapter.get(id);
+		} catch (OBRuntimeException r) {
+			snapshot = new OrganizationSnapshot(r.getErrorCode(), r.getParms());
+			snapshot.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			snapshot = new OrganizationSnapshot(r.getMessage());
+		} catch (RuntimeException r) {
+			snapshot = new OrganizationSnapshot(r.getMessage());
+		}
+
+		return (ResponseEntity<OrganizationSnapshot>) processResponse(snapshot);
 	}
 
 

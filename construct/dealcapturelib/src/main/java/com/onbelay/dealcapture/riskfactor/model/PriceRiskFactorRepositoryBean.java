@@ -66,21 +66,28 @@ public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFacto
 	}
 
 	@Override
-	public List<PriceRiskFactor> fetchByPriceIndices(List<Integer> priceIndexIds) {
+	public List<PriceRiskFactor> fetchByPriceIndices(
+			List<Integer> priceIndexIds,
+			LocalDate fromDate,
+			LocalDate toDate) {
+
 		List<PriceRiskFactor> riskFactors = new ArrayList<>();
+		String[] names = {"indexIds", "fromDate", "toDate"};
 		if (priceIndexIds.size() < 2000) {
+			Object[] parms = {priceIndexIds, fromDate, toDate};
 			riskFactors = executeQuery(
 					FETCH_BY_PRICE_INDEX_IDS,
-					"indexIds",
-					priceIndexIds);
+					names,
+					parms);
 		} else {
 			SubLister<Integer> subLister = new SubLister<>(priceIndexIds, 2000);
 			while (subLister.moreElements()) {
+				Object[] parms2 = {subLister.nextList(), fromDate, toDate};
 				riskFactors.addAll(
 						executeQuery(
 						FETCH_BY_PRICE_INDEX_IDS,
-						"indexIds",
-						subLister.nextList()));
+								names,
+								parms2));
 			}
 		}
 		return riskFactors;

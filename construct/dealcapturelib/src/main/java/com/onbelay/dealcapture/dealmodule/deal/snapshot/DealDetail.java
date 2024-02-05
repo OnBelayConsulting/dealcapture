@@ -40,7 +40,7 @@ import java.time.LocalDateTime;
 public class DealDetail {
 
 	private String commodityCodeValue;
-	private String dealStatusValue;
+	private String dealStatusCodeValue;
 	private String positionGenerationStatusValue;
 	private String positionGenerationIdentifier;
 	private LocalDateTime positionGenerationDateTime;
@@ -49,8 +49,8 @@ public class DealDetail {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private BigDecimal volumeQuantity;
-	private String volumeUnitOfMeasureValue;
-	private String reportingCurrencyValue;
+	private String volumeUnitOfMeasureCodeValue;
+	private String reportingCurrencyCodeValue;
 	
 	public DealDetail() {
 		
@@ -67,7 +67,7 @@ public class DealDetail {
 		if (commodityCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_COMMODITY_CODE.getCode());
 
-		if (dealStatusValue == null)
+		if (dealStatusCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_STATUS.getCode());
 
 		if (positionGenerationStatusValue == null)
@@ -89,10 +89,10 @@ public class DealDetail {
 		if (volumeQuantity == null)
 			throw new OBValidationException(DealErrorCode.MISSING_VOL_QUANTITY.getCode());
 		
-		if (volumeUnitOfMeasureValue == null)
+		if (volumeUnitOfMeasureCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_VOL_UNIT_OF_MEASURE.getCode());
 
-		if (reportingCurrencyValue == null)
+		if (reportingCurrencyCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_REPORTING_CURRENCY.getCode());
 
 	}
@@ -121,12 +121,12 @@ public class DealDetail {
 	public Quantity getVolume() {
 		return new Quantity(
 				volumeQuantity,
-				UnitOfMeasureCode.lookUp(volumeUnitOfMeasureValue));
+				UnitOfMeasureCode.lookUp(volumeUnitOfMeasureCodeValue));
 	}
 	
 	public void setVolume(Quantity quantity) {
 		this.volumeQuantity = quantity.getValue();
-		this.volumeUnitOfMeasureValue = quantity.getUnitOfMeasureCode().getCode();
+		this.volumeUnitOfMeasureCodeValue = quantity.getUnitOfMeasureCode().getCode();
 	}
 	
 	
@@ -142,62 +142,62 @@ public class DealDetail {
 	@Transient
 	@JsonIgnore
 	public UnitOfMeasureCode getVolumeUnitOfMeasure() {
-		return UnitOfMeasureCode.lookUp(volumeUnitOfMeasureValue);
+		return UnitOfMeasureCode.lookUp(volumeUnitOfMeasureCodeValue);
 	}
 
 	public void setVolumeUnitOfMeasure(UnitOfMeasureCode code) {
-		this.volumeUnitOfMeasureValue = code.getCode();
+		this.volumeUnitOfMeasureCodeValue = code.getCode();
 	}
 
 	@Column(name = "VOLUME_UOM_CODE")
 	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
 	@JsonSerialize(using = CodeLabelSerializer.class)
-	public String getVolumeUnitOfMeasureValue() {
-		return volumeUnitOfMeasureValue;
+	public String getVolumeUnitOfMeasureCodeValue() {
+		return volumeUnitOfMeasureCodeValue;
 	}
 
-	public void setVolumeUnitOfMeasureValue(String volumeUnitOfMeasureValue) {
-		this.volumeUnitOfMeasureValue = volumeUnitOfMeasureValue;
+	public void setVolumeUnitOfMeasureCodeValue(String volumeUnitOfMeasureCodeValue) {
+		this.volumeUnitOfMeasureCodeValue = volumeUnitOfMeasureCodeValue;
 	}
 
 	@Transient
 	@JsonIgnore
 	public CurrencyCode getReportingCurrencyCode() {
-		return CurrencyCode.lookUp(reportingCurrencyValue);
+		return CurrencyCode.lookUp(reportingCurrencyCodeValue);
 	}
 
 	public void setReportingCurrencyCode(CurrencyCode code) {
-		this.reportingCurrencyValue = code.getCode();
+		this.reportingCurrencyCodeValue = code.getCode();
 	}
 
 	@Column(name = "REPORTING_CURRENCY_CODE")
-	public String getReportingCurrencyValue() {
-		return reportingCurrencyValue;
+	public String getReportingCurrencyCodeValue() {
+		return reportingCurrencyCodeValue;
 	}
 
-	public void setReportingCurrencyValue(String reportingCurrencyValue) {
-		this.reportingCurrencyValue = reportingCurrencyValue;
+	public void setReportingCurrencyCodeValue(String reportingCurrencyCodeValue) {
+		this.reportingCurrencyCodeValue = reportingCurrencyCodeValue;
 	}
 
 	@Transient
 	@JsonIgnore
 	public DealStatusCode getDealStatus() {
-		return DealStatusCode.lookUp(dealStatusValue);
+		return DealStatusCode.lookUp(dealStatusCodeValue);
 	}
 	
 	public void setDealStatus(DealStatusCode status) {
-		this.dealStatusValue = status.getCode();
+		this.dealStatusCodeValue = status.getCode();
 	}
 	
 	@Column(name = "DEAL_STATUS_CODE")
 	@InjectCodeLabel(codeFamily = "dealStatusCode", injectedPropertyName = "dealStatusCodeItem")
 	@JsonSerialize(using = CodeLabelSerializer.class)
-	public String getDealStatusValue() {
-		return dealStatusValue;
+	public String getDealStatusCodeValue() {
+		return dealStatusCodeValue;
 	}
 
-	public void setDealStatusValue(String dealStatusValue) {
-		this.dealStatusValue = dealStatusValue;
+	public void setDealStatusCodeValue(String dealStatusCodeValue) {
+		this.dealStatusCodeValue = dealStatusCodeValue;
 	}
 
 	@Transient
@@ -289,8 +289,8 @@ public class DealDetail {
 		if (copy.commodityCodeValue != null)
 			this.commodityCodeValue = copy.commodityCodeValue;
 
-		if (copy.dealStatusValue != null)
-			this.dealStatusValue = copy.dealStatusValue;
+		if (copy.dealStatusCodeValue != null)
+			this.dealStatusCodeValue = copy.dealStatusCodeValue;
 
 		if (copy.positionGenerationStatusValue != null)
 			this.positionGenerationStatusValue = copy.positionGenerationStatusValue;
@@ -316,10 +316,10 @@ public class DealDetail {
 		if (copy.volumeQuantity != null)
 			this.volumeQuantity = copy.volumeQuantity;
 		
-		if (copy.volumeUnitOfMeasureValue != null)
-			this.volumeUnitOfMeasureValue = copy.volumeUnitOfMeasureValue;
+		if (copy.volumeUnitOfMeasureCodeValue != null)
+			this.volumeUnitOfMeasureCodeValue = copy.volumeUnitOfMeasureCodeValue;
 
-		if (copy.reportingCurrencyValue != null)
-			this.reportingCurrencyValue = copy.reportingCurrencyValue;
+		if (copy.reportingCurrencyCodeValue != null)
+			this.reportingCurrencyCodeValue = copy.reportingCurrencyCodeValue;
 	}
 }

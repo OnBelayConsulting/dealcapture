@@ -87,12 +87,12 @@ public class OrganizationRestControllerTest extends DealCaptureAppSpringTestCase
 		logger.debug("Json: " + jsonStringResponse);
 		
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		assertEquals(1, transactionResult.getEntityIds().size());
+		assertEquals(1, transactionResult.getIds().size());
 	}
 
 
 	@Test
-	public void createOrganizationRolesWithPut() throws Exception {
+	public void createOrganizationRolesWithPost() throws Exception {
 
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(organizationRestController)
 				.build();
@@ -111,7 +111,7 @@ public class OrganizationRestControllerTest extends DealCaptureAppSpringTestCase
 
 		logger.error(jsonPayload);
 
-		ResultActions result = mvc.perform(put("/api/organizations/" + otherOrganization.getId() + "/roles")
+		ResultActions result = mvc.perform(post("/api/organizations/" + otherOrganization.getId() + "/roles")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonPayload));
@@ -123,7 +123,7 @@ public class OrganizationRestControllerTest extends DealCaptureAppSpringTestCase
 		logger.debug("Json: " + jsonStringResponse);
 
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		assertEquals(2, transactionResult.getEntityIds().size());
+		assertEquals(2, transactionResult.getIds().size());
 	}
 
 

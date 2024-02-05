@@ -1,10 +1,8 @@
 package com.onbelay.dealcapture.riskfactor.components;
 
 import com.onbelay.dealcapture.busmath.model.Conversion;
-import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.enums.RiskFactorType;
-import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 
 import java.time.LocalDate;

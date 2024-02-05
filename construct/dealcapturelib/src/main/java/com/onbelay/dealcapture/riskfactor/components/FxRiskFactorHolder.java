@@ -1,4 +1,4 @@
-package com.onbelay.dealcapture.formulas.model;
+package com.onbelay.dealcapture.riskfactor.components;
 
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.components.BaseRiskFactorHolder;

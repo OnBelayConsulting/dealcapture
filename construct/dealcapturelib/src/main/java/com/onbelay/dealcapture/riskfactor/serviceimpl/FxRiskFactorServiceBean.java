@@ -53,8 +53,16 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
     }
 
     @Override
-    public List<FxRiskFactorSnapshot> findByFxIndexIds(List<Integer> fxIndexIds) {
-        List<FxRiskFactor> riskFactors = fxRiskFactorRepository.fetchByFxIndices(fxIndexIds);
+    public List<FxRiskFactorSnapshot> findByFxIndexIds(
+            List<Integer> fxIndexIds,
+            LocalDate fromDate,
+            LocalDate toDate) {
+
+        List<FxRiskFactor> riskFactors = fxRiskFactorRepository.fetchByFxIndices(
+                fxIndexIds,
+                fromDate,
+                toDate);
+
         FxRiskFactorAssembler assembler = new FxRiskFactorAssembler();
         return assembler.assemble(riskFactors);
     }
@@ -75,7 +83,7 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
         if (index == null)
             throw new OBRuntimeException(PricingErrorCode.MISSING_FX_INDEX.getCode());
 
-        List<EntityId> ids = index.saveFxRiskFactors(riskFactors);
+        List<Integer> ids = index.saveFxRiskFactors(riskFactors);
         return new TransactionResult(ids);
     }
 

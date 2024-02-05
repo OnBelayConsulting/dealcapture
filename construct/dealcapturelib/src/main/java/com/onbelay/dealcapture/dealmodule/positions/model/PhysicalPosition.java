@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionDetail;
@@ -87,21 +88,26 @@ public class PhysicalPosition extends DealPosition {
         };
 
         Price marketPrice = getMarketIndexPrice();
-        dealPrice = dealPrice.roundPrice();
-        marketPrice = marketPrice.roundPrice();
-        Price netPrice;
-        if (getDeal().getDealDetail().getBuySell() == BuySellCode.BUY)
-            netPrice = marketPrice.subtract(dealPrice);
-        else
-            netPrice = dealPrice.subtract(marketPrice);
-        Amount amount = netPrice.multiply(getDealPositionDetail().getQuantity());
+        if (dealPrice.isInError() == false && marketPrice.isInError() == false) {
+            dealPrice = dealPrice.roundPrice();
+            marketPrice = marketPrice.roundPrice();
+            Price netPrice;
+            if (getDeal().getDealDetail().getBuySell() == BuySellCode.BUY)
+                netPrice = marketPrice.subtract(dealPrice);
+            else
+                netPrice = dealPrice.subtract(marketPrice);
+            Amount amount = netPrice.multiply(getDealPositionDetail().getQuantity());
 
+            if (amount.isInError()) {
+                getDealPositionDetail().setErrorCode(amount.getError().getCode());
+            } else {
+                getDealPositionDetail().setMarkToMarketValuation(amount.getValue());
+                getDealPositionDetail().setErrorCode("SUCCESS");
+            }
+        } else {
+            getDealPositionDetail().setErrorCode(PositionErrorCode.ERROR_VALUE_POSITION_MISSING_PRICES.getCode());
+        }
         getDealPositionDetail().setCreateUpdateDateTime(currentDateTime);
-
-        if (amount.isInError())
-            getDealPositionDetail().setErrorCode(amount.getError().getCode());
-        else
-            getDealPositionDetail().setMarkToMarketValuation(amount.getValue());
     }
 
     @Transient

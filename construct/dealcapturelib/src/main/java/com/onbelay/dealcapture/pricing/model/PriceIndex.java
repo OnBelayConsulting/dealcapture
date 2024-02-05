@@ -177,17 +177,17 @@ public class PriceIndex extends TemporalAbstractEntity {
 	}
 	
 
-	public List<EntityId> savePriceCurves(List<PriceCurveSnapshot> prices) {
+	public List<Integer> savePriceCurves(List<PriceCurveSnapshot> prices) {
 
-		ArrayList<EntityId> ids = new ArrayList<>();
+		ArrayList<Integer> ids = new ArrayList<>();
 		for (PriceCurveSnapshot s : prices) {
 			if (s.getEntityState() == EntityState.NEW) {
 				PriceCurve price = new PriceCurve(this, s);
-				ids.add(price.generateEntityId());
+				ids.add(price.getId());
 			} if (s.getEntityState() == EntityState.MODIFIED) {
 				PriceCurve price = getPriceRepository().load(s.getEntityId());
 				price.updateWith(s);
-				ids.add(price.generateEntityId());
+				ids.add(price.getId());
 			}  if (s.getEntityState() == EntityState.DELETE) {
 				PriceCurve price = getPriceRepository().load(s.getEntityId());
 				price.delete();
@@ -216,16 +216,16 @@ public class PriceIndex extends TemporalAbstractEntity {
 	}
 
 
-	public List<EntityId> savePriceRiskFactors(List<PriceRiskFactorSnapshot> factors) {
-		ArrayList<EntityId> ids = new ArrayList<>();
+	public List<Integer> savePriceRiskFactors(List<PriceRiskFactorSnapshot> factors) {
+		ArrayList<Integer> ids = new ArrayList<>();
 		for (PriceRiskFactorSnapshot snapshot : factors) {
 			if (snapshot.getEntityState() == EntityState.NEW) {
 				PriceRiskFactor factor = PriceRiskFactor.create(this, snapshot);
-				ids.add(factor.generateEntityId());
+				ids.add(factor.getId());
 			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 				PriceRiskFactor factor = getPriceRiskFactorRepository().load(snapshot.getEntityId());
 				factor.updateWith(snapshot);
-				ids.add(factor.generateEntityId());
+				ids.add(factor.getId());
 			} else if (snapshot.getEntityState() == EntityState.DELETE) {
 				PriceRiskFactor factor = getPriceRiskFactorRepository().load(snapshot.getEntityId());
 				factor.delete();

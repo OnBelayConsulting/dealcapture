@@ -5,11 +5,14 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
-import com.onbelay.dealcapture.formulas.model.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -34,8 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @WithMockUser
 public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
@@ -48,6 +50,12 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
 
     @Autowired
     private PriceRiskFactorService priceRiskFactorService;
+
+    @Autowired
+    private DealService dealService;
+
+    @Autowired
+    private DealPositionService dealPositionService;
 
     @Autowired
     private GeneratePositionsService generatePositionsService;
@@ -143,8 +151,23 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
     }
 
     @Test
-    public void valuePositions() {
+    public void generatePositions() {
+        EvaluationContextRequest request = new EvaluationContextRequest();
+        request.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
+        request.setFromDate(fromMarketDate);
+        request.setToDate(toMarketDate);
 
+        dealPositionRestAdapter.generatePositions(
+                "WHERE dealId eq " + physicalDeal.getId(),
+                request);
+
+        List<DealPositionSnapshot> snapshots = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+        assertTrue(snapshots.size() > 0);
+    }
+
+    @Test
+    public void valuePositions() {
+        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDeal.getId()));
         generatePositionsService.generatePositions(
                 "Test",
                 EvaluationContext

@@ -5,9 +5,9 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
-import com.onbelay.dealcapture.formulas.model.EvaluationContext;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -30,6 +30,9 @@ public class GeneratePositionsServiceWithBasisTest extends DealCaptureSpringTest
 
     @Autowired
     private DealRepositoryBean dealRepository;
+
+    @Autowired
+    private DealService dealService;
 
     @Autowired
     private DealPositionService dealPositionService;
@@ -125,6 +128,8 @@ public class GeneratePositionsServiceWithBasisTest extends DealCaptureSpringTest
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
+        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDealWithFixedDealPrice.getId()));
+
         generatePositionsService.generatePositions(
                 "test",
                 context,
@@ -157,6 +162,9 @@ public class GeneratePositionsServiceWithBasisTest extends DealCaptureSpringTest
                 .withCurrency(CurrencyCode.CAD)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
+
+        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDealWithIndexDealPrice.getId()));
+
 
         generatePositionsService.generatePositions(
                 "test",

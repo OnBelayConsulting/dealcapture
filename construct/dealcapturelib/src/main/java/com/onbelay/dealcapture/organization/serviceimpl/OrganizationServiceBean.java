@@ -61,11 +61,11 @@ public class OrganizationServiceBean extends BaseDomainService implements Organi
 
     @Override
     public TransactionResult save(List<OrganizationSnapshot> snapshots) {
-        ArrayList<EntityId> ids = new ArrayList<>();
+        ArrayList<Integer> ids = new ArrayList<>();
         for (OrganizationSnapshot snapshot : snapshots ) {
             TransactionResult childResult = save(snapshot);
-            if (childResult.getEntityId() != null)
-                ids.add(childResult.getEntityId());
+            if (childResult.getId() != null)
+                ids.add(childResult.getId());
         }
         return new TransactionResult(ids);
     }
@@ -73,15 +73,14 @@ public class OrganizationServiceBean extends BaseDomainService implements Organi
     public TransactionResult save(OrganizationSnapshot snapshot) {
         if (snapshot.getEntityState() == EntityState.NEW) {
             Organization organization =  new Organization(snapshot);
-            return new TransactionResult(organization.generateEntityId());
+            return new TransactionResult(organization.getId());
         } else if (snapshot.getEntityState() == EntityState.MODIFIED) {
             Organization organization = organizationRepository.load(snapshot.getEntityId());
             organization.updateWith(snapshot);
-            return new TransactionResult(organization.generateEntityId());
+            return new TransactionResult(organization.getId());
         } else if (snapshot.getEntityState() == EntityState.DELETE) {
             Organization organization = organizationRepository.load(snapshot.getEntityId());
             organization.delete();
-            return new TransactionResult(organization.generateEntityId());
         }
         return new TransactionResult();
     }

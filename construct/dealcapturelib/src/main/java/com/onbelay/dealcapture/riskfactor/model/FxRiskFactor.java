@@ -34,7 +34,9 @@ import java.time.LocalDateTime;
                 query = "  SELECT riskFactor " +
                         "    FROM FxRiskFactor riskFactor " +
                         "   WHERE riskFactor.index.id in (:indexIds) " +
-                        "ORDER BY riskFactor.id, riskFactor.detail.marketDate "),
+                        "     AND riskFactor.detail.marketDate >= :fromDate " +
+                        "     AND riskFactor.detail.marketDate <= :toDate " +
+                        "ORDER BY riskFactor.index.id, riskFactor.detail.marketDate "),
         @NamedQuery(
                 name = FxRiskFactorRepositoryBean.FETCH_RISK_FACTORS_BY_DATES,
                 query = "  SELECT riskFactor " +

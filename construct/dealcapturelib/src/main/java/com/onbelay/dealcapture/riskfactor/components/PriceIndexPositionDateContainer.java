@@ -11,6 +11,8 @@ public class PriceIndexPositionDateContainer {
 
     private PriceIndexSnapshot priceIndex;
 
+    private boolean isInitialized = false;
+
     private PriceIndexPositionDateContainer basisToHubContainer;
 
     private ConcurrentHashMap<LocalDate, PriceRiskFactorSnapshot> factorMap = new ConcurrentHashMap<>();
@@ -26,12 +28,16 @@ public class PriceIndexPositionDateContainer {
         this.basisToHubContainer = basisToHubContainer;
     }
 
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
     public void putRiskFactor(PriceRiskFactorSnapshot snapshot) {
+        isInitialized = true;
         factorMap.put(snapshot.getDetail().getMarketDate(), snapshot);
     }
 
     public PriceRiskFactorSnapshot findRiskFactor(LocalDate marketDate) {
-
         return factorMap.get(marketDate);
     }
 

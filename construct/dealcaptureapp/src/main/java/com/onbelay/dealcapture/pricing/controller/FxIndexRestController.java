@@ -118,7 +118,7 @@ public class FxIndexRestController extends BaseRestController {
 
 	@Operation(summary="Create or update fx rates(curves) for a FxIndex")
 	@PutMapping(
-			value = "/{id}/rates",
+			value = "/{id}/curves",
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> saveFxCurves(
@@ -206,7 +206,7 @@ public class FxIndexRestController extends BaseRestController {
 
 
 	@Operation(summary="fetch all fx rates (curves)")
-	@GetMapping(value="/rates" )
+	@GetMapping(value="/curves" )
 	public ResponseEntity<FxCurveSnapshotCollection> getIndexFxs(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,

@@ -23,24 +23,28 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 
 public interface DealRepository {
 	
 	public static final String BEAN_NAME = "dealRepository";
 
 	/**
-	 * Update position generation status fields
-	 * @param dealId
+	 * Update deals by assigning deals to a position generation identifier.
+	 * @param dealIds - list of deal ids
 	 * @param positionGeneratorId - owning generator process name;
-	 * @param code - PositionGenerationStatus to set
-	 * @return true if update succeeded.
 	 */
-	public boolean executeUpdateOfPositionGenerationStatus(
-			Integer dealId,
-			String positionGeneratorId,
-			PositionGenerationStatusCode code);
+	public void executeDealUpdateAssignForPositionGeneration(
+			List<Integer> dealIds,
+			String positionGeneratorId);
 
-	/**
+	public void executeDealUpdateSetPositionGenerationToPending(List<Integer> dealIds);
+
+
+
+    BaseDeal findDealByTicketNo(String ticketNo);
+
+    /**
 	 * Fetch a list of deals by ids. This is usually used in paging.
 	 * @param querySelectedPage
 	 * @return
@@ -70,5 +74,8 @@ public interface DealRepository {
 	
 	
 	public BaseDeal load(EntityId dealKey);
-	
+
+	List<DealSummary> findAssignedDealSummaries(String positionGenerationIdentifier);
+
+	List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds);
 }

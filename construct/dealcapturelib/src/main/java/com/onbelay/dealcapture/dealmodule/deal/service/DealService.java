@@ -22,6 +22,7 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 
 import java.util.List;
 
@@ -40,8 +41,13 @@ public interface DealService {
 
 	public DealSummary getDealSummary(EntityId entityId);
 
-    public boolean updatePositionGenerationStatus(
+	public List<DealSummary> getAssignedDealSummaries(String positionGenerationIdentifier);
+
+	public void updateDealPositionGenerationStatusToPending(List<Integer> dealIds);
+
+	public void assignPositionIdentifierToDeals(
 			String positionGenerationIdentifier,
-			EntityId entityId,
-			PositionGenerationStatusCode positionGenerationStatusCode);
+			List<Integer> dealIds);
+
+	List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds);
 }

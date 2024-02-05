@@ -2,13 +2,13 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
-import com.onbelay.dealcapture.formulas.model.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.riskfactor.components.PriceIndexPositionDateContainer;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
@@ -23,36 +23,51 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhysicalDealPositionGenerator implements DealPositionGenerator {
+public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
 
-    private BaseDealSnapshot dealSnapshot;
-
-    private RiskFactorManager riskFactorManager;
-
-    private List<PositionHolder> positionHolders = new ArrayList<>();
 
     public static DealPositionGenerator newGenerator(
-            BaseDealSnapshot dealSnapshot,
+            DealSummary dealSummary,
             RiskFactorManager riskFactorManager) {
+        
         return new PhysicalDealPositionGenerator(
-                dealSnapshot,
+                dealSummary,
                 riskFactorManager);
     }
 
     private PhysicalDealPositionGenerator(
-            BaseDealSnapshot dealSnapshot,
+            DealSummary dealSummary,
             RiskFactorManager riskFactorManager) {
-        this.dealSnapshot = dealSnapshot;
-        this.riskFactorManager = riskFactorManager;
+        super(
+                dealSummary, 
+                riskFactorManager);
     }
 
     @Override
     public void generatePositionHolders(EvaluationContext context) {
+        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) dealSummary;
 
-        PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) dealSnapshot;
+        final LocalDate startDate;
+        final LocalDate endDate;
+        if (context.getStartPositionDate() != null) {
+            if (context.getStartPositionDate().isAfter(physicalDealSummary.getStartDate()))
+                startDate = context.getStartPositionDate();
+            else
+                startDate = physicalDealSummary.getStartDate();
+        } else {
+            startDate = physicalDealSummary.getStartDate();
+        }
+        if (context.getEndPositionDate() != null) {
+            if (context.getEndPositionDate().isBefore(physicalDealSummary.getEndDate()))
+                endDate = context.getEndPositionDate();
+            else
+                endDate = physicalDealSummary.getEndDate();
+        } else {
+            endDate = physicalDealSummary.getEndDate();
+        }
 
-        LocalDate currentDate = physicalDealSnapshot.getDealDetail().getStartDate();
-        while (currentDate.isAfter(physicalDealSnapshot.getDealDetail().getEndDate()) == false) {
+        LocalDate currentDate = startDate;
+        while (currentDate.isAfter(endDate) == false) {
             PhysicalPositionHolder physicalPositionHolder = new PhysicalPositionHolder(new PhysicalPositionSnapshot());
             PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) physicalPositionHolder.getDealPositionSnapshot();
             positionSnapshot.getDealPositionDetail().setFrequencyCode(FrequencyCode.DAILY);
@@ -61,19 +76,22 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
             if (context.getCurrencyCode() != null)
                 targetCurrencyCode = context.getCurrencyCode();
             else
-                targetCurrencyCode = physicalDealSnapshot.getDealDetail().getReportingCurrencyCode();
+                targetCurrencyCode = physicalDealSummary.getReportingCurrencyCode();
 
             UnitOfMeasureCode targetUnitOfMeasureCode;
             if (context.getUnitOfMeasureCode() != null)
                 targetUnitOfMeasureCode = context.getUnitOfMeasureCode();
             else
-                targetUnitOfMeasureCode = physicalDealSnapshot.getDealDetail().getVolumeUnitOfMeasure();
+                targetUnitOfMeasureCode = physicalDealSummary.getVolumeUnitOfMeasureCode();
 
-            if (targetUnitOfMeasureCode == physicalDealSnapshot.getDealDetail().getVolumeUnitOfMeasure()) {
-                positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(physicalDealSnapshot.getDealDetail().getVolumeQuantity());
+            if (targetUnitOfMeasureCode == physicalDealSummary.getVolumeUnitOfMeasureCode()) {
+                positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(physicalDealSummary.getVolumeQuantity());
             } else {
-                BigDecimal quantity = physicalDealSnapshot.getDealDetail().getVolumeQuantity();
-                Conversion conversion = UnitOfMeasureConverter.findConversion(targetUnitOfMeasureCode, physicalDealSnapshot.getDealDetail().getVolumeUnitOfMeasure());
+                BigDecimal quantity = physicalDealSummary.getVolumeQuantity();
+                Conversion conversion = UnitOfMeasureConverter.findConversion(
+                        targetUnitOfMeasureCode, 
+                        physicalDealSummary.getVolumeUnitOfMeasureCode());
+                
                 quantity = quantity.multiply(conversion.getValue(), MathContext.DECIMAL128);
                 positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(quantity);
             }
@@ -86,20 +104,20 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
             positionSnapshot.getDealPositionDetail().setCurrencyCode(targetCurrencyCode);
 
             // Deal Price
-            positionSnapshot.getDetail().setDealPriceValuationCode(physicalDealSnapshot.getDetail().getDealPriceValuationCode());
+            positionSnapshot.getDetail().setDealPriceValuationCode(physicalDealSummary.getDealPriceValuationCode());
 
             determineDealPriceRiskFactors(
                     physicalPositionHolder,
-                    physicalDealSnapshot,
+                    physicalDealSummary,
                     targetUnitOfMeasureCode,
                     targetCurrencyCode,
                     currentDate);
 
             // Market
-            positionSnapshot.getDetail().setDealMarketValuationCode(physicalDealSnapshot.getDetail().getMarketValuationCode());
+            positionSnapshot.getDetail().setDealMarketValuationCode(physicalDealSummary.getMarketValuationCode());
             determineMarketPriceRiskFactors(
                     physicalPositionHolder,
-                    physicalDealSnapshot,
+                    physicalDealSummary,
                     targetUnitOfMeasureCode,
                     targetCurrencyCode,
                     currentDate);
@@ -112,7 +130,7 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
 
     private void determineDealPriceRiskFactors(
             PhysicalPositionHolder physicalPositionHolder,
-            PhysicalDealSnapshot physicalDealSnapshot,
+            PhysicalDealSummary physicalDealSummary,
             UnitOfMeasureCode targetUnitOfMeasureCode,
             CurrencyCode targetCurrencyCode,
             LocalDate currentDate) {
@@ -123,10 +141,10 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
         if (positionSnapshot.getDetail().getDealPriceValuationCode() != ValuationCode.INDEX) {
 
 
-            if (physicalDealSnapshot.getDetail().getDealPriceUnitOfMeasure() != targetUnitOfMeasureCode) {
+            if (physicalDealSummary.getDealPriceUnitOfMeasureCode() != targetUnitOfMeasureCode) {
                 Conversion conversion = UnitOfMeasureConverter.findConversion(
                         targetUnitOfMeasureCode,
-                        physicalDealSnapshot.getDetail().getDealPriceUnitOfMeasure());
+                        physicalDealSummary.getDealPriceUnitOfMeasureCode());
                 positionSnapshot.getDetail().setDealPriceUOMConversion(conversion.getValue());
             } else {
                 positionSnapshot.getDetail().setDealPriceUOMConversion(BigDecimal.ONE);
@@ -134,23 +152,23 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
 
             // Set fixed deal price
             positionSnapshot.getDetail().setDealPriceValue(
-                    physicalDealSnapshot.getDetail().getDealPriceValue());
+                    physicalDealSummary.getDealPriceValue());
             positionSnapshot.getDetail().setDealPriceUnitOfMeasure(
-                    physicalDealSnapshot.getDetail().getDealPriceUnitOfMeasure());
+                    physicalDealSummary.getDealPriceUnitOfMeasureCode());
             positionSnapshot.getDetail().setDealPriceCurrencyCode(
-                    physicalDealSnapshot.getDetail().getDealPriceCurrency());
+                    physicalDealSummary.getDealPriceCurrencyCode());
 
 
-            if (physicalDealSnapshot.getDetail().getDealPriceCurrency() != targetCurrencyCode) {
+            if (physicalDealSummary.getDealPriceCurrencyCode() != targetCurrencyCode) {
                 physicalPositionHolder.setFixedDealPriceFxHolder(
                         riskFactorManager.determineFxRiskFactor(
-                                physicalDealSnapshot.getDetail().getDealPriceCurrency(),
+                                physicalDealSummary.getDealPriceCurrencyCode(),
                                 targetCurrencyCode,
                                 currentDate));
             }
         } else {   // Deal price is index based
             PriceRiskFactorHolder priceRiskFactorHolder = riskFactorManager.determinePriceRiskFactor(
-                    physicalDealSnapshot.getDealPriceIndexId().getCode(),
+                    physicalDealSummary.getDealPriceIndexId(),
                     currentDate);
 
 
@@ -173,7 +191,7 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
 
             PriceIndexPositionDateContainer priceIndexContainer = riskFactorManager
                     .findPriceIndexContainer(
-                            physicalDealSnapshot.getDealPriceIndexId().getCode());
+                            physicalDealSummary.getDealPriceIndexId());
 
             // Collect basis containers
             if (priceIndexContainer.isBasis()) {
@@ -210,13 +228,13 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
 
     private void determineMarketPriceRiskFactors(
             PhysicalPositionHolder physicalPositionHolder,
-            PhysicalDealSnapshot physicalDealSnapshot,
+            PhysicalDealSummary physicalDealSummary,
             UnitOfMeasureCode targetUnitOfMeasureCode,
             CurrencyCode targetCurrencyCode,
             LocalDate currentDate) {
 
         PriceRiskFactorHolder marketRiskFactorHolder = riskFactorManager.determinePriceRiskFactor(
-                physicalDealSnapshot.getMarketPriceIndexId().getCode(),
+                physicalDealSummary.getMarketIndexId(),
                 currentDate);
 
         physicalPositionHolder.setMarketRiskFactorHolder(marketRiskFactorHolder);
@@ -239,7 +257,7 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
 
         PriceIndexPositionDateContainer priceIndexContainer = riskFactorManager
                 .findPriceIndexContainer(
-                        physicalDealSnapshot.getMarketPriceIndexId().getCode());
+                        physicalDealSummary.getMarketIndexId());
 
         // Collect basis containers
         if (priceIndexContainer.isBasis()) {
@@ -351,15 +369,5 @@ public class PhysicalDealPositionGenerator implements DealPositionGenerator {
             positions.add(positionSnapshot);
         }
         return positions;
-    }
-
-    @Override
-    public BaseDealSnapshot getDealSnapshot() {
-        return dealSnapshot;
-    }
-
-    @Override
-    public List<PositionHolder> getPositionHolders() {
-        return positionHolders;
     }
 }

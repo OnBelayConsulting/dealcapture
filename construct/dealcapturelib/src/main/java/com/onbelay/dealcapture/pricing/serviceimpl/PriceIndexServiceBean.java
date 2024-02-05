@@ -111,7 +111,7 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 		for (PriceIndexSnapshot snapshot : snapshots) {
 			TransactionResult childResult = save(snapshot);
 			if (childResult.getEntityId() != null)
-				result.addEntityId(childResult.getEntityId());
+				result.getIds().add(childResult.getId());
 		}
 		return result;
 	}
@@ -123,11 +123,11 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 
 		if (snapshot.getEntityState() == EntityState.NEW) {
 			priceIndex = PriceIndex.create(snapshot);
-			return new TransactionResult(priceIndex.generateEntityId());
+			return new TransactionResult(priceIndex.getId());
 		} else if (snapshot.getEntityState() == EntityState.MODIFIED){
 			priceIndex = priceIndexRepository.load(snapshot.getEntityId());
 			priceIndex.updateWith(snapshot);
-			return new TransactionResult(priceIndex.generateEntityId());
+			return new TransactionResult(priceIndex.getId());
 		} else if (snapshot.getEntityState() == EntityState.DELETE) {
 			priceIndex = priceIndexRepository.load(snapshot.getEntityId());
 			priceIndex.delete();

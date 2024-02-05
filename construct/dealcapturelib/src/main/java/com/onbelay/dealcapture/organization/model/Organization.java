@@ -94,19 +94,19 @@ public class Organization extends TemporalAbstractEntity {
 		return getOrganizationRoleRepository().fetchByOrganizationId(getId());
 	}
 
-	public List<EntityId> saveOrganizationRoles(List<OrganizationRoleSnapshot> snapshots) {
-		ArrayList<EntityId> ids = new ArrayList<>();
+	public List<Integer> saveOrganizationRoles(List<OrganizationRoleSnapshot> snapshots) {
+		ArrayList<Integer> ids = new ArrayList<>();
 		for (OrganizationRoleSnapshot snapshot : snapshots) {
 			if (snapshot.getEntityState() == EntityState.NEW) {
 				OrganizationRole role = OrganizationRoleFactory.newOrganizationRole(snapshot.getOrganizationRoleType());
 				role.createWith(
 						this,
 						snapshot);
-				ids.add(role.generateEntityId());
+				ids.add(role.getId());
 			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 				OrganizationRole role = getOrganizationRoleRepository().load(snapshot.getEntityId());
 				role.updateWith(snapshot);
-				ids.add(role.generateEntityId());
+				ids.add(role.getId());
 			} else if (snapshot.getEntityState() == EntityState.DELETE) {
 				OrganizationRole role = getOrganizationRoleRepository().load(snapshot.getEntityId());
 				role.delete();

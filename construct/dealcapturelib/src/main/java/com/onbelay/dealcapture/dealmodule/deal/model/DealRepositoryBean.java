@@ -15,56 +15,111 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import java.util.List;
-
-import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import jakarta.transaction.Transactional;
-
+import com.onbelay.core.entity.repository.BaseRepository;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.onbelay.core.entity.repository.BaseRepository;
-import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.core.query.snapshot.DefinedQuery;
-import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import java.util.List;
 
 @Repository (value="dealRepository")
 @Transactional
 
 public class DealRepositoryBean extends BaseRepository<BaseDeal> implements DealRepository {
 	public static final String FETCH_ALL_DEALS = "DealRepository.FETCH_ALL_DEALS";
-	public static final String FETCH_DEAL_SUMMARIES = "DealRepository.FETCH_DEAL_SUMMARIES";
+	public static final String FETCH_ASSIGNED_DEAL_SUMMARIES = "DealRepository.FETCH_ASSIGNED_DEAL_SUMMARIES";
 	public static final String FIND_DEAL_BY_TICKET_NO = "DealRepository.FIND_DEAL_BY_TICKET_NO";
 	public static final String GET_DEAL_SUMMARY = "DealRepository.GET_DEAL_SUMMARY";
+    public static final String FETCH_PHYSICAL_DEAL_SUMMARIES = "DealRepository.FETCH_PHYSICAL_DEAL_SUMMARIES" ;
 
-	private static final String UPDATE_POSITION_GENERATION_STATUS_STATEMENT
-			= "UPDATE BaseDeal  SET dealDetail.positionGenerationStatusValue = :status, " +
-			" dealDetail.positionGenerationIdentifier = :identifier " +
-			"  WHERE id = :dealId " +
-			"   AND dealDetail.positionGenerationStatusValue in ('Completed', 'Cancelled', 'None')";
+    private static final String UPDATE_DEAL_POSITION_GENERATION_STATUS
+			= "UPDATE BaseDeal  " +
+			"     SET dealDetail.positionGenerationStatusValue = 'Pending', " +
+			"         dealDetail.positionGenerationIdentifier = null " +
+			"   WHERE id in (:dealIds) " +
+			"     AND dealDetail.positionGenerationStatusValue != 'Pending'";
+
+	private static final String UPDATE_DEAL_POSITION_GENERATION_ASSIGNMENT
+			= "UPDATE BaseDeal  " +
+			"     SET dealDetail.positionGenerationStatusValue = 'Generating', " +
+			"         dealDetail.positionGenerationIdentifier = :identifier " +
+			"   WHERE id in (:dealIds) " +
+			"     AND dealDetail.positionGenerationStatusValue = 'Pending'";
+
 
 	@Autowired
 	private DealColumnDefinitions dealColumnDefinitions;
 
+	@Override
+	public void executeDealUpdateAssignForPositionGeneration(
+			List<Integer> dealIds,
+			String positionGeneratorId) {
 
-	public boolean executeUpdateOfPositionGenerationStatus(
-			Integer dealId,
-			String positionGeneratorId,
-			PositionGenerationStatusCode code) {
+		String[] names = {"identifier","dealIds"};
+		if (dealIds.size() < 1000) {
+			Object[] parms = {positionGeneratorId, dealIds};
+				executeUpdate(
+						UPDATE_DEAL_POSITION_GENERATION_ASSIGNMENT,
+					names,
+					parms);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
+			while (subLister.moreElements()) {
+				Object[] parms2 = {positionGeneratorId, subLister.nextList()};
+				executeUpdate(
+						UPDATE_DEAL_POSITION_GENERATION_ASSIGNMENT,
+						names,
+						parms2);
+			}
+		}
 
-		String[] names = {"identifier", "status", "dealId"};
-		Object[] parms = {positionGeneratorId, code.getCode(), dealId};
+	}
 
-		int result = executeUpdate(
-				UPDATE_POSITION_GENERATION_STATUS_STATEMENT,
-				names,
-				parms);
 
-		return result > 0;
+	@Override
+	public void executeDealUpdateSetPositionGenerationToPending(List<Integer> dealIds) {
+
+		if (dealIds.size() < 1000) {
+			executeUpdate(
+					UPDATE_DEAL_POSITION_GENERATION_STATUS,
+					"dealIds",
+					dealIds);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
+			while (subLister.moreElements()) {
+				executeUpdate(
+						UPDATE_DEAL_POSITION_GENERATION_STATUS,
+						"dealIds",
+						subLister.nextList());
+			}
+		}
+
+	}
+
+	@Override
+	public List<DealSummary> findAssignedDealSummaries(String positionGenerationIdentifier) {
+		return (List<DealSummary>) executeReportQuery(
+				FETCH_ASSIGNED_DEAL_SUMMARIES,
+				"identifier",
+				positionGenerationIdentifier);
+	}
+
+	@Override
+	public List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds) {
+		return (List<PhysicalDealSummary>) executeReportQuery(
+				FETCH_PHYSICAL_DEAL_SUMMARIES,
+				"dealIds",
+				physicalDealIds);
 	}
 
 	/*
@@ -80,8 +135,9 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 		return  executeDefinedQuery(dealColumnDefinitions, definedQuery);
 	}
 
+	@Override
 	public List<DealSummary> fetchDealSummaries() {
-		return (List<DealSummary>) executeReportQuery(FETCH_DEAL_SUMMARIES);
+		return (List<DealSummary>) executeReportQuery(FETCH_ASSIGNED_DEAL_SUMMARIES);
 	}
 
 	@Override
@@ -104,6 +160,7 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 			return null;
 	}
 
+	@Override
 	public DealSummary getDealSummary(EntityId id) {
 		return (DealSummary) executeSingleResultReportQuery(
 				GET_DEAL_SUMMARY,
@@ -111,6 +168,7 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 				id.getId());
 	}
 
+	@Override
 	public BaseDeal findDealByTicketNo(String ticketNo) {
 		return (BaseDeal) executeSingleResultQuery(
 				FIND_DEAL_BY_TICKET_NO, 

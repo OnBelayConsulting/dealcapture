@@ -285,7 +285,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
                 monthlyPriceIndex.generateEntityId(),
                 List.of(snapshot));
         flush();
-        assertEquals(1, result.getEntityIds().size());
+        assertEquals(1, result.getIds().size());
 
         PriceCurve curve = priceCurveRepository.load(result.getEntityId());
         assertEquals(LocalDate.of(2022, 1, 1), curve.getDetail().getCurveDate());

@@ -57,8 +57,8 @@ public class FxIndexServiceBean extends BaseDomainService implements FxIndexServ
         TransactionResult result = new TransactionResult();
         for (FxIndexSnapshot snapshot : snapshots) {
             TransactionResult childResult = save(snapshot);
-            if (childResult.getEntityId() != null)
-                result.addEntityId(childResult.getEntityId());
+            if (childResult.getId() != null)
+                result.getIds().add(childResult.getId());
         }
         return result;
     }
@@ -88,11 +88,11 @@ public class FxIndexServiceBean extends BaseDomainService implements FxIndexServ
     public TransactionResult save(FxIndexSnapshot snapshot) {
         if (snapshot.getEntityState() == EntityState.NEW) {
             FxIndex index = FxIndex.create(snapshot);
-            return new TransactionResult(index.generateEntityId());
+            return new TransactionResult(index.getId());
         } else if (snapshot.getEntityState() == EntityState.MODIFIED) {
             FxIndex index = fxIndexRepository.load(snapshot.getEntityId());
             index.updateWith(snapshot);
-            return new TransactionResult(index.generateEntityId());
+            return new TransactionResult(index.getId());
         } else if (snapshot.getEntityState() == EntityState.DELETE) {
             FxIndex index = fxIndexRepository.load(snapshot.getEntityId());
             index.delete();

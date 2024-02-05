@@ -26,7 +26,10 @@ public interface FxRiskFactorRepository {
 
     List<FxRiskFactor> fetchByFxIndex(EntityId fxIndexId);
 
-    public List<FxRiskFactor> fetchByFxIndices(List<Integer> fxIndexIds);
+    public List<FxRiskFactor> fetchByFxIndices(
+            List<Integer> fxIndexIds,
+            LocalDate fromDate,
+            LocalDate toDate);
 
     List<FxRiskFactor> find(DefinedQuery definedQuery);
 }

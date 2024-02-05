@@ -15,11 +15,16 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
+import com.onbelay.shared.enums.BuySellCode;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 
 public class DealSummary {
@@ -27,33 +32,34 @@ public class DealSummary {
 	private EntityId dealId;
 	private String ticketNo;
 	private LocalDate startDate;
-	private String companyName;
-	private String counterpartyName;
-	private String dealStatusValue;
-	private String positionGenerationStatusValue;
-	private String positionGenerationIdentifier;
-	
-	
-	
+	private LocalDate endDate;
+	private DealTypeCode dealTypeCode;
+	private BuySellCode buySellCode;
+	private CurrencyCode reportingCurrencyCode;
+	private BigDecimal volumeQuantity;
+	private UnitOfMeasureCode volumeUnitOfMeasureCode;
+
 	public DealSummary(
-			Integer dealKey,
-			String ticketNo, 
-			LocalDate startDate, 
-			String companyName,
-			String counterpartyName,
-			String dealStatusValue,
-			String positionGenerationStatusValue,
-			String positionGenerationIdentifier) {
+			Integer dealId,
+			String ticketNo,
+			LocalDate startDate,
+			LocalDate endDate,
+			String dealTypeCodeValue,
+			String buySellCodeValue,
+			String reportingCurrencyCodeValue,
+			BigDecimal volumeQuantity,
+			String volumeUnitOfMeasureCodeValue) {
 		
 		super();
-		this.dealId = new EntityId(dealKey, ticketNo, ticketNo, false);
+		this.dealId = new EntityId(dealId, ticketNo, ticketNo, false);
 		this.ticketNo = ticketNo;
 		this.startDate = startDate;
-		this.companyName = companyName;
-		this.counterpartyName = counterpartyName;
-		this.dealStatusValue = dealStatusValue;
-		this.positionGenerationStatusValue = positionGenerationStatusValue;
-		this.positionGenerationIdentifier = positionGenerationIdentifier;
+		this.endDate = endDate;
+		dealTypeCode = DealTypeCode.lookUp(dealTypeCodeValue);
+		this.buySellCode = BuySellCode.lookUp(buySellCodeValue);
+		this.reportingCurrencyCode = CurrencyCode.lookUp(reportingCurrencyCodeValue);
+		this.volumeQuantity = volumeQuantity;
+		this.volumeUnitOfMeasureCode = UnitOfMeasureCode.lookUp(volumeUnitOfMeasureCodeValue);
 	}
 	
 	public EntityId getDealId() {
@@ -65,22 +71,28 @@ public class DealSummary {
 	public LocalDate getStartDate() {
 		return startDate;
 	}
-	public String getCompanyName() {
-		return companyName;
-	}
-	public String getCounterpartyName() {
-		return counterpartyName;
-	}
-	
-	public DealStatusCode getDealStatusCode() {
-		return DealStatusCode.lookUp(dealStatusValue);
+
+	public LocalDate getEndDate() {
+		return endDate;
 	}
 
-	public PositionGenerationStatusCode getPositionGenerationStatusCode() {
-		return PositionGenerationStatusCode.lookUp(positionGenerationStatusValue);
+	public DealTypeCode getDealTypeCode() {
+		return dealTypeCode;
 	}
 
-	public String getPositionGenerationIdentifier() {
-		return positionGenerationIdentifier;
+	public BigDecimal getVolumeQuantity() {
+		return volumeQuantity;
+	}
+
+	public UnitOfMeasureCode getVolumeUnitOfMeasureCode() {
+		return volumeUnitOfMeasureCode;
+	}
+
+	public BuySellCode getBuySellCode() {
+		return buySellCode;
+	}
+
+	public CurrencyCode getReportingCurrencyCode() {
+		return reportingCurrencyCode;
 	}
 }

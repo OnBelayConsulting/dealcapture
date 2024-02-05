@@ -85,7 +85,7 @@ public class FxRiskFactorRestController extends BaseRestController {
 
 
 	@Operation(summary="value fxRiskFactors based on a query")
-	@PutMapping(
+	@PostMapping(
 			value = "/riskFactors/valued",
 			consumes="application/json"  )
 	public ResponseEntity<TransactionResult> valueFxRiskFactors(

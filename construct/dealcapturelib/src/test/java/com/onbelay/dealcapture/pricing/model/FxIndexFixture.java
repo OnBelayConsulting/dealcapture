@@ -92,7 +92,7 @@ public class FxIndexFixture {
 
 
 
-    public static List<EntityId> generateDailyFxCurves(
+    public static List<Integer> generateDailyFxCurves(
             FxIndex fxIndex,
             LocalDate startMarketDate,
             LocalDate endMarketDate,
@@ -113,7 +113,7 @@ public class FxIndexFixture {
         return fxIndex.saveFxCurves(fxs);
     }
 
-    public static List<EntityId> generateDailyFxCurves(
+    public static List<Integer> generateDailyFxCurves(
             FxIndex fxIndex,
             LocalDate startMarketDate,
             LocalDate endMarketDate,
@@ -136,7 +136,7 @@ public class FxIndexFixture {
     }
 
 
-    public static List<EntityId> generateMonthlyFxCurves(
+    public static List<Integer> generateMonthlyFxCurves(
             FxIndex fxIndex,
             LocalDate startMarketDate,
             LocalDate endMarketDate,

@@ -36,11 +36,11 @@ public class OrganizationRoleDetail {
 
 
 	@Column(name = "ORG_ROLE_STATUS_CODE")
-	private String getOrganizationRoleStatusValue() {
+	public String getOrganizationRoleStatusValue() {
 		return organizationRoleStatusValue;
 	}
 
-	private void setOrganizationRoleStatusValue(String organizationRoleStatusValue) {
+	public void setOrganizationRoleStatusValue(String organizationRoleStatusValue) {
 		this.organizationRoleStatusValue = organizationRoleStatusValue;
 	}
 	

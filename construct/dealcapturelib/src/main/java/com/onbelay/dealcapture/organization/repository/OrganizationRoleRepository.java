@@ -15,14 +15,14 @@
  */
 package com.onbelay.dealcapture.organization.repository;
 
-import java.util.List;
-
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRole;
+
+import java.util.List;
 
 public interface OrganizationRoleRepository {
 	
@@ -37,7 +37,9 @@ public interface OrganizationRoleRepository {
 	public List<Integer> findOrganizationRoleIds(DefinedQuery query);
 	
 	public List<OrganizationRole> findByShortName(String name);
-		
-	
 
+
+    OrganizationRole getByShortNameAndRoleType(
+			String organizationShortName,
+			OrganizationRoleType organizationRoleType);
 }

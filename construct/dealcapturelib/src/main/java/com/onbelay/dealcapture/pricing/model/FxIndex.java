@@ -163,16 +163,16 @@ public class FxIndex extends TemporalAbstractEntity {
 	}
 
 
-	public List<EntityId> saveFxRiskFactors(List<FxRiskFactorSnapshot> factors) {
-		ArrayList<EntityId> ids = new ArrayList<>();
+	public List<Integer> saveFxRiskFactors(List<FxRiskFactorSnapshot> factors) {
+		ArrayList<Integer> ids = new ArrayList<>();
 		for (FxRiskFactorSnapshot snapshot : factors) {
 			if (snapshot.getEntityState() == EntityState.NEW) {
 				FxRiskFactor factor = FxRiskFactor.create(this, snapshot);
-				ids.add(factor.generateEntityId());
+				ids.add(factor.getId());
 			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 				FxRiskFactor factor = getFxRiskFactorRepository().load(snapshot.getEntityId());
 				factor.updateWith(snapshot);
-				ids.add(factor.generateEntityId());
+				ids.add(factor.getId());
 			} else if (snapshot.getEntityState() == EntityState.DELETE) {
 				FxRiskFactor factor = getFxRiskFactorRepository().load(snapshot.getEntityId());
 				factor.delete();
@@ -197,16 +197,16 @@ public class FxIndex extends TemporalAbstractEntity {
 		fxRiskFactor.save();
 	}
 
-	public List<EntityId> saveFxCurves(List<FxCurveSnapshot> snapshots) {
-		ArrayList<EntityId> ids = new ArrayList<>();
+	public List<Integer> saveFxCurves(List<FxCurveSnapshot> snapshots) {
+		ArrayList<Integer> ids = new ArrayList<>();
 		for (FxCurveSnapshot snapshot : snapshots) {
 			if (snapshot.getEntityState() == EntityState.NEW) {
 				FxCurve curve = new FxCurve(this, snapshot);
-				ids.add(curve.generateEntityId());
+				ids.add(curve.getId());
 			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 				FxCurve curve = getFxCurveRepository().load(snapshot.getEntityId());
 				curve.updateWith(snapshot);
-				ids.add(curve.generateEntityId());
+				ids.add(curve.getId());
 			} else if (snapshot.getEntityState() == EntityState.DELETE) {
 				FxCurve curve = getFxCurveRepository().load(snapshot.getEntityId());
 				curve.delete();

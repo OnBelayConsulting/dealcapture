@@ -38,7 +38,7 @@ public class PhysicalDealDetail  {
 	private String marketValuationCodeValue;
 	private BigDecimal dealPriceValue;
 	private String dealPriceCurrencyCodeValue;
-	private String dealPriceUnitOfMeasureValue;
+	private String dealPriceUnitOfMeasureCodeValue;
 
 	public PhysicalDealDetail() {
 	}
@@ -60,7 +60,7 @@ public class PhysicalDealDetail  {
 			if (dealPriceCurrencyCodeValue == null)
 				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_CURRENCY.getCode());
 
-			if (dealPriceUnitOfMeasureValue == null)
+			if (dealPriceUnitOfMeasureCodeValue == null)
 				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_UOM.getCode());
 		}
 
@@ -79,13 +79,13 @@ public class PhysicalDealDetail  {
 			return new Price(
 					dealPriceValue,
 				CurrencyCode.lookUp(dealPriceCurrencyCodeValue),
-				UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureValue));
+				UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue));
 	}
 	
 	public void setDealPrice(Price price) {
 		this.dealPriceValue = price.getValue();
 		this.dealPriceCurrencyCodeValue = price.getCurrency().getCode();
-		this.dealPriceUnitOfMeasureValue = price.getUnitOfMeasure().getCode();
+		this.dealPriceUnitOfMeasureCodeValue = price.getUnitOfMeasure().getCode();
 	}
 
 	@Transient
@@ -161,23 +161,23 @@ public class PhysicalDealDetail  {
 	@Transient
 	@JsonIgnore
 	public UnitOfMeasureCode getDealPriceUnitOfMeasure() {
-		return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureValue);
+		return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue);
 	}
 
 	public void setDealPriceUnitOfMeasure(UnitOfMeasureCode code) {
-		this.dealPriceUnitOfMeasureValue = code.getCode();
+		this.dealPriceUnitOfMeasureCodeValue = code.getCode();
 	}
 
     @Column(name="DEAL_PRICE_UOM_CODE")
 	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "dealPriceUnitOfMeasureCodeItem")
 	@JsonSerialize(using = CodeLabelSerializer.class)
-    public String getDealPriceUnitOfMeasureValue() {
-		return dealPriceUnitOfMeasureValue;
+    public String getDealPriceUnitOfMeasureCodeValue() {
+		return dealPriceUnitOfMeasureCodeValue;
 	}
 
 
-    public void setDealPriceUnitOfMeasureValue(String dealPriceUoMValue) {
-		this.dealPriceUnitOfMeasureValue = dealPriceUoMValue;
+    public void setDealPriceUnitOfMeasureCodeValue(String dealPriceUoMValue) {
+		this.dealPriceUnitOfMeasureCodeValue = dealPriceUoMValue;
 	}
 
 
@@ -194,8 +194,8 @@ public class PhysicalDealDetail  {
     	if (copy.dealPriceCurrencyCodeValue != null)
     		this.dealPriceCurrencyCodeValue = copy.dealPriceCurrencyCodeValue;
     	
-    	if (copy.dealPriceUnitOfMeasureValue != null)
-    		this.dealPriceUnitOfMeasureValue = copy.dealPriceUnitOfMeasureValue;
+    	if (copy.dealPriceUnitOfMeasureCodeValue != null)
+    		this.dealPriceUnitOfMeasureCodeValue = copy.dealPriceUnitOfMeasureCodeValue;
     }
 	
 }

@@ -33,5 +33,8 @@ public interface FxRiskFactorService {
 
     List<FxRiskFactorSnapshot> findByIds(QuerySelectedPage querySelectedPage);
 
-    List<FxRiskFactorSnapshot> findByFxIndexIds(List<Integer> collect);
+    List<FxRiskFactorSnapshot> findByFxIndexIds(
+            List<Integer> fxIndexIds,
+            LocalDate fromDate,
+            LocalDate toDate);
 }

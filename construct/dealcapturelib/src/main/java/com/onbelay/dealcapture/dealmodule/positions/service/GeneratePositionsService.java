@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.dealcapture.formulas.model.EvaluationContext;
 
 import java.util.List;
 

@@ -57,21 +57,28 @@ public class FxRiskFactorRepositoryBean extends BaseRepository<FxRiskFactor> imp
 	}
 
 	@Override
-	public List<FxRiskFactor> fetchByFxIndices(List<Integer> fxIndexIds) {
+	public List<FxRiskFactor> fetchByFxIndices(
+			List<Integer> fxIndexIds,
+			LocalDate fromDate,
+			LocalDate toDate) {
+
 		List<FxRiskFactor> riskFactors = new ArrayList<>();
+		String[] names = {"indexIds", "fromDate", "toDate"};
+		Object[] parms = {fxIndexIds, fromDate, toDate};
 		if (fxIndexIds.size() < 2000) {
 			riskFactors = executeQuery(
 					FETCH_BY_FX_INDEX_IDS,
-					"indexIds",
-					fxIndexIds);
+					names,
+					parms);
 		} else {
 			SubLister<Integer> subLister = new SubLister<>(fxIndexIds, 2000);
 			while (subLister.moreElements()) {
+				Object[] parms2 = {subLister.nextList(), fromDate, toDate};
 				riskFactors.addAll(
 						executeQuery(
 								FETCH_BY_FX_INDEX_IDS,
-								"indexIds",
-								subLister.nextList()));
+								names,
+								parms2));
 			}
 		}
 		return riskFactors;

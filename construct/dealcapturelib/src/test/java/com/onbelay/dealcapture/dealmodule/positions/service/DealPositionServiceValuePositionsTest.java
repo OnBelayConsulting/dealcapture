@@ -5,20 +5,14 @@ import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
-import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.formulas.model.EvaluationContext;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
 import com.onbelay.dealcapture.pricing.model.*;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
@@ -42,6 +36,9 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
     private static final Logger logger = LogManager.getLogger();
     @Autowired
     private DealRepositoryBean dealRepository;
+
+    @Autowired
+    private DealService dealService;
 
     @Autowired
     private DealPositionRepository dealPositionRepository;
@@ -151,7 +148,7 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
                 .withCurrency(CurrencyCode.CAD)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
-
+        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDealWithFixedDealPrice.getId()));
         generatePositionsService.generatePositions(
                 "test",
                 context,

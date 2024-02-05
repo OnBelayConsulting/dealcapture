@@ -27,6 +27,7 @@ import com.onbelay.core.query.model.ColumnDefinitions;
 
 @Component(value = "dealColumnDefinitions")
 public class DealColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
+	public static final ColumnDefinition dealId = new ColumnDefinition("dealId", ColumnDataType.INTEGER, "id");
 	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeValue");
 	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "dealDetail.ticketNo");
 	public static final ColumnDefinition companyShortName = new ColumnDefinition("companyShortName", ColumnDataType.STRING, "companyRole.detail.shortName");
@@ -34,6 +35,7 @@ public class DealColumnDefinitions extends BaseColumnDefinitions implements Colu
 	public static final ColumnDefinition buySellCode = new ColumnDefinition("buySellCode", ColumnDataType.STRING, "dealDetail.buySellCode");
 
 	public DealColumnDefinitions() {
+		add(dealId);
 		add(dealType);
 		add(ticketNo);
 		add(companyShortName);

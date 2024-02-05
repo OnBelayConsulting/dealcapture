@@ -19,7 +19,8 @@ import java.util.*;
 
 public enum PositionErrorCode {
 
-    MISSING_BASIS_CONTAINER          ("DC_PS-E0001", "Error: Missing basis container in position generation.");
+    ERROR_VALUE_POSITION_MISSING_PRICES ("DC_PS-E0001", "Error: Position valuation failed. Missing, invalid prices."),
+    MISSING_BASIS_CONTAINER             ("DC_PS-E0100", "Error: Missing basis container in position generation.");
 
     private String code;
     private String description;

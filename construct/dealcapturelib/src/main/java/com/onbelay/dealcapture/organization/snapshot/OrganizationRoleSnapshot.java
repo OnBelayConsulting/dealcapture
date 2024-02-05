@@ -39,6 +39,8 @@ public class OrganizationRoleSnapshot extends AbstractSnapshot {
 
 	private EntityId organizationId;
 
+	private OrganizationRoleDetail roleDetail = new OrganizationRoleDetail();
+
 	public OrganizationRoleSnapshot() { }
 	
 	protected OrganizationRoleSnapshot(OrganizationRoleType roleType) {
@@ -53,8 +55,6 @@ public class OrganizationRoleSnapshot extends AbstractSnapshot {
 	public void setOrganizationId(EntityId organizationId) {
 		this.organizationId = organizationId;
 	}
-
-	private OrganizationRoleDetail roleDetail = new OrganizationRoleDetail();
 
 	public OrganizationRoleDetail getRoleDetail() {
 		return roleDetail;

@@ -35,6 +35,12 @@ import jakarta.persistence.*;
 			   "  FROM OrganizationRole role " +
        	     "   WHERE role.organization.id = :organizationId"),
     @NamedQuery(
+       name = OrganizationRoleRepositoryBean.GET_BY_SHORT_NAME_ROLE_TYPE,
+       query = "SELECT role " +
+			   "  FROM OrganizationRole role " +
+       	     "   WHERE role.organization.detail.shortName = :shortName " +
+			   "   AND role.organizationRoleTypeCode = :roleType"),
+    @NamedQuery(
        name = OrganizationRoleRepositoryBean.FIND_BY_SHORT_NAME,
        query = "SELECT role " +
 			   "  FROM OrganizationRole role " +
@@ -50,7 +56,7 @@ public abstract class OrganizationRole extends TemporalAbstractEntity {
 
     protected OrganizationRoleDetail roleDetail = new OrganizationRoleDetail();
 
-	private OrganizationRole() {
+	protected OrganizationRole() {
 	}
 
 	protected OrganizationRole(OrganizationRoleType roleType) {

@@ -24,7 +24,7 @@ import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdap
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.ErrorDealPositionSnapshot;
-import com.onbelay.dealcapture.formulas.model.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +58,7 @@ public class DealPositionRestController extends BaseRestController {
 	public ResponseEntity<TransactionResult> generatePositions(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
-			@RequestBody EvaluationContext evaluationContext,
+			@RequestBody EvaluationContextRequest evaluationContext,
 			BindingResult bindingResult) {
 
 

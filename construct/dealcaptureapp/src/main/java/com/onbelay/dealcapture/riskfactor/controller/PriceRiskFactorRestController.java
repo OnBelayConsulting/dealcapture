@@ -86,9 +86,9 @@ public class PriceRiskFactorRestController extends BaseRestController {
 
 
 	@Operation(summary="value priceRiskFactors based on a query")
-	@PutMapping(
+	@PostMapping(
 			value = "/riskFactors/valued",
-			consumes="application/json"  )
+			produces="application/json"  )
 	public ResponseEntity<TransactionResult> valuePriceRiskFactors(
 			@RequestParam(value = "query", defaultValue="default") String queryText) {
 

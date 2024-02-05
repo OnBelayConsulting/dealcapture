@@ -4,7 +4,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
-import com.onbelay.dealcapture.formulas.model.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public interface DealPositionRestAdapter {
 
     TransactionResult generatePositions(
             String queryText,
-            EvaluationContext evaluationContext);
+            EvaluationContextRequest evaluationContext);
 
     TransactionResult save(
             EntityId dealId,

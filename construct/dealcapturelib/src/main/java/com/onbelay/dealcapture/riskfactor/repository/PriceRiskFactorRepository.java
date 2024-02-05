@@ -28,5 +28,8 @@ public interface PriceRiskFactorRepository {
 
     List<PriceRiskFactor> find(DefinedQuery definedQuery);
 
-    List<PriceRiskFactor> fetchByPriceIndices(List<Integer> priceIndexIds);
+    List<PriceRiskFactor> fetchByPriceIndices(
+            List<Integer> priceIndexIds,
+            LocalDate fromDate,
+            LocalDate toDate);
 }

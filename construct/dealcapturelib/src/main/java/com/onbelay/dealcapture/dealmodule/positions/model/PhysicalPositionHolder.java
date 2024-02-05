@@ -1,7 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.formulas.model.FxRiskFactorHolder;
+import com.onbelay.dealcapture.riskfactor.components.FxRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 
 import java.util.ArrayList;
