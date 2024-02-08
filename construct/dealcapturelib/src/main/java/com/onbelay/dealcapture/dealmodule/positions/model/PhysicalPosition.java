@@ -1,17 +1,15 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.core.entity.model.AuditAbstractEntity;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.busmath.model.Amount;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionDetail;
-
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
@@ -25,22 +23,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table (name = "PHYSICAL_POSITION")
+@DiscriminatorValue("PHY")
 public class PhysicalPosition extends DealPosition {
 
 
     private PhysicalPositionDetail detail = new PhysicalPositionDetail();
 
-    private FxRiskFactor fixedPriceFxRiskFactor;
+    private Integer fixedPriceFxRiskFactorId;
 
-    private PriceRiskFactor dealPriceRiskFactor;
-    private FxRiskFactor dealPriceFxRiskFactor;
+    private Integer dealPriceRiskFactorId;
+    private Integer dealPriceFxRiskFactorId;
 
-    private PriceRiskFactor marketPriceRiskFactor;
-    private FxRiskFactor marketPriceFxRiskFactor;
+    private Integer marketPriceRiskFactorId;
+    private Integer marketPriceFxRiskFactorId;
 
     public PhysicalPosition() {
-        super.getDealPositionDetail().setDealTypeCode(DealTypeCode.PHYSICAL_DEAL);
+        super(DealTypeCode.PHYSICAL_DEAL.getCode());
+
     }
 
     @Embedded
@@ -52,14 +51,12 @@ public class PhysicalPosition extends DealPosition {
         this.detail = detail;
     }
 
-    public void createWith(
-            BaseDeal deal,
-            DealPositionSnapshot snapshot) {
-        super.createWith(deal, snapshot);
+    public void createWith(DealPositionSnapshot snapshot) {
+        super.createWith(snapshot);
         PhysicalPositionSnapshot physicalPositionSnapshot = (PhysicalPositionSnapshot) snapshot;
         detail.copyFrom(physicalPositionSnapshot.getDetail());
         setAssociations(physicalPositionSnapshot);
-        deal.addPosition(this);
+        save();
         postCreateWith(snapshot);
     }
 
@@ -113,12 +110,12 @@ public class PhysicalPosition extends DealPosition {
     @Transient
     public Price getMarketIndexPrice() {
 
-        Price price = marketPriceRiskFactor.fetchCurrentPrice();
+        Price price = getMarketPriceRiskFactor().fetchCurrentPrice();
         price = price.multiply(detail.getMarketPriceUOMConversion());
 
-        if (marketPriceFxRiskFactor != null) {
+        if (marketPriceFxRiskFactorId != null) {
             price =  price.apply(
-                    marketPriceFxRiskFactor.fetchFxRate(
+                    getMarketPriceFxRiskFactor().fetchFxRate(
                             getDealPositionDetail().getCurrencyCode(),
                             price.getCurrency()));
         }
@@ -135,11 +132,11 @@ public class PhysicalPosition extends DealPosition {
 
     @Transient
     public Price getDealIndexPrice() {
-        Price price = dealPriceRiskFactor.fetchCurrentPrice();
+        Price price = getDealPriceRiskFactor().fetchCurrentPrice();
         price = price.multiply(detail.getDealPriceUOMConversion());
 
-        if (dealPriceFxRiskFactor != null) {
-            price = price.multiply(this.dealPriceFxRiskFactor.getDetail().getValue());
+        if (dealPriceFxRiskFactorId != null) {
+            price = price.multiply(this.getDealPriceFxRiskFactor().getDetail().getValue());
         }
 
         List<PositionRiskFactorMappingSummary> summaries = findMappingSummaries(PriceTypeCode.DEAL_PRICE);
@@ -175,84 +172,90 @@ public class PhysicalPosition extends DealPosition {
 
 
         if (snapshot.getFixedDealPriceFxRiskFactorId() != null)
-            this.fixedPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getFixedDealPriceFxRiskFactorId());
+            this.fixedPriceFxRiskFactorId = snapshot.getFixedDealPriceFxRiskFactorId().getId();
 
         if (snapshot.getDealPriceRiskFactorId() != null)
-            this.dealPriceRiskFactor = getPriceRiskFactorRepository().load(snapshot.getDealPriceRiskFactorId());
+            this.dealPriceRiskFactorId = snapshot.getDealPriceRiskFactorId().getId();
 
         if (snapshot.getDealPriceFxRiskFactorId() != null)
-            this.dealPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getDealPriceFxRiskFactorId());
+            this.dealPriceFxRiskFactorId = snapshot.getDealPriceFxRiskFactorId().getId();
 
         if (snapshot.getMarketPriceRiskFactorId() != null)
-            this.marketPriceRiskFactor = getPriceRiskFactorRepository().load(snapshot.getMarketPriceRiskFactorId());
+            this.marketPriceRiskFactorId = snapshot.getMarketPriceRiskFactorId().getId();
 
         if (snapshot.getMarketFxRiskFactorId() != null)
-            this.marketPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getMarketFxRiskFactorId());
+            this.marketPriceFxRiskFactorId = snapshot.getMarketFxRiskFactorId().getId();
 
 
     }
 
-
-    @ManyToOne
-    @JoinColumn(name = "FIXED_PRICE_FX_RISK_FACTOR_ID")
+    @Transient
     public FxRiskFactor getFixedPriceFxRiskFactor() {
-        return fixedPriceFxRiskFactor;
+        return getFxRiskFactorRepository().load(new EntityId(fixedPriceFxRiskFactorId));
     }
 
-    public void setFixedPriceFxRiskFactor(FxRiskFactor fixedDealPriceFxRiskFactor) {
-        this.fixedPriceFxRiskFactor = fixedDealPriceFxRiskFactor;
+    @Column(name = "FIXED_PRICE_FX_RISK_FACTOR_ID")
+    public Integer getFixedPriceFxRiskFactorId() {
+        return fixedPriceFxRiskFactorId;
     }
 
+    public void setFixedPriceFxRiskFactorId(Integer fixedDealPriceFxRiskFactorId) {
+        this.fixedPriceFxRiskFactorId = fixedDealPriceFxRiskFactorId;
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "DEAL_PRICE_RISK_FACTOR_ID")
+    @Transient
     public PriceRiskFactor getDealPriceRiskFactor() {
-        return dealPriceRiskFactor;
+        return getPriceRiskFactorRepository().load(new EntityId(dealPriceRiskFactorId));
     }
 
-    public void setDealPriceRiskFactor(PriceRiskFactor dealPriceRiskFactor) {
-        this.dealPriceRiskFactor = dealPriceRiskFactor;
+    @Column(name = "DEAL_PRICE_RISK_FACTOR_ID")
+    public Integer getDealPriceRiskFactorId() {
+        return dealPriceRiskFactorId;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "DEAL_PRICE_FX_RISK_FACTOR_ID")
+    public void setDealPriceRiskFactorId(Integer dealPriceRiskFactorId) {
+        this.dealPriceRiskFactorId = dealPriceRiskFactorId;
+    }
+
+    @Transient
     public FxRiskFactor getDealPriceFxRiskFactor() {
-        return dealPriceFxRiskFactor;
+        return getFxRiskFactorRepository().load(new EntityId(dealPriceFxRiskFactorId));
+    }
+    @Column(name = "DEAL_PRICE_FX_RISK_FACTOR_ID")
+    public Integer getDealPriceFxRiskFactorId() {
+        return dealPriceFxRiskFactorId;
     }
 
-    public void setDealPriceFxRiskFactor(FxRiskFactor dealPriceFxRiskFactor) {
-        this.dealPriceFxRiskFactor = dealPriceFxRiskFactor;
+    public void setDealPriceFxRiskFactorId(Integer dealPriceFxRiskFactorId) {
+        this.dealPriceFxRiskFactorId = dealPriceFxRiskFactorId;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "MKT_PRICE_RISK_FACTOR_ID")
+    @Transient
     public PriceRiskFactor getMarketPriceRiskFactor() {
-        return marketPriceRiskFactor;
+        return getPriceRiskFactorRepository().load(new EntityId(marketPriceRiskFactorId));
     }
 
-    public void setMarketPriceRiskFactor(PriceRiskFactor marketPriceRiskFactor) {
-        this.marketPriceRiskFactor = marketPriceRiskFactor;
+    @Column(name = "MKT_PRICE_RISK_FACTOR_ID")
+    public Integer getMarketPriceRiskFactorId() {
+        return marketPriceRiskFactorId;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "MKT_PRICE_FX_RISK_FACTOR_ID")
+    public void setMarketPriceRiskFactorId(Integer marketPriceRiskFactorId) {
+        this.marketPriceRiskFactorId = marketPriceRiskFactorId;
+    }
+
+    @Transient
     public FxRiskFactor getMarketPriceFxRiskFactor() {
-        return marketPriceFxRiskFactor;
+        return getFxRiskFactorRepository().load(new EntityId(marketPriceFxRiskFactorId));
     }
 
-    public void setMarketPriceFxRiskFactor(FxRiskFactor marketPriceFxRiskFactor) {
-        this.marketPriceFxRiskFactor = marketPriceFxRiskFactor;
+    @Column(name = "MKT_PRICE_FX_RISK_FACTOR_ID")
+    public Integer getMarketPriceFxRiskFactorId() {
+        return marketPriceFxRiskFactorId;
     }
 
-    @Override
-    protected AuditAbstractEntity createHistory() {
-        return PhysicalPositionAudit.create(this);
-    }
-
-
-    @Override
-    public AuditAbstractEntity fetchRecentHistory() {
-        return PhysicalPositionAudit.findRecentHistory(this);
+    public void setMarketPriceFxRiskFactorId(Integer marketPriceFxRiskFactorId) {
+        this.marketPriceFxRiskFactorId = marketPriceFxRiskFactorId;
     }
 
     private static FxRiskFactorRepository getFxRiskFactorRepository() {

@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DealPositionDetail extends AbstractDetail {
 
-    private String dealTypeCodeValue;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime createUpdateDateTime;
@@ -46,9 +45,6 @@ public class DealPositionDetail extends AbstractDetail {
     }
 
     public void copyFrom(DealPositionDetail copy) {
-
-        if (copy.dealTypeCodeValue != null)
-            this.dealTypeCodeValue = copy.dealTypeCodeValue;
 
         if (copy.startDate != null)
             this.startDate = copy.startDate;
@@ -78,24 +74,6 @@ public class DealPositionDetail extends AbstractDetail {
             this.errorCode = copy.errorCode;
     }
 
-    @Transient
-    @JsonIgnore
-    public DealTypeCode getDealTypeCode() {
-        return DealTypeCode.lookUp(dealTypeCodeValue);
-    }
-
-    public void setDealTypeCode(DealTypeCode code) {
-        this.dealTypeCodeValue = code.getCode();
-    }
-
-    @Column(name = "DEAL_TYPE_CODE")
-    public String getDealTypeCodeValue() {
-        return dealTypeCodeValue;
-    }
-
-    public void setDealTypeCodeValue(String dealTypeCodeValue) {
-        this.dealTypeCodeValue = dealTypeCodeValue;
-    }
 
     @Column(name = "START_DATE")
     public LocalDate getStartDate() {

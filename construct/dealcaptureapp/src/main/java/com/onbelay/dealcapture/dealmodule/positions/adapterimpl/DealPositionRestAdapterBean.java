@@ -182,13 +182,13 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     @Override
     public TransactionResult save(
             EntityId dealId,
-            DealPositionSnapshot dealSnapshot) {
+            DealPositionSnapshot positionSnapshot) {
         initializeSession();
+        positionSnapshot.setDealId(dealId);
         String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
         TransactionResult result = dealPositionService.saveDealPositions(
                 positionGenerationIdentifier,
-                dealId,
-                List.of(dealSnapshot));
+                List.of(positionSnapshot));
 
         return result;
     }
@@ -197,7 +197,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     public TransactionResult save(List<DealPositionSnapshot> snapshots) {
         initializeSession();
         String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
-        TransactionResult result =  dealPositionService.saveAllDealPositions(
+        TransactionResult result =  dealPositionService.saveDealPositions(
                 positionGenerationIdentifier,
                 snapshots);
         return result;

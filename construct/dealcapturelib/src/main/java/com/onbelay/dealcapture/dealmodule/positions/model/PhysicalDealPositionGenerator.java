@@ -298,6 +298,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             PhysicalPositionHolder physicalPositionHolder = (PhysicalPositionHolder) holder;
 
             PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) holder.getDealPositionSnapshot();
+            positionSnapshot.setDealId(dealSummary.getDealId());
 
             // Market Price
             positionSnapshot.setMarketPriceRiskFactorId(physicalPositionHolder.getMarketRiskFactorHolder().getRiskFactor().getEntityId());

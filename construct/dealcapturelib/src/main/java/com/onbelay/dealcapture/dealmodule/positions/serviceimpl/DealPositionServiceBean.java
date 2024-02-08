@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
+import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
@@ -10,6 +11,7 @@ import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.PositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.DealPositionAssemblerFactory;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
+import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -41,44 +43,24 @@ public class DealPositionServiceBean implements DealPositionService {
     public DealPositionSnapshot load(EntityId entityId) {
         DealPosition position =  dealPositionRepository.load(entityId);
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();
-        PositionAssembler assembler = factory.newAssembler(position.getDealPositionDetail().getDealTypeCode());
+        PositionAssembler assembler = factory.newAssembler(position.getDealTypeCode());
         return assembler.assemble(position);
     }
 
     @Override
     public TransactionResult saveDealPositions(
             String positionGeneratorIdentifier,
-            EntityId dealId,
             List<DealPositionSnapshot> positions) {
 
-        BaseDeal deal = dealRepository.load(dealId);
-        deal.savePositions(
-                positionGeneratorIdentifier,
-                positions);
-        return new TransactionResult();
-    }
-
-    @Override
-    public TransactionResult saveAllDealPositions(
-            String positionGenerationIdentifier,
-            List<DealPositionSnapshot> positions) {
-
-        HashMap<Integer, List<DealPositionSnapshot>> dealPositionMap = new HashMap<>();
         for (DealPositionSnapshot snapshot : positions) {
-            List<DealPositionSnapshot> list = dealPositionMap.get(snapshot.getDealId().getId());
-            if (list == null) {
-                list = new ArrayList<>();
-                dealPositionMap.put(snapshot.getDealId().getId(), list);
+            if (snapshot.getEntityState() == EntityState.NEW) {
+                PhysicalPosition position = new PhysicalPosition();
+                position.createWith(snapshot);
+            } else if (snapshot.getEntityState() == EntityState.DELETE) {
+                PhysicalPosition position = (PhysicalPosition) dealPositionRepository.load(snapshot.getEntityId());
+                position.setIsExpired(true);
             }
-            list.add(snapshot);
         }
-        for (Integer dealId : dealPositionMap.keySet()) {
-            BaseDeal deal = dealRepository.load(new EntityId(dealId));
-            deal.savePositions(
-                positionGenerationIdentifier,
-                dealPositionMap.get(dealId));
-        }
-
         return new TransactionResult();
     }
 

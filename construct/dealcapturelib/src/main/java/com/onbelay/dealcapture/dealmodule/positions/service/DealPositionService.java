@@ -14,13 +14,7 @@ public interface DealPositionService {
 
     public TransactionResult saveDealPositions(
             String positionGeneratorIdentifier,
-            EntityId dealId,
             List<DealPositionSnapshot> positions);
-
-    public TransactionResult saveAllDealPositions(
-            String positionGeneratorIdentifier,
-            List<DealPositionSnapshot> positions);
-
 
     List<DealPositionSnapshot> findByDeal(EntityId entityId);
 

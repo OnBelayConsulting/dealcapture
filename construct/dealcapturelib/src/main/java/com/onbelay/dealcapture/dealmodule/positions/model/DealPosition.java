@@ -1,11 +1,16 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -14,6 +19,7 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorM
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
+import org.hibernate.type.YesNoConverter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,22 +27,29 @@ import java.util.List;
 
 @Entity
 @Table(name = "DEAL_POSITION")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DEAL_TYPE_CODE")
 @NamedQueries({
         @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_BY_DEAL,
                 query = "SELECT position " +
                         "  FROM DealPosition position " +
-                        " WHERE position.deal.id = :dealId " +
+                        " WHERE position.dealId = :dealId " +
                       "ORDER BY position.dealPositionDetail.startDate ")
 })
-public abstract class DealPosition extends TemporalAbstractEntity {
+public abstract class DealPosition extends AbstractEntity {
 
     private Integer id;
+    private Boolean isExpired = Boolean.FALSE;
+    private String dealTypeCodeValue;
 
-    private BaseDeal deal;
+    private Integer dealId;
 
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
+
+    protected DealPosition(String dealTypeCodeValue) {
+        this.dealTypeCodeValue = dealTypeCodeValue;
+    }
 
     public abstract void valuePosition(LocalDateTime currentDateTime);
 
@@ -48,7 +61,7 @@ public abstract class DealPosition extends TemporalAbstractEntity {
 
     @Id
     @Column(name="ENTITY_ID", insertable =  false, updatable = false)
-    @SequenceGenerator(name="dealPosGen", sequenceName="DEAL_POSITION_SEQ", allocationSize = 1)
+    @SequenceGenerator(name="dealPosGen", sequenceName="DEAL_POSITION_SEQ", allocationSize = 100)
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "dealPosGen")
     public Integer getId() {
         return id;
@@ -58,15 +71,54 @@ public abstract class DealPosition extends TemporalAbstractEntity {
         this.id = dealId;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "DEAL_ID")
-    public BaseDeal getDeal() {
-        return deal;
+    @Transient
+    @JsonIgnore
+    public DealTypeCode getDealTypeCode() {
+        return DealTypeCode.lookUp(dealTypeCodeValue);
+    }
+
+    public void setDealTypeCode(DealTypeCode code) {
+        this.dealTypeCodeValue = code.getCode();
+    }
+
+    @Column(name = "DEAL_TYPE_CODE", insertable = false, updatable = false)
+    private String getDealTypeCodeValue() {
+        return dealTypeCodeValue;
+    }
+
+    private void setDealTypeCodeValue(String dealTypeCodeValue) {
+        this.dealTypeCodeValue = dealTypeCodeValue;
+    }
+
+    @Column(name = "EXPIRED_FLG")
+    @Convert(converter = YesNoConverter.class)
+    public Boolean getIsExpired() {
+        return isExpired;
+    }
+
+    public void setIsExpired(Boolean isExpired) {
+        this.isExpired = isExpired;
+    }
+
+
+    @Column(name = "DEAL_ID")
+    public Integer getDealId() {
+        return dealId;
+    }
+
+    public void setDealId(Integer dealId) {
+        this.dealId = dealId;
+    }
+
+    @Transient
+    public BaseDeal  getDeal() {
+        return getDealRepository().load(new EntityId(dealId));
     }
 
     public void setDeal(BaseDeal deal) {
-        this.deal = deal;
+        this.dealId = deal.getId();
     }
+
 
     @Embedded
     public DealPositionDetail getDealPositionDetail() {
@@ -87,10 +139,15 @@ public abstract class DealPosition extends TemporalAbstractEntity {
                 ids.add(mapping.generateEntityId());
             } else if (snapshot.getEntityState() == EntityState.DELETE) {
                 PositionRiskFactorMapping mapping = getPositionRiskFactorMappingRepository().load(snapshot.getEntityId());
-                mapping.delete();
+                mapping.setIsExpired(true);
             }
         }
         return ids;
+    }
+
+    @Override
+    protected void validate() throws OBValidationException {
+
     }
 
     public List<PositionRiskFactorMapping> fetchPositionRiskFactorMappings() {
@@ -108,10 +165,9 @@ public abstract class DealPosition extends TemporalAbstractEntity {
         mapping.save();
     }
 
-    public void createWith(
-            BaseDeal deal,
-            DealPositionSnapshot snapshot) {
+    public void createWith(DealPositionSnapshot snapshot) {
         this.dealPositionDetail.setDefaults();
+        this.dealId = snapshot.getDealId().getId();
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
     }
 
@@ -119,11 +175,10 @@ public abstract class DealPosition extends TemporalAbstractEntity {
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
     }
 
-    @Override
-    public AuditAbstractEntity fetchRecentHistory() {
-        return DealPositionAudit.findRecentHistory(this);
+    @Transient
+    protected static DealRepository getDealRepository() {
+        return (DealRepository) ApplicationContextFactory.getBean(DealRepository.BEAN_NAME);
     }
-
 
     @Transient
     protected static PositionRiskFactorMappingRepository getPositionRiskFactorMappingRepository() {

@@ -330,14 +330,18 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
 
         TransactionResult overallResult = new TransactionResult();
         logger.info("save deal positions start: " + LocalDateTime.now().toString());
+        ArrayList<DealPositionSnapshot> positionSnapshots = new ArrayList<>();
         for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
-            List<DealPositionSnapshot> positions = dealPositionGenerator.generateDealPositionSnapshots();
-
+            positionSnapshots.addAll(
+                    dealPositionGenerator.generateDealPositionSnapshots());
+        }
+        SubLister<DealPositionSnapshot> subLister = new SubLister<>(positionSnapshots, 20);
+        while (subLister.moreElements()) {
             dealPositionService.saveDealPositions(
                     positionGenerationIdentifier,
-                    dealPositionGenerator.getDealSummary().getDealId(),
-                    positions);
+                    subLister.nextList());
         }
+
         logger.info("save deal positions end: " + LocalDateTime.now().toString());
         return overallResult;
     }

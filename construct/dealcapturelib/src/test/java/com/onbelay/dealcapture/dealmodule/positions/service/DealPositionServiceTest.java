@@ -104,7 +104,6 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
 
         dealPositionService.saveDealPositions(
                 "test",
-                physicalDeal.generateEntityId(),
                 snapshots);
 
         flush();

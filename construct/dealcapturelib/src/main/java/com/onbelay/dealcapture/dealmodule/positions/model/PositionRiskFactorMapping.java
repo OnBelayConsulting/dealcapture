@@ -2,9 +2,11 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
+import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
@@ -13,6 +15,7 @@ import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
+import org.hibernate.type.YesNoConverter;
 
 @Entity
 @Table(name = "POSITION_RISK_FACTOR_MAP")
@@ -39,9 +42,10 @@ import jakarta.persistence.*;
                         " WHERE mapping.dealPosition.id = :positionId " +
                         "   AND  mapping.detail.priceTypeCodeValue = :priceTypeCode ")
 })
-public class PositionRiskFactorMapping extends TemporalAbstractEntity {
+public class PositionRiskFactorMapping extends AbstractEntity {
 
     private Integer id;
+    private Boolean isExpired = Boolean.FALSE;
 
     private DealPosition dealPosition;
 
@@ -90,6 +94,18 @@ public class PositionRiskFactorMapping extends TemporalAbstractEntity {
     public void setId(Integer id) {
         this.id = id;
     }
+
+
+    @Column(name = "EXPIRED_FLG")
+    @Convert(converter = YesNoConverter.class)
+    public Boolean getIsExpired() {
+        return isExpired;
+    }
+
+    public void setIsExpired(Boolean isExpired) {
+        this.isExpired = isExpired;
+    }
+
 
     public static PositionRiskFactorMapping create(
             DealPosition position,
@@ -158,15 +174,8 @@ public class PositionRiskFactorMapping extends TemporalAbstractEntity {
     }
 
     @Override
-    protected AuditAbstractEntity createHistory() {
-        PositionRiskFactorMappingAudit audit = PositionRiskFactorMappingAudit.create(this);
-        audit.copyFrom(this);
-        return audit;
-    }
+    protected void validate() throws OBValidationException {
 
-    @Override
-    public AuditAbstractEntity fetchRecentHistory() {
-        return PositionRiskFactorMappingAudit.findRecentHistory(this);
     }
 
     @Transient
