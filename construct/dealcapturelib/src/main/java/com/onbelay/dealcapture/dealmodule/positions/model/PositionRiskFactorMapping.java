@@ -45,7 +45,6 @@ import org.hibernate.type.YesNoConverter;
 public class PositionRiskFactorMapping extends AbstractEntity {
 
     private Integer id;
-    private Boolean isExpired = Boolean.FALSE;
 
     private DealPosition dealPosition;
 
@@ -93,17 +92,6 @@ public class PositionRiskFactorMapping extends AbstractEntity {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-
-    @Column(name = "EXPIRED_FLG")
-    @Convert(converter = YesNoConverter.class)
-    public Boolean getIsExpired() {
-        return isExpired;
-    }
-
-    public void setIsExpired(Boolean isExpired) {
-        this.isExpired = isExpired;
     }
 
 
@@ -170,7 +158,7 @@ public class PositionRiskFactorMapping extends AbstractEntity {
                 getId(),
                 "",
                 "",
-                getIsExpired());
+                false);
     }
 
     @Override

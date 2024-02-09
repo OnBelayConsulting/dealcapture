@@ -9,13 +9,13 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     private EntityId marketPriceRiskFactorId;
 
-    private EntityId marketFxRiskFactorId;
+    private EntityId marketPriceFxRiskFactorId;
 
     private EntityId dealPriceRiskFactorId;
 
     private EntityId dealPriceFxRiskFactorId;
 
-    private EntityId fixedDealPriceFxRiskFactorId;
+    private EntityId fixedPriceFxRiskFactorId;
 
 
 
@@ -39,20 +39,20 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
         this.marketPriceRiskFactorId = marketPriceRiskFactorId;
     }
 
-    public EntityId getMarketFxRiskFactorId() {
-        return marketFxRiskFactorId;
+    public EntityId getMarketPriceFxRiskFactorId() {
+        return marketPriceFxRiskFactorId;
     }
 
-    public void setMarketFxRiskFactorId(EntityId marketFxRiskFactorId) {
-        this.marketFxRiskFactorId = marketFxRiskFactorId;
+    public void setMarketPriceFxRiskFactorId(EntityId marketPriceFxRiskFactorId) {
+        this.marketPriceFxRiskFactorId = marketPriceFxRiskFactorId;
     }
 
-    public EntityId getFixedDealPriceFxRiskFactorId() {
-        return fixedDealPriceFxRiskFactorId;
+    public EntityId getFixedPriceFxRiskFactorId() {
+        return fixedPriceFxRiskFactorId;
     }
 
-    public void setFixedDealPriceFxRiskFactorId(EntityId fixedDealPriceFxRiskFactorId) {
-        this.fixedDealPriceFxRiskFactorId = fixedDealPriceFxRiskFactorId;
+    public void setFixedPriceFxRiskFactorId(EntityId fixedPriceFxRiskFactorId) {
+        this.fixedPriceFxRiskFactorId = fixedPriceFxRiskFactorId;
     }
 
     public EntityId getDealPriceRiskFactorId() {

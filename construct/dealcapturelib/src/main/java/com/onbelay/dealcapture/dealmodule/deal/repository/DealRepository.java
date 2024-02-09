@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.onbelay.core.entity.snapshot.EntityId;
@@ -38,7 +39,11 @@ public interface DealRepository {
 			List<Integer> dealIds,
 			String positionGeneratorId);
 
-	public void executeDealUpdateSetPositionGenerationToPending(List<Integer> dealIds);
+    void executeDealUpdatePositionGenerationToComplete(
+            List<Integer> dealIds,
+            LocalDateTime createdUpdatedDateTime);
+
+    public void executeDealUpdateSetPositionGenerationToPending(List<Integer> dealIds);
 
 
 

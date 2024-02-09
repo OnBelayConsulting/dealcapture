@@ -56,9 +56,6 @@ public class DealPositionServiceBean implements DealPositionService {
             if (snapshot.getEntityState() == EntityState.NEW) {
                 PhysicalPosition position = new PhysicalPosition();
                 position.createWith(snapshot);
-            } else if (snapshot.getEntityState() == EntityState.DELETE) {
-                PhysicalPosition position = (PhysicalPosition) dealPositionRepository.load(snapshot.getEntityId());
-                position.setIsExpired(true);
             }
         }
         return new TransactionResult();

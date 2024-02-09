@@ -6,4 +6,6 @@
         logicalFilePath="/com/onbelay/dealcapture/changes/Feat_010/changelog.xml"
 >
     <include file="DROP_POS_TABLES.xml" relativeToChangelogFile="true"/>
+    <include file="DROP_POS_COLUMNS.xml" relativeToChangelogFile="true"/>
+    <include file="DROP_MAPPINGS_COLUMNS.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

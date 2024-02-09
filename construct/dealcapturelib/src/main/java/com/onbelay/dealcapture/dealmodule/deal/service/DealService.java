@@ -24,6 +24,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DealService {
@@ -50,4 +51,8 @@ public interface DealService {
 			List<Integer> dealIds);
 
 	List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds);
+
+    void updateDealPositionStatusToComplete(
+			List<Integer> dealIds,
+			LocalDateTime observedDateTime);
 }

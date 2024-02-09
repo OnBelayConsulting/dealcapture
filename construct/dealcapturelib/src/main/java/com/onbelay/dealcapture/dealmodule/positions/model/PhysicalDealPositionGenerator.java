@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.busmath.model.Conversion;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
@@ -20,6 +21,7 @@ import com.onbelay.shared.enums.UnitOfMeasureCode;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -291,15 +293,17 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         }
     }
 
-    public List<DealPositionSnapshot> generateDealPositionSnapshots() {
+    public List<DealPositionSnapshot> generateDealPositionSnapshots(LocalDateTime observedDateTime) {
+
         List<DealPositionSnapshot> positions = new ArrayList<>();
 
         for (PositionHolder holder : positionHolders) {
             PhysicalPositionHolder physicalPositionHolder = (PhysicalPositionHolder) holder;
-
             PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) holder.getDealPositionSnapshot();
+            positionSnapshot.getDealPositionDetail().setCreateUpdateDateTime(observedDateTime);
             positionSnapshot.setDealId(dealSummary.getDealId());
-
+            positionSnapshot.setDealTypeValue(DealTypeCode.PHYSICAL_DEAL.getCode());
+            positionSnapshot.getDealPositionDetail().setErrorCode("0");
             // Market Price
             positionSnapshot.setMarketPriceRiskFactorId(physicalPositionHolder.getMarketRiskFactorHolder().getRiskFactor().getEntityId());
 
@@ -310,7 +314,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 positionSnapshot.getDetail().setMarketPriceUOMConversion(BigDecimal.ONE);
 
             if (physicalPositionHolder.getMarketFxHolder() != null) {
-                positionSnapshot.setMarketFxRiskFactorId(
+                positionSnapshot.setMarketPriceFxRiskFactorId(
                         physicalPositionHolder.getMarketFxHolder().getRiskFactor().getFxIndexId());
             }
 
@@ -333,7 +337,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             // Deal Price
 
             if (physicalPositionHolder.getFixedDealPriceFxHolder() != null) {
-                positionSnapshot.setFixedDealPriceFxRiskFactorId(physicalPositionHolder.getFixedDealPriceFxHolder().getRiskFactor().getEntityId());
+                positionSnapshot.setFixedPriceFxRiskFactorId(physicalPositionHolder.getFixedDealPriceFxHolder().getRiskFactor().getEntityId());
             }
 
             if (physicalPositionHolder.getDealPriceRiskFactorHolder() != null) {

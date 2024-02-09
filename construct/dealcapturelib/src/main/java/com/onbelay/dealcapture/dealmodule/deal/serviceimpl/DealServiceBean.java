@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +127,17 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	@Override
 	public void updateDealPositionGenerationStatusToPending(List<Integer> dealIds) {
 		dealRepository.executeDealUpdateSetPositionGenerationToPending(dealIds);
+	}
+
+	@Override
+	public void updateDealPositionStatusToComplete(
+			List<Integer> dealIds,
+			LocalDateTime observedDateTime) {
+
+		dealRepository.executeDealUpdatePositionGenerationToComplete(
+				dealIds,
+				observedDateTime);
+
 	}
 
 	@Override

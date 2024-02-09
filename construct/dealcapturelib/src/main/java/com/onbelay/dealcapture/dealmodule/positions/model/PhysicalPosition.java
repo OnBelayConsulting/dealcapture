@@ -171,8 +171,8 @@ public class PhysicalPosition extends DealPosition {
     private void setAssociations(PhysicalPositionSnapshot snapshot) {
 
 
-        if (snapshot.getFixedDealPriceFxRiskFactorId() != null)
-            this.fixedPriceFxRiskFactorId = snapshot.getFixedDealPriceFxRiskFactorId().getId();
+        if (snapshot.getFixedPriceFxRiskFactorId() != null)
+            this.fixedPriceFxRiskFactorId = snapshot.getFixedPriceFxRiskFactorId().getId();
 
         if (snapshot.getDealPriceRiskFactorId() != null)
             this.dealPriceRiskFactorId = snapshot.getDealPriceRiskFactorId().getId();
@@ -183,8 +183,8 @@ public class PhysicalPosition extends DealPosition {
         if (snapshot.getMarketPriceRiskFactorId() != null)
             this.marketPriceRiskFactorId = snapshot.getMarketPriceRiskFactorId().getId();
 
-        if (snapshot.getMarketFxRiskFactorId() != null)
-            this.marketPriceFxRiskFactorId = snapshot.getMarketFxRiskFactorId().getId();
+        if (snapshot.getMarketPriceFxRiskFactorId() != null)
+            this.marketPriceFxRiskFactorId = snapshot.getMarketPriceFxRiskFactorId().getId();
 
 
     }

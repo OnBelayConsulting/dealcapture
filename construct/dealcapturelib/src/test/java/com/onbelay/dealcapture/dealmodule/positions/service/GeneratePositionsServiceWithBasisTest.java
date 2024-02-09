@@ -127,7 +127,7 @@ public class GeneratePositionsServiceWithBasisTest extends DealCaptureSpringTest
                 .withCurrency(CurrencyCode.CAD)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
-
+        flush();
         dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDealWithFixedDealPrice.getId()));
 
         generatePositionsService.generatePositions(

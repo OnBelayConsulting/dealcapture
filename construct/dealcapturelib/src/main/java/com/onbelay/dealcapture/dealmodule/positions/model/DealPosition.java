@@ -40,7 +40,6 @@ import java.util.List;
 public abstract class DealPosition extends AbstractEntity {
 
     private Integer id;
-    private Boolean isExpired = Boolean.FALSE;
     private String dealTypeCodeValue;
 
     private Integer dealId;
@@ -61,7 +60,7 @@ public abstract class DealPosition extends AbstractEntity {
 
     @Id
     @Column(name="ENTITY_ID", insertable =  false, updatable = false)
-    @SequenceGenerator(name="dealPosGen", sequenceName="DEAL_POSITION_SEQ", allocationSize = 100)
+    @SequenceGenerator(name="dealPosGen", sequenceName="DEAL_POSITION_SEQ", allocationSize = 1)
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "dealPosGen")
     public Integer getId() {
         return id;
@@ -89,17 +88,6 @@ public abstract class DealPosition extends AbstractEntity {
     private void setDealTypeCodeValue(String dealTypeCodeValue) {
         this.dealTypeCodeValue = dealTypeCodeValue;
     }
-
-    @Column(name = "EXPIRED_FLG")
-    @Convert(converter = YesNoConverter.class)
-    public Boolean getIsExpired() {
-        return isExpired;
-    }
-
-    public void setIsExpired(Boolean isExpired) {
-        this.isExpired = isExpired;
-    }
-
 
     @Column(name = "DEAL_ID")
     public Integer getDealId() {
@@ -137,9 +125,6 @@ public abstract class DealPosition extends AbstractEntity {
                         this,
                         snapshot);
                 ids.add(mapping.generateEntityId());
-            } else if (snapshot.getEntityState() == EntityState.DELETE) {
-                PositionRiskFactorMapping mapping = getPositionRiskFactorMappingRepository().load(snapshot.getEntityId());
-                mapping.setIsExpired(true);
             }
         }
         return ids;
@@ -166,8 +151,8 @@ public abstract class DealPosition extends AbstractEntity {
     }
 
     public void createWith(DealPositionSnapshot snapshot) {
-        this.dealPositionDetail.setDefaults();
         this.dealId = snapshot.getDealId().getId();
+        this.dealPositionDetail.setDefaults();
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
     }
 

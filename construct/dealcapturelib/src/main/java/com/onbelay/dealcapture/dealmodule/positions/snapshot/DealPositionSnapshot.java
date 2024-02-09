@@ -112,6 +112,12 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
         return riskFactorMappingSnapshots.stream().filter( c-> c.getDetail().getPriceTypeCode() == PriceTypeCode.DEAL_PRICE).collect(Collectors.toList());
     }
 
+
+    public void setIdInMappings() {
+        riskFactorMappingSnapshots.forEach( c->c.setDealPositionId(getEntityId()));
+    }
+
+
     @Transient
     @JsonIgnore
     public List<PositionRiskFactorMappingSnapshot> getMarketPriceMappings() {
