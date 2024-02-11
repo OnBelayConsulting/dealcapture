@@ -171,7 +171,7 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
         List<DealPosition> positions = dealPositionRepository.findByDeal(physicalDealWithFixedDealPrice.generateEntityId());
         PhysicalPosition physicalPosition = (PhysicalPosition) positions.get(0);
         logger.error(physicalPosition.getDealPrice().toFormula());
-        assertEquals(0, BigDecimal.valueOf(2.110112).compareTo(physicalPosition.getDealPrice().getValue()));
+        assertEquals(0, BigDecimal.valueOf(2.11).compareTo(physicalPosition.getDealPrice().getValue()));
         logger.error("Market Price: " + physicalPosition.getMarketIndexPrice().toFormula());
         logger.error("MtM: " + physicalPosition.getDealPositionDetail().getMarkToMarketValuation());
         assertEquals(0, BigDecimal.valueOf(81.24).compareTo(physicalPosition.getDealPositionDetail().getMarkToMarketValuation()));

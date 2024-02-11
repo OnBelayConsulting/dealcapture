@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.model.AbstractEntity;
-import com.onbelay.core.entity.model.AuditAbstractEntity;
-import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
@@ -13,13 +11,11 @@ import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionDetail;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
-import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
-import org.hibernate.type.YesNoConverter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +30,7 @@ import java.util.List;
                 name = DealPositionRepositoryBean.FIND_BY_DEAL,
                 query = "SELECT position " +
                         "  FROM DealPosition position " +
-                        " WHERE position.dealId = :dealId " +
+                        " WHERE position.deal.id = :dealId " +
                       "ORDER BY position.dealPositionDetail.startDate ")
 })
 public abstract class DealPosition extends AbstractEntity {
@@ -42,7 +38,7 @@ public abstract class DealPosition extends AbstractEntity {
     private Integer id;
     private String dealTypeCodeValue;
 
-    private Integer dealId;
+    private BaseDeal deal;
 
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
 
@@ -89,22 +85,14 @@ public abstract class DealPosition extends AbstractEntity {
         this.dealTypeCodeValue = dealTypeCodeValue;
     }
 
-    @Column(name = "DEAL_ID")
-    public Integer getDealId() {
-        return dealId;
-    }
-
-    public void setDealId(Integer dealId) {
-        this.dealId = dealId;
-    }
-
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "DEAL_ID")
     public BaseDeal  getDeal() {
-        return getDealRepository().load(new EntityId(dealId));
+        return deal;
     }
 
     public void setDeal(BaseDeal deal) {
-        this.dealId = deal.getId();
+        this.deal = deal;
     }
 
 
@@ -151,7 +139,7 @@ public abstract class DealPosition extends AbstractEntity {
     }
 
     public void createWith(DealPositionSnapshot snapshot) {
-        this.dealId = snapshot.getDealId().getId();
+        this.deal = getDealRepository().load(snapshot.getDealId());
         this.dealPositionDetail.setDefaults();
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
     }
