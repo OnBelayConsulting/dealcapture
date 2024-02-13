@@ -176,6 +176,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                         .withStartPositionDate(fromMarketDate)
                         .withEndPositionDate(toMarketDate),
                 List.of(physicalDeal.getId()));
+        flush();
 
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
@@ -188,6 +189,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
         String query = "WHERE ticketNo eq '" + physicalDeal.getDealDetail().getTicketNo() + "'";
         dealPositionRestAdapter.valuePositions(query);
         flush();
+        clearCache();
 
         DealPositionSnapshotCollection collection = dealPositionRestAdapter.find(query, 0, 500);
         DealPositionSnapshot snapshot = collection.getSnapshots().get(0);

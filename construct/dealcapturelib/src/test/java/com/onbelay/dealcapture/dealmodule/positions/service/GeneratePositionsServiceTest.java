@@ -143,7 +143,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
         assertEquals(0,
                 physicalDealWithFixedDealPrice.getDetail().getDealPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getDealPriceValue()));
+                        positionSnapshot.getDetail().getFixedPriceValue()));
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 

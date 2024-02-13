@@ -16,10 +16,8 @@
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.model.PositionValuationResult;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,32 +27,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 
-@Component(value="dealPositionsBatchInserter")
+@Component(value="dealPositionsBatchUpdater")
 @Transactional
-public class DealPositionsBatchInserter {
+public class DealPositionsBatchUpdater {
+	private static final Logger logger = LogManager.getLogger(DealPositionsBatchUpdater.class);
 	@Value("${positionBatchSize:20}")
 	private int batchSize;
 
-	private static final Logger logger = LogManager.getLogger(DealPositionsBatchInserter.class);
-
-	private Map<DealTypeCode, Supplier<DealPositionSqlMapper>> sqlMappers = new HashMap<>();
-	
-	public DealPositionsBatchInserter() {
-		sqlMappers.put(DealTypeCode.PHYSICAL_DEAL, PhysicalPositionSqlMapper::new);
+	public DealPositionsBatchUpdater() {
 	}
 	
 	
 	
-	public void savePositions(
-			DealTypeCode dealTypeCode,
-			List<DealPositionSnapshot> positions) {
+	public void updatePositions(List<PositionValuationResult> positionValuationResults) {
 		
 		
 		EntityManager entityManager = ApplicationContextFactory.getCurrentEntityManagerOnThread();
@@ -64,9 +52,7 @@ public class DealPositionsBatchInserter {
 		try {
 			session.doWork(
 					new BatchDealPositionInsertWorker(
-							sqlMappers.get(dealTypeCode)
-											.get(),
-							positions,
+							positionValuationResults,
 							batchSize));
 		} catch (RuntimeException t) {
 			logger.error("batch insert failed", t);
@@ -78,49 +64,42 @@ public class DealPositionsBatchInserter {
 	
 	public static class BatchDealPositionInsertWorker implements Work {
 		
-		private DealPositionSqlMapper sqlMapper;
-		private List<DealPositionSnapshot> positions;
+		private List<PositionValuationResult> valuationResults;
 		private int batchSize;
 		
 		public BatchDealPositionInsertWorker(
-				DealPositionSqlMapper sqlMapper,
-				List<DealPositionSnapshot> positions,
+				List<PositionValuationResult> valuationResults,
 				int batchSize) {
 			
 			super();
-			this.sqlMapper = sqlMapper;
-			this.positions = positions;
+			this.valuationResults = valuationResults;
 			this.batchSize = batchSize;
 		}
 
 		@Override
 		public void execute(Connection connection) throws SQLException {
 
-			String sqlInsert = "INSERT into " +
-					sqlMapper.getTableName() +
-					" (" + String.join(",", sqlMapper.getColumnNames()) + ")" +
-					" VALUES " + sqlMapper.createPlaceHolders();
+			String sqlInsert = "UPDATE DEAL_POSITION "+
+					 "SET MTM_VALUATION = ?, CREATE_UPDATE_DATETIME = ?, ERROR_CODE = ? " +
+					" WHERE ENTITY_ID = ?";
 
-			try (PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+			try (PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert)) {
 
-				SubLister<DealPositionSnapshot> subLister = new SubLister<>(positions, batchSize);
+				SubLister<PositionValuationResult> subLister = new SubLister<>(valuationResults, batchSize);
 				while (subLister.moreElements()) {
-					List<DealPositionSnapshot> myList = subLister.nextList();
-					for (DealPositionSnapshot position : myList) {
-						sqlMapper.setValuesOnPreparedStatement(
-								position,
-								preparedStatement);
+					List<PositionValuationResult> myList = subLister.nextList();
+					for (PositionValuationResult valuation : myList) {
+						if (valuation.hasError() == false)
+							preparedStatement.setBigDecimal(1,valuation.getMtmValue());
+						else
+							preparedStatement.setNull(1, Types.DECIMAL);
+						preparedStatement.setTimestamp(2, Timestamp.valueOf(valuation.getCurrentDateTime()));
+						preparedStatement.setString(3, valuation.getErrorCode());
+						preparedStatement.setInt(4, valuation.getPositionId());
 						preparedStatement.addBatch();
 					}
 
 					preparedStatement.executeBatch();
-					ResultSet resultSet = preparedStatement.getGeneratedKeys();
-					int j = 0;
-					while (resultSet.next()) {
-						BigDecimal id = resultSet.getBigDecimal(1);
-						myList.get(j).setEntityId(new EntityId(id.intValue()));
-						j++;
-					}
 				}
 
 			} catch (RuntimeException e) {

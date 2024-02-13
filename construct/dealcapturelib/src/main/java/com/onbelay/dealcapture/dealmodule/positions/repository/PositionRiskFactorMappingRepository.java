@@ -18,4 +18,5 @@ public interface PositionRiskFactorMappingRepository {
             EntityId positionEntityId,
             PriceTypeCode priceTypeCode);
 
+    List<PositionRiskFactorMappingSummary> findAllMappingSummaries(List<Integer> positionIds);
 }

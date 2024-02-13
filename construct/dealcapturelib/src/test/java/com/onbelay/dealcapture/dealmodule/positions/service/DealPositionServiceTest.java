@@ -6,6 +6,7 @@ import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -112,6 +113,28 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
                 physicalDeal.generateEntityId());
 
         assertTrue(snapshots1.size() > 0);
+
+    }
+
+
+
+    @Test
+    public void fetchPhysicalPositionReports() {
+        List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
+                physicalDeal,
+                priceRiskFactor,
+                fxRiskFactor);
+
+        dealPositionService.saveDealPositions(
+                "test",
+                snapshots);
+
+        flush();
+
+        List<PhysicalPositionReport> reports = dealPositionService.findPhysicalPositionReportsByDeal(
+                physicalDeal.generateEntityId());
+
+        assertTrue(reports.size() > 0);
 
     }
 

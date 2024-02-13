@@ -153,7 +153,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             }
 
             // Set fixed deal price
-            positionSnapshot.getDetail().setDealPriceValue(
+            positionSnapshot.getDetail().setFixedPriceValue(
                     physicalDealSummary.getDealPriceValue());
             positionSnapshot.getDetail().setDealPriceUnitOfMeasure(
                     physicalDealSummary.getDealPriceUnitOfMeasureCode());

@@ -2,13 +2,14 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
-import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
-import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
-import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -20,8 +21,6 @@ import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,16 +31,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTestCase {
-    private static final Logger logger = LogManager.getLogger();
+public class ValuePositionsServiceTest extends DealCaptureSpringTestCase {
+
     @Autowired
     private DealRepositoryBean dealRepository;
 
     @Autowired
     private DealService dealService;
-
-    @Autowired
-    private DealPositionRepository dealPositionRepository;
 
     @Autowired
     private DealPositionService dealPositionService;
@@ -50,10 +46,14 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
     private GeneratePositionsService generatePositionsService;
 
     @Autowired
+    private ValuePositionsService valuePositionsService;
+
+    @Autowired
     private PriceRiskFactorService priceRiskFactorService;
 
     @Autowired
     private FxRiskFactorService fxRiskFactorService;
+
 
     private PricingLocation location;
     private PriceIndex priceIndex;
@@ -76,32 +76,17 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
         companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
         counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
         location = PricingLocationFixture.createPricingLocation("West");
-
         fxIndex = FxIndexFixture.createFxIndex(
-                FrequencyCode.DAILY,
+                FrequencyCode.MONTHLY,
                 CurrencyCode.CAD,
                 CurrencyCode.USD);
 
-        FxIndexFixture.generateDailyFxCurves(
-                fxIndex,
-                fromMarketDate,
-                toMarketDate,
-                BigDecimal.valueOf(2),
-                LocalDateTime.of(2023, 1, 1, 0, 1));
-
         priceIndex = PriceIndexFixture.createPriceIndex(
                 "ACEE",
-                FrequencyCode.DAILY,
+                FrequencyCode.MONTHLY,
                 CurrencyCode.CAD,
-                UnitOfMeasureCode.MMBTU,
+                UnitOfMeasureCode.GJ,
                 location);
-
-        PriceIndexFixture.generateDailyPriceCurves(
-                priceIndex,
-                fromMarketDate,
-                toMarketDate,
-                BigDecimal.valueOf(1.23),
-                LocalDateTime.now());
 
         secondPriceIndex = PriceIndexFixture.createPriceIndex(
                 "ADFS",
@@ -121,12 +106,12 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
                 toMarketDate,
                 BigDecimal.valueOf(100),
                 UnitOfMeasureCode.GJ,
-                CurrencyCode.USD,
+                CurrencyCode.CAD,
                 new Price(
                         BigDecimal.ONE,
                         CurrencyCode.USD,
-                        UnitOfMeasureCode.MMBTU)
-        );
+                        UnitOfMeasureCode.GJ)
+                );
 
         physicalDealWithIndexDealPrice = DealFixture.createIndexedPricePhysicalDeal(
                 CommodityCode.CRUDE,
@@ -141,20 +126,24 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
     }
 
     @Test
-    public void valuePositions() {
+    public void generateAndValuePhysicalPositionsWithFixedDealPrice() {
+
+        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDealWithFixedDealPrice.getId()));
 
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
-        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDealWithFixedDealPrice.getId()));
+
         generatePositionsService.generatePositions(
                 "test",
                 context,
                 physicalDealWithFixedDealPrice.getId());
 
         flush();
+        clearCache();
+
 
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
@@ -164,17 +153,62 @@ public class DealPositionServiceValuePositionsTest extends DealCaptureSpringTest
                 new DefinedQuery("FxRiskFactor"),
                 LocalDateTime.now());
 
-        dealPositionService.valuePositions(
+        valuePositionsService.valuePositions(
                 physicalDealWithFixedDealPrice.generateEntityId(),
                 LocalDateTime.now());
 
-        List<DealPosition> positions = dealPositionRepository.findByDeal(physicalDealWithFixedDealPrice.generateEntityId());
-        PhysicalPosition physicalPosition = (PhysicalPosition) positions.get(0);
-        logger.error(physicalPosition.getDealPrice().toFormula());
-        assertEquals(0, BigDecimal.valueOf(2.11).compareTo(physicalPosition.getDealPrice().getValue()));
-        logger.error("Market Price: " + physicalPosition.getMarketIndexPrice().toFormula());
-        logger.error("MtM: " + physicalPosition.getDealPositionDetail().getMarkToMarketValuation());
-        assertEquals(0, BigDecimal.valueOf(81.24).compareTo(physicalPosition.getDealPositionDetail().getMarkToMarketValuation()));
+
+
+        valuePositionsService.valuePositions(
+                physicalDealWithFixedDealPrice.generateEntityId(),
+                LocalDateTime.now());
+
+        PhysicalDeal deal = (PhysicalDeal) dealRepository.load(physicalDealWithFixedDealPrice.generateEntityId());
+        assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
+        assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+                physicalDealWithFixedDealPrice.generateEntityId());
+
+        assertTrue(positionSnapshots.size() > 0);
+        PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
+        assertEquals(physicalDealWithFixedDealPrice.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
+        assertEquals(physicalDealWithFixedDealPrice.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
+        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(0,
+                physicalDealWithFixedDealPrice.getDetail().getDealPrice().getValue().compareTo(
+                        positionSnapshot.getDetail().getFixedPriceValue()));
+        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
+
+    }
+
+
+    @Test
+    public void generatePhysicalPositionsWithIndexDealPrice() {
+        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDealWithIndexDealPrice.getId()));
+        EvaluationContext context = EvaluationContext
+                .build()
+                .withCurrency(CurrencyCode.CAD)
+                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
+                .withStartPositionDate(fromMarketDate);
+
+        generatePositionsService.generatePositions(
+                "test",
+                context,
+                physicalDealWithIndexDealPrice.getId());
+
+        flush();
+
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+                physicalDealWithIndexDealPrice.generateEntityId());
+
+        assertTrue(positionSnapshots.size() > 0);
+        PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
+        assertEquals(physicalDealWithIndexDealPrice.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
+        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
+
     }
 
 }

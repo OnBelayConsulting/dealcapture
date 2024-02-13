@@ -1,28 +1,87 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.dealcapture.busmath.model.Amount;
-import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionDetail;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
-import com.onbelay.shared.enums.BuySellCode;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @DiscriminatorValue("PHY")
+@NamedQueries({
+        @NamedQuery(
+                name = DealPositionRepositoryBean.FIND_PHYSICAL_POSITION_REPORT_BY_DEAL,
+                query = " SELECT new com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport( " +
+                        "       position.deal.id," +
+                        "       deal.dealDetail.buySellCodeValue," +
+                        "       position.id," +
+                        "       position.dealPositionDetail.volumeQuantityValue," +
+                        "       position.dealPositionDetail.volumeUnitOfMeasureValue," +
+                        "       position.dealPositionDetail.currencyCodeValue," +
+                        "       position.detail.dealPriceValuationValue," +
+                        "       position.detail.fixedPriceValue," +
+                        "       position.detail.fixedPriceCurrencyCodeValue," +
+                        "       fixedFxFactor.detail.value," +
+                        "       position.detail.fixedPriceUnitOfMeasureCodeValue," +
+                        "       priceIndexFactor.detail.value, " +
+                        "       priceIndex.detail.currencyCodeValue, " +
+                        "       priceIndex.detail.unitOfMeasureCodeValue, " +
+                        "       priceIndexFxFactor.detail.value, " +
+                        "       position.detail.marketPriceValuationValue," +
+                        "       marketIndexFactor.detail.value,  " +
+                        "       marketIndex.detail.currencyCodeValue,  " +
+                        "       marketIndex.detail.unitOfMeasureCodeValue," +
+                        "       marketIndexFxFactor.detail.value) " +
+                        "     FROM PhysicalPosition position " +
+                        "LEFT JOIN position.fixedPriceFxRiskFactor as fixedFxFactor " +
+                        "LEFT JOIN position.dealPriceRiskFactor as priceIndexFactor " +
+                        "LEFT JOIN priceIndexFactor.index as priceIndex " +
+                        "LEFT JOIN position.dealPriceFxRiskFactor as priceIndexFxFactor " +
+                        "     JOIN position.marketPriceRiskFactor as marketIndexFactor " +
+                        "     JOIN marketIndexFactor.index as marketIndex " +
+                        "lEFT JOIN position.marketPriceFxRiskFactor as marketIndexFxFactor " +
+                        "    WHERE position.deal.id = :dealId  "),
+        @NamedQuery(
+                name = DealPositionRepositoryBean.FIND_PHYSICAL_POSITION_REPORTS,
+                query = " SELECT new com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport( " +
+                        "       position.deal.id," +
+                        "       deal.dealDetail.buySellCodeValue," +
+                        "       position.id," +
+                        "       position.dealPositionDetail.volumeQuantityValue," +
+                        "       position.dealPositionDetail.volumeUnitOfMeasureValue," +
+                        "       position.dealPositionDetail.currencyCodeValue," +
+                        "       position.detail.dealPriceValuationValue," +
+                        "       position.detail.fixedPriceValue," +
+                        "       position.detail.fixedPriceCurrencyCodeValue," +
+                        "       fixedFxFactor.detail.value," +
+                        "       position.detail.fixedPriceUnitOfMeasureCodeValue," +
+                        "       priceIndexFactor.detail.value, " +
+                        "       priceIndex.detail.currencyCodeValue, " +
+                        "       priceIndex.detail.unitOfMeasureCodeValue, " +
+                        "       priceIndexFxFactor.detail.value, " +
+                        "       position.detail.marketPriceValuationValue," +
+                        "       marketIndexFactor.detail.value,  " +
+                        "       marketIndex.detail.currencyCodeValue,  " +
+                        "       marketIndex.detail.unitOfMeasureCodeValue," +
+                        "       marketIndexFxFactor.detail.value) " +
+                        "     FROM PhysicalPosition position " +
+                        "LEFT JOIN position.fixedPriceFxRiskFactor as fixedFxFactor " +
+                        "LEFT JOIN position.dealPriceRiskFactor as priceIndexFactor " +
+                        "LEFT JOIN priceIndexFactor.index as priceIndex " +
+                        "LEFT JOIN position.dealPriceFxRiskFactor as priceIndexFxFactor " +
+                        "     JOIN position.marketPriceRiskFactor as marketIndexFactor " +
+                        "     JOIN marketIndexFactor.index as marketIndex " +
+                        "lEFT JOIN position.marketPriceFxRiskFactor as marketIndexFxFactor " +
+                        "    WHERE position.id in (:positionIds)  ")
+})
 public class PhysicalPosition extends DealPosition {
 
 
@@ -72,99 +131,12 @@ public class PhysicalPosition extends DealPosition {
 
     @Override
     public void valuePosition(LocalDateTime currentDateTime) {
-        Price dealPrice =  switch (detail.getDealPriceValuationCode()) {
-
-            case FIXED -> getDealPrice();
-
-            case INDEX -> getDealIndexPrice();
-
-            case INDEX_PLUS -> getDealIndexPrice().add(getDealPrice());
-
-            default -> new Price(CalculatedErrorType.ERROR);
-        };
-
-        Price marketPrice = getMarketIndexPrice();
-        if (dealPrice.isInError() == false && marketPrice.isInError() == false) {
-            dealPrice = dealPrice.roundPrice();
-            marketPrice = marketPrice.roundPrice();
-            Price netPrice;
-            if (getDeal().getDealDetail().getBuySell() == BuySellCode.BUY)
-                netPrice = marketPrice.subtract(dealPrice);
-            else
-                netPrice = dealPrice.subtract(marketPrice);
-            Amount amount = netPrice.multiply(getDealPositionDetail().getQuantity());
-
-            if (amount.isInError()) {
-                getDealPositionDetail().setErrorCode(amount.getError().getCode());
-            } else {
-                getDealPositionDetail().setMarkToMarketValuation(amount.getValue());
-                getDealPositionDetail().setErrorCode("SUCCESS");
-            }
-        } else {
-            getDealPositionDetail().setErrorCode(PositionErrorCode.ERROR_VALUE_POSITION_MISSING_PRICES.getCode());
-        }
+        PhysicalPositionValuator valuator = new PhysicalPositionValuator(getPositionReport());
+        PositionValuationResult result = valuator.valuePosition(currentDateTime);
+        if (result.hasError() == false)
+            getDealPositionDetail().setMarkToMarketValuation(result.getMtmValue());
+        getDealPositionDetail().setErrorCode(result.getErrorCode());
         getDealPositionDetail().setCreateUpdateDateTime(currentDateTime);
-    }
-
-    @Transient
-    public Price getMarketIndexPrice() {
-
-        Price price = getMarketPriceRiskFactor().fetchCurrentPrice();
-        price = price.multiply(detail.getMarketPriceUOMConversion());
-
-        if (marketPriceFxRiskFactor != null) {
-            price =  price.apply(
-                    marketPriceFxRiskFactor.fetchFxRate(
-                            getDealPositionDetail().getCurrencyCode(),
-                            price.getCurrency()));
-        }
-        List<PositionRiskFactorMappingSummary> summaries = findMappingSummaries(PriceTypeCode.MARKET_PRICE);
-        if (summaries.isEmpty() == false) {
-            for (PositionRiskFactorMappingSummary summary : summaries) {
-                price = price.add(summary.calculateConvertedPrice(
-                        price.getCurrency(),
-                        price.getUnitOfMeasure()));
-            }
-        }
-        return price;
-    }
-
-    @Transient
-    public Price getDealIndexPrice() {
-        Price price = getDealPriceRiskFactor().fetchCurrentPrice();
-        price = price.multiply(detail.getDealPriceUOMConversion());
-
-        if (dealPriceFxRiskFactor != null) {
-            price = price.multiply(this.getDealPriceFxRiskFactor().getDetail().getValue());
-        }
-
-        List<PositionRiskFactorMappingSummary> summaries = findMappingSummaries(PriceTypeCode.DEAL_PRICE);
-        if (summaries.isEmpty() == false) {
-            for (PositionRiskFactorMappingSummary summary : summaries) {
-                price = price.add(summary.calculateConvertedPrice(
-                        price.getCurrency(),
-                        price.getUnitOfMeasure()));
-            }
-        }
-
-        return price;
-    }
-
-    @Transient
-    public Price getDealPrice() {
-        Price dealPrice = detail.getDealPrice();
-        if (getDealPositionDetail().getCurrencyCode() != dealPrice.getCurrency()) {
-            dealPrice = dealPrice.apply(
-                    getFixedPriceFxRiskFactor()
-                            .fetchFxRate(
-                                    getDealPositionDetail().getCurrencyCode(),
-                                    dealPrice.getCurrency()));
-        }
-
-        if (getDealPositionDetail().getVolumeUnitOfMeasure() != dealPrice.getUnitOfMeasure()) {
-            dealPrice = dealPrice.multiply(detail.getDealPriceUOMConversion());
-        }
-        return dealPrice;
     }
 
     private void setAssociations(PhysicalPositionSnapshot snapshot) {
@@ -186,6 +158,32 @@ public class PhysicalPosition extends DealPosition {
             this.marketPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getMarketPriceFxRiskFactorId());
 
 
+    }
+
+    @Transient
+    public PhysicalPositionReport getPositionReport() {
+
+        return new PhysicalPositionReport(
+                getDeal().getId(),
+                getDeal().getDealDetail().getBuySellCodeValue(),
+                getId(),
+                getDealPositionDetail().getVolumeQuantityValue(),
+                getDealPositionDetail().getVolumeUnitOfMeasureValue(),
+                getDealPositionDetail().getCurrencyCodeValue(),
+                getDetail().getDealPriceValuationValue(),
+                getDetail().getFixedPriceValue(),
+                getDetail().getFixedPriceCurrencyCodeValue(),
+                (dealPriceFxRiskFactor != null ? dealPriceFxRiskFactor.getDetail().getValue() : null),
+                getDetail().getFixedPriceUnitOfMeasureCodeValue(),
+                (dealPriceRiskFactor != null ? dealPriceRiskFactor.getDetail().getValue() : null),
+                (dealPriceRiskFactor != null ? dealPriceRiskFactor.getIndex().getDetail().getCurrencyCodeValue() : null),
+                (dealPriceRiskFactor != null ? dealPriceRiskFactor.getIndex().getDetail().getUnitOfMeasureCodeValue() : null),
+                (dealPriceFxRiskFactor != null ? dealPriceFxRiskFactor.getDetail().getValue() : null),
+                getDetail().getMarketPriceValuationValue(),
+                marketPriceRiskFactor.getDetail().getValue(),
+                marketPriceRiskFactor.getIndex().getDetail().getCurrencyCodeValue(),
+                marketPriceRiskFactor.getIndex().getDetail().getUnitOfMeasureCodeValue(),
+                (marketPriceFxRiskFactor != null ? marketPriceFxRiskFactor.getDetail().getValue() : null));
     }
 
     @ManyToOne(fetch = FetchType.EAGER)

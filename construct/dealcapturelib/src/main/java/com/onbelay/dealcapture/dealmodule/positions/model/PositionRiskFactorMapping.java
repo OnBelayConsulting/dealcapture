@@ -29,6 +29,8 @@ import org.hibernate.type.YesNoConverter;
                 name = PositionRiskFactorMappingRepositoryBean.FIND_MAPPING_SUMMARY,
                 query = "SELECT new com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary(" +
                         "   mapping.id," +
+                        "   mapping.dealPosition.id, " +
+                        "   mapping.detail.priceTypeCodeValue, " +
                         "   priceRiskFactor.index.detail.currencyCodeValue, " +
                         "   priceRiskFactor.index.detail.unitOfMeasureCodeValue, " +
                         "   priceRiskFactor.detail.value," +
@@ -40,7 +42,24 @@ import org.hibernate.type.YesNoConverter;
                         "  JOIN mapping.priceRiskFactor priceRiskFactor " +
                "LEFT OUTER JOIN mapping.fxRiskFactor fxRiskFactor " +
                         " WHERE mapping.dealPosition.id = :positionId " +
-                        "   AND  mapping.detail.priceTypeCodeValue = :priceTypeCode ")
+                        "   AND  mapping.detail.priceTypeCodeValue = :priceTypeCode "),
+        @NamedQuery(
+                name = PositionRiskFactorMappingRepositoryBean.FIND_ALL_MAPPING_SUMMARIES,
+                query = "SELECT new com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary(" +
+                        "   mapping.id," +
+                        "   mapping.dealPosition.id, " +
+                        "   mapping.detail.priceTypeCodeValue, " +
+                        "   priceRiskFactor.index.detail.currencyCodeValue, " +
+                        "   priceRiskFactor.index.detail.unitOfMeasureCodeValue, " +
+                        "   priceRiskFactor.detail.value," +
+                        "   fxRiskFactor.detail.value," +
+                        "   fxRiskFactor.index.detail.toCurrencyCodeValue, " +
+                        "   fxRiskFactor.index.detail.fromCurrencyCodeValue, " +
+                        "   mapping.detail.unitOfMeasureConversion) " +
+                        "  FROM PositionRiskFactorMapping mapping " +
+                        "  JOIN mapping.priceRiskFactor priceRiskFactor " +
+               "LEFT OUTER JOIN mapping.fxRiskFactor fxRiskFactor " +
+                        " WHERE mapping.dealPosition.id in (:positionIds) ")
 })
 public class PositionRiskFactorMapping extends AbstractEntity {
 

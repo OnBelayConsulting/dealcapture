@@ -27,8 +27,7 @@ import java.util.List;
 public class PhysicalPositionSqlMapper extends DealPositionSqlMapper {
 
 	public List<String> getColumnNames() {
-		List<String> columnNames = new ArrayList<String>();
-		columnNames.addAll(COL_NAMES);
+		List<String> columnNames = new ArrayList<>(COL_NAMES);
 		columnNames.add("DEAL_PRICE_VALUATION_CODE");
 		columnNames.add("DEAL_PRICE");
 		columnNames.add("DEAL_PRICE_CURRENCY_CODE");
@@ -54,18 +53,18 @@ public class PhysicalPositionSqlMapper extends DealPositionSqlMapper {
 
 		preparedStatement.setString(12, physicalPosition.getDetail().getDealPriceValuationValue());
 
-		if (physicalPosition.getDetail().getDealPriceValue() != null)
-			preparedStatement.setBigDecimal(13, physicalPosition.getDetail().getDealPriceValue());
+		if (physicalPosition.getDetail().getFixedPriceValue() != null)
+			preparedStatement.setBigDecimal(13, physicalPosition.getDetail().getFixedPriceValue());
 		else
 			preparedStatement.setNull(13, Types.DECIMAL);
 
-		if (physicalPosition.getDetail().getDealPriceCurrencyCodeValue() != null)
-			preparedStatement.setString(14, physicalPosition.getDetail().getDealPriceCurrencyCodeValue());
+		if (physicalPosition.getDetail().getFixedPriceCurrencyCodeValue() != null)
+			preparedStatement.setString(14, physicalPosition.getDetail().getFixedPriceCurrencyCodeValue());
 		else
 			preparedStatement.setNull(14, Types.VARCHAR);
 
-		if (physicalPosition.getDetail().getDealPriceUnitOfMeasureCodeValue() != null)
-			preparedStatement.setString(15, physicalPosition.getDetail().getDealPriceUnitOfMeasureCodeValue());
+		if (physicalPosition.getDetail().getFixedPriceUnitOfMeasureCodeValue() != null)
+			preparedStatement.setString(15, physicalPosition.getDetail().getFixedPriceUnitOfMeasureCodeValue());
 		else
 			preparedStatement.setNull(15, Types.VARCHAR);
 

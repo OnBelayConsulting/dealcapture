@@ -12,6 +12,7 @@ import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
@@ -34,6 +35,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
 
     @Autowired
     private GeneratePositionsService generatePositionsService;
+
+    @Autowired
+    private ValuePositionsService valuePositionsService;
 
     @Autowired
     private DealService dealService;
@@ -125,7 +129,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
                             "ticketNo"));
         }
 
-        TransactionResult result = dealPositionService.valuePositions(
+        TransactionResult result = valuePositionsService.valuePositions(
                 definedQuery,
                 currentDateTime);
 
