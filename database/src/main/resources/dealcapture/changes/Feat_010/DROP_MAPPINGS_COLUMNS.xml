@@ -1,0 +1,17 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/changes/Feat_010/DROP_MAPPINGS_COLUMNS.xml">
+
+    <changeSet author="lefeuvrem" id="2.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <dropColumn
+                tableName = "POSITION_RISK_FACTOR_MAP"
+                columnName = "OPTIMISTIC_LOCK_NO"
+        />
+        <dropColumn
+                tableName = "POSITION_RISK_FACTOR_MAP"
+                columnName = "EXPIRED_FLG"
+        />
+    </changeSet>
+</databaseChangeLog>

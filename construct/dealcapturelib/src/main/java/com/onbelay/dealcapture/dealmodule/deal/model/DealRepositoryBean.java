@@ -22,7 +22,6 @@ import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
@@ -30,6 +29,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository (value="dealRepository")
@@ -48,6 +48,14 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 			"         dealDetail.positionGenerationIdentifier = null " +
 			"   WHERE id in (:dealIds) " +
 			"     AND dealDetail.positionGenerationStatusValue != 'Pending'";
+
+	private static final String UPDATE_DEAL_POSITION_GENERATION_STATUS_TO_COMPLETE
+			= "UPDATE BaseDeal  " +
+			"     SET dealDetail.positionGenerationStatusValue = 'Complete', " +
+			"         dealDetail.positionGenerationDateTime = :updateDateTime " +
+			"   WHERE id in (:dealIds) " +
+			"     AND dealDetail.positionGenerationStatusValue = 'Generating'";
+
 
 	private static final String UPDATE_DEAL_POSITION_GENERATION_ASSIGNMENT
 			= "UPDATE BaseDeal  " +
@@ -78,6 +86,32 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 				Object[] parms2 = {positionGeneratorId, subLister.nextList()};
 				executeUpdate(
 						UPDATE_DEAL_POSITION_GENERATION_ASSIGNMENT,
+						names,
+						parms2);
+			}
+		}
+
+	}
+
+
+	@Override
+	public void executeDealUpdatePositionGenerationToComplete(
+			List<Integer> dealIds,
+			LocalDateTime positionGenerationDateTime) {
+
+		String[] names = {"dealIds", "updateDateTime"};
+		if (dealIds.size() < 1000) {
+			Object[] parms = {dealIds, positionGenerationDateTime};
+			executeUpdate(
+					UPDATE_DEAL_POSITION_GENERATION_STATUS_TO_COMPLETE,
+					names,
+					parms);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
+			while (subLister.moreElements()) {
+				Object[] parms2 = {subLister.nextList(), positionGenerationDateTime};
+				executeUpdate(
+						UPDATE_DEAL_POSITION_GENERATION_STATUS_TO_COMPLETE,
 						names,
 						parms2);
 			}

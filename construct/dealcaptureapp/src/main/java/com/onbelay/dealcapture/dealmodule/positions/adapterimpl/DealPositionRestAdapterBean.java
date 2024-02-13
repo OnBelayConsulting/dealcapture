@@ -3,6 +3,7 @@ package com.onbelay.dealcapture.dealmodule.positions.adapterimpl;
 import com.onbelay.core.controller.BaseRestAdapterBean;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
@@ -11,10 +12,12 @@ import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.enums.DealCaptureErrorCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
 
     @Autowired
     private GeneratePositionsService generatePositionsService;
+
+    @Autowired
+    private ValuePositionsService valuePositionsService;
 
     @Autowired
     private DealService dealService;
@@ -63,10 +69,17 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
 
         String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
 
+        if (evaluationContextRequest.getCurrencyCode() == null)
+            throw new OBRuntimeException(DealCaptureErrorCode.SYSTEM_FAILURE.getCode());
+
         EvaluationContext evaluationContext = EvaluationContext
                 .build()
-                .withCurrency(evaluationContextRequest.getCurrencyCode())
-                .withObservedDateTime(evaluationContextRequest.getObservedDateTime());
+                .withCurrency(evaluationContextRequest.getCurrencyCode());
+
+        if (evaluationContextRequest.getObservedDateTime() != null)
+            evaluationContext.withObservedDateTime(evaluationContextRequest.getObservedDateTime());
+        else
+            evaluationContext.withObservedDateTime(LocalDateTime.now());
 
         if (evaluationContextRequest.getUnitOfMeasureCode() != null)
             evaluationContext.withUnitOfMeasure(evaluationContextRequest.getUnitOfMeasureCode());
@@ -116,7 +129,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
                             "ticketNo"));
         }
 
-        TransactionResult result = dealPositionService.valuePositions(
+        TransactionResult result = valuePositionsService.valuePositions(
                 definedQuery,
                 currentDateTime);
 
@@ -182,13 +195,13 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     @Override
     public TransactionResult save(
             EntityId dealId,
-            DealPositionSnapshot dealSnapshot) {
+            DealPositionSnapshot positionSnapshot) {
         initializeSession();
+        positionSnapshot.setDealId(dealId);
         String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
         TransactionResult result = dealPositionService.saveDealPositions(
                 positionGenerationIdentifier,
-                dealId,
-                List.of(dealSnapshot));
+                List.of(positionSnapshot));
 
         return result;
     }
@@ -197,7 +210,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     public TransactionResult save(List<DealPositionSnapshot> snapshots) {
         initializeSession();
         String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
-        TransactionResult result =  dealPositionService.saveAllDealPositions(
+        TransactionResult result =  dealPositionService.saveDealPositions(
                 positionGenerationIdentifier,
                 snapshots);
         return result;

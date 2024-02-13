@@ -21,8 +21,8 @@ import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -34,8 +34,10 @@ import java.util.List;
 
 public class DealPositionRepositoryBean extends BaseRepository<DealPosition> implements DealPositionRepository {
 	public static final String FIND_BY_DEAL = "DealPositionsRepository.FIND_BY_DEAL";
+    public static final String FIND_PHYSICAL_POSITION_REPORT_BY_DEAL ="DealPositionsRepository.FIND_PHYSICAL_POSITION_REPORT_BY_DEAL" ;
+	public static final String FIND_PHYSICAL_POSITION_REPORTS ="DealPositionsRepository.FIND_PHYSICAL_POSITION_REPORTS" ;
 
-	@Autowired
+    @Autowired
 	private DealPositionColumnDefinitions dealPositionColumnDefinitions;
 
 	@Override
@@ -51,7 +53,7 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 
 
 		if (entityId.isSet())
-			return (DealPosition) find(DealPosition.class, entityId.getId());
+			return find(DealPosition.class, entityId.getId());
 		else
 			return null;
 	}
@@ -63,6 +65,22 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 				FIND_BY_DEAL,
 				"dealId",
 				dealEntityId.getId());
+	}
+
+	@Override
+	public List<PhysicalPositionReport> findPhysicalPositionReportsByDeal(EntityId dealId) {
+		return (List<PhysicalPositionReport>) executeReportQuery(
+				FIND_PHYSICAL_POSITION_REPORT_BY_DEAL,
+				"dealId",
+				dealId.getId());
+	}
+
+	@Override
+	public List<PhysicalPositionReport> findPhysicalPositionReports(List<Integer> positionIds) {
+		return (List<PhysicalPositionReport>) executeReportQuery(
+				FIND_PHYSICAL_POSITION_REPORTS,
+				"positionIds",
+				positionIds);
 	}
 
 

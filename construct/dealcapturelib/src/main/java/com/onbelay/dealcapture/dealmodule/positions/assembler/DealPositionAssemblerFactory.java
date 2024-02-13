@@ -29,7 +29,7 @@ public class DealPositionAssemblerFactory {
     public List<DealPositionSnapshot> assemble(List<DealPosition> positions) {
         ArrayList<DealPositionSnapshot> snapshots = new ArrayList<>();
         for (DealPosition position : positions) {
-            PositionAssembler assembler = newAssembler(position.getDealPositionDetail().getDealTypeCode());
+            PositionAssembler assembler = newAssembler(position.getDealTypeCode());
             snapshots.add(
                     assembler.assemble(
                             position));

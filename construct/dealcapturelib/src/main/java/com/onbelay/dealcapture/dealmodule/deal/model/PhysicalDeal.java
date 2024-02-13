@@ -175,25 +175,6 @@ public class PhysicalDeal extends BaseDeal {
 
 	}
 
-	@Override
-	protected Integer savePosition(DealPositionSnapshot snapshot) {
-		if (snapshot.getEntityState() == EntityState.NEW) {
-			PhysicalPosition position = new PhysicalPosition();
-			position.createWith(
-					this,
-					snapshot);
-			return position.getId();
-		} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
-			PhysicalPosition position = (PhysicalPosition) getDealPositionsRepository().load(snapshot.getEntityId());
-			position.updateWith(snapshot);
-			return position.getId();
-		} else if (snapshot.getEntityState() == EntityState.DELETE) {
-			PhysicalPosition position = (PhysicalPosition) getDealPositionsRepository().load(snapshot.getEntityId());
-			position.delete();
-		}
-		return null;
-	}
-
 	@Embedded
 	public PhysicalDealDetail getDetail() {
 		return detail;
@@ -210,9 +191,4 @@ public class PhysicalDeal extends BaseDeal {
 		return PhysicalDealAudit.create(this);
 	}
 
-
-
-	private static DealPositionRepository getDealPositionsRepository() {
-		return (DealPositionRepository) ApplicationContextFactory.getBean(DealPositionRepository.BEAN_NAME);
-	}
 }

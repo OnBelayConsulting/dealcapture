@@ -1,18 +1,20 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.enums.EntityState;
-import com.onbelay.core.entity.model.AuditAbstractEntity;
-import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionDetail;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
-import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -21,7 +23,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "DEAL_POSITION")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DEAL_TYPE_CODE")
 @NamedQueries({
         @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_BY_DEAL,
@@ -30,13 +33,18 @@ import java.util.List;
                         " WHERE position.deal.id = :dealId " +
                       "ORDER BY position.dealPositionDetail.startDate ")
 })
-public abstract class DealPosition extends TemporalAbstractEntity {
+public abstract class DealPosition extends AbstractEntity {
 
     private Integer id;
+    private String dealTypeCodeValue;
 
     private BaseDeal deal;
 
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
+
+    protected DealPosition(String dealTypeCodeValue) {
+        this.dealTypeCodeValue = dealTypeCodeValue;
+    }
 
     public abstract void valuePosition(LocalDateTime currentDateTime);
 
@@ -58,15 +66,35 @@ public abstract class DealPosition extends TemporalAbstractEntity {
         this.id = dealId;
     }
 
+    @Transient
+    @JsonIgnore
+    public DealTypeCode getDealTypeCode() {
+        return DealTypeCode.lookUp(dealTypeCodeValue);
+    }
+
+    public void setDealTypeCode(DealTypeCode code) {
+        this.dealTypeCodeValue = code.getCode();
+    }
+
+    @Column(name = "DEAL_TYPE_CODE", insertable = false, updatable = false)
+    private String getDealTypeCodeValue() {
+        return dealTypeCodeValue;
+    }
+
+    private void setDealTypeCodeValue(String dealTypeCodeValue) {
+        this.dealTypeCodeValue = dealTypeCodeValue;
+    }
+
     @ManyToOne
     @JoinColumn(name = "DEAL_ID")
-    public BaseDeal getDeal() {
+    public BaseDeal  getDeal() {
         return deal;
     }
 
     public void setDeal(BaseDeal deal) {
         this.deal = deal;
     }
+
 
     @Embedded
     public DealPositionDetail getDealPositionDetail() {
@@ -85,12 +113,14 @@ public abstract class DealPosition extends TemporalAbstractEntity {
                         this,
                         snapshot);
                 ids.add(mapping.generateEntityId());
-            } else if (snapshot.getEntityState() == EntityState.DELETE) {
-                PositionRiskFactorMapping mapping = getPositionRiskFactorMappingRepository().load(snapshot.getEntityId());
-                mapping.delete();
             }
         }
         return ids;
+    }
+
+    @Override
+    protected void validate() throws OBValidationException {
+
     }
 
     public List<PositionRiskFactorMapping> fetchPositionRiskFactorMappings() {
@@ -108,9 +138,8 @@ public abstract class DealPosition extends TemporalAbstractEntity {
         mapping.save();
     }
 
-    public void createWith(
-            BaseDeal deal,
-            DealPositionSnapshot snapshot) {
+    public void createWith(DealPositionSnapshot snapshot) {
+        this.deal = getDealRepository().load(snapshot.getDealId());
         this.dealPositionDetail.setDefaults();
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
     }
@@ -119,11 +148,10 @@ public abstract class DealPosition extends TemporalAbstractEntity {
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
     }
 
-    @Override
-    public AuditAbstractEntity fetchRecentHistory() {
-        return DealPositionAudit.findRecentHistory(this);
+    @Transient
+    protected static DealRepository getDealRepository() {
+        return (DealRepository) ApplicationContextFactory.getBean(DealRepository.BEAN_NAME);
     }
-
 
     @Transient
     protected static PositionRiskFactorMappingRepository getPositionRiskFactorMappingRepository() {

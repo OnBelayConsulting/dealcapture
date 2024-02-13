@@ -18,9 +18,9 @@ public class PhysicalPositionDetail extends AbstractDetail {
     private String dealPriceValuationValue;
     private String marketPriceValuationValue;
 
-    private BigDecimal dealPriceValue;
-    private String dealPriceCurrencyCodeValue;
-    private String dealPriceUnitOfMeasureCodeValue;
+    private BigDecimal fixedPriceValue;
+    private String fixedPriceCurrencyCodeValue;
+    private String fixedPriceUnitOfMeasureCodeValue;
 
     private BigDecimal dealPriceUOMConversion;
     private BigDecimal marketPriceUOMConversion;
@@ -33,14 +33,14 @@ public class PhysicalPositionDetail extends AbstractDetail {
         if (copy.marketPriceValuationValue != null)
             this.marketPriceValuationValue = copy.marketPriceValuationValue;
 
-        if (copy.dealPriceValue != null)
-            this.dealPriceValue = copy.dealPriceValue;
+        if (copy.fixedPriceValue != null)
+            this.fixedPriceValue = copy.fixedPriceValue;
 
-        if (copy.dealPriceCurrencyCodeValue != null)
-            this.dealPriceCurrencyCodeValue = copy.dealPriceCurrencyCodeValue;
+        if (copy.fixedPriceCurrencyCodeValue != null)
+            this.fixedPriceCurrencyCodeValue = copy.fixedPriceCurrencyCodeValue;
 
-        if (copy.dealPriceUnitOfMeasureCodeValue != null)
-            this.dealPriceUnitOfMeasureCodeValue = copy.dealPriceUnitOfMeasureCodeValue;
+        if (copy.fixedPriceUnitOfMeasureCodeValue != null)
+            this.fixedPriceUnitOfMeasureCodeValue = copy.fixedPriceUnitOfMeasureCodeValue;
 
         if (copy.dealPriceUOMConversion != null)
             this.dealPriceUOMConversion = copy.dealPriceUOMConversion;
@@ -87,50 +87,50 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
 
     @Column(name = "DEAL_PRICE")
-    public BigDecimal getDealPriceValue() {
-        return dealPriceValue;
+    public BigDecimal getFixedPriceValue() {
+        return fixedPriceValue;
     }
 
-    public void setDealPriceValue(BigDecimal dealPriceValue) {
-        this.dealPriceValue = dealPriceValue;
+    public void setFixedPriceValue(BigDecimal fixedPriceValue) {
+        this.fixedPriceValue = fixedPriceValue;
     }
 
     @Transient
     @JsonIgnore
     public CurrencyCode getDealPriceCurrencyCode() {
-        return CurrencyCode.lookUp(dealPriceCurrencyCodeValue);
+        return CurrencyCode.lookUp(fixedPriceCurrencyCodeValue);
     }
 
     public void setDealPriceCurrencyCode(CurrencyCode code) {
-        this.dealPriceCurrencyCodeValue = code.getCode();
+        this.fixedPriceCurrencyCodeValue = code.getCode();
     }
 
     @Column(name = "DEAL_PRICE_CURRENCY_CODE")
-    public String getDealPriceCurrencyCodeValue() {
-        return dealPriceCurrencyCodeValue;
+    public String getFixedPriceCurrencyCodeValue() {
+        return fixedPriceCurrencyCodeValue;
     }
 
-    public void setDealPriceCurrencyCodeValue(String dealPriceCurrencyCodeValue) {
-        this.dealPriceCurrencyCodeValue = dealPriceCurrencyCodeValue;
+    public void setFixedPriceCurrencyCodeValue(String fixedPriceCurrencyCodeValue) {
+        this.fixedPriceCurrencyCodeValue = fixedPriceCurrencyCodeValue;
     }
 
     @Transient
     @JsonIgnore
     public UnitOfMeasureCode getDealPriceUnitOfMeasure() {
-        return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue);
+        return UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue);
     }
 
     public void setDealPriceUnitOfMeasure(UnitOfMeasureCode code) {
-        this.dealPriceUnitOfMeasureCodeValue = code.getCode();
+        this.fixedPriceUnitOfMeasureCodeValue = code.getCode();
     }
 
     @Column(name = "DEAL_PRICE_UOM_CODE")
-    public String getDealPriceUnitOfMeasureCodeValue() {
-        return dealPriceUnitOfMeasureCodeValue;
+    public String getFixedPriceUnitOfMeasureCodeValue() {
+        return fixedPriceUnitOfMeasureCodeValue;
     }
 
-    public void setDealPriceUnitOfMeasureCodeValue(String dealPriceUnitOfMeasureCodeValue) {
-        this.dealPriceUnitOfMeasureCodeValue = dealPriceUnitOfMeasureCodeValue;
+    public void setFixedPriceUnitOfMeasureCodeValue(String fixedPriceUnitOfMeasureCodeValue) {
+        this.fixedPriceUnitOfMeasureCodeValue = fixedPriceUnitOfMeasureCodeValue;
     }
 
     @Column(name = "DEAL_PRICE_UOM_CONVERSION")
@@ -155,7 +155,7 @@ public class PhysicalPositionDetail extends AbstractDetail {
     @JsonIgnore
     public Price getDealPrice() {
         return new Price(
-                dealPriceValue,
+                fixedPriceValue,
                 getDealPriceCurrencyCode(),
                 getDealPriceUnitOfMeasure());
     }

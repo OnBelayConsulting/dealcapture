@@ -224,31 +224,12 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return getDealCostRepository().fetchDealCosts(id);
 	}
 
-	public List<Integer> savePositions(
-			String positionGeneratorIdentifier,
-			List<DealPositionSnapshot> snapshots) {
+	public void updateDealWithPositionGenerationStatus(String positionGeneratorIdentifier) {
 
 		dealDetail.setPositionGenerationStatusCode(PositionGenerationStatusCode.COMPLETE);
 		dealDetail.setPositionGenerationIdentifier(positionGeneratorIdentifier);
 		LocalDateTime currentDateTime = LocalDateTime.now();
 		dealDetail.setPositionGenerationDateTime(currentDateTime);
-		ArrayList<Integer> ids = new ArrayList<>();
-		for (DealPositionSnapshot snapshot : snapshots) {
-			snapshot.getDealPositionDetail().setCreateUpdateDateTime(currentDateTime);
-			Integer id = savePosition(snapshot);
-			if (id != null)
-				ids.add(id);
-		}
-
-		return ids;
-	}
-
-	protected abstract Integer savePosition(DealPositionSnapshot snapshot);
-
-
-	public void addPosition(DealPosition dealPosition) {
-		dealPosition.setDeal(this);
-		dealPosition.save();
 	}
 
 

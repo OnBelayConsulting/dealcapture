@@ -2,9 +2,11 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
+import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
@@ -13,6 +15,7 @@ import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
+import org.hibernate.type.YesNoConverter;
 
 @Entity
 @Table(name = "POSITION_RISK_FACTOR_MAP")
@@ -26,6 +29,8 @@ import jakarta.persistence.*;
                 name = PositionRiskFactorMappingRepositoryBean.FIND_MAPPING_SUMMARY,
                 query = "SELECT new com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary(" +
                         "   mapping.id," +
+                        "   mapping.dealPosition.id, " +
+                        "   mapping.detail.priceTypeCodeValue, " +
                         "   priceRiskFactor.index.detail.currencyCodeValue, " +
                         "   priceRiskFactor.index.detail.unitOfMeasureCodeValue, " +
                         "   priceRiskFactor.detail.value," +
@@ -37,9 +42,26 @@ import jakarta.persistence.*;
                         "  JOIN mapping.priceRiskFactor priceRiskFactor " +
                "LEFT OUTER JOIN mapping.fxRiskFactor fxRiskFactor " +
                         " WHERE mapping.dealPosition.id = :positionId " +
-                        "   AND  mapping.detail.priceTypeCodeValue = :priceTypeCode ")
+                        "   AND  mapping.detail.priceTypeCodeValue = :priceTypeCode "),
+        @NamedQuery(
+                name = PositionRiskFactorMappingRepositoryBean.FIND_ALL_MAPPING_SUMMARIES,
+                query = "SELECT new com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary(" +
+                        "   mapping.id," +
+                        "   mapping.dealPosition.id, " +
+                        "   mapping.detail.priceTypeCodeValue, " +
+                        "   priceRiskFactor.index.detail.currencyCodeValue, " +
+                        "   priceRiskFactor.index.detail.unitOfMeasureCodeValue, " +
+                        "   priceRiskFactor.detail.value," +
+                        "   fxRiskFactor.detail.value," +
+                        "   fxRiskFactor.index.detail.toCurrencyCodeValue, " +
+                        "   fxRiskFactor.index.detail.fromCurrencyCodeValue, " +
+                        "   mapping.detail.unitOfMeasureConversion) " +
+                        "  FROM PositionRiskFactorMapping mapping " +
+                        "  JOIN mapping.priceRiskFactor priceRiskFactor " +
+               "LEFT OUTER JOIN mapping.fxRiskFactor fxRiskFactor " +
+                        " WHERE mapping.dealPosition.id in (:positionIds) ")
 })
-public class PositionRiskFactorMapping extends TemporalAbstractEntity {
+public class PositionRiskFactorMapping extends AbstractEntity {
 
     private Integer id;
 
@@ -90,6 +112,7 @@ public class PositionRiskFactorMapping extends TemporalAbstractEntity {
     public void setId(Integer id) {
         this.id = id;
     }
+
 
     public static PositionRiskFactorMapping create(
             DealPosition position,
@@ -154,19 +177,12 @@ public class PositionRiskFactorMapping extends TemporalAbstractEntity {
                 getId(),
                 "",
                 "",
-                getIsExpired());
+                false);
     }
 
     @Override
-    protected AuditAbstractEntity createHistory() {
-        PositionRiskFactorMappingAudit audit = PositionRiskFactorMappingAudit.create(this);
-        audit.copyFrom(this);
-        return audit;
-    }
+    protected void validate() throws OBValidationException {
 
-    @Override
-    public AuditAbstractEntity fetchRecentHistory() {
-        return PositionRiskFactorMappingAudit.findRecentHistory(this);
     }
 
     @Transient

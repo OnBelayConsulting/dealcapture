@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
@@ -127,7 +128,11 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
                 physicalDealWithFixedDealPrice.getId());
 
         flush();
+        clearCache();
 
+        PhysicalDeal deal = (PhysicalDeal) dealRepository.load(physicalDealWithFixedDealPrice.generateEntityId());
+        assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
+        assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
                 physicalDealWithFixedDealPrice.generateEntityId());
 
@@ -138,7 +143,7 @@ public class GeneratePositionsServiceTest extends DealCaptureSpringTestCase {
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
         assertEquals(0,
                 physicalDealWithFixedDealPrice.getDetail().getDealPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getDealPriceValue()));
+                        positionSnapshot.getDetail().getFixedPriceValue()));
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 

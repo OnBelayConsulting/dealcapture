@@ -9,12 +9,15 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchInserter;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.PositionRiskFactorMappingBatchInserter;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGeneratorFactory;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
@@ -22,7 +25,7 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.components.ConcurrentRiskFactorManager;
 import com.onbelay.dealcapture.riskfactor.components.FxRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
+import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
@@ -40,6 +43,12 @@ import java.util.stream.Collectors;
 @Service
 public class GeneratePositionsServiceBean implements GeneratePositionsService {
     private static final Logger logger = LogManager.getLogger();
+
+    @Autowired
+    private DealPositionsBatchInserter dealPositionsBatchInserter;
+
+    @Autowired
+    private PositionRiskFactorMappingBatchInserter positionRiskFactorMappingBatchInserter;
 
     @Autowired
     private DealService dealService;
@@ -88,14 +97,12 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         logger.info("get assigned deal summaries end: " + LocalDateTime.now().toString());
 
         return createAndSavePositions(
-                positionGenerationIdentifier,
                 context,
                 summaries);
 
     }
 
     private TransactionResult createAndSavePositions(
-            String positionGenerationIdentifier,
             EvaluationContext context,
             List<DealSummary> dealSummaries) {
 
@@ -123,7 +130,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
 
         logger.info("fetch active price risk factors start: " + LocalDateTime.now().toString());
         List<PriceRiskFactorSnapshot> activePriceRiskFactors = priceRiskFactorService.findByPriceIndexIds(
-                uniquePriceIndexIds.stream().collect(Collectors.toList()),
+                new ArrayList<>(uniquePriceIndexIds),
                 context.getStartPositionDate(),
                 context.getEndPositionDate());
         logger.info("fetch active price risk factors end: " + LocalDateTime.now().toString());
@@ -162,14 +169,33 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         }
         logger.info("generate position holders end: " + LocalDateTime.now().toString());
 
+        processPriceRiskFactors(
+                riskFactorManager,
+                context.getStartPositionDate(),
+                context.getEndPositionDate());
+
+        processFxRiskFactors(riskFactorManager);
+
+        batchSavePositions(
+                context.getObservedDateTime(),
+                dealPositionGenerators);
+
+        return  new TransactionResult();
+    }
+
+    private void processPriceRiskFactors(
+            RiskFactorManager riskFactorManager,
+            LocalDate startPositionDate,
+            LocalDate endPositionDate) {
+
         logger.info("fetch basis price risk factors start: " + LocalDateTime.now().toString());
-       if (riskFactorManager.getPriceRiskFactorsSearch().keySet().size() > 0) {
+        if (riskFactorManager.getPriceRiskFactorsSearch().keySet().size() > 0) {
             List<PriceRiskFactorSnapshot> existingSnapshots = priceRiskFactorService.findByPriceIndexIds(
                     riskFactorManager.getPriceRiskFactorsSearch().keySet().stream().toList(),
-                    context.getStartPositionDate(),
-                    context.getEndPositionDate());
+                    startPositionDate,
+                    endPositionDate);
 
-            HashMap<Integer, Map<LocalDate, PriceRiskFactorSnapshot>> existingMap = new HashMap();
+            HashMap<Integer, Map<LocalDate, PriceRiskFactorSnapshot>> existingMap = new HashMap<>();
 
             for (PriceRiskFactorSnapshot snapshot : existingSnapshots) {
                 Map<LocalDate, PriceRiskFactorSnapshot> indexMap = existingMap.get(snapshot.getPriceIndexId().getId());
@@ -199,13 +225,9 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         logger.info("Save price risk factors start: " + LocalDateTime.now().toString());
         for (PriceRiskFactorHolder holder : riskFactorManager.getPriceRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
-                Map<LocalDate, PriceRiskFactorSnapshot> snapshotMap =  newPriceRiskFactors.get(holder.getPriceIndex().getEntityId().getId());
-                if (snapshotMap == null) {
-                    snapshotMap = new HashMap<>();
-                    newPriceRiskFactors.put(
-                            holder.getPriceIndex().getEntityId().getId(),
-                            snapshotMap);
-                }
+                Map<LocalDate, PriceRiskFactorSnapshot> snapshotMap = newPriceRiskFactors.computeIfAbsent(
+                        holder.getPriceIndex().getEntityId().getId(),
+                        k -> new HashMap<>());
 
                 PriceRiskFactorSnapshot snapshot = snapshotMap.get(holder.getMarketDate());
                 if (snapshot == null) {
@@ -241,7 +263,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
             for (PriceRiskFactorSnapshot snapshot : saved) {
                 PriceRiskFactorSnapshot existing = newPriceRiskFactors
                         .get(priceIndexId)
-                            .get(snapshot.getDetail().getMarketDate());
+                        .get(snapshot.getDetail().getMarketDate());
                 existing.setEntityId(snapshot.getEntityId());
                 existing.setEntityState(EntityState.UNMODIFIED);
             }
@@ -254,27 +276,24 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
                 holder.setRiskFactor(
                         newPriceRiskFactors
                                 .get(holder.getPriceIndex().getEntityId().getId())
-                                    .get(holder.getMarketDate()));
+                                .get(holder.getMarketDate()));
             }
         }
         logger.info("assign new price risk factors to holders end: " + LocalDateTime.now().toString());
 
-        /////////////////// FX Risk Factors /////////////////
+    }
+
+    private void processFxRiskFactors(RiskFactorManager riskFactorManager) {
 
         HashMap<Integer, Map<LocalDate, FxRiskFactorSnapshot>> newFxRiskFactors = new HashMap<>();
 
         logger.info("save new fx risk factors start: " + LocalDateTime.now().toString());
         for (FxRiskFactorHolder holder : riskFactorManager.getFxRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
-                Map<LocalDate, FxRiskFactorSnapshot> snapshotMap =  newFxRiskFactors
-                        .get(holder.getFxIndex().getEntityId().getId());
-
-                if (snapshotMap == null) {
-                    snapshotMap = new HashMap<>();
-                    newFxRiskFactors.put(
-                            holder.getFxIndex().getEntityId().getId(),
-                            snapshotMap);
-                }
+                Map<LocalDate, FxRiskFactorSnapshot> snapshotMap = newFxRiskFactors
+                        .computeIfAbsent(
+                                holder.getFxIndex().getEntityId().getId(),
+                                k -> new HashMap<>());
 
                 FxRiskFactorSnapshot snapshot = snapshotMap.get(holder.getMarketDate());
                 if (snapshot == null) {
@@ -309,7 +328,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
             for (FxRiskFactorSnapshot snapshot : saved) {
                 FxRiskFactorSnapshot existing = newFxRiskFactors
                         .get(fxIndexId)
-                            .get(snapshot.getDetail().getMarketDate());
+                        .get(snapshot.getDetail().getMarketDate());
                 existing.setEntityId(snapshot.getEntityId());
                 existing.setEntityState(EntityState.UNMODIFIED);
             }
@@ -323,23 +342,60 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
                 holder.setRiskFactor(
                         newFxRiskFactors
                                 .get(holder.getFxIndex().getEntityId().getId())
-                                    .get(holder.getMarketDate()));
+                                .get(holder.getMarketDate()));
             }
         }
         logger.info("assign new fx risk factors to holders end: " + LocalDateTime.now().toString());
 
-        TransactionResult overallResult = new TransactionResult();
-        logger.info("save deal positions start: " + LocalDateTime.now().toString());
-        for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
-            List<DealPositionSnapshot> positions = dealPositionGenerator.generateDealPositionSnapshots();
+    }
 
-            dealPositionService.saveDealPositions(
-                    positionGenerationIdentifier,
-                    dealPositionGenerator.getDealSummary().getDealId(),
-                    positions);
+    private void batchSavePositions(
+            LocalDateTime observedDateTime,
+            List<DealPositionGenerator> dealPositionGenerators) {
+
+
+        logger.info("save deal positions start: " + LocalDateTime.now().toString());
+
+        ArrayList<DealPositionSnapshot> positionSnapshots = new ArrayList<>();
+        ArrayList<Integer> dealIds = new ArrayList<>();
+        for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
+            dealIds.add(dealPositionGenerator.getDealSummary().getDealId().getId());
+            positionSnapshots.addAll(
+                    dealPositionGenerator.generateDealPositionSnapshots(observedDateTime));
         }
+        SubLister<DealPositionSnapshot> positionSubLister = new SubLister<>(positionSnapshots, 1000);
+        while (positionSubLister.moreElements()) {
+            dealPositionsBatchInserter.savePositions(
+                    DealTypeCode.PHYSICAL_DEAL,
+                    positionSubLister.nextList());
+        }
+
         logger.info("save deal positions end: " + LocalDateTime.now().toString());
-        return overallResult;
+
+        logger.info("save position risk factor mappings start: " + LocalDateTime.now().toString());
+
+        ArrayList<PositionRiskFactorMappingSnapshot> mappings = new ArrayList<>();
+        for (DealPositionSnapshot snapshot : positionSnapshots) {
+            if (snapshot.getRiskFactorMappingSnapshots().isEmpty() == false) {
+                snapshot.setIdInMappings();
+                mappings.addAll(snapshot.getRiskFactorMappingSnapshots());
+            }
+        }
+
+        if (mappings.size() > 0)
+            positionRiskFactorMappingBatchInserter.savePositionRiskFactorMappings(mappings);
+        logger.info("save position risk factor mappings emd: " + LocalDateTime.now().toString());
+
+
+        SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+        logger.info("Update deal position generation start: " + LocalDateTime.now().toString());
+        while (subLister.moreElements()) {
+            dealService.updateDealPositionStatusToComplete(
+                    subLister.nextList(),
+                    observedDateTime);
+        }
+        logger.info("Update deal position generation end: " + LocalDateTime.now().toString());
+
     }
 
 }

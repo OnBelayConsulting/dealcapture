@@ -19,14 +19,10 @@ import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
-import com.onbelay.core.query.snapshot.DefinedQuery;
-import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,6 +33,7 @@ import java.util.List;
 public class PositionRiskFactorMappingRepositoryBean extends BaseRepository<PositionRiskFactorMapping> implements PositionRiskFactorMappingRepository {
 	public static final String FIND_BY_DEAL_POSITION = "PositionRiskFactorMappingRepository.FIND_BY_DEAL_POSITION";
 	public static final String FIND_MAPPING_SUMMARY = "PositionRiskFactorMappingRepository.FIND_MAPPING_SUMMARY";
+	public static final String FIND_ALL_MAPPING_SUMMARIES = "PositionRiskFactorMappingRepository.FIND_ALL_MAPPING_SUMMARIES";
 
 	@Override
 	public PositionRiskFactorMapping load(EntityId entityId) {
@@ -67,7 +64,9 @@ public class PositionRiskFactorMappingRepositoryBean extends BaseRepository<Posi
 
 
 	@Override
-	public List<PositionRiskFactorMappingSummary> findMappingSummaries(EntityId positionEntityId, PriceTypeCode priceTypeCode) {
+	public List<PositionRiskFactorMappingSummary> findMappingSummaries(
+			EntityId positionEntityId,
+			PriceTypeCode priceTypeCode) {
 		String[] names = {"positionId", "priceTypeCode"};
 		Object[] parms = {positionEntityId.getId(), priceTypeCode.getCode()};
 		return (List<PositionRiskFactorMappingSummary>) executeReportQuery(
@@ -75,5 +74,15 @@ public class PositionRiskFactorMappingRepositoryBean extends BaseRepository<Posi
 				names,
 				parms);
 	}
+
+
+	@Override
+	public List<PositionRiskFactorMappingSummary> findAllMappingSummaries(List<Integer> positionIds) {
+		return (List<PositionRiskFactorMappingSummary>) executeReportQuery(
+				FIND_ALL_MAPPING_SUMMARIES,
+				"positionIds",
+				positionIds);
+	}
+
 
 }

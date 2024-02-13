@@ -1,28 +1,29 @@
 package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
+import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
-import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
-import com.onbelay.dealcapture.dealmodule.positions.assembler.PositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.DealPositionAssemblerFactory;
+import com.onbelay.dealcapture.dealmodule.positions.assembler.PositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
+import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
+import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.valuator.DealPositionValuator;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,54 +33,51 @@ public class DealPositionServiceBean implements DealPositionService {
     private DealPositionRepository dealPositionRepository;
 
     @Autowired
-    private DealRepository dealRepository;
-
-    @Autowired
-    private DealPositionValuator dealPositionValuator;
+    private PositionRiskFactorMappingRepository positionRiskFactorMappingRepository;
 
     @Override
     public DealPositionSnapshot load(EntityId entityId) {
         DealPosition position =  dealPositionRepository.load(entityId);
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();
-        PositionAssembler assembler = factory.newAssembler(position.getDealPositionDetail().getDealTypeCode());
+        PositionAssembler assembler = factory.newAssembler(position.getDealTypeCode());
         return assembler.assemble(position);
     }
 
     @Override
     public TransactionResult saveDealPositions(
             String positionGeneratorIdentifier,
-            EntityId dealId,
             List<DealPositionSnapshot> positions) {
 
-        BaseDeal deal = dealRepository.load(dealId);
-        deal.savePositions(
-                positionGeneratorIdentifier,
-                positions);
+        for (DealPositionSnapshot snapshot : positions) {
+            if (snapshot.getEntityState() == EntityState.NEW) {
+                PhysicalPosition position = new PhysicalPosition();
+                position.createWith(snapshot);
+            }
+        }
         return new TransactionResult();
     }
 
     @Override
-    public TransactionResult saveAllDealPositions(
-            String positionGenerationIdentifier,
-            List<DealPositionSnapshot> positions) {
+    public List<PhysicalPositionReport> fetchPhysicalPositionReports(List<Integer> positionIds) {
+        SubLister<Integer> subLister = new SubLister<>(positionIds, 2000);
+        ArrayList<PhysicalPositionReport> reports = new ArrayList<>();
+        while (subLister.moreElements()) {
 
-        HashMap<Integer, List<DealPositionSnapshot>> dealPositionMap = new HashMap<>();
-        for (DealPositionSnapshot snapshot : positions) {
-            List<DealPositionSnapshot> list = dealPositionMap.get(snapshot.getDealId().getId());
-            if (list == null) {
-                list = new ArrayList<>();
-                dealPositionMap.put(snapshot.getDealId().getId(), list);
+            List<Integer> idList = subLister.nextList();
+            List<PhysicalPositionReport> subReports = dealPositionRepository.findPhysicalPositionReports(idList);
+            HashMap<Integer, PhysicalPositionReport> reportMap = new HashMap<>();
+            subReports.forEach(c-> reportMap.put(c.getDealPositionId(), c));
+            for (PositionRiskFactorMappingSummary summary : positionRiskFactorMappingRepository.findAllMappingSummaries(idList)) {
+                PhysicalPositionReport report = reportMap.get(summary.getDealPositionId());
+                report.addMappingSummary(summary);
             }
-            list.add(snapshot);
-        }
-        for (Integer dealId : dealPositionMap.keySet()) {
-            BaseDeal deal = dealRepository.load(new EntityId(dealId));
-            deal.savePositions(
-                positionGenerationIdentifier,
-                dealPositionMap.get(dealId));
+
+            reports.addAll(subReports);
         }
 
-        return new TransactionResult();
+
+
+        return reports;
     }
 
     @Override
@@ -88,6 +86,11 @@ public class DealPositionServiceBean implements DealPositionService {
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();
         PositionAssembler assembler = factory.newAssembler(DealTypeCode.PHYSICAL_DEAL);
         return assembler.assemble(positions);
+    }
+
+    @Override
+    public List<PhysicalPositionReport> findPhysicalPositionReportsByDeal(EntityId dealId) {
+        return dealPositionRepository.findPhysicalPositionReportsByDeal(dealId);
     }
 
     @Override
@@ -104,25 +107,4 @@ public class DealPositionServiceBean implements DealPositionService {
         return factory.assemble(positions);
     }
 
-    @Override
-    public TransactionResult valuePositions(
-            EntityId dealId,
-            LocalDateTime currentDateTime) {
-        dealPositionValuator.valuePositions(
-                dealId,
-                currentDateTime);
-        return new TransactionResult();
-    }
-
-    @Override
-    public TransactionResult valuePositions(
-            DefinedQuery definedQuery,
-            LocalDateTime currentDateTime) {
-
-        List<Integer> ids = dealPositionRepository.findPositionIds(definedQuery);
-        dealPositionValuator.valuePositions(
-                new QuerySelectedPage(ids),
-                currentDateTime);
-        return new TransactionResult();
-    }
 }
