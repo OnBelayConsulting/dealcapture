@@ -13,11 +13,7 @@
     <include file="PHYSICAL_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="PHYSICAL_DEAL_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_POSITION.xml" relativeToChangelogFile="true"/>
-    <include file="DEAL_POSITION_AUDIT.xml" relativeToChangelogFile="true"/>
-    <include file="PHYSICAL_POSITION.xml" relativeToChangelogFile="true"/>
-    <include file="PHYSICAL_POSITION_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="POSITION_RISK_FACTOR_MAP.xml" relativeToChangelogFile="true"/>
-    <include file="POSITION_RISK_FACTOR_MAP_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_COST.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_COST_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_CURVE.xml" relativeToChangelogFile="true"/>

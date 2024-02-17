@@ -31,7 +31,6 @@ public class PositionRiskFactorMappingSqlMapper extends AbstractBaseSqlMapper {
 		columnNames.add("PRICE_RISK_FACTOR_ID");
 		columnNames.add("FX_RISK_FACTOR_ID");
 		columnNames.add("PRICE_TYPE_CODE");
-		columnNames.add("UOM_CONVERSION");
 		return columnNames;
 	}
 
@@ -54,12 +53,6 @@ public class PositionRiskFactorMappingSqlMapper extends AbstractBaseSqlMapper {
 			preparedStatement.setNull(3, Types.INTEGER);
 
 		preparedStatement.setString(4, mapping.getDetail().getPriceTypeCodeValue());
-
-		if (mapping.getDetail().getUnitOfMeasureConversion() != null)
-			preparedStatement.setBigDecimal(5, mapping.getDetail().getUnitOfMeasureConversion());
-		else
-			preparedStatement.setNull(5, Types.DECIMAL);
-
 
 	}
 

@@ -24,7 +24,7 @@
                 <constraints nullable="true"/>
             </column>
             <column name="FREQUENCY_CODE"
-                    type="java.sql.Types.VARCHAR(20)">
+                    type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
             <column name="CURVE_DATE"

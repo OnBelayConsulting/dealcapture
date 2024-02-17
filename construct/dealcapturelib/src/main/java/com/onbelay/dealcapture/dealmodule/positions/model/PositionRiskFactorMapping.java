@@ -36,8 +36,7 @@ import org.hibernate.type.YesNoConverter;
                         "   priceRiskFactor.detail.value," +
                         "   fxRiskFactor.detail.value," +
                         "   fxRiskFactor.index.detail.toCurrencyCodeValue, " +
-                        "   fxRiskFactor.index.detail.fromCurrencyCodeValue, " +
-                        "   mapping.detail.unitOfMeasureConversion) " +
+                        "   fxRiskFactor.index.detail.fromCurrencyCodeValue) " +
                         "  FROM PositionRiskFactorMapping mapping " +
                         "  JOIN mapping.priceRiskFactor priceRiskFactor " +
                "LEFT OUTER JOIN mapping.fxRiskFactor fxRiskFactor " +
@@ -54,8 +53,7 @@ import org.hibernate.type.YesNoConverter;
                         "   priceRiskFactor.detail.value," +
                         "   fxRiskFactor.detail.value," +
                         "   fxRiskFactor.index.detail.toCurrencyCodeValue, " +
-                        "   fxRiskFactor.index.detail.fromCurrencyCodeValue, " +
-                        "   mapping.detail.unitOfMeasureConversion) " +
+                        "   fxRiskFactor.index.detail.fromCurrencyCodeValue) " +
                         "  FROM PositionRiskFactorMapping mapping " +
                         "  JOIN mapping.priceRiskFactor priceRiskFactor " +
                "LEFT OUTER JOIN mapping.fxRiskFactor fxRiskFactor " +

@@ -5,6 +5,7 @@ import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
+import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
@@ -20,6 +21,8 @@ import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,9 +33,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DealPositionServiceTest extends DealCaptureSpringTestCase {
+    private static final Logger logger = LogManager.getLogger();
 
     @Autowired
     private DealRepositoryBean dealRepository;
+
+    @Autowired
+    private DealPositionRepository dealPositionRepository;
 
     @Autowired
     private DealPositionService dealPositionService;
@@ -94,6 +101,14 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
                 priceIndex,
                 fromMarketDate);
 
+    }
+
+    @Test
+    public void getSequences() {
+        long start = dealPositionRepository.reserveSequenceRange("DEAL_POSITION_SEQ", 10);
+        logger.error("firstcall: " + start);
+        start = dealPositionRepository.reserveSequenceRange("DEAL_POSITION_SEQ", 10);
+        logger.error("secondcall" + start);
     }
 
     @Test

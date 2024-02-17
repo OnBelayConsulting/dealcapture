@@ -12,8 +12,6 @@ public class PositionRiskFactorMappingDetail extends AbstractDetail {
 
     private String priceTypeCodeValue;
 
-    private BigDecimal unitOfMeasureConversion;
-
     @Transient
     @JsonIgnore
     public PriceTypeCode getPriceTypeCode() {
@@ -33,20 +31,9 @@ public class PositionRiskFactorMappingDetail extends AbstractDetail {
         this.priceTypeCodeValue = priceTypeCodeValue;
     }
 
-    @Column(name = "UOM_CONVERSION")
-    public BigDecimal getUnitOfMeasureConversion() {
-        return unitOfMeasureConversion;
-    }
-
-    public void setUnitOfMeasureConversion(BigDecimal unitOfMeasureConversion) {
-        this.unitOfMeasureConversion = unitOfMeasureConversion;
-    }
-
     public void copyFrom(PositionRiskFactorMappingDetail copy) {
         if (copy.priceTypeCodeValue != null)
             this.priceTypeCodeValue = copy.priceTypeCodeValue;
 
-        if (copy.unitOfMeasureConversion != null)
-            this.unitOfMeasureConversion = copy.unitOfMeasureConversion;
     }
 }

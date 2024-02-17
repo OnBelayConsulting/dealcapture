@@ -142,16 +142,6 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         // if deal price valuation is fixed or INDEX Plus
         if (positionSnapshot.getDetail().getDealPriceValuationCode() != ValuationCode.INDEX) {
 
-
-            if (physicalDealSummary.getDealPriceUnitOfMeasureCode() != targetUnitOfMeasureCode) {
-                Conversion conversion = UnitOfMeasureConverter.findConversion(
-                        targetUnitOfMeasureCode,
-                        physicalDealSummary.getDealPriceUnitOfMeasureCode());
-                positionSnapshot.getDetail().setDealPriceUOMConversion(conversion.getValue());
-            } else {
-                positionSnapshot.getDetail().setDealPriceUOMConversion(BigDecimal.ONE);
-            }
-
             // Set fixed deal price
             positionSnapshot.getDetail().setFixedPriceValue(
                     physicalDealSummary.getDealPriceValue());
@@ -307,12 +297,6 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             // Market Price
             positionSnapshot.setMarketPriceRiskFactorId(physicalPositionHolder.getMarketRiskFactorHolder().getRiskFactor().getEntityId());
 
-            if (physicalPositionHolder.getMarketRiskFactorHolder().hasUnitOfMeasureConversion())
-                positionSnapshot.getDetail().setMarketPriceUOMConversion(
-                        physicalPositionHolder.getMarketRiskFactorHolder().getConversion().getValue());
-            else
-                positionSnapshot.getDetail().setMarketPriceUOMConversion(BigDecimal.ONE);
-
             if (physicalPositionHolder.getMarketFxHolder() != null) {
                 positionSnapshot.setMarketPriceFxRiskFactorId(
                         physicalPositionHolder.getMarketFxHolder().getRiskFactor().getFxIndexId());
@@ -322,12 +306,6 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 PositionRiskFactorMappingSnapshot mapping = new PositionRiskFactorMappingSnapshot();
                 mapping.getDetail().setPriceTypeCode(PriceTypeCode.MARKET_PRICE);
                 mapping.setPriceRiskFactorId(factorHolder.getRiskFactor().getEntityId());
-
-                if (factorHolder.hasUnitOfMeasureConversion()) {
-                    mapping.getDetail().setUnitOfMeasureConversion(factorHolder.getConversion().getValue());
-                } else {
-                    mapping.getDetail().setUnitOfMeasureConversion(BigDecimal.ONE);
-                }
 
                 if (factorHolder.getFxRiskFactorHolder() != null)
                     mapping.setFxRiskFactorId(factorHolder.getFxRiskFactorHolder().getRiskFactor().getEntityId());
@@ -343,13 +321,6 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             if (physicalPositionHolder.getDealPriceRiskFactorHolder() != null) {
                 positionSnapshot.setDealPriceRiskFactorId(physicalPositionHolder.getDealPriceRiskFactorHolder().getRiskFactor().getEntityId());
 
-
-                if (physicalPositionHolder.getDealPriceRiskFactorHolder().hasUnitOfMeasureConversion())
-                    positionSnapshot.getDetail().setDealPriceUOMConversion(
-                            physicalPositionHolder.getDealPriceRiskFactorHolder().getConversion().getValue());
-                else
-                    positionSnapshot.getDetail().setDealPriceUOMConversion(BigDecimal.ONE);
-
                 if (physicalPositionHolder.getDealPriceFxHolder() != null) {
                     positionSnapshot.setDealPriceFxRiskFactorId(physicalPositionHolder.getDealPriceFxHolder().getRiskFactor().getEntityId());
                 }
@@ -358,12 +329,6 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             for (PriceRiskFactorHolder factorHolder : physicalPositionHolder.getBasisToHubDealPriceHolders()) {
                 PositionRiskFactorMappingSnapshot mapping = new PositionRiskFactorMappingSnapshot();
                 mapping.getDetail().setPriceTypeCode(PriceTypeCode.DEAL_PRICE);
-
-                if (factorHolder.hasUnitOfMeasureConversion()) {
-                    mapping.getDetail().setUnitOfMeasureConversion(factorHolder.getConversion().getValue());
-                } else {
-                    mapping.getDetail().setUnitOfMeasureConversion(BigDecimal.ONE);
-                }
 
                 mapping.setPriceRiskFactorId(factorHolder.getRiskFactor().getEntityId());
                 if (factorHolder.getFxRiskFactorHolder() != null)

@@ -22,9 +22,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
     private String fixedPriceCurrencyCodeValue;
     private String fixedPriceUnitOfMeasureCodeValue;
 
-    private BigDecimal dealPriceUOMConversion;
-    private BigDecimal marketPriceUOMConversion;
-
 
     public void copyFrom(PhysicalPositionDetail copy) {
         if (copy.dealPriceValuationValue != null)
@@ -41,12 +38,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
         if (copy.fixedPriceUnitOfMeasureCodeValue != null)
             this.fixedPriceUnitOfMeasureCodeValue = copy.fixedPriceUnitOfMeasureCodeValue;
-
-        if (copy.dealPriceUOMConversion != null)
-            this.dealPriceUOMConversion = copy.dealPriceUOMConversion;
-
-        if (copy.marketPriceUOMConversion != null)
-            this.marketPriceUOMConversion = copy.marketPriceUOMConversion;
     }
 
     @Transient
@@ -86,7 +77,7 @@ public class PhysicalPositionDetail extends AbstractDetail {
     }
 
 
-    @Column(name = "DEAL_PRICE")
+    @Column(name = "FIXED_PRICE")
     public BigDecimal getFixedPriceValue() {
         return fixedPriceValue;
     }
@@ -105,7 +96,7 @@ public class PhysicalPositionDetail extends AbstractDetail {
         this.fixedPriceCurrencyCodeValue = code.getCode();
     }
 
-    @Column(name = "DEAL_PRICE_CURRENCY_CODE")
+    @Column(name = "FIXED_PRICE_CURRENCY_CODE")
     public String getFixedPriceCurrencyCodeValue() {
         return fixedPriceCurrencyCodeValue;
     }
@@ -124,31 +115,13 @@ public class PhysicalPositionDetail extends AbstractDetail {
         this.fixedPriceUnitOfMeasureCodeValue = code.getCode();
     }
 
-    @Column(name = "DEAL_PRICE_UOM_CODE")
+    @Column(name = "FIXED_PRICE_UOM_CODE")
     public String getFixedPriceUnitOfMeasureCodeValue() {
         return fixedPriceUnitOfMeasureCodeValue;
     }
 
     public void setFixedPriceUnitOfMeasureCodeValue(String fixedPriceUnitOfMeasureCodeValue) {
         this.fixedPriceUnitOfMeasureCodeValue = fixedPriceUnitOfMeasureCodeValue;
-    }
-
-    @Column(name = "DEAL_PRICE_UOM_CONVERSION")
-    public BigDecimal getDealPriceUOMConversion() {
-        return dealPriceUOMConversion;
-    }
-
-    public void setDealPriceUOMConversion(BigDecimal dealPriceUOMConversion) {
-        this.dealPriceUOMConversion = dealPriceUOMConversion;
-    }
-
-    @Column(name = "MKT_PRICE_UOM_CONVERSION")
-    public BigDecimal getMarketPriceUOMConversion() {
-        return marketPriceUOMConversion;
-    }
-
-    public void setMarketPriceUOMConversion(BigDecimal marketPriceUOMConversion) {
-        this.marketPriceUOMConversion = marketPriceUOMConversion;
     }
 
     @Transient

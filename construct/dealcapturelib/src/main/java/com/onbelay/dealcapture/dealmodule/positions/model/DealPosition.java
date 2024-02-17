@@ -16,7 +16,9 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapsho
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import jakarta.persistence.*;
+import microsoft.sql.Types;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

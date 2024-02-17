@@ -23,8 +23,10 @@ import java.util.List;
 
 public abstract class DealPositionSqlMapper {
 
-	protected static List<String> COL_NAMES = new ArrayList<String>(); 
-	
+	private static List<String> COL_NAMES = new ArrayList<String>();
+
+	private boolean addPrimaryKey = false;
+
 	static {
 		COL_NAMES.add("DEAL_ID");
 		COL_NAMES.add("DEAL_TYPE_CODE");
@@ -39,43 +41,71 @@ public abstract class DealPositionSqlMapper {
 		COL_NAMES.add("ERROR_CODE");
 	}
 
+	public DealPositionSqlMapper() {
+	}
+
+
+	protected int getStartingPoint() {
+		if (addPrimaryKey == false)
+			return 11;
+		else
+			return 12;
+	}
 
 	public String getTableName() {
 		return "DEAL_POSITION";
 	}
 	
-	public abstract List<String> getColumnNames();
+	public List<String> getColumnNames() {
+		ArrayList<String> list = new ArrayList<>(COL_NAMES);
+		if (addPrimaryKey)
+			list.add(0, "ENTITY_ID");
+		return list;
+	}
 	
 	
 	public void setValuesOnPreparedStatement(
 			DealPositionSnapshot position,
 			PreparedStatement preparedStatement) throws SQLException {
-		
-		preparedStatement.setInt(1, position.getDealId().getId());
-		preparedStatement.setString(2, position.getDealTypeValue());
+		int n;
+		if (addPrimaryKey = true) {
+			n= 1;
+			preparedStatement.setInt(1, position.getEntityId().getId());
+		} else {
+			n = 0;
+		}
+		preparedStatement.setInt(n + 1, position.getDealId().getId());
+		preparedStatement.setString(n + 2, position.getDealTypeValue());
 
-		preparedStatement.setDate(3, Date.valueOf(position.getDealPositionDetail().getStartDate()));
-		preparedStatement.setDate(4, Date.valueOf(position.getDealPositionDetail().getEndDate()));
-		preparedStatement.setTimestamp(5, Timestamp.valueOf(position.getDealPositionDetail().getCreateUpdateDateTime()));
+		preparedStatement.setDate(n + 3, Date.valueOf(position.getDealPositionDetail().getStartDate()));
+		preparedStatement.setDate(n + 4, Date.valueOf(position.getDealPositionDetail().getEndDate()));
+		preparedStatement.setTimestamp(n + 5, Timestamp.valueOf(position.getDealPositionDetail().getCreateUpdateDateTime()));
 
-		preparedStatement.setBigDecimal(6, position.getDealPositionDetail().getVolumeQuantityValue());
-		preparedStatement.setString(7, position.getDealPositionDetail().getCurrencyCodeValue());
-		preparedStatement.setString(8, position.getDealPositionDetail().getVolumeUnitOfMeasureValue());
-		preparedStatement.setString(9, position.getDealPositionDetail().getFrequencyCodeValue());
+		preparedStatement.setBigDecimal(n + 6, position.getDealPositionDetail().getVolumeQuantityValue());
+		preparedStatement.setString(n + 7, position.getDealPositionDetail().getCurrencyCodeValue());
+		preparedStatement.setString(n + 8, position.getDealPositionDetail().getVolumeUnitOfMeasureValue());
+		preparedStatement.setString(n + 9, position.getDealPositionDetail().getFrequencyCodeValue());
 
 		if (position.getDealPositionDetail().getMarkToMarketValuation() != null)
-			preparedStatement.setBigDecimal(10, position.getDealPositionDetail().getMarkToMarketValuation());
+			preparedStatement.setBigDecimal(n + 10, position.getDealPositionDetail().getMarkToMarketValuation());
 		else
-			preparedStatement.setNull(10, Types.DECIMAL);
+			preparedStatement.setNull(n + 10, Types.DECIMAL);
 
 		if (position.getDealPositionDetail().getErrorCode() != null)
-			preparedStatement.setString(11, position.getDealPositionDetail().getErrorCode());
+			preparedStatement.setString(n + 11, position.getDealPositionDetail().getErrorCode());
 		else
-			preparedStatement.setNull(11, Types.VARCHAR);
+			preparedStatement.setNull(n + 11, Types.VARCHAR);
 		
 
-	}		
-	
+	}
+
+	public boolean isAddPrimaryKey() {
+		return addPrimaryKey;
+	}
+
+	public void setAddPrimaryKey(boolean addPrimaryKey) {
+		this.addPrimaryKey = addPrimaryKey;
+	}
 
 	public String createPlaceHolders() {
 		if (getColumnNames().size() < 1)

@@ -2,16 +2,14 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        logicalFilePath="/com/onbelay/dealcapture/changes/Feat_010/DROP_POS_COLUMNS.xml">
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/UC_ORGANIZATION_ROLE.xml">
 
-    <changeSet author="lefeuvrem" id="2.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-        <dropColumn
-                tableName = "DEAL_POSITION"
-                columnName = "OPTIMISTIC_LOCK_NO"
-        />
-        <dropColumn
-                tableName = "DEAL_POSITION"
-                columnName = "EXPIRED_FLG"
-        />
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <addUniqueConstraint
+                columnNames='ORGANIZATION_ID,ORG_ROLE_TYPE_CODE'
+                tableName='ORGANIZATION_ROLE'
+                constraintName='ORGANIZATION_ROLE_UC'/>
+
     </changeSet>
 </databaseChangeLog>

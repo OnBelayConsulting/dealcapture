@@ -23,19 +23,37 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
+import jakarta.persistence.StoredProcedureQuery;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 
 @Repository (value="dealPositionsRepository")
 @Transactional
 
 public class DealPositionRepositoryBean extends BaseRepository<DealPosition> implements DealPositionRepository {
+	private static final Logger logger = LogManager.getLogger();
 	public static final String FIND_BY_DEAL = "DealPositionsRepository.FIND_BY_DEAL";
     public static final String FIND_PHYSICAL_POSITION_REPORT_BY_DEAL ="DealPositionsRepository.FIND_PHYSICAL_POSITION_REPORT_BY_DEAL" ;
 	public static final String FIND_PHYSICAL_POSITION_REPORTS ="DealPositionsRepository.FIND_PHYSICAL_POSITION_REPORTS" ;
+
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 
     @Autowired
 	private DealPositionColumnDefinitions dealPositionColumnDefinitions;
@@ -56,6 +74,27 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 			return find(DealPosition.class, entityId.getId());
 		else
 			return null;
+	}
+
+	@Override
+	public long reserveSequenceRange(String sequenceName, int rangeSize) {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("sp_sequence_get_range")
+				.declareParameters(new SqlParameter("sequence_name", Types.VARCHAR),
+									new SqlParameter("range_size", Types.INTEGER),
+									new SqlOutParameter("range_first_value", microsoft.sql.Types.SQL_VARIANT),
+						new SqlOutParameter("range_last_value", microsoft.sql.Types.SQL_VARIANT),
+						new SqlOutParameter("range_cycle_count", Types.INTEGER),
+						new SqlOutParameter("sequence_increment", microsoft.sql.Types.SQL_VARIANT),
+						new SqlOutParameter("sequence_min_value", microsoft.sql.Types.SQL_VARIANT),
+						new SqlOutParameter("sequence_max_value", microsoft.sql.Types.SQL_VARIANT)
+						);
+
+		MapSqlParameterSource parmSource = new MapSqlParameterSource();
+		parmSource.addValue("sequence_name", sequenceName);
+		parmSource.addValue("range_size", rangeSize);
+		Map<String, Object> results = simpleJdbcCall.execute(parmSource);
+		return (long) results.get("range_first_value");
 	}
 
 	@Override

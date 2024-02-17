@@ -20,6 +20,7 @@ import java.util.*;
 public enum PositionErrorCode {
 
     ERROR_VALUE_POSITION_MISSING_PRICES ("DC_PS-E0001", "Error: Position valuation failed. Missing, invalid prices."),
+    ERROR_MISSING_FX_RATE_CONVERSION    ("DC_PS-E0002", "Error: Position valuation for risk factor - missing fx rate conversion."),
     MISSING_BASIS_CONTAINER             ("DC_PS-E0100", "Error: Missing basis container in position generation.");
 
     private String code;
