@@ -11,9 +11,9 @@ public class PhysicalDealSummary extends DealSummary {
 
     private ValuationCode DealPriceValuationCode;
     Integer dealPriceIndexId;
-    private BigDecimal dealPriceValue;
-    private UnitOfMeasureCode dealPriceUnitOfMeasureCode;
-    private CurrencyCode dealPriceCurrencyCode;
+    private BigDecimal fixedPriceValue;
+    private UnitOfMeasureCode fixedPriceUnitOfMeasureCode;
+    private CurrencyCode fixedPriceCurrencyCode;
 
     private ValuationCode marketValuationCode;
     Integer marketIndexId;
@@ -31,9 +31,9 @@ public class PhysicalDealSummary extends DealSummary {
             String volumeUnitOfMeasureCodeValue,
             String dealPriceValuationCodeValue,
             Integer dealPriceIndexId,
-            BigDecimal dealPriceValue,
-            String dealPriceUnitOfMeasureCodeValue,
-            String dealPriceCurrencyCodeValue,
+            BigDecimal fixedPriceValue,
+            String fixedPriceUnitOfMeasureCodeValue,
+            String fixedPriceCurrencyCodeValue,
             String marketValuationCodeValue,
             Integer marketIndexId) {
 
@@ -49,9 +49,9 @@ public class PhysicalDealSummary extends DealSummary {
                 volumeUnitOfMeasureCodeValue);
         this.DealPriceValuationCode = ValuationCode.lookUp(dealPriceValuationCodeValue);
         this.dealPriceIndexId = dealPriceIndexId;
-        this.dealPriceValue = dealPriceValue;
-        this.dealPriceCurrencyCode = CurrencyCode.lookUp(dealPriceCurrencyCodeValue);
-        this.dealPriceUnitOfMeasureCode = UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue);
+        this.fixedPriceValue = fixedPriceValue;
+        this.fixedPriceCurrencyCode = CurrencyCode.lookUp(fixedPriceCurrencyCodeValue);
+        this.fixedPriceUnitOfMeasureCode = UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue);
         this.marketValuationCode = ValuationCode.lookUp(marketValuationCodeValue);
         this.marketIndexId = marketIndexId;
     }
@@ -64,16 +64,16 @@ public class PhysicalDealSummary extends DealSummary {
         return dealPriceIndexId;
     }
 
-    public BigDecimal getDealPriceValue() {
-        return dealPriceValue;
+    public BigDecimal getFixedPriceValue() {
+        return fixedPriceValue;
     }
 
-    public UnitOfMeasureCode getDealPriceUnitOfMeasureCode() {
-        return dealPriceUnitOfMeasureCode;
+    public UnitOfMeasureCode getFixedPriceUnitOfMeasureCode() {
+        return fixedPriceUnitOfMeasureCode;
     }
 
-    public CurrencyCode getDealPriceCurrencyCode() {
-        return dealPriceCurrencyCode;
+    public CurrencyCode getFixedPriceCurrencyCode() {
+        return fixedPriceCurrencyCode;
     }
 
     public ValuationCode getMarketValuationCode() {

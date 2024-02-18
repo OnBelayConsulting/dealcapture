@@ -15,13 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.core.entity.enums.EntityState;
-import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
-import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
 import jakarta.persistence.*;
 
@@ -52,9 +46,9 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue," +
 			   "         deal.detail.dealPriceValuationCodeValue," +
 			   "         deal.dealPriceIndex.id," +
-			   "         deal.detail.dealPriceValue," +
-			   "         deal.detail.dealPriceUnitOfMeasureCodeValue," +
-			   "         deal.detail.dealPriceCurrencyCodeValue," +
+			   "         deal.detail.fixedPriceValue," +
+			   "         deal.detail.fixedPriceUnitOfMeasureCodeValue," +
+			   "         deal.detail.fixedPriceCurrencyCodeValue," +
 			   "         deal.detail.marketValuationCodeValue," +
 			   "         deal.marketPriceIndex.id" +
 			   "         ) "
@@ -141,17 +135,17 @@ public class PhysicalDeal extends BaseDeal {
 			if (getDetail().getDealPriceValuationCode() == ValuationCode.FIXED) {
 				if (dealPriceIndex != null)
 					throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_INDEX.getCode());
-				if (getDetail().getDealPrice() == null)
+				if (getDetail().getFixedPrice() == null)
 					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
 			} else if (getDetail().getDealPriceValuationCode() == ValuationCode.INDEX) {
 				if (dealPriceIndex == null)
 					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
-				if (getDetail().getDealPrice() != null)
+				if (getDetail().getFixedPrice() != null)
 					throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_VALUE.getCode());
 			} else if (getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
 				if (dealPriceIndex == null)
 					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
-				if (getDetail().getDealPrice() == null)
+				if (getDetail().getFixedPrice() == null)
 					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
 			}
 

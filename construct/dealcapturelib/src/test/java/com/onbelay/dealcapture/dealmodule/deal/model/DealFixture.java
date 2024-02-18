@@ -69,7 +69,7 @@ public class DealFixture {
 
 		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.FIXED);
 
-		dealSnapshot.getDetail().setDealPrice(dealPrice);
+		dealSnapshot.getDetail().setFixedPrice(dealPrice);
 
 		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
 

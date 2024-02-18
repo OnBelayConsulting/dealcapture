@@ -74,9 +74,9 @@ public class DealTest extends DealCaptureSpringTestCase {
 				UnitOfMeasureCode.GJ,
 				CurrencyCode.USD);
 
-		snapshot.getDetail().setDealPriceValue(BigDecimal.valueOf(1.55));
-		snapshot.getDetail().setDealPriceCurrency(CurrencyCode.CAD);
-		snapshot.getDetail().setDealPriceUnitOfMeasure(UnitOfMeasureCode.GJ);
+		snapshot.getDetail().setFixedPriceValue(BigDecimal.valueOf(1.55));
+		snapshot.getDetail().setFixedPriceCurrencyCode(CurrencyCode.CAD);
+		snapshot.getDetail().setFixedPriceUnitOfMeasure(UnitOfMeasureCode.GJ);
 
 		PhysicalDeal deal = PhysicalDeal.create(snapshot);
 
@@ -133,7 +133,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 						BigDecimal.valueOf(34.78),
 						UnitOfMeasureCode.GJ));
 		
-		dealSnapshot.getDetail().setDealPrice(
+		dealSnapshot.getDetail().setFixedPrice(
 				new Price(
 						BigDecimal.valueOf(1.55),
 						CurrencyCode.CAD,

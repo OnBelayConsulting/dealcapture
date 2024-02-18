@@ -144,17 +144,17 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
 
             // Set fixed deal price
             positionSnapshot.getDetail().setFixedPriceValue(
-                    physicalDealSummary.getDealPriceValue());
+                    physicalDealSummary.getFixedPriceValue());
             positionSnapshot.getDetail().setDealPriceUnitOfMeasure(
-                    physicalDealSummary.getDealPriceUnitOfMeasureCode());
+                    physicalDealSummary.getFixedPriceUnitOfMeasureCode());
             positionSnapshot.getDetail().setDealPriceCurrencyCode(
-                    physicalDealSummary.getDealPriceCurrencyCode());
+                    physicalDealSummary.getFixedPriceCurrencyCode());
 
 
-            if (physicalDealSummary.getDealPriceCurrencyCode() != targetCurrencyCode) {
+            if (physicalDealSummary.getFixedPriceCurrencyCode() != targetCurrencyCode) {
                 physicalPositionHolder.setFixedDealPriceFxHolder(
                         riskFactorManager.determineFxRiskFactor(
-                                physicalDealSummary.getDealPriceCurrencyCode(),
+                                physicalDealSummary.getFixedPriceCurrencyCode(),
                                 targetCurrencyCode,
                                 currentDate));
             }

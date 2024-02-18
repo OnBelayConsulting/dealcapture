@@ -36,9 +36,9 @@ public class PhysicalDealDetail  {
 
 	private String dealPriceValuationCodeValue;
 	private String marketValuationCodeValue;
-	private BigDecimal dealPriceValue;
-	private String dealPriceCurrencyCodeValue;
-	private String dealPriceUnitOfMeasureCodeValue;
+	private BigDecimal fixedPriceValue;
+	private String fixedPriceCurrencyCodeValue;
+	private String fixedPriceUnitOfMeasureCodeValue;
 
 	public PhysicalDealDetail() {
 	}
@@ -54,13 +54,13 @@ public class PhysicalDealDetail  {
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUATION.getCode());
 
 		if (getDealPriceValuationCode() == ValuationCode.FIXED) {
-			if (dealPriceValue == null)
+			if (fixedPriceValue == null)
 				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
 
-			if (dealPriceCurrencyCodeValue == null)
+			if (fixedPriceCurrencyCodeValue == null)
 				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_CURRENCY.getCode());
 
-			if (dealPriceUnitOfMeasureCodeValue == null)
+			if (fixedPriceUnitOfMeasureCodeValue == null)
 				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_UOM.getCode());
 		}
 
@@ -72,20 +72,20 @@ public class PhysicalDealDetail  {
 	
 	@Transient
 	@JsonIgnore
-	public Price getDealPrice() {
-		if (dealPriceValue == null)
+	public Price getFixedPrice() {
+		if (fixedPriceValue == null)
 			return null;
 		else
 			return new Price(
-					dealPriceValue,
-				CurrencyCode.lookUp(dealPriceCurrencyCodeValue),
-				UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue));
+					fixedPriceValue,
+				CurrencyCode.lookUp(fixedPriceCurrencyCodeValue),
+				UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue));
 	}
 	
-	public void setDealPrice(Price price) {
-		this.dealPriceValue = price.getValue();
-		this.dealPriceCurrencyCodeValue = price.getCurrency().getCode();
-		this.dealPriceUnitOfMeasureCodeValue = price.getUnitOfMeasure().getCode();
+	public void setFixedPrice(Price price) {
+		this.fixedPriceValue = price.getValue();
+		this.fixedPriceCurrencyCodeValue = price.getCurrency().getCode();
+		this.fixedPriceUnitOfMeasureCodeValue = price.getUnitOfMeasure().getCode();
 	}
 
 	@Transient
@@ -127,57 +127,57 @@ public class PhysicalDealDetail  {
 	}
 
 	@Column(name="DEAL_PRICE")
-    public BigDecimal getDealPriceValue() {
-		return dealPriceValue;
+    public BigDecimal getFixedPriceValue() {
+		return fixedPriceValue;
 	}
 
 
-    public void setDealPriceValue(BigDecimal dealPriceValue) {
-		this.dealPriceValue = dealPriceValue;
+    public void setFixedPriceValue(BigDecimal fixedPriceValue) {
+		this.fixedPriceValue = fixedPriceValue;
 	}
 
 	@Transient
 	@JsonIgnore
-	public CurrencyCode getDealPriceCurrency() {
-		return CurrencyCode.lookUp(dealPriceCurrencyCodeValue);
+	public CurrencyCode getFixedPriceCurrencyCode() {
+		return CurrencyCode.lookUp(fixedPriceCurrencyCodeValue);
 	}
 
-	public void setDealPriceCurrency(CurrencyCode code) {
-		this.dealPriceCurrencyCodeValue = code.getCode();
+	public void setFixedPriceCurrencyCode(CurrencyCode code) {
+		this.fixedPriceCurrencyCodeValue = code.getCode();
 	}
 
     @Column(name="DEAL_PRICE_CURRENCY_CODE")
 	@InjectCodeLabel(codeFamily = "currencyCode", injectedPropertyName = "dealPriceCurrencyCodeItem")
 	@JsonSerialize(using = CodeLabelSerializer.class)
-    public String getDealPriceCurrencyCodeValue() {
-		return dealPriceCurrencyCodeValue;
+    public String getFixedPriceCurrencyCodeValue() {
+		return fixedPriceCurrencyCodeValue;
 	}
 
 
-    public void setDealPriceCurrencyCodeValue(String dealPriceCurrencyValue) {
-		this.dealPriceCurrencyCodeValue = dealPriceCurrencyValue;
+    public void setFixedPriceCurrencyCodeValue(String dealPriceCurrencyValue) {
+		this.fixedPriceCurrencyCodeValue = dealPriceCurrencyValue;
 	}
 
 	@Transient
 	@JsonIgnore
-	public UnitOfMeasureCode getDealPriceUnitOfMeasure() {
-		return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue);
+	public UnitOfMeasureCode getFixedPriceUnitOfMeasure() {
+		return UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue);
 	}
 
-	public void setDealPriceUnitOfMeasure(UnitOfMeasureCode code) {
-		this.dealPriceUnitOfMeasureCodeValue = code.getCode();
+	public void setFixedPriceUnitOfMeasure(UnitOfMeasureCode code) {
+		this.fixedPriceUnitOfMeasureCodeValue = code.getCode();
 	}
 
     @Column(name="DEAL_PRICE_UOM_CODE")
 	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "dealPriceUnitOfMeasureCodeItem")
 	@JsonSerialize(using = CodeLabelSerializer.class)
-    public String getDealPriceUnitOfMeasureCodeValue() {
-		return dealPriceUnitOfMeasureCodeValue;
+    public String getFixedPriceUnitOfMeasureCodeValue() {
+		return fixedPriceUnitOfMeasureCodeValue;
 	}
 
 
-    public void setDealPriceUnitOfMeasureCodeValue(String dealPriceUoMValue) {
-		this.dealPriceUnitOfMeasureCodeValue = dealPriceUoMValue;
+    public void setFixedPriceUnitOfMeasureCodeValue(String dealPriceUoMValue) {
+		this.fixedPriceUnitOfMeasureCodeValue = dealPriceUoMValue;
 	}
 
 
@@ -188,14 +188,14 @@ public class PhysicalDealDetail  {
 		if (copy.marketValuationCodeValue != null)
 			this.marketValuationCodeValue = copy.marketValuationCodeValue;
 
-		if (copy.dealPriceValue != null)
-    		this.dealPriceValue = copy.dealPriceValue;
+		if (copy.fixedPriceValue != null)
+    		this.fixedPriceValue = copy.fixedPriceValue;
     	
-    	if (copy.dealPriceCurrencyCodeValue != null)
-    		this.dealPriceCurrencyCodeValue = copy.dealPriceCurrencyCodeValue;
+    	if (copy.fixedPriceCurrencyCodeValue != null)
+    		this.fixedPriceCurrencyCodeValue = copy.fixedPriceCurrencyCodeValue;
     	
-    	if (copy.dealPriceUnitOfMeasureCodeValue != null)
-    		this.dealPriceUnitOfMeasureCodeValue = copy.dealPriceUnitOfMeasureCodeValue;
+    	if (copy.fixedPriceUnitOfMeasureCodeValue != null)
+    		this.fixedPriceUnitOfMeasureCodeValue = copy.fixedPriceUnitOfMeasureCodeValue;
     }
 	
 }

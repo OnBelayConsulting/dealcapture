@@ -203,7 +203,7 @@ public class DealServiceTest extends DealCaptureSpringTestCase {
 
 		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX_PLUS);
 		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
-		dealSnapshot.getDetail().setDealPrice(
+		dealSnapshot.getDetail().setFixedPrice(
 				new Price(
 					BigDecimal.ONE,
 					CurrencyCode.USD,

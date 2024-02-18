@@ -37,7 +37,7 @@ public class PhysicalPositionsFixture {
             snapshot.getDealPositionDetail().setCurrencyCode(deal.getDealDetail().getReportingCurrencyCode());
             snapshot.getDealPositionDetail().setVolumeQuantityValue(deal.getDealDetail().getVolumeQuantity());
             snapshot.getDealPositionDetail().setVolumeUnitOfMeasure(UnitOfMeasureCode.GJ);
-            snapshot.getDetail().setFixedPriceValue(deal.getDetail().getDealPriceValue());
+            snapshot.getDetail().setFixedPriceValue(deal.getDetail().getFixedPriceValue());
             snapshots.add(snapshot);
             current = current.plusDays(1);
         }

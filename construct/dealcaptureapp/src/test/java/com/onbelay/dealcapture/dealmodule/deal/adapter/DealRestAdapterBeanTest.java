@@ -102,7 +102,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
 
         dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX_PLUS);
 
-        dealSnapshot.getDetail().setDealPrice(new Price(
+        dealSnapshot.getDetail().setFixedPrice(new Price(
                 BigDecimal.ONE,
                 CurrencyCode.USD,
                 UnitOfMeasureCode.GJ));
