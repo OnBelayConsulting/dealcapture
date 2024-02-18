@@ -83,7 +83,7 @@ jobs:
 
     - name: Copy overlays to support testing
       run: |
-        ./gradlew copyAllOverlays
+        cp ./overlays/database/* ./database
 
     - name: list directory
       run: |
