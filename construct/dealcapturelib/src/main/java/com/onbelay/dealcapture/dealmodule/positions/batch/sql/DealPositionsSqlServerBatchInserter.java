@@ -32,8 +32,7 @@ public class DealPositionsSqlServerBatchInserter extends DealPositionsBaseBatchI
             DealTypeCode dealTypeCode,
             List<DealPositionSnapshot> positions) {
 
-        DealPositionSqlMapper sqlMapper = sqlMappers.get(DealTypeCode.PHYSICAL_DEAL).get();
-        sqlMapper.setAddPrimaryKey(true);
+        DealPositionSqlMapper sqlMapper = sqlMappers.get(DealTypeCode.PHYSICAL_DEAL).apply(true);
 
         Long startId = dealPositionRepository.reserveSequenceRange("DEAL_POSITION_SEQ", positions.size());
         for (DealPositionSnapshot snapshot : positions) {

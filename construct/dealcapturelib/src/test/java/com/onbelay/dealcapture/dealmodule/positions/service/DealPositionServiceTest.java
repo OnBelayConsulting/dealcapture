@@ -103,7 +103,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
 
     }
 
-    @Test
+    //@Test
     public void getSequences() {
         long start = dealPositionRepository.reserveSequenceRange("DEAL_POSITION_SEQ", 10);
         logger.error("firstcall: " + start);

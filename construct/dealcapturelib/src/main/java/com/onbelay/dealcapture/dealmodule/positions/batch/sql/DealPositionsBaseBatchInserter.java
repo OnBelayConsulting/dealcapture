@@ -33,6 +33,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class DealPositionsBaseBatchInserter implements DealPositionsBatchInserter {
@@ -41,7 +42,7 @@ public abstract class DealPositionsBaseBatchInserter implements DealPositionsBat
 	@Value("${positionBatchSize:20}")
 	protected int batchSize;
 
-	protected Map<DealTypeCode, Supplier<DealPositionSqlMapper>> sqlMappers = new HashMap<>();
+	protected Map<DealTypeCode, Function<Boolean, DealPositionSqlMapper>> sqlMappers = new HashMap<>();
 
 	public DealPositionsBaseBatchInserter() {
 		sqlMappers.put(DealTypeCode.PHYSICAL_DEAL, PhysicalPositionSqlMapper::new);

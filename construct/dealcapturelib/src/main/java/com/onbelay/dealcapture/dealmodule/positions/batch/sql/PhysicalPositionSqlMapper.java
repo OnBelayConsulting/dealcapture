@@ -26,6 +26,10 @@ import java.util.List;
 
 public class PhysicalPositionSqlMapper extends DealPositionSqlMapper {
 
+	public PhysicalPositionSqlMapper(Boolean isAddPrimaryKey) {
+		super(isAddPrimaryKey);
+	}
+
 	public List<String> getColumnNames() {
 		List<String> columnNames = new ArrayList<>(super.getColumnNames());
 		columnNames.add("DEAL_PRICE_VALUATION_CODE");

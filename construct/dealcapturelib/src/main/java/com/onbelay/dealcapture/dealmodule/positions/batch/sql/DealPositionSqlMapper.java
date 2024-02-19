@@ -23,30 +23,15 @@ import java.util.List;
 
 public abstract class DealPositionSqlMapper {
 
-	private static List<String> COL_NAMES = new ArrayList<String>();
+	private final  boolean isAddPrimaryKey;
 
-	private boolean addPrimaryKey = false;
-
-	static {
-		COL_NAMES.add("DEAL_ID");
-		COL_NAMES.add("DEAL_TYPE_CODE");
-		COL_NAMES.add("START_DATE");
-		COL_NAMES.add("END_DATE");
-		COL_NAMES.add("CREATE_UPDATE_DATETIME");
-		COL_NAMES.add("VOLUME_QUANTITY");
-		COL_NAMES.add("CURRENCY_CODE");
-		COL_NAMES.add("VOLUME_UOM_CODE");
-		COL_NAMES.add("FREQUENCY_CODE");
-		COL_NAMES.add("MTM_VALUATION");
-		COL_NAMES.add("ERROR_CODE");
-	}
-
-	public DealPositionSqlMapper() {
+	public DealPositionSqlMapper(Boolean isAddPrimaryKey) {
+		this.isAddPrimaryKey = isAddPrimaryKey;
 	}
 
 
 	protected int getStartingPoint() {
-		if (addPrimaryKey == false)
+		if (isAddPrimaryKey == false)
 			return 11;
 		else
 			return 12;
@@ -57,9 +42,22 @@ public abstract class DealPositionSqlMapper {
 	}
 	
 	public List<String> getColumnNames() {
-		ArrayList<String> list = new ArrayList<>(COL_NAMES);
-		if (addPrimaryKey)
-			list.add(0, "ENTITY_ID");
+		ArrayList<String> list = new ArrayList<>();
+		if (isAddPrimaryKey)
+			list.add("ENTITY_ID");
+
+		list.add("DEAL_ID");
+		list.add("DEAL_TYPE_CODE");
+		list.add("START_DATE");
+		list.add("END_DATE");
+		list.add("CREATE_UPDATE_DATETIME");
+		list.add("VOLUME_QUANTITY");
+		list.add("CURRENCY_CODE");
+		list.add("VOLUME_UOM_CODE");
+		list.add("FREQUENCY_CODE");
+		list.add("MTM_VALUATION");
+		list.add("ERROR_CODE");
+
 		return list;
 	}
 	
@@ -68,7 +66,7 @@ public abstract class DealPositionSqlMapper {
 			DealPositionSnapshot position,
 			PreparedStatement preparedStatement) throws SQLException {
 		int n;
-		if (addPrimaryKey = true) {
+		if (isAddPrimaryKey) {
 			n= 1;
 			preparedStatement.setInt(1, position.getEntityId().getId());
 		} else {
@@ -100,11 +98,7 @@ public abstract class DealPositionSqlMapper {
 	}
 
 	public boolean isAddPrimaryKey() {
-		return addPrimaryKey;
-	}
-
-	public void setAddPrimaryKey(boolean addPrimaryKey) {
-		this.addPrimaryKey = addPrimaryKey;
+		return isAddPrimaryKey;
 	}
 
 	public String createPlaceHolders() {

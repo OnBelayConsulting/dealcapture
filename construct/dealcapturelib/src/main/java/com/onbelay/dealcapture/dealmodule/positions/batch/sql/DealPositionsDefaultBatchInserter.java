@@ -51,14 +51,15 @@ public class DealPositionsDefaultBatchInserter extends DealPositionsBaseBatchIns
 		
 		
 		EntityManager entityManager = ApplicationContextFactory.getCurrentEntityManagerOnThread();
-		
+
+		DealPositionSqlMapper sqlMapper = sqlMappers.get(dealTypeCode).apply(false);
+
 		Session session = entityManager.unwrap(Session.class);
 		
 		try {
 			session.doWork(
 					new BatchDealPositionDefaultInsertWorker(
-							sqlMappers.get(dealTypeCode)
-											.get(),
+							sqlMapper,
 							positions,
 							batchSize));
 		} catch (RuntimeException t) {
