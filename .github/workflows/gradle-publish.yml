@@ -84,6 +84,10 @@ jobs:
     - name: Copy overlays to support testing
       run: |
         cp ./overlays/database/* ./database
+        rm ./construct/dealcapturelib/src/test/resources/*.properties
+        cp ./overlays/construct/dealcapturelib/src/test/resources/* ./construct/dealcapturelib/src/test/resources
+        rm ./construct/dealcaptureapp/src/test/resources/*.properties
+        cp ./overlays/construct/dealcaptureapp/src/test/resources/* ./construct/dealcaptureapp/src/test/resources
 
     - name: list directory
       run: |
