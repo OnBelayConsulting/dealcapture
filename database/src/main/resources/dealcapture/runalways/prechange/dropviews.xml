@@ -9,7 +9,7 @@
 >
 	<changeSet
 			author='lefeuvrem'
-			id='1'
+			id='drop DEAL_VIEW'
 			runAlways='true'
 			runOnChange='true'
 	>
@@ -22,6 +22,40 @@
 		</preConditions>
 		<dropView
 				viewName='DEAL_VIEW'
+		/>
+	</changeSet>
+	<changeSet
+			author='lefeuvrem'
+			id='drop DEAL_DAY_VIEW'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='DEAL_DAY_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='DEAL_DAY_VIEW'
+		/>
+	</changeSet>
+	<changeSet
+			author='lefeuvrem'
+			id='drop DEAL_POSITION_VIEW'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='DEAL_POSITION_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='DEAL_POSITION_VIEW'
 		/>
 	</changeSet>
 

@@ -16,6 +16,8 @@
     <include file="POSITION_RISK_FACTOR_MAP.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_COST.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_COST_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_DAY.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_DAY_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="FX_CURVE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_INDEX.xml" relativeToChangelogFile="true"/>

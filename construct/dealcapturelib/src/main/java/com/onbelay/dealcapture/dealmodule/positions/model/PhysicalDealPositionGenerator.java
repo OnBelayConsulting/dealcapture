@@ -6,10 +6,10 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
+import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.riskfactor.components.PriceIndexPositionDateContainer;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
@@ -86,17 +86,27 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             else
                 targetUnitOfMeasureCode = physicalDealSummary.getVolumeUnitOfMeasureCode();
 
-            if (targetUnitOfMeasureCode == physicalDealSummary.getVolumeUnitOfMeasureCode()) {
-                positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(physicalDealSummary.getVolumeQuantity());
-            } else {
-                BigDecimal quantity = physicalDealSummary.getVolumeQuantity();
+            BigDecimal dayQuantity = null;
+            if (hasDealDaysContainerForQuantity(positionSnapshot.getDealPositionDetail().getStartDate()))
+                dayQuantity = getDayQuantity(positionSnapshot.getDealPositionDetail().getStartDate());
+
+            if (dayQuantity == null)
+                dayQuantity = physicalDealSummary.getVolumeQuantity();
+
+            if (targetUnitOfMeasureCode != physicalDealSummary.getVolumeUnitOfMeasureCode()) {
                 Conversion conversion = UnitOfMeasureConverter.findConversion(
                         targetUnitOfMeasureCode, 
                         physicalDealSummary.getVolumeUnitOfMeasureCode());
-                
-                quantity = quantity.multiply(conversion.getValue(), MathContext.DECIMAL128);
-                positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(quantity);
+
+                dayQuantity = dayQuantity.multiply(conversion.getValue(), MathContext.DECIMAL128);
             }
+
+            positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(dayQuantity);
+            setCosts(
+                    positionSnapshot.getCostDetail(),
+                    positionSnapshot.getDealPositionDetail().getStartDate(),
+                    dayQuantity);
+
             positionSnapshot.getDealPositionDetail().setVolumeUnitOfMeasure(targetUnitOfMeasureCode);
 
             positionSnapshot.getDealPositionDetail().setStartDate(currentDate);
@@ -143,8 +153,16 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         if (positionSnapshot.getDetail().getDealPriceValuationCode() != ValuationCode.INDEX) {
 
             // Set fixed deal price
-            positionSnapshot.getDetail().setFixedPriceValue(
+            BigDecimal fixedPrice = null;
+            if (hasDealDaysContainerForPrice(positionSnapshot.getDealPositionDetail().getStartDate()))
+                fixedPrice = getDayPrice(positionSnapshot.getDealPositionDetail().getStartDate());
+
+            if (fixedPrice != null)
+                positionSnapshot.getDetail().setFixedPriceValue(fixedPrice);
+            else
+                positionSnapshot.getDetail().setFixedPriceValue(
                     physicalDealSummary.getFixedPriceValue());
+
             positionSnapshot.getDetail().setDealPriceUnitOfMeasure(
                     physicalDealSummary.getFixedPriceUnitOfMeasureCode());
             positionSnapshot.getDetail().setDealPriceCurrencyCode(
@@ -290,10 +308,13 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         for (PositionHolder holder : positionHolders) {
             PhysicalPositionHolder physicalPositionHolder = (PhysicalPositionHolder) holder;
             PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) holder.getDealPositionSnapshot();
+
             positionSnapshot.getDealPositionDetail().setCreateUpdateDateTime(observedDateTime);
             positionSnapshot.setDealId(dealSummary.getDealId());
             positionSnapshot.setDealTypeValue(DealTypeCode.PHYSICAL_DEAL.getCode());
             positionSnapshot.getDealPositionDetail().setErrorCode("0");
+
+
             // Market Price
             positionSnapshot.setMarketPriceRiskFactorId(physicalPositionHolder.getMarketRiskFactorHolder().getRiskFactor().getEntityId());
 

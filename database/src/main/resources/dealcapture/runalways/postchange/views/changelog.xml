@@ -9,6 +9,8 @@
         logicalFilePath="/com/onbelay/dealcapture/runalways/postchange/views/changelog.xml"
 >
     <include file="DEAL_VIEW.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_DAY_VIEW.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_POSITION_VIEW.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

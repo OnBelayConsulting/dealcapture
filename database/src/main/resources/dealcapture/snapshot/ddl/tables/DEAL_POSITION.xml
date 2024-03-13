@@ -40,6 +40,26 @@
                     type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
+            <column name="SETTLEMENT_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_SETTLEMENT_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="TOTAL_SETTLEMENT_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="SETTLEMENT_CURRENCY"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="SETTLEMENT_REFERENCE"
+                    type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
             <column name='VOLUME_UOM_CODE'
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable='false'/>
@@ -90,6 +110,46 @@
             </column>
             <column name="MKT_PRICE_FX_RISK_FACTOR_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_1_NAME"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_1_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_2_NAME"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_2_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_3_NAME"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_3_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_4_NAME"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_4_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_5_NAME"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_5_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
             <column name="ERROR_CODE"

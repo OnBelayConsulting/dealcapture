@@ -30,6 +30,10 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
 
+    private CostPositionDetail costDetail = new CostPositionDetail();
+
+    private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
+
     private List<PositionRiskFactorMappingSnapshot> riskFactorMappingSnapshots = new ArrayList<>();
 
     private String dealTypeValue;
@@ -92,6 +96,22 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     public void setDealPositionDetail(DealPositionDetail dealPositionDetail) {
         this.dealPositionDetail = dealPositionDetail;
+    }
+
+    public CostPositionDetail getCostDetail() {
+        return costDetail;
+    }
+
+    public void setCostDetail(CostPositionDetail costDetail) {
+        this.costDetail = costDetail;
+    }
+
+    public PositionSettlementDetail getSettlementDetail() {
+        return settlementDetail;
+    }
+
+    public void setSettlementDetail(PositionSettlementDetail settlementDetail) {
+        this.settlementDetail = settlementDetail;
     }
 
     public void addRiskFactorMappingSnapshot(PositionRiskFactorMappingSnapshot snapshot) {

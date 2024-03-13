@@ -49,7 +49,7 @@ public class DealCostAssembler extends EntityAssembler {
 	public DealCostSnapshot assemble(DealCost dealCost) {
 		DealCostSnapshot snapshot = new DealCostSnapshot();
 		super.setEntityAttributes(dealCost, snapshot);
-		snapshot.setDealKey(new EntityId(deal.getId()));
+		snapshot.setDealId(new EntityId(deal.getId()));
 		snapshot.getDetail().copyFrom(dealCost.getDetail());
 		return snapshot;
 	}

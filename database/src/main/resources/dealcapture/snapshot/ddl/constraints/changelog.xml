@@ -22,6 +22,7 @@
     <include file="FK_DEAL_COST_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_COST_TO_COST_NAME_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_COST_TO_COST_TYPE_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_DEAL_DAY_TO_DAY_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_POSITION_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_POSITION_TO_VALUATION_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_FX_CURVE_TO_FREQUENCY_CODE.xml" relativeToChangelogFile="true"/>
@@ -36,6 +37,8 @@
     <include file="FK_PRICE_INDEX_TO_FREQUENCY_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_PRICE_INDEX_TO_UOM_CODE.xml" relativeToChangelogFile="true"/>
     <include file="UC_DEAL.xml" relativeToChangelogFile="true"/>
+    <include file="UC_DEAL_COST.xml" relativeToChangelogFile="true"/>
+    <include file="UC_DEAL_DAY.xml" relativeToChangelogFile="true"/>
     <include file="UC_FX_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="UC_FX_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="UC_FX_RISK_FACTOR.xml" relativeToChangelogFile="true"/>

@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealCostRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 
@@ -32,6 +33,19 @@ import jakarta.persistence.*;
 			   "  FROM DealCost dealCost " +
        		 "   WHERE dealCost.deal.id = :dealId " +
        	     "ORDER BY dealCost.detail.costNameCodeValue DESC"),
+    @NamedQuery(
+       name = DealCostRepositoryBean.FETCH_DEAL_COST_SUMMARIES,
+       query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary( " +
+			   "		dealCost.id, " +
+			   "		dealCost.deal.id, " +
+			   "		dealCost.detail.costNameCodeValue," +
+			   "		dealCost.detail.costTypeCodeValue," +
+			   "		dealCost.detail.costValue," +
+			   "		dealCost.detail.currencyCodeValue," +
+			   "		dealCost.detail.unitOfMeasureCodeValue) " +
+			   "  FROM DealCost dealCost " +
+       		 "   WHERE dealCost.deal.id in (:dealIds) " +
+       	     "ORDER BY dealCost.deal.id"),
     @NamedQuery(
        name = DealCostRepositoryBean.FIND_BY_DEAL_AND_NAME,
        query = "SELECT dealCost " +
@@ -51,6 +65,7 @@ public class DealCost extends TemporalAbstractEntity {
 	}
 	
 	public DealCost(BaseDeal deal) {
+		this.deal = deal;
 	}
 	
 	public static DealCost create(
@@ -124,8 +139,8 @@ public class DealCost extends TemporalAbstractEntity {
 	}
 	
 	@Transient
-	protected static  DealCostRepositoryBean getDealCostRepository() {
-		return (DealCostRepositoryBean) ApplicationContextFactory.getBean(DealCostRepositoryBean.BEAN_NAME);
+	protected static DealCostRepository getDealCostRepository() {
+		return (DealCostRepository) ApplicationContextFactory.getBean(DealCostRepositoryBean.BEAN_NAME);
 	}
 
 }

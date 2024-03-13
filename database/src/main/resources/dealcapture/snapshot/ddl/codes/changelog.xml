@@ -10,6 +10,7 @@
 >
     <include file="COST_NAME_CODE.xml" relativeToChangelogFile="true"/>
     <include file="COST_TYPE_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="DAY_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_STATUS_CODE.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="INDEX_TYPE_CODE.xml" relativeToChangelogFile="true"/>

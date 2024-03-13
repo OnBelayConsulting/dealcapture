@@ -45,40 +45,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class DealServiceTest extends DealCaptureSpringTestCase {
-	
-	private CompanyRole companyRole;
-	private CounterpartyRole counterpartyRole;
-	private PriceIndex priceIndex;
-
-	private PriceIndex dealPriceIndex;
-
-	private LocalDate startDate = LocalDate.of(2023, 1, 1);
-	private LocalDate endDate = LocalDate.of(2023, 12, 31);
-
-	@Autowired
-	private DealRepository dealRepository;
-	
-	@Autowired
-	private DealService dealService;
-
-	@Override
-	public void setUp() {
-		super.setUp();
-		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
-		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
-		
-		priceIndex = PriceIndexFixture.createPriceIndex(
-				"AECO", 
-				PricingLocationFixture.createPricingLocation(
-						"west"));
-		dealPriceIndex = PriceIndexFixture.createPriceIndex(
-				"DDFF",
-				PricingLocationFixture.createPricingLocation(
-						"east"));
-
-		flush();
-	}
+public class DealServiceTest extends DealServiceTestCase {
 
 	@Test
 	public void testUpdatePhysicalDeal() {

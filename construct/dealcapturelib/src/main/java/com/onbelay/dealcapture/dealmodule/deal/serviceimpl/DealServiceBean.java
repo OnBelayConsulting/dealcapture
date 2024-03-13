@@ -23,17 +23,17 @@ import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.AbstractDealAssembler;
+import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
+import com.onbelay.dealcapture.dealmodule.deal.assembler.DealDayAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealSnapshotAssemblerFactory;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
-import com.onbelay.dealcapture.dealmodule.deal.model.CreateDealFactory;
+import com.onbelay.dealcapture.dealmodule.deal.model.*;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealCostRepository;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealDayRepository;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.ErrorDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +53,15 @@ import java.util.List;
 public class DealServiceBean extends BaseDomainService implements DealService {
 	private static Logger logger =LogManager.getLogger();
 	private static final Marker userMarker = MarkerManager.getMarker("USER");
+
 	@Autowired
 	private DealRepository dealRepository;
 
+	@Autowired
+	private DealCostRepository dealCostRepository;
+
+	@Autowired
+	private DealDayRepository dealDayRepository;
 
 	@Override
 	public QuerySelectedPage findDealIds(DefinedQuery definedQuery) {
@@ -173,5 +180,71 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 		return assembler.assemble(deal);
 	}
 
+	@Override
+	public List<DealCostSnapshot> fetchDealCosts(EntityId dealId) {
+		BaseDeal deal = dealRepository.load(dealId);
+		List<DealCost> costs = deal.fetchDealCosts();
+		DealCostAssembler assembler = new DealCostAssembler(deal);
+		return assembler.assemble(costs);
+	}
 
+	@Override
+	public TransactionResult saveDealCosts(
+			EntityId dealId,
+			List<DealCostSnapshot> snapshots) {
+
+		BaseDeal deal = dealRepository.load(dealId);
+		List<Integer> keys = deal.saveDealCosts(snapshots);
+		return new TransactionResult(keys);
+	}
+
+	@Override
+	public List<DealDayView> fetchDealDayViewsByDates(
+			List<Integer> dealIds,
+			LocalDate fromDate,
+			LocalDate toDate) {
+
+		return dealDayRepository.fetchAllDealDayViewsByDates(
+				dealIds,
+				fromDate,
+				toDate);
+	}
+
+	@Override
+	public List<DealCostSummary> fetchDealCostSummaries(List<Integer> dealIds) {
+		return dealCostRepository.fetchDealCostSummaries(dealIds);
+	}
+
+	@Override
+	public List<DealDaySnapshot> fetchDealDays(EntityId dealId) {
+		BaseDeal deal = dealRepository.load(dealId);
+		List<DealDay> dealDays = deal.fetchDealDays();
+		DealDayAssembler assembler = new DealDayAssembler(deal);
+		return assembler.assemble(dealDays);
+	}
+
+	@Override
+	public List<DealDayView> fetchDealDayViews(EntityId dealId) {
+		return dealDayRepository.fetchDealDayViews(dealId);
+	}
+
+	@Override
+	public List<DealDaySnapshot> fetchDealDaysByType(
+			EntityId dealId,
+			DayTypeCode code) {
+		BaseDeal deal = dealRepository.load(dealId);
+		List<DealDay> dealDays = deal.fetchDealDays(code);
+		DealDayAssembler assembler = new DealDayAssembler(deal);
+		return assembler.assemble(dealDays);
+	}
+
+	@Override
+	public TransactionResult saveDealDays(
+			EntityId dealId,
+			List<DealDaySnapshot> snapshots) {
+
+		BaseDeal deal = dealRepository.load(dealId);
+		List<Integer> keys = deal.saveDealDays(snapshots);
+		return new TransactionResult(keys);
+	}
 }

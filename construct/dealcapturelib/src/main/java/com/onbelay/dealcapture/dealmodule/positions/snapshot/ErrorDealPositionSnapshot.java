@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 
 import java.util.List;
 

@@ -11,15 +11,9 @@ import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionDetail;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.*;
 import jakarta.persistence.*;
-import microsoft.sql.Types;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +38,13 @@ public abstract class DealPosition extends AbstractEntity {
 
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
 
+    private CostPositionDetail costDetail = new CostPositionDetail();
+
+    private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
+
     protected DealPosition(String dealTypeCodeValue) {
         this.dealTypeCodeValue = dealTypeCodeValue;
     }
-
-    public abstract void valuePosition(LocalDateTime currentDateTime);
 
     protected void postCreateWith(DealPositionSnapshot snapshot) {
         if (snapshot.getRiskFactorMappingSnapshots().isEmpty() == false) {
@@ -107,6 +103,24 @@ public abstract class DealPosition extends AbstractEntity {
         this.dealPositionDetail = detail;
     }
 
+    @Embedded
+    public CostPositionDetail getCostDetail() {
+        return costDetail;
+    }
+
+    public void setCostDetail(CostPositionDetail costDetail) {
+        this.costDetail = costDetail;
+    }
+
+    @Embedded
+    public PositionSettlementDetail getSettlementDetail() {
+        return settlementDetail;
+    }
+
+    public void setSettlementDetail(PositionSettlementDetail settlementDetail) {
+        this.settlementDetail = settlementDetail;
+    }
+
     public List<EntityId> savePositionRiskFactorMappings(List<PositionRiskFactorMappingSnapshot> snapshots) {
         ArrayList<EntityId> ids = new ArrayList<>();
         for (PositionRiskFactorMappingSnapshot snapshot : snapshots) {
@@ -143,11 +157,17 @@ public abstract class DealPosition extends AbstractEntity {
     public void createWith(DealPositionSnapshot snapshot) {
         this.deal = getDealRepository().load(snapshot.getDealId());
         this.dealPositionDetail.setDefaults();
+        this.settlementDetail.setDefaults();
+
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
+        this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
+        this.costDetail.copyFrom(snapshot.getCostDetail());
     }
 
     public void updateWith(DealPositionSnapshot snapshot) {
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
+        this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
+        this.costDetail.copyFrom(snapshot.getCostDetail());
     }
 
     @Transient

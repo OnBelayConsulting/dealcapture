@@ -20,9 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.onbelay.core.codes.annotations.CodeLabelSerializer;
 import com.onbelay.core.codes.annotations.InjectCodeLabel;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
@@ -65,11 +67,11 @@ public class DealCostDetail  {
 
 	@Transient
 	@JsonIgnore
-	public CurrencyCode getCurrency() {
+	public CurrencyCode getCurrencyCode() {
 		return CurrencyCode.lookUp(currencyCodeValue);
 	}
 
-	public void setCurrency(CurrencyCode code) {
+	public void setCurrencyCode(CurrencyCode code) {
 		this.currencyCodeValue = code.getCode();
 	}
 
@@ -88,11 +90,11 @@ public class DealCostDetail  {
 
 	@Transient
 	@JsonIgnore
-	public UnitOfMeasureCode getUnitOfMeasure() {
+	public UnitOfMeasureCode getUnitOfMeasureCode() {
 		return UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue);
 	}
 
-	public void setUnitOfMeasure(UnitOfMeasureCode code) {
+	public void setUnitOfMeasureCode(UnitOfMeasureCode code) {
 		this.unitOfMeasureCodeValue = code.getCode();
 	}
 
@@ -147,6 +149,22 @@ public class DealCostDetail  {
 		this.costTypeCodeValue = type;
 	}
 
+	public void validate() throws OBValidationException {
+		if (costTypeCodeValue == null)
+			throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_TYPE.getCode());
+		if (costNameCodeValue == null)
+			throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_NAME.getCode());
+		if (costValue == null)
+			throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_VALUE.getCode());
+		if (currencyCodeValue == null)
+			throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_CURRENCY.getCode());
+
+		if (getCostType() == CostTypeCode.PER_UNIT) {
+			if (this.unitOfMeasureCodeValue == null)
+				throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_UOM.getCode());
+		}
+
+	}
 
 
     public void copyFrom(DealCostDetail copy) {

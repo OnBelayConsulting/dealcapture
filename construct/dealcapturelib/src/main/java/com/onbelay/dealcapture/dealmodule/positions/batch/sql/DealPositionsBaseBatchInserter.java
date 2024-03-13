@@ -15,26 +15,14 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
-import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public abstract class DealPositionsBaseBatchInserter implements DealPositionsBatchInserter {
 	private static final Logger logger = LogManager.getLogger(DealPositionsBaseBatchInserter.class);

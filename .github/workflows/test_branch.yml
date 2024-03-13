@@ -72,9 +72,12 @@ jobs:
         chmod +x gradlew
 
     - name: Copy overlays to support testing
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: copyAllOverlays
+      run: |
+        cp ./overlays/database/* ./database
+        rm  -rf ./construct/dealcapturelib/src/test/resources/*.properties
+        cp ./overlays/construct/dealcapturelib/src/test/resources/* ./construct/dealcapturelib/src/test/resources
+        rm -rf  ./construct/dealcaptureapp/src/test/resources/*.properties
+        cp ./overlays/construct/dealcaptureapp/src/test/resources/* ./construct/dealcaptureapp/src/test/resources
 
     - name: run gradle deployNew
       run: |

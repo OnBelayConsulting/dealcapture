@@ -47,7 +47,21 @@ public enum DealErrorCode {
 
     MISSING_MARKET_INDEX      		 ("DC_DL-E0501", "Error: Missing market index"),
     MISSING_DEAL_PRICE_CURRENCY		 ("DC_DL-E0503", "Error: Missing deal price currency."),
-    MISSING_DEAL_PRICE_UOM		     ("DC_DL-E0504", "Error: Missing deal price unit of measure.");
+    MISSING_DEAL_PRICE_UOM		     ("DC_DL-E0504", "Error: Missing deal price unit of measure."),
+
+    MISSING_DEAL_COST_TYPE		     ("DC_DL-E0600", "Error: Missing deal cost type."),
+    MISSING_DEAL_COST_NAME		     ("DC_DL-E0601", "Error: Missing deal cost name."),
+    MISSING_DEAL_COST_CURRENCY	     ("DC_DL-E0602", "Error: Missing deal cost currency."),
+    MISSING_DEAL_COST_UOM		     ("DC_DL-E0603", "Error: Missing deal cost unitOfMeasure."),
+    MISSING_DEAL_COST_VALUE		     ("DC_DL-E0604", "Error: Missing deal cost value."),
+    DUPLICATE_DEAL_COST	    	     ("DC_DL-E0605", "Error: Deal Cost with same dealid, cost name, cost type already exists."),
+
+    MISSING_DEAL_DAY_TYPE		     ("DC_DL-E0700", "Error: Missing deal day type."),
+    MISSING_DEAL_DAY_YEAR		     ("DC_DL-E0701", "Error: Missing deal day year."),
+    MISSING_DEAL_DAY_MONTH		     ("DC_DL-E0702", "Error: Missing deal day month."),
+    DUPLICATE_DEAL_DAY	    	     ("DC_DL-E0703", "Error: Deal Day with same dealid, type, year, month already exists."),
+
+    ;
 
     private String code;
     private String description;

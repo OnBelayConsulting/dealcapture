@@ -5,12 +5,12 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchUpdater;
+import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionValuator;
 import com.onbelay.dealcapture.dealmodule.positions.model.PositionValuationResult;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class ValuePositionsServiceBean implements ValuePositionsService {
                 .map(c-> c.getId())
                 .collect(Collectors.toList());
 
-        valuePositionsUsingReport(ids, currentDateTime);
+        valuePositionsUsingView(ids, currentDateTime);
 
         return new TransactionResult();
     }
@@ -54,22 +54,22 @@ public class ValuePositionsServiceBean implements ValuePositionsService {
             LocalDateTime currentDateTime) {
 
         List<Integer> ids = dealPositionRepository.findPositionIds(definedQuery);
-        valuePositionsUsingReport(ids, currentDateTime);
+        valuePositionsUsingView(ids, currentDateTime);
 
         return new TransactionResult();
     }
 
-    private void valuePositionsUsingReport(
+    private void valuePositionsUsingView(
             List<Integer> positionIds,
             LocalDateTime currentDateTime) {
 
         logger.info("value positions start: " + LocalDateTime.now().toString());
 
-        List<PhysicalPositionReport> reports = dealPositionService.fetchPhysicalPositionReports(positionIds);
+        List<DealPositionView> views = dealPositionService.fetchDealPositionViews(positionIds);
         ArrayList<PositionValuationResult> results = new ArrayList<>();
 
-        for (PhysicalPositionReport report : reports) {
-                PhysicalPositionValuator valuator = new PhysicalPositionValuator(report);
+        for (DealPositionView view : views) {
+                PhysicalPositionValuator valuator = new PhysicalPositionValuator(view);
                 results.add(valuator.valuePosition(currentDateTime));
         }
 

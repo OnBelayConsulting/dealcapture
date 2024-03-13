@@ -32,9 +32,9 @@ public abstract class DealPositionSqlMapper {
 
 	protected int getStartingPoint() {
 		if (isAddPrimaryKey == false)
-			return 11;
+			return 26;
 		else
-			return 12;
+			return 27;
 	}
 
 	public String getTableName() {
@@ -56,6 +56,21 @@ public abstract class DealPositionSqlMapper {
 		list.add("VOLUME_UOM_CODE");
 		list.add("FREQUENCY_CODE");
 		list.add("MTM_VALUATION");
+		list.add("SETTLEMENT_AMOUNT");
+		list.add("COST_SETTLEMENT_AMOUNT");
+		list.add("TOTAL_SETTLEMENT_AMOUNT");
+		list.add("SETTLEMENT_CURRENCY");
+		list.add("SETTLEMENT_REFERENCE");
+		list.add("COST_1_NAME");
+		list.add("COST_1_AMOUNT");
+		list.add("COST_2_NAME");
+		list.add("COST_2_AMOUNT");
+		list.add("COST_3_NAME");
+		list.add("COST_3_AMOUNT");
+		list.add("COST_4_NAME");
+		list.add("COST_4_AMOUNT");
+		list.add("COST_5_NAME");
+		list.add("COST_5_AMOUNT");
 		list.add("ERROR_CODE");
 
 		return list;
@@ -89,11 +104,85 @@ public abstract class DealPositionSqlMapper {
 		else
 			preparedStatement.setNull(n + 10, Types.DECIMAL);
 
-		if (position.getDealPositionDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 11, position.getDealPositionDetail().getErrorCode());
+		// Settlement
+		if (position.getSettlementDetail().getSettlementAmount() != null)
+			preparedStatement.setBigDecimal(n + 11, position.getSettlementDetail().getSettlementAmount());
 		else
-			preparedStatement.setNull(n + 11, Types.VARCHAR);
-		
+			preparedStatement.setNull(n + 11, Types.DECIMAL);
+
+		if (position.getSettlementDetail().getCostSettlementAmount() != null)
+			preparedStatement.setBigDecimal(n + 12, position.getSettlementDetail().getCostSettlementAmount());
+		else
+			preparedStatement.setNull(n + 12, Types.DECIMAL);
+
+		if (position.getSettlementDetail().getTotalSettlementAmount() != null)
+			preparedStatement.setBigDecimal(n + 13, position.getSettlementDetail().getTotalSettlementAmount());
+		else
+			preparedStatement.setNull(n + 13, Types.DECIMAL);
+
+		if (position.getSettlementDetail().getSettlementCurrencyCodeValue() != null)
+			preparedStatement.setString(n + 14, position.getSettlementDetail().getSettlementCurrencyCodeValue());
+		else
+			preparedStatement.setNull(n + 14, Types.VARCHAR);
+
+		if (position.getSettlementDetail().getSettlementReference() != null)
+			preparedStatement.setString(n + 15, position.getSettlementDetail().getSettlementReference());
+		else
+			preparedStatement.setNull(n + 15, Types.VARCHAR);
+
+		// Costs
+		if (position.getCostDetail().getCost1Name() != null)
+			preparedStatement.setString(n + 16, position.getCostDetail().getCost1Name());
+		else
+			preparedStatement.setNull(n + 16, Types.VARCHAR);
+		if (position.getCostDetail().getCost1Amount() != null)
+			preparedStatement.setBigDecimal(n + 17, position.getCostDetail().getCost1Amount());
+		else
+			preparedStatement.setNull(n + 17, Types.DECIMAL);
+
+		if (position.getCostDetail().getCost2Name() != null)
+			preparedStatement.setString(n + 18, position.getCostDetail().getCost2Name());
+		else
+			preparedStatement.setNull(n + 18, Types.VARCHAR);
+		if (position.getCostDetail().getCost2Amount() != null)
+			preparedStatement.setBigDecimal(n + 19, position.getCostDetail().getCost2Amount());
+		else
+			preparedStatement.setNull(n + 19, Types.DECIMAL);
+
+		if (position.getCostDetail().getCost3Name() != null)
+			preparedStatement.setString(n + 20, position.getCostDetail().getCost3Name());
+		else
+			preparedStatement.setNull(n + 20, Types.VARCHAR);
+		if (position.getCostDetail().getCost3Amount() != null)
+			preparedStatement.setBigDecimal(n + 21, position.getCostDetail().getCost3Amount());
+		else
+			preparedStatement.setNull(n + 21, Types.DECIMAL);
+
+		if (position.getCostDetail().getCost4Name() != null)
+			preparedStatement.setString(n + 22, position.getCostDetail().getCost4Name());
+		else
+			preparedStatement.setNull(n + 22, Types.VARCHAR);
+		if (position.getCostDetail().getCost4Amount() != null)
+			preparedStatement.setBigDecimal(n + 23, position.getCostDetail().getCost4Amount());
+		else
+			preparedStatement.setNull(n + 23, Types.DECIMAL);
+
+		if (position.getCostDetail().getCost5Name() != null)
+			preparedStatement.setString(n + 24, position.getCostDetail().getCost5Name());
+		else
+			preparedStatement.setNull(n + 24, Types.VARCHAR);
+		if (position.getCostDetail().getCost5Amount() != null)
+			preparedStatement.setBigDecimal(n + 25, position.getCostDetail().getCost5Amount());
+		else
+			preparedStatement.setNull(n + 25, Types.DECIMAL);
+
+		// Error Code
+		if (position.getDealPositionDetail().getErrorCode() != null)
+			preparedStatement.setString(n + 26, position.getDealPositionDetail().getErrorCode());
+		else
+			preparedStatement.setNull(n + 26, Types.VARCHAR);
+
+
 
 	}
 

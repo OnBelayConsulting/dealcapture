@@ -22,14 +22,12 @@ import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealDayRepository;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
@@ -220,6 +218,41 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return ids;
 	}
 
+	protected void addDealDay(DealDay dealDay) {
+		dealDay.setDeal(this);
+		dealDay.save();
+	}
+
+	public List<Integer> saveDealDays(List<DealDaySnapshot> snapshots) {
+		ArrayList<Integer> ids = new ArrayList<>();
+		for (DealDaySnapshot snapshot : snapshots) {
+			if (snapshot.getEntityState() == EntityState.NEW) {
+				DealDay dealDay = DealDay.create(this, snapshot);
+				ids.add(dealDay.getId());
+			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
+				DealDay dealDay =  getDealDayRepository().load(snapshot.getEntityId());
+				dealDay.updateWith(snapshot);
+				ids.add(dealDay.getId());
+			} else if (snapshot.getEntityState() == EntityState.DELETE) {
+				DealDay dealDay =  getDealDayRepository().load(snapshot.getEntityId());
+				dealDay.delete();
+			}
+		}
+		return ids;
+	}
+
+	public List<DealDay> fetchDealDays() {
+		return getDealDayRepository().fetchDealDays(id);
+	}
+
+
+	public List<DealDay> fetchDealDays(DayTypeCode code) {
+		return getDealDayRepository().fetchDealDays(
+				id,
+				code);
+	}
+
+
 	public List<DealCost> fetchDealCosts() {
 		return getDealCostRepository().fetchDealCosts(id);
 	}
@@ -276,7 +309,12 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	protected static  DealCostRepositoryBean getDealCostRepository() {
 		return (DealCostRepositoryBean) ApplicationContextFactory.getBean(DealCostRepositoryBean.BEAN_NAME);
 	}
-	
+
+	@Transient
+	protected static DealDayRepository getDealDayRepository() {
+		return (DealDayRepository) ApplicationContextFactory.getBean(DealDayRepositoryBean.BEAN_NAME);
+	}
+
 	@Transient
 	protected static PriceIndexRepository getPriceIndexRepository() {
 		return (PriceIndexRepository) ApplicationContextFactory.getBean(PriceIndexRepository.BEAN_NAME);

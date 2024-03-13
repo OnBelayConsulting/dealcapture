@@ -1,13 +1,9 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AbstractEntity;
-import com.onbelay.core.entity.model.AuditAbstractEntity;
-import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
@@ -15,7 +11,6 @@ import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
-import org.hibernate.type.YesNoConverter;
 
 @Entity
 @Table(name = "POSITION_RISK_FACTOR_MAP")

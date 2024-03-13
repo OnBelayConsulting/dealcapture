@@ -4,7 +4,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
+import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 
 import java.util.List;
 
@@ -19,9 +19,9 @@ public interface DealPositionRepository {
 
     List<Integer> findPositionIds(DefinedQuery definedQuery);
 
-    List<PhysicalPositionReport> findPhysicalPositionReportsByDeal(EntityId dealId);
+    List<DealPositionView> findDealPositionViewsByDeal(EntityId dealId);
 
-    List<PhysicalPositionReport> findPhysicalPositionReports(List<Integer> positionIds);
+    List<DealPositionView> findDealPositionViews(List<Integer> positionIds);
 
     List<DealPosition> fetchByIds(QuerySelectedPage page);
 }

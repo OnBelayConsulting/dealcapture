@@ -22,23 +22,17 @@ import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
-import jakarta.persistence.StoredProcedureQuery;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
-import java.sql.CallableStatement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +43,8 @@ import java.util.Map;
 public class DealPositionRepositoryBean extends BaseRepository<DealPosition> implements DealPositionRepository {
 	private static final Logger logger = LogManager.getLogger();
 	public static final String FIND_BY_DEAL = "DealPositionsRepository.FIND_BY_DEAL";
-    public static final String FIND_PHYSICAL_POSITION_REPORT_BY_DEAL ="DealPositionsRepository.FIND_PHYSICAL_POSITION_REPORT_BY_DEAL" ;
-	public static final String FIND_PHYSICAL_POSITION_REPORTS ="DealPositionsRepository.FIND_PHYSICAL_POSITION_REPORTS" ;
+    public static final String FIND_DEAL_POSITION_VIEWS_BY_DEAL ="DealPositionsRepository.FIND_DEAL_POSITION_VIEWS_BY_DEAL" ;
+	public static final String FIND_DEAL_POSITION_VIEWS ="DealPositionsRepository.FIND_DEAL_POSITION_VIEWS" ;
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
@@ -107,17 +101,17 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 	}
 
 	@Override
-	public List<PhysicalPositionReport> findPhysicalPositionReportsByDeal(EntityId dealId) {
-		return (List<PhysicalPositionReport>) executeReportQuery(
-				FIND_PHYSICAL_POSITION_REPORT_BY_DEAL,
+	public List<DealPositionView> findDealPositionViewsByDeal(EntityId dealId) {
+		return (List<DealPositionView>) executeReportQuery(
+				FIND_DEAL_POSITION_VIEWS_BY_DEAL,
 				"dealId",
 				dealId.getId());
 	}
 
 	@Override
-	public List<PhysicalPositionReport> findPhysicalPositionReports(List<Integer> positionIds) {
-		return (List<PhysicalPositionReport>) executeReportQuery(
-				FIND_PHYSICAL_POSITION_REPORTS,
+	public List<DealPositionView> findDealPositionViews(List<Integer> positionIds) {
+		return (List<DealPositionView>) executeReportQuery(
+				FIND_DEAL_POSITION_VIEWS,
 				"positionIds",
 				positionIds);
 	}

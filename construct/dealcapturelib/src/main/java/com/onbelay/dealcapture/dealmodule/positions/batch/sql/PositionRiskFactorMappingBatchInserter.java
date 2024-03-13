@@ -16,9 +16,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
@@ -28,8 +26,9 @@ import org.hibernate.jdbc.Work;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 @Component(value="positionRiskFactorMappingBatchInserter")

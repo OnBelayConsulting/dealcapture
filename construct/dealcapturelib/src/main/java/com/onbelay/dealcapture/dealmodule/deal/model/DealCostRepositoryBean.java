@@ -15,8 +15,12 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealCostRepository;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import jakarta.transaction.Transactional;
 
 import com.onbelay.core.entity.snapshot.EntityId;
@@ -29,12 +33,14 @@ import com.onbelay.core.entity.repository.BaseRepository;
 @Repository (value="dealCostRepository")
 @Transactional
 
-public class DealCostRepositoryBean extends BaseRepository<DealCost> {
+public class DealCostRepositoryBean extends BaseRepository<DealCost> implements DealCostRepository {
 	public static final String BEAN_NAME = "dealCostRepository";
 	public static final String FETCH_DEAL_COSTS = "DealCostRepository.FETCH_DEAL_COSTS";
 	public static final String FIND_BY_DEAL_AND_NAME = "DealCostRepository.FIND_BY_DEAL_AND_NAME";
+    public static final String FETCH_DEAL_COST_SUMMARIES = "DealCostRepository.FETCH_DEAL_COST_SUMMARIES" ;
 
 
+    @Override
 	public DealCost load(EntityId entityId) {
 		if (entityId == null)
 			throw new OBRuntimeException(CoreTransactionErrorCode.INVALID_ENTITY_ID.getCode());
@@ -52,18 +58,20 @@ public class DealCostRepositoryBean extends BaseRepository<DealCost> {
 			return null;
 	}
 
+	@Override
 	public DealCost findByDealAndName(
-			EntityId dealEntityId,
+			Integer dealId,
 			String name) {
 
 		String[] names = {"dealId", "name"};
-		Object[] parms = {dealEntityId.getId(), name};
+		Object[] parms = {dealId, name};
 		return executeSingleResultQuery(
 				FIND_BY_DEAL_AND_NAME,
 				names,
 				parms);
 	}
 
+	@Override
 	public List<DealCost> fetchDealCosts(Integer dealId) {
 		
 		return (List<DealCost>) executeQuery(
@@ -72,4 +80,25 @@ public class DealCostRepositoryBean extends BaseRepository<DealCost> {
 				dealId); 
 	}
 
+	@Override
+	public List<DealCostSummary> fetchDealCostSummaries(List<Integer> dealIds) {
+
+		if (dealIds.size() < 2000) {
+			return (List<DealCostSummary>) executeReportQuery(
+					FETCH_DEAL_COST_SUMMARIES,
+					"dealIds",
+					dealIds);
+		} else {
+			ArrayList<DealCostSummary> summaries = new ArrayList<>();
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+			while (subLister.moreElements()) {
+				summaries.addAll(
+						(List<DealCostSummary>) executeReportQuery(
+								FETCH_DEAL_COST_SUMMARIES,
+								"dealIds",
+								subLister.nextList()));
+			}
+			return summaries;
+		}
+	}
 }

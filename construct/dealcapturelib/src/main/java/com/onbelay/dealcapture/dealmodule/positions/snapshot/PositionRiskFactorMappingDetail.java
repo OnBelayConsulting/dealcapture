@@ -6,8 +6,6 @@ import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
-import java.math.BigDecimal;
-
 public class PositionRiskFactorMappingDetail extends AbstractDetail {
 
     private String priceTypeCodeValue;

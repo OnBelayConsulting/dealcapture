@@ -1,12 +1,9 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import jakarta.persistence.Embedded;
-import jakarta.persistence.Transient;
 
 import java.util.List;
 

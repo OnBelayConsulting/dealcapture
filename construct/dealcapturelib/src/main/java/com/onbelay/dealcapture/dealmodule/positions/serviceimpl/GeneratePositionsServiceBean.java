@@ -6,7 +6,9 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealDayView;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchInserter;
@@ -96,15 +98,26 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         List<DealSummary> summaries = dealService.getAssignedDealSummaries(positionGenerationIdentifier);
         logger.info("get assigned deal summaries end: " + LocalDateTime.now().toString());
 
+        List<DealCostSummary> dealCostSummaries = dealService.fetchDealCostSummaries(dealIds);
+
+        List<DealDayView> dealDayViews = dealService.fetchDealDayViewsByDates(
+                dealIds,
+                context.getStartPositionDate(),
+                context.getEndPositionDate());
+
         return createAndSavePositions(
                 context,
-                summaries);
+                summaries,
+                dealCostSummaries,
+                dealDayViews);
 
     }
 
     private TransactionResult createAndSavePositions(
             EvaluationContext context,
-            List<DealSummary> dealSummaries) {
+            List<DealSummary> dealSummaries,
+            List<DealCostSummary> dealCostSummaries,
+            List<DealDayView> dealDayViews) {
 
         List<Integer> physicalDealIds = dealSummaries
                 .stream()
@@ -151,7 +164,12 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
                 activePriceRiskFactors,
                 activeFxRiskFactors);
 
-        DealPositionGeneratorFactory factory = new DealPositionGeneratorFactory();
+        DealPositionGeneratorFactory factory = DealPositionGeneratorFactory.newFactory();
+        if (dealCostSummaries.size() > 0)
+            factory.withCosts(dealCostSummaries);
+
+        if (dealDayViews.size() > 0)
+            factory.withDealDays(dealDayViews);
 
         List<DealPositionGenerator> dealPositionGenerators = new ArrayList<>(dealSummaries.size());
 

@@ -22,19 +22,19 @@ import com.onbelay.core.entity.snapshot.EntityId;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DealCostSnapshot extends AbstractSnapshot {
 	
-	private EntityId dealKey;
+	private EntityId dealId;
 	
 	public DealCostSnapshot() {
 	}
 	
 	private DealCostDetail detail = new DealCostDetail();
 
-	public EntityId getDealKey() {
-		return dealKey;
+	public EntityId getDealId() {
+		return dealId;
 	}
 
-	public void setDealKey(EntityId dealKey) {
-		this.dealKey = dealKey;
+	public void setDealId(EntityId dealId) {
+		this.dealId = dealId;
 	}
 
 	public DealCostDetail getDetail() {

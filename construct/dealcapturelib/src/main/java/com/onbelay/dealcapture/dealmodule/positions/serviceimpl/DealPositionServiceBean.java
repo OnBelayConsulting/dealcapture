@@ -10,12 +10,12 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.DealPositionAssemblerFactory;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.PositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
+import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionReport;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,17 +58,17 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
-    public List<PhysicalPositionReport> fetchPhysicalPositionReports(List<Integer> positionIds) {
+    public List<DealPositionView> fetchDealPositionViews(List<Integer> positionIds) {
         SubLister<Integer> subLister = new SubLister<>(positionIds, 2000);
-        ArrayList<PhysicalPositionReport> reports = new ArrayList<>();
+        ArrayList<DealPositionView> reports = new ArrayList<>();
         while (subLister.moreElements()) {
 
             List<Integer> idList = subLister.nextList();
-            List<PhysicalPositionReport> subReports = dealPositionRepository.findPhysicalPositionReports(idList);
-            HashMap<Integer, PhysicalPositionReport> reportMap = new HashMap<>();
-            subReports.forEach(c-> reportMap.put(c.getDealPositionId(), c));
+            List<DealPositionView> subReports = dealPositionRepository.findDealPositionViews(idList);
+            HashMap<Integer, DealPositionView> reportMap = new HashMap<>();
+            subReports.forEach(c-> reportMap.put(c.getId(), c));
             for (PositionRiskFactorMappingSummary summary : positionRiskFactorMappingRepository.findAllMappingSummaries(idList)) {
-                PhysicalPositionReport report = reportMap.get(summary.getDealPositionId());
+                DealPositionView report = reportMap.get(summary.getDealPositionId());
                 report.addMappingSummary(summary);
             }
 
@@ -89,8 +89,8 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
-    public List<PhysicalPositionReport> findPhysicalPositionReportsByDeal(EntityId dealId) {
-        return dealPositionRepository.findPhysicalPositionReportsByDeal(dealId);
+    public List<DealPositionView> findDealPositionViewsByDeal(EntityId dealId) {
+        return dealPositionRepository.findDealPositionViewsByDeal(dealId);
     }
 
     @Override

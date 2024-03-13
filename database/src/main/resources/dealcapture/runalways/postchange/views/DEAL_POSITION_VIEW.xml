@@ -1,0 +1,74 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/runalways/postchange/views/DEAL_POSITION_VIEW.xml'
+>
+    <changeSet
+            author='lefeuvrem'
+            id='1'
+            runAlways='true'
+            runOnChange='true'
+    >
+    <createView viewName="DEAL_POSITION_VIEW">
+    SELECT
+            pp.ENTITY_ID,
+            pp.START_DATE,
+            pp.END_DATE,
+            pp.DEAL_TYPE_CODE,
+            pp.CURRENCY_CODE,
+            pp.VOLUME_UOM_CODE,
+            pp.VOLUME_QUANTITY,
+            pp.DEAL_PRICE_VALUATION_CODE,
+            pp.FIXED_PRICE,
+            pp.FIXED_PRICE_CURRENCY_CODE as FIXED_PRICE_CURRENCY_CODE,
+            pp.FIXED_PRICE_UOM_CODE as FIXED_PRICE_UOM_CODE,
+            pp.MARKET_VALUATION_CODE,
+            pp.DEAL_ID,
+            bd.BUY_SELL_CODE,
+            bd.TICKET_NO,
+            fixedFxRf.MARKET_VALUE as FIXED_FX_VALUE,
+            dealPRf.MARKET_VALUE as DEAL_PRICE_RF_VALUE,
+            dealPriceIndex.CURRENCY_CODE as DEAL_PRICE_CURRENCY_CODE,
+            dealPriceIndex.UNIT_OF_MEASURE_CODE AS DEAL_PRICE_UOM_CODE,
+            dealFxPRf.MARKET_VALUE as DEAL_PRICE_FX_VALUE,
+            marketPRf.MARKET_VALUE as MARKET_PRICE_RF_VALUE,
+            marketIndex.CURRENCY_CODE as MARKET_INDEX_CURRENCY_CODE,
+            marketIndex.UNIT_OF_MEASURE_CODE as MARKET_INDEX_UOM_CODE,
+            marketFxRf.MARKET_VALUE as MARKET_PRICE_FX_VALUE,
+            pp.COST_1_NAME,
+            pp.COST_1_AMOUNT,
+            pp.COST_2_NAME,
+            pp.COST_2_AMOUNT,
+            pp.COST_3_NAME,
+            pp.COST_3_AMOUNT,
+            pp.COST_4_NAME,
+            pp.COST_4_AMOUNT,
+            pp.COST_5_NAME,
+            pp.COST_5_AMOUNT
+            FROM
+            DEAL_POSITION pp
+            INNER JOIN BASE_DEAL bd ON
+                bd.ENTITY_ID = pp.DEAL_ID
+            LEFT OUTER JOIN FX_RISK_FACTOR fixedFxRf ON
+                fixedFxRf.ENTITY_ID = pp.FIXED_PRICE_FX_RISK_FACTOR_ID
+            LEFT OUTER JOIN PRICE_RISK_FACTOR dealPRf ON
+                dealPRf.ENTITY_ID = pp.DEAL_PRICE_RISK_FACTOR_ID
+            LEFT OUTER JOIN PRICE_INDEX dealPriceIndex ON
+                dealPriceIndex.ENTITY_ID = dealPRf.PRICE_INDEX_ID
+            LEFT OUTER JOIN FX_RISK_FACTOR dealFxPRf ON
+                dealFxPRf.ENTITY_ID = pp.DEAL_PRICE_FX_RISK_FACTOR_ID
+            INNER JOIN PRICE_RISK_FACTOR marketPRf ON
+                marketPRf.ENTITY_ID = pp.MKT_PRICE_RISK_FACTOR_ID
+            LEFT OUTER JOIN PRICE_INDEX marketIndex ON
+                marketIndex.ENTITY_ID = marketPRf.PRICE_INDEX_ID
+            LEFT OUTER JOIN FX_RISK_FACTOR marketFxRf ON
+                marketFxRf.ENTITY_ID = pp.MKT_PRICE_FX_RISK_FACTOR_ID
+        </createView>
+    </changeSet>
+
+
+</databaseChangeLog>
