@@ -15,12 +15,8 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.service;
 
-import com.onbelay.core.entity.enums.EntityState;
-import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
@@ -28,15 +24,9 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
-import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
+import com.onbelay.dealcapture.pricing.model.*;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import com.onbelay.shared.enums.BuySellCode;
-import com.onbelay.shared.enums.CommodityCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
-import org.junit.jupiter.api.Test;
+import com.onbelay.shared.enums.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -49,12 +39,25 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 	
 	protected CompanyRole companyRole;
 	protected CounterpartyRole counterpartyRole;
-	protected PriceIndex priceIndex;
+	protected PriceIndex marketIndex;
 
 	protected PriceIndex dealPriceIndex;
 
-	protected LocalDate startDate = LocalDate.of(2023, 1, 1);
-	protected LocalDate endDate = LocalDate.of(2023, 12, 31);
+
+	protected FxIndex fxIndex;
+
+
+	protected PhysicalDeal fixedPriceSellDeal;
+	protected PhysicalDeal indexSellDeal;
+	protected PhysicalDeal indexPlusSellDeal;
+
+	protected PhysicalDeal fixedPriceBuyDeal;
+	protected PhysicalDeal indexBuyDeal;
+	protected PhysicalDeal indexPlusBuyDeal;
+
+	protected LocalDate startDate = LocalDate.of(2024, 1, 1);
+	protected LocalDate endDate = LocalDate.of(2024, 1, 31);
+
 
 	@Autowired
 	protected DealRepository dealRepository;
@@ -68,16 +71,156 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		
-		priceIndex = PriceIndexFixture.createPriceIndex(
-				"AECO", 
+		marketIndex = PriceIndexFixture.createPriceIndex(
+				"AECO",
+				FrequencyCode.DAILY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
 				PricingLocationFixture.createPricingLocation(
 						"west"));
+
 		dealPriceIndex = PriceIndexFixture.createPriceIndex(
 				"DDFF",
+				FrequencyCode.DAILY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
 				PricingLocationFixture.createPricingLocation(
 						"east"));
 
+		fxIndex = FxIndexFixture.createFxIndex(
+				FrequencyCode.MONTHLY,
+				CurrencyCode.CAD,
+				CurrencyCode.USD);
+
+
 		flush();
+
+		PhysicalDealSnapshot snapshot = DealFixture.createIndexPhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.SELL,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"indexSellDeal",
+				companyRole,
+				counterpartyRole,
+				marketIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				dealPriceIndex);
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		indexSellDeal = PhysicalDeal.create(snapshot);
+
+		snapshot = DealFixture.createIndexPhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"indexBuyDeal",
+				companyRole,
+				counterpartyRole,
+				marketIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				dealPriceIndex);
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		indexBuyDeal = PhysicalDeal.create(snapshot);
+
+
+		snapshot = DealFixture.createPhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.SELL,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"fixedSellDeal",
+				companyRole,
+				counterpartyRole,
+				marketIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				new Price(
+						BigDecimal.ONE,
+						CurrencyCode.CAD,
+						UnitOfMeasureCode.GJ));
+
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		fixedPriceSellDeal = PhysicalDeal.create(snapshot);
+
+
+		snapshot = DealFixture.createPhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"fixedBuyDeal",
+				companyRole,
+				counterpartyRole,
+				marketIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				new Price(
+						BigDecimal.ONE,
+						CurrencyCode.CAD,
+						UnitOfMeasureCode.GJ));
+
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		fixedPriceBuyDeal = PhysicalDeal.create(snapshot);
+
+
+		snapshot = DealFixture.createIndexPlusPhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.SELL,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"indexPlusSellDeal",
+				companyRole,
+				counterpartyRole,
+				marketIndex,
+				new Price(
+						BigDecimal.ONE,
+						CurrencyCode.CAD,
+						UnitOfMeasureCode.GJ),
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				dealPriceIndex);
+
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		indexPlusSellDeal = PhysicalDeal.create(snapshot);
+
+		snapshot = DealFixture.createIndexPlusPhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"indexPlusBuyDeal",
+				companyRole,
+				counterpartyRole,
+				marketIndex,
+				new Price(
+						BigDecimal.ONE,
+						CurrencyCode.CAD,
+						UnitOfMeasureCode.GJ),
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				dealPriceIndex);
+
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		indexPlusBuyDeal = PhysicalDeal.create(snapshot);
+		flush();
+		clearCache();
+
+
 	}
 
 

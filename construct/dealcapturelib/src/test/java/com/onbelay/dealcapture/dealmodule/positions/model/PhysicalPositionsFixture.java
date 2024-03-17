@@ -6,6 +6,7 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapsho
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
+import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
@@ -35,6 +36,9 @@ public class PhysicalPositionsFixture {
             snapshot.getDealPositionDetail().setStartDate(current);
             snapshot.getDealPositionDetail().setEndDate(current);
             snapshot.getDealPositionDetail().setCurrencyCode(deal.getDealDetail().getReportingCurrencyCode());
+            snapshot.getSettlementDetail().setIsSettlementPosition(true);
+            snapshot.getSettlementDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+
             snapshot.getDealPositionDetail().setVolumeQuantityValue(deal.getDealDetail().getVolumeQuantity());
             snapshot.getDealPositionDetail().setVolumeUnitOfMeasure(UnitOfMeasureCode.GJ);
             snapshot.getDetail().setFixedPriceValue(deal.getDetail().getFixedPriceValue());

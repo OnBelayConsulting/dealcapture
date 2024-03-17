@@ -53,21 +53,20 @@ public class PhysicalDealDetail  {
 		if (dealPriceValuationCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUATION.getCode());
 
-		if (getDealPriceValuationCode() == ValuationCode.FIXED) {
-			if (fixedPriceValue == null)
-				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+		if (fixedPriceValue != null) {
 
 			if (fixedPriceCurrencyCodeValue == null)
-				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_CURRENCY.getCode());
+				throw new OBValidationException(DealErrorCode.MISSED_FIXED_PRICE_CURRENCY.getCode());
 
 			if (fixedPriceUnitOfMeasureCodeValue == null)
-				throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_UOM.getCode());
+				throw new OBValidationException(DealErrorCode.MISSING_FIXED_PRICE_UOM.getCode());
 		}
 
 		if (marketValuationCodeValue == null) {
 			throw new OBValidationException(DealErrorCode.MISSING_MARKET_PRICE_VALUATION.getCode());
 		}
-		
+
+
 	}
 	
 	@Transient

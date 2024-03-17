@@ -59,8 +59,9 @@ import java.util.List;
 			   + "          deal.dealTypeValue, "
 			   + "          deal.dealDetail.buySellCodeValue,"
 			   + "          deal.dealDetail.reportingCurrencyCodeValue," +
-			   "		 deal.dealDetail.volumeQuantity," +
-			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue)"
+			   "		    deal.dealDetail.volumeQuantity," +
+			   "            deal.dealDetail.volumeUnitOfMeasureCodeValue," +
+			   "            deal.dealDetail.settlementCurrencyCodeValue)"
 			   + "   FROM BaseDeal deal " +
 			   " WHERE deal.dealDetail.positionGenerationIdentifier = :identifier " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),
@@ -74,8 +75,9 @@ import java.util.List;
 			   + "          deal.dealTypeValue, "
 			   + "          deal.dealDetail.buySellCodeValue,"
 			   + "          deal.dealDetail.reportingCurrencyCodeValue," +
-			   "		 deal.dealDetail.volumeQuantity," +
-			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue)"
+			   "		    deal.dealDetail.volumeQuantity," +
+			   "            deal.dealDetail.volumeUnitOfMeasureCodeValue," +
+			   "            deal.dealDetail.settlementCurrencyCodeValue)"
        		+ "   FROM BaseDeal deal " +
        	     "   WHERE deal.id = :dealId"),
     @NamedQuery(

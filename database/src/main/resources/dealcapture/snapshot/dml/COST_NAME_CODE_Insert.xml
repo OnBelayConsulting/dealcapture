@@ -9,13 +9,43 @@
 >
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
         <insert tableName='COST_NAME_CODE'>
-            <column name='CODE_ID' value='Facility'/>
-            <column name='CODE_LABEL' value='Facility Fee'/>
+            <column name='CODE_ID' value='Facility Fee'/>
+            <column name='CODE_LABEL' value='Facility PerUnit Fee'/>
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
         <insert tableName='COST_NAME_CODE'>
-            <column name='CODE_ID' value='Brokerage'/>
+            <column name='CODE_ID' value='Facility Flat Fee'/>
+            <column name='CODE_LABEL' value='Facility Flat Fee'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+        <insert tableName='COST_NAME_CODE'>
+            <column name='CODE_ID' value='Transportation Fee'/>
+            <column name='CODE_LABEL' value='Transportation Fee'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+        <insert tableName='COST_NAME_CODE'>
+            <column name='CODE_ID' value='Trans Flat Fee'/>
+            <column name='CODE_LABEL' value='Transportation Flat Fee'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+        <insert tableName='COST_NAME_CODE'>
+            <column name='CODE_ID' value='Brokerage Fee'/>
             <column name='CODE_LABEL' value='Brokerage Fee'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+        <insert tableName='COST_NAME_CODE'>
+            <column name='CODE_ID' value='Brokerage Flat Fee'/>
+            <column name='CODE_LABEL' value='Brokerage Flat Fee'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+        <insert tableName='COST_NAME_CODE'>
+            <column name='CODE_ID' value='Total Fixed Cost'/>
+            <column name='CODE_LABEL' value='Total Fixed Cost'/>
+            <column name='DISPLAY_ORDER_NO' value='100'/>
+        </insert>
+        <insert tableName='COST_NAME_CODE'>
+            <column name='CODE_ID' value='Total Per Unit Cost'/>
+            <column name='CODE_LABEL' value='Total Per Unit Cost'/>
             <column name='DISPLAY_ORDER_NO' value='20'/>
         </insert>
     </changeSet>

@@ -71,11 +71,11 @@ public class DealPositionGeneratorFactory {
                  dealSummary,
                  riskFactorManager);
 
-        if (costMap.containsKey(dealSummary.getDealId()))
-            generator.withCosts(costMap.get(dealSummary.getDealId()));
+        if (costMap.containsKey(dealSummary.getDealId().getId()))
+            generator.withCosts(costMap.get(dealSummary.getDealId().getId()));
 
-        if (dealDayMap.containsKey(dealSummary.getDealId()))
-            generator.withDealDays(dealDayMap.get(dealSummary.getDealId()));
+        if (dealDayMap.containsKey(dealSummary.getDealId().getId()))
+            generator.withDealDays(dealDayMap.get(dealSummary.getDealId().getId()));
 
         return generator;
     }

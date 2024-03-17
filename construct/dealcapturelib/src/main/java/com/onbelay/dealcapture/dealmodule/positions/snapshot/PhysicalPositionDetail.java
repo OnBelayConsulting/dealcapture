@@ -88,11 +88,11 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
     @Transient
     @JsonIgnore
-    public CurrencyCode getDealPriceCurrencyCode() {
+    public CurrencyCode getFixedPriceCurrencyCode() {
         return CurrencyCode.lookUp(fixedPriceCurrencyCodeValue);
     }
 
-    public void setDealPriceCurrencyCode(CurrencyCode code) {
+    public void setFixedPriceCurrencyCode(CurrencyCode code) {
         this.fixedPriceCurrencyCodeValue = code.getCode();
     }
 
@@ -107,11 +107,11 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
     @Transient
     @JsonIgnore
-    public UnitOfMeasureCode getDealPriceUnitOfMeasure() {
+    public UnitOfMeasureCode getFixedPriceUnitOfMeasure() {
         return UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue);
     }
 
-    public void setDealPriceUnitOfMeasure(UnitOfMeasureCode code) {
+    public void setFixedPriceUnitOfMeasure(UnitOfMeasureCode code) {
         this.fixedPriceUnitOfMeasureCodeValue = code.getCode();
     }
 
@@ -126,10 +126,10 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
     @Transient
     @JsonIgnore
-    public Price getDealPrice() {
+    public Price getFixedPrice() {
         return new Price(
                 fixedPriceValue,
-                getDealPriceCurrencyCode(),
-                getDealPriceUnitOfMeasure());
+                getFixedPriceCurrencyCode(),
+                getFixedPriceUnitOfMeasure());
     }
 }

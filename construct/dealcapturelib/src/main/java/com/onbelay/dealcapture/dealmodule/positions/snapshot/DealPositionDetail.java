@@ -30,8 +30,6 @@ public class DealPositionDetail extends AbstractDetail {
 
     private String currencyCodeValue;
 
-    private BigDecimal markToMarketValuation;
-
     private String errorCode;
 
 
@@ -62,9 +60,6 @@ public class DealPositionDetail extends AbstractDetail {
 
         if (copy.frequencyCodeValue != null)
             this.frequencyCodeValue = copy.frequencyCodeValue;
-
-        if (copy.markToMarketValuation != null)
-            this.markToMarketValuation = copy.markToMarketValuation;
 
         if (copy.currencyCodeValue != null)
             this.currencyCodeValue = copy.currencyCodeValue;
@@ -176,15 +171,6 @@ public class DealPositionDetail extends AbstractDetail {
 
     public void setFrequencyCodeValue(String frequencyCodeValue) {
         this.frequencyCodeValue = frequencyCodeValue;
-    }
-
-    @Column(name = "MTM_VALUATION")
-    public BigDecimal getMarkToMarketValuation() {
-        return markToMarketValuation;
-    }
-
-    public void setMarkToMarketValuation(BigDecimal markToMarketValuation) {
-        this.markToMarketValuation = markToMarketValuation;
     }
 
     @Column(name = "ERROR_CODE")

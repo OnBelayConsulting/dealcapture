@@ -39,10 +39,7 @@ import jakarta.persistence.*;
 			   "		dealCost.id, " +
 			   "		dealCost.deal.id, " +
 			   "		dealCost.detail.costNameCodeValue," +
-			   "		dealCost.detail.costTypeCodeValue," +
-			   "		dealCost.detail.costValue," +
-			   "		dealCost.detail.currencyCodeValue," +
-			   "		dealCost.detail.unitOfMeasureCodeValue) " +
+			   "		dealCost.detail.costValue) " +
 			   "  FROM DealCost dealCost " +
        		 "   WHERE dealCost.deal.id in (:dealIds) " +
        	     "ORDER BY dealCost.deal.id"),

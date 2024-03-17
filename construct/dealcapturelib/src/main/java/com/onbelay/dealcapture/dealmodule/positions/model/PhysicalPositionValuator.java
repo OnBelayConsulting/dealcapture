@@ -3,6 +3,7 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 import com.onbelay.dealcapture.busmath.model.Amount;
 import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
@@ -11,6 +12,7 @@ import com.onbelay.shared.enums.BuySellCode;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,8 +23,13 @@ public class PhysicalPositionValuator {
     public PhysicalPositionValuator(DealPositionView report) {
         this.report = report;
     }
+
     public PositionValuationResult valuePosition(LocalDateTime currentDateTime) {
-        Price dealPrice =  switch (report.getDetail().getDealPriceValuationCode()) {
+        PositionValuationResult valuationResult = new PositionValuationResult(
+                report.getId(),
+                currentDateTime);
+
+        Price dealPrice = switch (report.getDetail().getDealPriceValuationCode()) {
 
             case FIXED -> getFixedPrice();
 
@@ -32,7 +39,40 @@ public class PhysicalPositionValuator {
 
         };
 
+        if (dealPrice.isInError())
+            valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MTM_DEAL_PRICE);
+
+        final BigDecimal totalCosts;
+        if (report.hasCosts())
+            totalCosts = calculateCosts();
+        else
+            totalCosts = BigDecimal.ZERO;
+
+        valuationResult.getSettlementDetail().setCostSettlementAmount(totalCosts);
+
+        setMarkToMarket(
+                dealPrice,
+                totalCosts,
+                valuationResult);
+
+        setSettlementAmounts(
+                dealPrice,
+                totalCosts,
+                valuationResult);
+
+        return valuationResult;
+    }
+
+    private void setMarkToMarket(
+            Price dealPrice,
+            BigDecimal totalCosts,
+            PositionValuationResult valuationResult) {
+
         Price marketPrice = getMarketIndexPrice();
+        if (marketPrice.isInError()) {
+            valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MISSING_MARKET_PRICE);
+        }
+
         if (dealPrice.isInError() == false && marketPrice.isInError() == false) {
             dealPrice = dealPrice.roundPrice();
             marketPrice = marketPrice.roundPrice();
@@ -44,22 +84,64 @@ public class PhysicalPositionValuator {
             Amount amount = netPrice.multiply(report.getDetail().getQuantity());
 
             if (amount.isInError()) {
-                return new PositionValuationResult(
-                        report.getId(),
-                        currentDateTime,
-                        amount.getError().getCode());
+                valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MTM_CALCULATION);
             } else {
-                return new PositionValuationResult(
-                        report.getId(),
-                        currentDateTime,
-                        amount.getValue());
+                BigDecimal amountBigDecimal = amount.getValue().add(totalCosts);
+                valuationResult.getSettlementDetail().setMarkToMarketValuation(amountBigDecimal);
             }
-        } else {
-            return new PositionValuationResult(
-                    report.getId(),
-                    currentDateTime,
-                    PositionErrorCode.ERROR_VALUE_POSITION_MISSING_PRICES.getCode());
+
         }
+    }
+
+    private BigDecimal calculateCosts() {
+        BigDecimal totalCosts = BigDecimal.ZERO;
+        for (int i = 1; i < 6; i++) {
+            BigDecimal cost = report.getCostPositionDetail().getCostAmount(i);
+            if (cost != null) {
+                CostTypeCode costTypeCode = report.getCostPositionDetail().getCostTypeCode(i);
+
+                if (report.getDetail().getCurrencyCode() != report.getDetail().getSettlementCurrencyCode())
+                    cost.multiply(report.getDetail().getCostFxRateValue(), MathContext.DECIMAL128);
+
+                if (costTypeCode == CostTypeCode.PER_UNIT) {
+
+                    if (report.getDetail().getVolumeUnitOfMeasure() != report.getDetail().getDealUnitOfMeasureCode()) {
+                        Conversion conversion = UnitOfMeasureConverter.findConversion(
+                                report.getDetail().getVolumeUnitOfMeasure(),
+                                report.getDetail().getDealUnitOfMeasureCode());
+                        cost = cost.multiply(conversion.getValue(), MathContext.DECIMAL128);
+                        cost = cost.setScale(3, RoundingMode.HALF_UP);
+
+                        cost = cost.multiply(report.getDetail().getVolumeQuantityValue(), MathContext.DECIMAL128);
+                    }
+                }
+                totalCosts = totalCosts.add(cost, MathContext.DECIMAL128);
+
+            }
+        }
+       return totalCosts.setScale(3, RoundingMode.HALF_UP);
+    }
+
+    private void setSettlementAmounts(
+            Price dealPrice,
+            BigDecimal totalCosts,
+            PositionValuationResult valuationResult) {
+
+        if (dealPrice.isInError()) {
+            valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_SET_DEAL_PRICE);
+            return;
+        }
+
+        Amount settlementAmount = dealPrice.multiply(report.getDetail().getQuantity());
+        BigDecimal settlementBigDecimal = settlementAmount.getValue();
+
+        if (report.getDetail().getBuySellCode() == BuySellCode.BUY) {
+            settlementBigDecimal = settlementBigDecimal.negate();
+        }
+        BigDecimal totalSettlementAmount = settlementBigDecimal.add(totalCosts, MathContext.DECIMAL128);
+        totalSettlementAmount = totalSettlementAmount.setScale(3, RoundingMode.HALF_UP);
+        valuationResult.getSettlementDetail().setSettlementAmount(settlementBigDecimal);
+        valuationResult.getSettlementDetail().setTotalSettlementAmount(totalSettlementAmount);
     }
 
     private Price getMarketIndexPrice() {
@@ -106,7 +188,9 @@ public class PhysicalPositionValuator {
                 dealPrice = dealPrice.multiply(inverted);
             }
         }
-
+        if (dealPrice.isInError()) {
+          return dealPrice;
+        }
         if (report.getDetail().getVolumeUnitOfMeasure() != dealPrice.getUnitOfMeasure()) {
             Conversion conversion = UnitOfMeasureConverter.findConversion(
                     report.getDetail().getVolumeUnitOfMeasure(),

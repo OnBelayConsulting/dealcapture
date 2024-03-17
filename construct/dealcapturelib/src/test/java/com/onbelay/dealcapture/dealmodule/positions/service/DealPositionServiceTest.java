@@ -1,42 +1,31 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
-import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
-import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.*;
+import com.onbelay.dealcapture.pricing.model.FxIndex;
+import com.onbelay.dealcapture.pricing.model.FxIndexFixture;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DealPositionServiceTest extends DealCaptureSpringTestCase {
+public class DealPositionServiceTest extends DealServiceTestCase {
     private static final Logger logger = LogManager.getLogger();
 
-    @Autowired
-    private DealRepositoryBean dealRepository;
 
     @Autowired
     private DealPositionRepository dealPositionRepository;
@@ -44,16 +33,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
     @Autowired
     private DealPositionService dealPositionService;
 
-    private PricingLocation location;
-    private PriceIndex priceIndex;
     private PriceRiskFactor priceRiskFactor;
-
-    private CompanyRole companyRole;
-    private CounterpartyRole counterpartyRole;
-
-    private PhysicalDeal physicalDeal;
-
-    private FxIndex fxIndex;
 
     private FxRiskFactor fxRiskFactor;
 
@@ -63,42 +43,11 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
-        counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
-        location = PricingLocationFixture.createPricingLocation("West");
-        fxIndex = FxIndexFixture.createFxIndex(
-                FrequencyCode.MONTHLY,
-                CurrencyCode.CAD,
-                CurrencyCode.USD);
 
         fxRiskFactor = FxRiskFactorFixture.createFxRiskFactor(fxIndex, fromMarketDate);
 
-        priceIndex = PriceIndexFixture.createPriceIndex(
-                "ACEE",
-                FrequencyCode.MONTHLY,
-                CurrencyCode.CAD,
-                UnitOfMeasureCode.GJ,
-                location);
-
-        physicalDeal = DealFixture.createFixedPricePhysicalDeal(
-                CommodityCode.CRUDE,
-                "5566",
-                companyRole,
-                counterpartyRole,
-                priceIndex,
-                fromMarketDate,
-                toMarketDate,
-                BigDecimal.valueOf(100),
-                UnitOfMeasureCode.GJ,
-                CurrencyCode.CAD,
-                new Price(
-                        BigDecimal.ONE,
-                        CurrencyCode.USD,
-                        UnitOfMeasureCode.GJ)
-                );
-
         priceRiskFactor = PriceRiskFactorFixture.createPriceRiskFactor(
-                priceIndex,
+                marketIndex,
                 fromMarketDate);
 
     }
@@ -112,9 +61,9 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
     }
 
     @Test
-    public void createPositions() {
+    public void createPositionsForFixedBuyDeal() {
         List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
-                physicalDeal,
+                fixedPriceBuyDeal,
                 priceRiskFactor,
                 fxRiskFactor);
 
@@ -125,7 +74,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
         flush();
 
         List<DealPositionSnapshot> snapshots1 = dealPositionService.findByDeal(
-                physicalDeal.generateEntityId());
+                fixedPriceBuyDeal.generateEntityId());
 
         assertTrue(snapshots1.size() > 0);
 
@@ -136,7 +85,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
     @Test
     public void fetchDealPositionViews() {
         List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
-                physicalDeal,
+                fixedPriceBuyDeal,
                 priceRiskFactor,
                 fxRiskFactor);
 
@@ -147,7 +96,7 @@ public class DealPositionServiceTest extends DealCaptureSpringTestCase {
         flush();
 
         List<DealPositionView> reports = dealPositionService.findDealPositionViewsByDeal(
-                physicalDeal.generateEntityId());
+                fixedPriceBuyDeal.generateEntityId());
 
         assertTrue(reports.size() > 0);
 

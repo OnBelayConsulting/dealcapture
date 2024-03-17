@@ -1,31 +1,29 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
-import java.math.BigDecimal;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionSettlementDetail;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PositionValuationResult {
+    private static Logger logger = LogManager.getLogger();
+    private static String SUCCESS = "SUCCESS";
 
     private Integer positionId;
     private LocalDateTime currentDateTime;
-    private String errorCode = "SUCCESS";
-    private BigDecimal mtmValue;
+    private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
+    private List<PositionErrorCode> errorCodes = new ArrayList<>();
 
     public PositionValuationResult(
             Integer positionId,
-            LocalDateTime currentDateTime,
-            String errorCode) {
+            LocalDateTime currentDateTime) {
         this.positionId = positionId;
         this.currentDateTime = currentDateTime;
-        this.errorCode = errorCode;
-    }
-
-    public PositionValuationResult(
-            Integer positionId,
-            LocalDateTime currentDateTime,
-            BigDecimal mtmValue) {
-        this.positionId = positionId;
-        this.currentDateTime = currentDateTime;
-        this.mtmValue = mtmValue;
     }
 
     public Integer getPositionId() {
@@ -36,15 +34,36 @@ public class PositionValuationResult {
         return currentDateTime;
     }
 
-    public boolean hasError() {
-        return "SUCCESS".equals(errorCode) == false;
+    public boolean hasErrors() {
+        return errorCodes.isEmpty() == false;
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public String getCompleteErrorCodeMessage() {
+        if (errorCodes.isEmpty())
+            return SUCCESS;
+
+        if (errorCodes.size() > 10) {
+            logger.error("Error message exceeds error message and will be truncated in database.");
+            logger.error(errorCodes.toString());
+            return errorCodes.stream().limit(10).map(c -> c.getCode()).collect(Collectors.joining(","));
+        } else {
+            return errorCodes.stream().map(c -> c.getCode()).collect(Collectors.joining(","));
+        }
     }
 
-    public BigDecimal getMtmValue() {
-        return mtmValue;
+    public PositionSettlementDetail getSettlementDetail() {
+        return settlementDetail;
+    }
+
+    public void setSettlementDetail(PositionSettlementDetail settlementDetail) {
+        this.settlementDetail = settlementDetail;
+    }
+
+    public List<PositionErrorCode> getErrorCodes() {
+        return errorCodes;
+    }
+
+    public void addErrorCode(PositionErrorCode positionErrorCode) {
+        errorCodes.add(positionErrorCode);
     }
 }

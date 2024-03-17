@@ -29,6 +29,7 @@ public class PhysicalDealSummary extends DealSummary {
             String reportingCurrencyCodeValue,
             BigDecimal volumeQuantity,
             String volumeUnitOfMeasureCodeValue,
+            String settlementCurrencyCodeValue,
             String dealPriceValuationCodeValue,
             Integer dealPriceIndexId,
             BigDecimal fixedPriceValue,
@@ -46,7 +47,9 @@ public class PhysicalDealSummary extends DealSummary {
                 buySellCodeValue,
                 reportingCurrencyCodeValue,
                 volumeQuantity,
-                volumeUnitOfMeasureCodeValue);
+                volumeUnitOfMeasureCodeValue,
+                settlementCurrencyCodeValue);
+
         this.DealPriceValuationCode = ValuationCode.lookUp(dealPriceValuationCodeValue);
         this.dealPriceIndexId = dealPriceIndexId;
         this.fixedPriceValue = fixedPriceValue;

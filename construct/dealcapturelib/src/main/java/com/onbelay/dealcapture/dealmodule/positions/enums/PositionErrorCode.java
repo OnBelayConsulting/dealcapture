@@ -19,8 +19,13 @@ import java.util.*;
 
 public enum PositionErrorCode {
 
-    ERROR_VALUE_POSITION_MISSING_PRICES ("DC_PS-E0001", "Error: Position valuation failed. Missing, invalid prices."),
-    ERROR_MISSING_FX_RATE_CONVERSION    ("DC_PS-E0002", "Error: Position valuation for risk factor - missing fx rate conversion."),
+    ERROR_VALUE_POSITION_MISSING_PRICES ("DC_PS-E0001", "Error: Position valuation failed. Missing/Invalid prices."),
+    ERROR_VALUE_MISSING_MARKET_PRICE    ("DC_PS-E0002", "Error: Position valuation failed. Missing/Invalid market price."),
+    ERROR_VALUE_MTM_DEAL_PRICE          ("DC_PS-E0003", "Error: Position valuation failed. Missing/Invalid deal price for MTM."),
+    ERROR_VALUE_MTM_CALCULATION         ("DC_PS-E0005", "Error: Position valuation failed to calculate MtM."),
+    ERROR_VALUE_SET_DEAL_PRICE          ("DC_PS-E0020", "Error: Position valuation failed. Missing/Invalid deal price for settlement."),
+    ERROR_VALUE_SET_CALCULATION         ("DC_PS-E0021", "Error: Position valuation failed to calculate settlement amount"),
+    ERROR_MISSING_FX_RATE_CONVERSION    ("DC_PS-E0022", "Error: Position valuation for risk factor - missing fx rate conversion."),
     MISSING_BASIS_CONTAINER             ("DC_PS-E0100", "Error: Missing basis container in position generation.");
 
     private String code;

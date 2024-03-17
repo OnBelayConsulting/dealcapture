@@ -69,6 +69,11 @@ public class DealPositionView extends AbstractEntity {
         this.detail = detail;
     }
 
+    @Transient
+    public boolean hasCosts() {
+        return costPositionDetail != null;
+    }
+
     @Embedded
     public CostPositionDetail getCostPositionDetail() {
         return costPositionDetail;

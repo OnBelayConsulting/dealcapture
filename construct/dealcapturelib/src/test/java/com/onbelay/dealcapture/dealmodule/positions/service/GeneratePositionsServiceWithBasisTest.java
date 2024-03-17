@@ -91,7 +91,7 @@ public class GeneratePositionsServiceWithBasisTest extends DealCaptureSpringTest
                 location);
 
 
-        physicalDealWithFixedDealPrice = DealFixture.createFixedPricePhysicalDeal(
+        physicalDealWithFixedDealPrice = DealFixture.createPricePhysicalDeal(
                 CommodityCode.CRUDE,
                 "5566",
                 companyRole,

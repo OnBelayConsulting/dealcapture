@@ -1,6 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
@@ -49,17 +51,29 @@ public class CostPositionDetail {
         return costNameGetterMap.get(day).get();
     }
 
+    public CostTypeCode getCostTypeCode(Integer day) {
+        String name = costNameGetterMap.get(day).get();
+        if (name != null)
+            return CostNameCode.lookUp(name).getCostTypeCode();
+        else
+            return null;
+    }
+
     public void setCostName(Integer day, String value) {
         costNameSetterMap.get(day).accept(value);
     }
 
 
     public void copyFrom(CostPositionDetail copy) {
+        if (copy == null)
+            return;
 
         for (int i=0; i < 5; i++) {
             int selector = i+1;
             this.costAmtSetterMap.get(selector).accept(
                     copy.costAmtGetterMap.get(selector).get());
+            this.costNameSetterMap.get(selector).accept(
+                    copy.costNameGetterMap.get(selector).get());
         }
     }
 

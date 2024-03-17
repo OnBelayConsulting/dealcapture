@@ -80,6 +80,16 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             else
                 targetCurrencyCode = physicalDealSummary.getReportingCurrencyCode();
 
+            if (targetCurrencyCode == physicalDealSummary.getSettlementCurrencyCode()) {
+                positionSnapshot.getSettlementDetail().setIsSettlementPosition(true);
+                positionSnapshot.getSettlementDetail().setSettlementCurrencyCode(targetCurrencyCode);
+            }
+
+            setPositionHolders(
+                    targetCurrencyCode,
+                    currentDate,
+                    physicalPositionHolder);
+
             UnitOfMeasureCode targetUnitOfMeasureCode;
             if (context.getUnitOfMeasureCode() != null)
                 targetUnitOfMeasureCode = context.getUnitOfMeasureCode();
@@ -104,8 +114,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(dayQuantity);
             setCosts(
                     positionSnapshot.getCostDetail(),
-                    positionSnapshot.getDealPositionDetail().getStartDate(),
-                    dayQuantity);
+                    positionSnapshot.getDealPositionDetail().getStartDate());
 
             positionSnapshot.getDealPositionDetail().setVolumeUnitOfMeasure(targetUnitOfMeasureCode);
 
@@ -114,6 +123,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             positionSnapshot.getDealPositionDetail().setCreateUpdateDateTime(context.getObservedDateTime());
 
             positionSnapshot.getDealPositionDetail().setCurrencyCode(targetCurrencyCode);
+
 
             // Deal Price
             positionSnapshot.getDetail().setDealPriceValuationCode(physicalDealSummary.getDealPriceValuationCode());
@@ -150,7 +160,8 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) physicalPositionHolder.getDealPositionSnapshot();
 
         // if deal price valuation is fixed or INDEX Plus
-        if (positionSnapshot.getDetail().getDealPriceValuationCode() != ValuationCode.INDEX) {
+        if (positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.FIXED ||
+                positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
 
             // Set fixed deal price
             BigDecimal fixedPrice = null;
@@ -163,9 +174,9 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 positionSnapshot.getDetail().setFixedPriceValue(
                     physicalDealSummary.getFixedPriceValue());
 
-            positionSnapshot.getDetail().setDealPriceUnitOfMeasure(
+            positionSnapshot.getDetail().setFixedPriceUnitOfMeasure(
                     physicalDealSummary.getFixedPriceUnitOfMeasureCode());
-            positionSnapshot.getDetail().setDealPriceCurrencyCode(
+            positionSnapshot.getDetail().setFixedPriceCurrencyCode(
                     physicalDealSummary.getFixedPriceCurrencyCode());
 
 
@@ -176,7 +187,11 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                                 targetCurrencyCode,
                                 currentDate));
             }
-        } else {   // Deal price is index based
+        }
+
+        // deal price is index or index plus
+        if (positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX ||
+                positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
             PriceRiskFactorHolder priceRiskFactorHolder = riskFactorManager.determinePriceRiskFactor(
                     physicalDealSummary.getDealPriceIndexId(),
                     currentDate);
@@ -321,6 +336,11 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             if (physicalPositionHolder.getMarketFxHolder() != null) {
                 positionSnapshot.setMarketPriceFxRiskFactorId(
                         physicalPositionHolder.getMarketFxHolder().getRiskFactor().getFxIndexId());
+            }
+
+            if (physicalPositionHolder.getCostFxHolder() != null) {
+                positionSnapshot.setCostFxRiskFactorId(
+                        physicalPositionHolder.getCostFxHolder().getRiskFactor().getFxIndexId());
             }
 
             for (PriceRiskFactorHolder factorHolder : physicalPositionHolder.getBasisToHubMarketHolders()) {

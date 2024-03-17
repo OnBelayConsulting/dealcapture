@@ -7,7 +7,7 @@
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
         <addUniqueConstraint
-                columnNames='DEAL_ID, COST_NAME_CODE, COST_TYPE_CODE'
+                columnNames='DEAL_ID, COST_NAME_CODE'
                 tableName='DEAL_COST'
                 constraintName='DEAL_COST_UC'/>
 

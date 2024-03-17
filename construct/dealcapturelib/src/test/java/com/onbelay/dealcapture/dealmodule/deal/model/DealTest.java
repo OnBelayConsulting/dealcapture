@@ -51,13 +51,11 @@ public class DealTest extends DealCaptureSpringTestCase {
 		super.setUp();
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
+		flush();
 	}
 
 	@Test
 	public void testCreateDeal() {
-		
-		
-		flush();
 
 		PhysicalDealSnapshot snapshot = new PhysicalDealSnapshot();
 		snapshot.setCompanyRoleId(companyRole.generateEntityId());
@@ -69,14 +67,17 @@ public class DealTest extends DealCaptureSpringTestCase {
 				BuySellCode.BUY,
 				"deal-12n",
 				LocalDate.of(2019, 1, 1),
-				LocalDate.of(2019, 1, 1),
+				LocalDate.of(2019, 1, 31),
 				BigDecimal.valueOf(34.78),
 				UnitOfMeasureCode.GJ,
 				CurrencyCode.USD);
 
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
+		snapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.CAD);
+
 		snapshot.getDetail().setFixedPriceValue(BigDecimal.valueOf(1.55));
 		snapshot.getDetail().setFixedPriceCurrencyCode(CurrencyCode.CAD);
-		snapshot.getDetail().setFixedPriceUnitOfMeasure(UnitOfMeasureCode.GJ);
+		snapshot.getDetail().setFixedPriceUnitOfMeasure(UnitOfMeasureCode.MMBTU);
 
 		PhysicalDeal deal = PhysicalDeal.create(snapshot);
 
@@ -89,6 +90,24 @@ public class DealTest extends DealCaptureSpringTestCase {
 		PhysicalDeal created = (PhysicalDeal) deals.get(0);
 		
 		assertTrue(created.getId().longValue() > 0);
+
+		assertEquals(DealStatusCode.PENDING, created.getDealDetail().getDealStatus());
+
+		assertEquals(companyRole.getId(), created.getCompanyRole().getId());
+		assertEquals(counterpartyRole.getId(), created.getCounterpartyRole().getId());
+		assertEquals(LocalDate.of(2019, 1, 1), created.getDealDetail().getStartDate());
+		assertEquals(LocalDate.of(2019, 1, 31), created.getDealDetail().getEndDate());
+
+		assertEquals(0, BigDecimal.valueOf(34.78).compareTo(created.getDealDetail().getVolumeQuantity()));
+
+		assertEquals(CurrencyCode.USD, created.getDealDetail().getSettlementCurrencyCode());
+		assertEquals(CurrencyCode.CAD, created.getDealDetail().getReportingCurrencyCode());
+
+		assertEquals(UnitOfMeasureCode.GJ, created.getDealDetail().getVolumeUnitOfMeasure());
+
+		assertEquals(0, BigDecimal.valueOf(1.55).compareTo(created.getDetail().getFixedPriceValue()));
+		assertEquals(UnitOfMeasureCode.MMBTU, created.getDetail().getFixedPriceUnitOfMeasure());
+		assertEquals(CurrencyCode.CAD, created.getDetail().getFixedPriceCurrencyCode());
 	}
 
 	private void setDealAttributes(
@@ -112,41 +131,5 @@ public class DealTest extends DealCaptureSpringTestCase {
 		detail.setVolumeUnitOfMeasure(unitOfMeasureCode);
 
 	}
-	
-	public void createDealFromSnapshot() {
-		
-		flush();
 
-		
-		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
-		
-		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
-		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
-
-		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.PENDING);
-		dealSnapshot.getDealDetail().setStartDate(LocalDate.of(2019, 1, 1));
-		dealSnapshot.getDealDetail().setEndDate(LocalDate.of(2019, 12, 31));
-		dealSnapshot.getDealDetail().setTicketNo("myTicket");
-		
-		dealSnapshot.getDealDetail().setVolume(
-				new Quantity(
-						BigDecimal.valueOf(34.78),
-						UnitOfMeasureCode.GJ));
-		
-		dealSnapshot.getDetail().setFixedPrice(
-				new Price(
-						BigDecimal.valueOf(1.55),
-						CurrencyCode.CAD,
-						UnitOfMeasureCode.GJ));
-		
-		PhysicalDeal physicalDeal = PhysicalDeal.create(dealSnapshot);
-		
-		clearCache();
-		
-		List<BaseDeal> deals = dealRepository.fetchAllDeals();
-		assertEquals(1, deals.size());
-		
-		PhysicalDeal created = (PhysicalDeal) deals.get(0);
-	}
-	
 }

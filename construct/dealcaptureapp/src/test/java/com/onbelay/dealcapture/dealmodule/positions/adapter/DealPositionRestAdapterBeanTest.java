@@ -109,7 +109,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                 toMarketDate,
                 LocalDateTime.of(2023, 10, 1, 0, 0));
 
-        physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+        physicalDeal = DealFixture.createPricePhysicalDeal(
                 CommodityCode.CRUDE,
                 "5566",
                 companyRole,

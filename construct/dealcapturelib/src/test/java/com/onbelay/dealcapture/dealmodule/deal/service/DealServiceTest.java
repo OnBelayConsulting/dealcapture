@@ -17,44 +17,45 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
-import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DealServiceTest extends DealServiceTestCase {
 
+
+	@Override
+	public void setUp() {
+		super.setUp();
+
+	}
+
 	@Test
 	public void testUpdatePhysicalDeal() {
-		PhysicalDeal physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+		PhysicalDeal physicalDeal = DealFixture.createSamplePhysicalDeal(
 				CommodityCode.CRUDE,
 				"myDeal", 
 				companyRole, 
 				counterpartyRole,
-                priceIndex);
+				marketIndex);
 		flush();
 		clearCache();
 		
@@ -82,10 +83,40 @@ public class DealServiceTest extends DealServiceTestCase {
 	}
 
 	@Test
+	public void fetchDealSummariesFixedPriceDeal() {
+
+		List<PhysicalDealSummary> summaries = dealService.findPhysicalDealSummariesByIds(List.of(fixedPriceSellDeal.getId()));
+		assertEquals(1, summaries.size());
+		PhysicalDealSummary summary = summaries.get(0);
+
+		assertNotNull(summary.getDealId());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getBuySell(), summary.getBuySellCode());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getTicketNo(), summary.getTicketNo());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), summary.getStartDate());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getEndDate(), summary.getEndDate());
+		assertEquals(0, fixedPriceSellDeal.getDealDetail().getVolumeQuantity().compareTo(summary.getVolumeQuantity()));
+
+		assertEquals(DealTypeCode.PHYSICAL_DEAL, summary.getDealTypeCode());
+		assertEquals(CurrencyCode.CAD, summary.getSettlementCurrencyCode());
+		assertEquals(CurrencyCode.CAD, summary.getReportingCurrencyCode());
+		assertEquals(UnitOfMeasureCode.GJ, summary.getVolumeUnitOfMeasureCode());
+
+		assertEquals(ValuationCode.FIXED, summary.getDealPriceValuationCode());
+		assertEquals(0, BigDecimal.ONE.compareTo(summary.getFixedPriceValue()));
+		assertEquals(UnitOfMeasureCode.GJ, summary.getFixedPriceUnitOfMeasureCode());
+		assertEquals(CurrencyCode.CAD, summary.getFixedPriceCurrencyCode());
+		assertNull(summary.getDealPriceIndexId());
+
+		assertEquals(ValuationCode.INDEX, summary.getMarketValuationCode());
+		assertEquals(marketIndex.getId(), summary.getMarketIndexId());
+	}
+
+	@Test
 	public void testCreateFixedPriceMarketIndexPhysicalDeal() {
 
-		PhysicalDealSnapshot dealSnapshot = DealFixture.createFixedPriceMarketIndexPhysicalDealSnapshot(
+		PhysicalDealSnapshot dealSnapshot = DealFixture.createPhysicalDealSnapshot(
 				CommodityCode.CRUDE,
+				BuySellCode.SELL,
 				startDate,
 				endDate,
 				DealStatusCode.VERIFIED,
@@ -93,7 +124,9 @@ public class DealServiceTest extends DealServiceTestCase {
 				"mydeal",
 				companyRole, 
 				counterpartyRole,
-                priceIndex,
+				marketIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
 				new Price(
 						BigDecimal.ONE,
 						CurrencyCode.USD,
@@ -110,7 +143,7 @@ public class DealServiceTest extends DealServiceTestCase {
 		assertEquals(BuySellCode.SELL, physicalDeal.getDealDetail().getBuySell());
 		assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getReportingCurrencyCode());
 		assertEquals(DealStatusCode.VERIFIED, physicalDeal.getDealDetail().getDealStatus());
-		assertEquals(priceIndex.getId(), physicalDeal.getMarketPriceIndex().getId());
+		assertEquals(marketIndex.getId(), physicalDeal.getMarketPriceIndex().getId());
 	}
 
 	@Test
@@ -123,12 +156,13 @@ public class DealServiceTest extends DealServiceTestCase {
 
 		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
 		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
+		dealSnapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
 		dealSnapshot.getDealDetail().setStartDate(startDate);
 		dealSnapshot.getDealDetail().setEndDate(endDate);
 		dealSnapshot.getDealDetail().setTicketNo("GHT");
 
-		dealSnapshot.setMarketPriceIndexId(priceIndex.generateEntityId());
+		dealSnapshot.setMarketPriceIndexId(marketIndex.generateEntityId());
 		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
 
 		dealSnapshot.getDealDetail().setVolume(
@@ -147,7 +181,7 @@ public class DealServiceTest extends DealServiceTestCase {
 	}
 
 	@Test
-	public void testCreateIndexPlusPriceMarketIndexPhysicalDeal() {
+	public void testCreateIndexPhysicalDealWithFixedPriceFail() {
 
 		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
 
@@ -161,14 +195,14 @@ public class DealServiceTest extends DealServiceTestCase {
 		dealSnapshot.getDealDetail().setEndDate(endDate);
 		dealSnapshot.getDealDetail().setTicketNo("GHT");
 
-		dealSnapshot.setMarketPriceIndexId(priceIndex.generateEntityId());
+		dealSnapshot.setMarketPriceIndexId(marketIndex.generateEntityId());
 
 		dealSnapshot.getDealDetail().setVolume(
 				new Quantity(
 						BigDecimal.valueOf(34.78),
 						UnitOfMeasureCode.GJ));
 
-		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX_PLUS);
+		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
 		dealSnapshot.getDetail().setFixedPrice(
 				new Price(
@@ -178,9 +212,14 @@ public class DealServiceTest extends DealServiceTestCase {
 
 		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
 
-		TransactionResult result  = dealService.save(dealSnapshot);
-		flush();
-		clearCache();
+		try {
+			dealService.save(dealSnapshot);
+			fail("Should have thrown exception");
+		} catch (OBValidationException e) {
+			assertEquals(DealErrorCode.INVALID_FIXED_PRICE_VALUE.getCode(), e.getErrorCode());
+			return;
+		}
+		fail("Should have thrown ob exception");
 	}
 
 }

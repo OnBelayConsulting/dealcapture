@@ -39,15 +39,22 @@ public enum DealErrorCode {
 
     MISSING_DEAL_PRICE_VALUATION     ("DC_DL-E0200", "Error: Missing Deal Price Valuation Code."),
     MISSING_MARKET_PRICE_VALUATION   ("DC_DL-E0201", "Error: Missing Market Price Valuation Code."),
+    INVALID_DEAL_PRICE_VALUATION     ("DC_DL-E0202", "Error: Invalid Deal Price Valuation Code(Fixed or Index only)."),
+    INVALID_MARKET_PRICE_VALUATION   ("DC_DL-E0203", "Error: Invalid Market Price Valuation Code(Index or Index Plus only."),
 
     INVALID_DEAL_PRICE_INDEX         ("DC_DL-E0300", "Error: Invalid deal price index.Deal is fixed."),
     MISSING_DEAL_PRICE_INDEX         ("DC_DL-E0301", "Error: Missing deal price index.Deal is Indexed."),
     INVALID_DEAL_PRICE_VALUE   		 ("DC_DL-E0302", "Error: Invalid deal price value"),
     MISSING_DEAL_PRICE_VALUE   		 ("DC_DL-E0303", "Error: Missing deal price value"),
 
+    INVALID_FIXED_PRICE_VALUE  		 ("DC_DL-E0320", "Error: Invalid fixed price value. Valuation is Index."),
+    MISSING_FIXED_PRICE_VALUE  		 ("DC_DL-E0321", "Error: Missing fixed price value, Valuation is Index plus"),
+
+
     MISSING_MARKET_INDEX      		 ("DC_DL-E0501", "Error: Missing market index"),
-    MISSING_DEAL_PRICE_CURRENCY		 ("DC_DL-E0503", "Error: Missing deal price currency."),
-    MISSING_DEAL_PRICE_UOM		     ("DC_DL-E0504", "Error: Missing deal price unit of measure."),
+
+    MISSED_FIXED_PRICE_CURRENCY      ("DC_DL-E0550", "Error: Fixed price is set and currency is missing."),
+    MISSING_FIXED_PRICE_UOM          ("DC_DL-E0551", "Error: Fixed price is set and unit of measure is missing."),
 
     MISSING_DEAL_COST_TYPE		     ("DC_DL-E0600", "Error: Missing deal cost type."),
     MISSING_DEAL_COST_NAME		     ("DC_DL-E0601", "Error: Missing deal cost name."),

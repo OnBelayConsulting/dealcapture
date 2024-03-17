@@ -15,6 +15,12 @@ public class PhysicalPositionAssembler extends DealPositionAssembler implements 
 
         snapshot.getDetail().copyFrom(position.getDetail());
 
+        if (position.getFixedPriceFxRiskFactor() != null)
+            snapshot.setFixedPriceFxRiskFactorId(position.getFixedPriceFxRiskFactor().generateEntityId());
+
+        if (position.getDealPriceRiskFactor() != null)
+            snapshot.setDealPriceRiskFactorId(position.getDealPriceRiskFactor().generateEntityId());
+
         if (position.getDealPriceFxRiskFactor() != null)
             snapshot.setDealPriceFxRiskFactorId(position.getDealPriceFxRiskFactor().generateEntityId());
 

@@ -32,9 +32,9 @@ public abstract class DealPositionSqlMapper {
 
 	protected int getStartingPoint() {
 		if (isAddPrimaryKey == false)
-			return 26;
+			return 28;
 		else
-			return 27;
+			return 29;
 	}
 
 	public String getTableName() {
@@ -71,6 +71,8 @@ public abstract class DealPositionSqlMapper {
 		list.add("COST_4_AMOUNT");
 		list.add("COST_5_NAME");
 		list.add("COST_5_AMOUNT");
+		list.add("IS_SETTLEMENT_POSITION");
+		list.add("COST_FX_RISK_FACTOR_ID");
 		list.add("ERROR_CODE");
 
 		return list;
@@ -99,8 +101,8 @@ public abstract class DealPositionSqlMapper {
 		preparedStatement.setString(n + 8, position.getDealPositionDetail().getVolumeUnitOfMeasureValue());
 		preparedStatement.setString(n + 9, position.getDealPositionDetail().getFrequencyCodeValue());
 
-		if (position.getDealPositionDetail().getMarkToMarketValuation() != null)
-			preparedStatement.setBigDecimal(n + 10, position.getDealPositionDetail().getMarkToMarketValuation());
+		if (position.getSettlementDetail().getMarkToMarketValuation() != null)
+			preparedStatement.setBigDecimal(n + 10, position.getSettlementDetail().getMarkToMarketValuation());
 		else
 			preparedStatement.setNull(n + 10, Types.DECIMAL);
 
@@ -176,11 +178,28 @@ public abstract class DealPositionSqlMapper {
 		else
 			preparedStatement.setNull(n + 25, Types.DECIMAL);
 
+
+		if (position.getSettlementDetail().getIsSettlementPosition() != null) {
+			String value;
+			if (position.getSettlementDetail().getIsSettlementPosition() == true)
+				value = "Y";
+			else
+				value = "N";
+			preparedStatement.setString(n + 26, value);
+		} else {
+			preparedStatement.setNull(n + 26, Types.CHAR);
+		}
+
+		if (position.getCostFxRiskFactorId() != null)
+			preparedStatement.setInt(n+ 27, position.getCostFxRiskFactorId().getId());
+		else
+			preparedStatement.setNull(n+ 27, Types.INTEGER);
+
 		// Error Code
 		if (position.getDealPositionDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 26, position.getDealPositionDetail().getErrorCode());
+			preparedStatement.setString(n + 28, position.getDealPositionDetail().getErrorCode());
 		else
-			preparedStatement.setNull(n + 26, Types.VARCHAR);
+			preparedStatement.setNull(n + 28, Types.VARCHAR);
 
 
 

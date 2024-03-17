@@ -38,6 +38,7 @@ public class DealSummary {
 	private CurrencyCode reportingCurrencyCode;
 	private BigDecimal volumeQuantity;
 	private UnitOfMeasureCode volumeUnitOfMeasureCode;
+	private CurrencyCode settlementCurrencyCode;
 
 	public DealSummary(
 			Integer dealId,
@@ -48,7 +49,8 @@ public class DealSummary {
 			String buySellCodeValue,
 			String reportingCurrencyCodeValue,
 			BigDecimal volumeQuantity,
-			String volumeUnitOfMeasureCodeValue) {
+			String volumeUnitOfMeasureCodeValue,
+			String settlementCurrencyCodeValue) {
 		
 		super();
 		this.dealId = new EntityId(dealId, ticketNo, ticketNo, false);
@@ -60,6 +62,7 @@ public class DealSummary {
 		this.reportingCurrencyCode = CurrencyCode.lookUp(reportingCurrencyCodeValue);
 		this.volumeQuantity = volumeQuantity;
 		this.volumeUnitOfMeasureCode = UnitOfMeasureCode.lookUp(volumeUnitOfMeasureCodeValue);
+		this.settlementCurrencyCode = CurrencyCode.lookUp(settlementCurrencyCodeValue);
 	}
 	
 	public EntityId getDealId() {
@@ -94,5 +97,9 @@ public class DealSummary {
 
 	public CurrencyCode getReportingCurrencyCode() {
 		return reportingCurrencyCode;
+	}
+
+	public CurrencyCode getSettlementCurrencyCode() {
+		return settlementCurrencyCode;
 	}
 }

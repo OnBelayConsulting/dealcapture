@@ -38,12 +38,12 @@ public class DealServiceDealDayTest extends DealServiceTestCase {
 	@Override
 	public void setUp() {
 		super.setUp();
-		physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+		physicalDeal = DealFixture.createSamplePhysicalDeal(
 				CommodityCode.CRUDE,
 				"myDeal",
 				companyRole,
 				counterpartyRole,
-				priceIndex);
+                marketIndex);
 		flush();
 		DealDayFixture.createDayQuantity(
 				physicalDeal,

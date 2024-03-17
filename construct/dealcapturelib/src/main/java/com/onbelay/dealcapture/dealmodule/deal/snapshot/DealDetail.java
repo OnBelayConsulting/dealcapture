@@ -51,7 +51,8 @@ public class DealDetail {
 	private BigDecimal volumeQuantity;
 	private String volumeUnitOfMeasureCodeValue;
 	private String reportingCurrencyCodeValue;
-	
+	private String settlementCurrencyCodeValue;
+
 	public DealDetail() {
 		
 	}
@@ -177,6 +178,24 @@ public class DealDetail {
 
 	public void setReportingCurrencyCodeValue(String reportingCurrencyCodeValue) {
 		this.reportingCurrencyCodeValue = reportingCurrencyCodeValue;
+	}
+	@Transient
+	@JsonIgnore
+	public CurrencyCode getSettlementCurrencyCode() {
+		return CurrencyCode.lookUp(settlementCurrencyCodeValue);
+	}
+
+	public void setSettlementCurrencyCode(CurrencyCode code) {
+		this.settlementCurrencyCodeValue = code.getCode();
+	}
+
+	@Column(name = "SETTLEMENT_CURRENCY_CODE")
+	public String getSettlementCurrencyCodeValue() {
+		return settlementCurrencyCodeValue;
+	}
+
+	public void setSettlementCurrencyCodeValue(String settlementCurrencyCodeValue) {
+		this.settlementCurrencyCodeValue = settlementCurrencyCodeValue;
 	}
 
 	@Transient
@@ -321,5 +340,8 @@ public class DealDetail {
 
 		if (copy.reportingCurrencyCodeValue != null)
 			this.reportingCurrencyCodeValue = copy.reportingCurrencyCodeValue;
+
+		if (copy.settlementCurrencyCodeValue != null)
+			this.settlementCurrencyCodeValue = copy.settlementCurrencyCodeValue;
 	}
 }

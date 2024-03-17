@@ -13,19 +13,13 @@ public class DealCostSummary {
             Integer id,
             Integer dealId,
             String costNameCodeValue,
-            String costTypeCodeValue,
-            BigDecimal costValue,
-            String currencyCodeValue,
-            String unitOfMeasureCodeValue) {
+            BigDecimal costValue) {
 
         this.id = id;
         this.dealId = dealId;
 
         detail.setCostNameCodeValue(costNameCodeValue);
-        detail.setCostTypeCodeValue(costTypeCodeValue);
         detail.setCostValue(costValue);
-        detail.setCurrencyCodeValue(currencyCodeValue);
-        detail.setUnitOfMeasureCodeValue(unitOfMeasureCodeValue);
     }
 
     public Integer getId() {

@@ -22,6 +22,7 @@
             pp.CURRENCY_CODE,
             pp.VOLUME_UOM_CODE,
             pp.VOLUME_QUANTITY,
+            pp.IS_SETTLEMENT_POSITION,
             pp.DEAL_PRICE_VALUATION_CODE,
             pp.FIXED_PRICE,
             pp.FIXED_PRICE_CURRENCY_CODE as FIXED_PRICE_CURRENCY_CODE,
@@ -30,7 +31,10 @@
             pp.DEAL_ID,
             bd.BUY_SELL_CODE,
             bd.TICKET_NO,
+            bd.SETTLEMENT_CURRENCY_CODE,
+            bd.VOLUME_UOM_CODE AS DEAL_UNIT_OF_MEASURE,
             fixedFxRf.MARKET_VALUE as FIXED_FX_VALUE,
+            costFxRf.MARKET_VALUE as COST_FX_VALUE,
             dealPRf.MARKET_VALUE as DEAL_PRICE_RF_VALUE,
             dealPriceIndex.CURRENCY_CODE as DEAL_PRICE_CURRENCY_CODE,
             dealPriceIndex.UNIT_OF_MEASURE_CODE AS DEAL_PRICE_UOM_CODE,
@@ -53,6 +57,8 @@
             DEAL_POSITION pp
             INNER JOIN BASE_DEAL bd ON
                 bd.ENTITY_ID = pp.DEAL_ID
+            LEFT OUTER JOIN FX_RISK_FACTOR costFxRf ON
+                costFxRf.ENTITY_ID = pp.COST_FX_RISK_FACTOR_ID
             LEFT OUTER JOIN FX_RISK_FACTOR fixedFxRf ON
                 fixedFxRf.ENTITY_ID = pp.FIXED_PRICE_FX_RISK_FACTOR_ID
             LEFT OUTER JOIN PRICE_RISK_FACTOR dealPRf ON

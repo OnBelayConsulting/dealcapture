@@ -88,12 +88,16 @@ public class PhysicalPosition extends DealPosition {
     }
 
 
+    public void setFixedPriceFxRiskFactor(FxRiskFactor fixedPriceFxRiskFactor) {
+        this.fixedPriceFxRiskFactor = fixedPriceFxRiskFactor;
+    }
+
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "DEAL_PRICE_RISK_FACTOR_ID")
     public PriceRiskFactor getDealPriceRiskFactor() {
         return dealPriceRiskFactor;
     }
-
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "DEAL_PRICE_FX_RISK_FACTOR_ID")
@@ -111,10 +115,6 @@ public class PhysicalPosition extends DealPosition {
     @JoinColumn(name = "MKT_PRICE_FX_RISK_FACTOR_ID")
     public FxRiskFactor getMarketPriceFxRiskFactor() {
         return marketPriceFxRiskFactor;
-    }
-
-    public void setFixedPriceFxRiskFactor(FxRiskFactor fixedPriceFxRiskFactor) {
-        this.fixedPriceFxRiskFactor = fixedPriceFxRiskFactor;
     }
 
     public void setDealPriceRiskFactor(PriceRiskFactor dealPriceRiskFactor) {

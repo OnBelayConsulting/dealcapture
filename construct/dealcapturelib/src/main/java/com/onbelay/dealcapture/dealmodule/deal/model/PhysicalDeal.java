@@ -28,6 +28,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL")
@@ -44,6 +45,7 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 		    +  "         deal.dealDetail.reportingCurrencyCodeValue," +
 			   "		 deal.dealDetail.volumeQuantity," +
 			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue," +
+			   "	  	 deal.dealDetail.settlementCurrencyCodeValue," +
 			   "         deal.detail.dealPriceValuationCodeValue," +
 			   "         deal.dealPriceIndex.id," +
 			   "         deal.detail.fixedPriceValue," +
@@ -132,25 +134,35 @@ public class PhysicalDeal extends BaseDeal {
 
 
 		if (getDealDetail().getDealStatus() == DealStatusCode.VERIFIED) {
-			if (getDetail().getDealPriceValuationCode() == ValuationCode.FIXED) {
-				if (dealPriceIndex != null)
-					throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_INDEX.getCode());
-				if (getDetail().getFixedPrice() == null)
-					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
-			} else if (getDetail().getDealPriceValuationCode() == ValuationCode.INDEX) {
-				if (dealPriceIndex == null)
-					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
-				if (getDetail().getFixedPrice() != null)
-					throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_VALUE.getCode());
-			} else if (getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
-				if (dealPriceIndex == null)
-					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
-				if (getDetail().getFixedPrice() == null)
-					throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+
+			switch (getDetail().getDealPriceValuationCode()) {
+				case FIXED -> {
+					if (dealPriceIndex != null)
+						throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_INDEX.getCode());
+					if (getDetail().getFixedPrice() == null)
+						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+				}
+				case INDEX -> {
+					if (dealPriceIndex == null)
+						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
+					if (getDetail().getFixedPrice() != null)
+						throw new OBValidationException(DealErrorCode.INVALID_FIXED_PRICE_VALUE.getCode());
+				}
+				case INDEX_PLUS -> {
+					if (dealPriceIndex == null)
+						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
+					if (getDetail().getFixedPrice() == null)
+						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
+				}
 			}
 
-			if (marketPriceIndex == null)
-				throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
+			switch (getDetail().getMarketValuationCode()) {
+				case INDEX -> {
+					if (marketPriceIndex == null)
+						throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
+				}
+				default -> {throw new OBValidationException(DealErrorCode.INVALID_MARKET_PRICE_VALUATION.getCode());}
+			}
 		}
 	}
 

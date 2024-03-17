@@ -1,10 +1,14 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionDetail;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
+import com.onbelay.shared.enums.CurrencyCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -14,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseDealPositionGenerator implements DealPositionGenerator {
+    private static final Logger logger = LogManager.getLogger();
+
     protected DealSummary dealSummary;
 
     protected RiskFactorManager riskFactorManager;
@@ -28,6 +34,21 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     public BaseDealPositionGenerator(DealSummary dealSummary, RiskFactorManager riskFactorManager) {
         this.dealSummary = dealSummary;
         this.riskFactorManager = riskFactorManager;
+    }
+
+    public void setPositionHolders(
+            CurrencyCode targetCurrencyCode,
+            LocalDate currentDate,
+            PositionHolder holder) {
+
+        if (dealSummary.getReportingCurrencyCode() != targetCurrencyCode) {
+            holder.setCostFxHolder(
+                    riskFactorManager.determineFxRiskFactor(
+                            dealSummary.getReportingCurrencyCode(),
+                            targetCurrencyCode,
+                            currentDate));
+        }
+
     }
 
     public boolean hasDealDaysContainerForCosts(LocalDate positionDate) {
@@ -67,39 +88,48 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
     protected void setCosts(
             CostPositionDetail costPositionDetail,
-            LocalDate positionDate,
-            BigDecimal dayQuantity) {
+            LocalDate positionDate) {
 
         if (costSummaries.isEmpty())
             return;
 
-        for (int i=0 ; i < 5; i++) {
-            DealCostSummary summary = costSummaries.get(i);
-            int costOffset = i+1;
-            costPositionDetail.setCostName(
-                    costOffset,
-                    summary.getDetail().getCostNameCodeValue());
+        if (costSummaries.size() > 5) {
+            logger.error("deal costs exceed position slot total of 5. Will consolidate  costs.");
+            BigDecimal totalPerUnit = BigDecimal.ZERO;
+            BigDecimal totalFixed = BigDecimal.ZERO;
+            for (int j=0; j < costSummaries.size(); j++) {
+                DealCostSummary summary = costSummaries.get(j);
+                if (summary.getDetail().getCostType() == CostTypeCode.FIXED)
+                    totalFixed = totalFixed.add(summary.getDetail().getCostValue());
+                else
+                    totalPerUnit = totalPerUnit.add(summary.getDetail().getCostValue());
+            }
+            costPositionDetail.setCost1Name(CostNameCode.TOTAL_FIXED_FEE.getCode());
+            costPositionDetail.setCost1Amount(totalFixed.setScale(3, RoundingMode.HALF_UP));
+            costPositionDetail.setCost2Name(CostNameCode.TOTAL_PER_UNIT_FEE.getCode());
+            costPositionDetail.setCost2Amount(totalPerUnit.setScale(3, RoundingMode.HALF_UP));
+        } else {
 
-            BigDecimal costAmount;
-            if (hasDealDaysContainerForCosts(positionDate)) {
-                costAmount = dealDaysContainer.getDayCost(
-                        positionDate,
+            for (int i = 0; i < costSummaries.size(); i++) {
+                DealCostSummary summary = costSummaries.get(i);
+                int costOffset = i + 1;
+                costPositionDetail.setCostName(
+                        costOffset,
                         summary.getDetail().getCostNameCodeValue());
-            } else {
-                costAmount = summary.getDetail().getCostValue();
+
+                BigDecimal costAmount;
+                if (hasDealDaysContainerForCosts(positionDate)) {
+                    costAmount = dealDaysContainer.getDayCost(
+                            positionDate,
+                            summary.getDetail().getCostNameCodeValue());
+                } else {
+                    costAmount = summary.getDetail().getCostValue();
+                }
+
+                costPositionDetail.setCostAmount(
+                        costOffset,
+                        costAmount);
             }
-
-            if (summary.getDetail().getCostType() == CostTypeCode.PER_UNIT) {
-                    costAmount
-                        .multiply(
-                           dayQuantity, MathContext.DECIMAL128);
-            }
-
-                costAmount = costAmount.setScale(3, RoundingMode.HALF_UP);
-
-            costPositionDetail.setCostAmount(
-                    costOffset,
-                    costAmount);
         }
     }
 

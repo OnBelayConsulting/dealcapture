@@ -30,18 +30,6 @@
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
-            <column name="COST_TYPE_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="COST_CURRENCY_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="COST_UOM_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
             <column name="COST_VALUE"
                     type="java.sql.Types.NUMERIC(8, 3)"/>
             <column name="AUDIT_LOCK_NO"

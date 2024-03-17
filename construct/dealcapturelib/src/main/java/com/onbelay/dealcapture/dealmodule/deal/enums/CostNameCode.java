@@ -26,10 +26,18 @@ import java.util.Map;
  *
  */
 public enum CostNameCode {
-	FACILITY	("Facility"),
-	BROKERAGE	("Brokerage");
+	FACILITY_PER_UNIT_FEE	 	("Facility Fee", CostTypeCode.PER_UNIT),
+	FACILITY_FLAT_FEE	 	 	("Facility Flat Fee", CostTypeCode.FIXED),
+	TRANSPORTATION_PER_UNIT_FEE	("Transportation Fee", CostTypeCode.PER_UNIT),
+	TRANSPORTATION_FLAT_FEE		("Trans Flat Fee", CostTypeCode.FIXED),
+	BROKERAGE_PER_UNIT_FEE	 	("Brokerage Fee", CostTypeCode.PER_UNIT),
+	BROKERAGE_DAILY_FEE		 	("Brokerage Flat Fee", CostTypeCode.FIXED),
+	TOTAL_PER_UNIT_FEE		 	("Total Per Unit Cost", CostTypeCode.PER_UNIT),
+	TOTAL_FIXED_FEE		 		("Total Fixed Cost", CostTypeCode.FIXED),
+	;
 
 	private final String code;
+	private final CostTypeCode costTypeCode;
 
     private static final Map<String, CostNameCode> lookup
     	= new HashMap<String, CostNameCode>();
@@ -39,12 +47,17 @@ public enum CostNameCode {
          lookup.put(c.code, c);
     }
 
-	private CostNameCode(String code) {
+	private CostNameCode(String code, CostTypeCode costTypeCode) {
 		this.code = code;
+		this.costTypeCode = costTypeCode;
 	}
 	
 	public String getCode() {
 		return code;
+	}
+
+	public CostTypeCode getCostTypeCode() {
+		return costTypeCode;
 	}
 
 	public static CostNameCode lookUp(String code) {

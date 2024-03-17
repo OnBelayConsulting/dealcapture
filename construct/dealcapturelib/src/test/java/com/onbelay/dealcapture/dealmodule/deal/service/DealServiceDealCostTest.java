@@ -23,8 +23,6 @@ import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 import com.onbelay.shared.enums.CommodityCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -39,20 +37,18 @@ public class DealServiceDealCostTest extends DealServiceTestCase {
 	@Override
 	public void setUp() {
 		super.setUp();
-		physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+		physicalDeal = DealFixture.createSamplePhysicalDeal(
 				CommodityCode.CRUDE,
 				"myDeal",
 				companyRole,
 				counterpartyRole,
-				priceIndex);
+                marketIndex);
 		flush();
 		DealCostFixture.createCost(
 				physicalDeal,
 				CostTypeCode.PER_UNIT,
-				CostNameCode.FACILITY,
-				BigDecimal.TEN,
-				CurrencyCode.CAD,
-				UnitOfMeasureCode.GJ);
+				CostNameCode.FACILITY_PER_UNIT_FEE,
+				BigDecimal.TEN);
 		flush();
 		clearCache();
 	}
@@ -69,10 +65,8 @@ public class DealServiceDealCostTest extends DealServiceTestCase {
 	public void saveCosts() {
 
 		DealCostSnapshot costSnapshot = new DealCostSnapshot();
-		costSnapshot.getDetail().setCostName(CostNameCode.BROKERAGE);
-		costSnapshot.getDetail().setCostType(CostTypeCode.FIXED);
+		costSnapshot.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
 		costSnapshot.getDetail().setCostValue(BigDecimal.valueOf(17.45));
-		costSnapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
 
 		dealService.saveDealCosts(
 				physicalDeal.generateEntityId(),
@@ -82,10 +76,8 @@ public class DealServiceDealCostTest extends DealServiceTestCase {
 		assertEquals(2, physicalDeal.fetchDealCosts().size());
 
 		DealCost cost = physicalDeal.fetchDealCosts().stream().filter(c-> c.getDetail().getCostType() == CostTypeCode.FIXED).findFirst().get();
-		assertEquals(CostNameCode.BROKERAGE, cost.getDetail().getCostName());
+		assertEquals(CostNameCode.BROKERAGE_DAILY_FEE, cost.getDetail().getCostName());
 		assertEquals(CostTypeCode.FIXED, cost.getDetail().getCostType());
-		assertEquals(CurrencyCode.USD, cost.getDetail().getCurrencyCode());
-		assertNull(cost.getDetail().getUnitOfMeasureCodeValue());
 		assertEquals(0, cost.getDetail().getCostValue().compareTo(BigDecimal.valueOf(17.45)));
 		flush();
 		clearCache();

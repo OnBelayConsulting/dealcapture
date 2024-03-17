@@ -39,6 +39,11 @@ public class DealPositionViewDetail {
 
     private BigDecimal fixedFxRateValue;
 
+
+    private BigDecimal costFxRateValue;
+    private String settlementCurrencyCodeValue;
+    private String dealUnitOfMeasureCodeValue;
+
     private BigDecimal dealPriceRfValue;
     private String dealPriceCurrencyCodeValue;
     private String dealPriceUnitOfMeasureCodeValue;
@@ -260,6 +265,45 @@ public class DealPositionViewDetail {
 
     public void setFixedFxRateValue(BigDecimal fixedFxRateValue) {
         this.fixedFxRateValue = fixedFxRateValue;
+    }
+
+    @Column(name = "COST_FX_VALUE")
+    public BigDecimal getCostFxRateValue() {
+        return costFxRateValue;
+    }
+
+    public void setCostFxRateValue(BigDecimal costFxRateValue) {
+        this.costFxRateValue = costFxRateValue;
+    }
+
+    @Transient
+    @JsonIgnore
+    public CurrencyCode getSettlementCurrencyCode() {
+        return CurrencyCode.lookUp(settlementCurrencyCodeValue);
+    }
+
+    @Column(name = "SETTLEMENT_CURRENCY_CODE")
+    public String getSettlementCurrencyCodeValue() {
+        return settlementCurrencyCodeValue;
+    }
+
+    public void setSettlementCurrencyCodeValue(String settlementCurrencyCodeValue) {
+        this.settlementCurrencyCodeValue = settlementCurrencyCodeValue;
+    }
+
+    @Transient
+    @JsonIgnore
+    public UnitOfMeasureCode getDealUnitOfMeasureCode() {
+        return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue);
+    }
+
+    @Column(name = "DEAL_UNIT_OF_MEASURE")
+    public String getDealUnitOfMeasureCodeValue() {
+        return dealUnitOfMeasureCodeValue;
+    }
+
+    public void setDealUnitOfMeasureCodeValue(String dealUnitOfMeasureCodeValue) {
+        this.dealUnitOfMeasureCodeValue = dealUnitOfMeasureCodeValue;
     }
 
     @Column(name = "DEAL_PRICE_RF_VALUE")

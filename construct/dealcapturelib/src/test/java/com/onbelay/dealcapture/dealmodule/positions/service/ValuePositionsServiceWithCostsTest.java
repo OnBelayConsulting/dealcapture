@@ -1,26 +1,19 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.core.query.snapshot.DefinedQuery;
-import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.*;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +25,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ValuePositionsServiceTest extends DealServiceTestCase {
+public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
     @Autowired
     private DealPositionService dealPositionService;
@@ -78,7 +71,13 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
     }
 
     @Test
-    public void valuePhysicalPositionsWithBuyFixedPrice() {
+    public void valueWithBuyFixedPriceFixedCost() {
+
+        DealCostSnapshot cost = new DealCostSnapshot();
+        cost.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
+        cost.getDetail().setCostValue(BigDecimal.valueOf(-.50));
+        fixedPriceBuyDeal.saveDealCosts(List.of(cost));
+        flush();
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
@@ -127,10 +126,10 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
-        assertEquals(0, BigDecimal.valueOf(3.4).compareTo(positionSnapshot.getSettlementDetail().getMarkToMarketValuation()));
+        assertEquals(0, BigDecimal.valueOf(2.9).compareTo(positionSnapshot.getSettlementDetail().getMarkToMarketValuation()));
         assertEquals(0, BigDecimal.ZERO.compareTo(positionSnapshot.getSettlementDetail().getCostSettlementAmount()));
-        assertEquals(0, BigDecimal.valueOf(-10).compareTo(positionSnapshot.getSettlementDetail().getSettlementAmount()));
-        assertEquals(0, BigDecimal.valueOf(-10).compareTo(positionSnapshot.getSettlementDetail().getTotalSettlementAmount()));
+        assertEquals(0, BigDecimal.valueOf(-10.00).compareTo(positionSnapshot.getSettlementDetail().getSettlementAmount()));
+        assertEquals(0, BigDecimal.valueOf(-10.50).compareTo(positionSnapshot.getSettlementDetail().getTotalSettlementAmount()));
         assertNotNull(positionSnapshot.getSettlementDetail().getSettlementCurrencyCodeValue());
     }
 

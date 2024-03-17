@@ -82,7 +82,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 		
 		flush();
 
-		physicalDeal = DealFixture.createFixedPricePhysicalDeal(
+		physicalDeal = DealFixture.createSamplePhysicalDeal(
 				CommodityCode.CRUDE,
 				"mine",
 				companyRole, 
@@ -99,7 +99,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 				.build();
 		
 
-		PhysicalDealSnapshot snapshot = DealFixture.createFixedPriceMarketIndexPhysicalDealSnapshot(
+		PhysicalDealSnapshot snapshot = DealFixture.createPhysicalDealSnapshot(
 				CommodityCode.CRUDE,
 				LocalDate.of(2023, 1, 1),
 				LocalDate.of(2023, 1, 31),
