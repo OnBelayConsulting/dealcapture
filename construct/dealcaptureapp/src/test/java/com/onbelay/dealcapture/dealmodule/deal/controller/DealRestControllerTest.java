@@ -31,6 +31,7 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
+import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
@@ -101,6 +102,7 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 
 		PhysicalDealSnapshot snapshot = DealFixture.createPhysicalDealSnapshot(
 				CommodityCode.CRUDE,
+				BuySellCode.SELL,
 				LocalDate.of(2023, 1, 1),
 				LocalDate.of(2023, 1, 31),
 				DealStatusCode.VERIFIED,
@@ -109,6 +111,8 @@ public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
 				companyRole, 
 				counterpartyRole,
                 priceIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
 				new Price(
 						BigDecimal.ONE,
 						CurrencyCode.USD,

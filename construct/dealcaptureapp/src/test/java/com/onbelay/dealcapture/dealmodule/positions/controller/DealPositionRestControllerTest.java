@@ -297,7 +297,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 		List<DealPositionSnapshot> snapshots = dealPositionService.findByDeal(physicalDeal.generateEntityId());
 		DealPositionSnapshot snapshot = snapshots.get(0);
-		assertNotNull(snapshot.getDealPositionDetail().getMarkToMarketValuation());
+		assertNotNull(snapshot.getSettlementDetail().getMarkToMarketValuation());
 
 	}
 

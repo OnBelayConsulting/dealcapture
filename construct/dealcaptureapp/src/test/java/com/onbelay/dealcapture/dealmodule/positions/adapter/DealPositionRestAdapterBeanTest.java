@@ -193,7 +193,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
 
         DealPositionSnapshotCollection collection = dealPositionRestAdapter.find(query, 0, 500);
         DealPositionSnapshot snapshot = collection.getSnapshots().get(0);
-        assertNotNull(snapshot.getDealPositionDetail().getMarkToMarketValuation());
+        assertNotNull(snapshot.getSettlementDetail().getMarkToMarketValuation());
 
     }
 

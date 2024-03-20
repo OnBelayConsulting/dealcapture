@@ -60,6 +60,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
     public void createDeal() {
         PhysicalDealSnapshot dealSnapshot = DealFixture.createPhysicalDealSnapshot(
                 CommodityCode.CRUDE,
+                BuySellCode.SELL,
                 LocalDate.of(2023, 1, 1),
                 LocalDate.of(2023, 1, 31),
                 DealStatusCode.VERIFIED,
@@ -68,6 +69,8 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
                 companyRole,
                 counterpartyRole,
                 priceIndex,
+                BigDecimal.TEN,
+                UnitOfMeasureCode.GJ,
                 new Price(
                         BigDecimal.ONE,
                         CurrencyCode.USD,
