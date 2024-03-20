@@ -50,7 +50,9 @@ public class PositionRiskFactorMappingSummary {
         return id;
     }
 
-    public Price calculateConvertedPrice(
+    public Price
+
+    calculateConvertedPrice(
             CurrencyCode targetCurrencyCode,
             UnitOfMeasureCode targetUnitOfMeasureCode) {
 

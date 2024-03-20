@@ -32,17 +32,20 @@
             bd.BUY_SELL_CODE,
             bd.TICKET_NO,
             bd.SETTLEMENT_CURRENCY_CODE,
+            bd.COST_CURRENCY_CODE,
             bd.VOLUME_UOM_CODE AS DEAL_UNIT_OF_MEASURE,
             fixedFxRf.MARKET_VALUE as FIXED_FX_VALUE,
+            fixedFxRf.FX_INDEX_ID as FIXED_FX_INDEX_ID,
             costFxRf.MARKET_VALUE as COST_FX_VALUE,
+            costFxRf.FX_INDEX_ID as COST_FX_INDEX_ID,
             dealPRf.MARKET_VALUE as DEAL_PRICE_RF_VALUE,
-            dealPriceIndex.CURRENCY_CODE as DEAL_PRICE_CURRENCY_CODE,
-            dealPriceIndex.UNIT_OF_MEASURE_CODE AS DEAL_PRICE_UOM_CODE,
+            dealPRf.PRICE_INDEX_ID as DEAL_PRICE_INDEX_ID,
             dealFxPRf.MARKET_VALUE as DEAL_PRICE_FX_VALUE,
+            dealFxPRf.FX_INDEX_ID as DEAL_PRICE_FX_INDEX_ID,
             marketPRf.MARKET_VALUE as MARKET_PRICE_RF_VALUE,
-            marketIndex.CURRENCY_CODE as MARKET_INDEX_CURRENCY_CODE,
-            marketIndex.UNIT_OF_MEASURE_CODE as MARKET_INDEX_UOM_CODE,
-            marketFxRf.MARKET_VALUE as MARKET_PRICE_FX_VALUE,
+            marketPRf.PRICE_INDEX_ID as MARKET_INDEX_ID,
+            marketFxRf.MARKET_VALUE as MARKET_FX_VALUE,
+            marketFxRf.FX_INDEX_ID as MARKET_FX_INDEX_ID,
             pp.COST_1_NAME,
             pp.COST_1_AMOUNT,
             pp.COST_2_NAME,
@@ -63,14 +66,10 @@
                 fixedFxRf.ENTITY_ID = pp.FIXED_PRICE_FX_RISK_FACTOR_ID
             LEFT OUTER JOIN PRICE_RISK_FACTOR dealPRf ON
                 dealPRf.ENTITY_ID = pp.DEAL_PRICE_RISK_FACTOR_ID
-            LEFT OUTER JOIN PRICE_INDEX dealPriceIndex ON
-                dealPriceIndex.ENTITY_ID = dealPRf.PRICE_INDEX_ID
             LEFT OUTER JOIN FX_RISK_FACTOR dealFxPRf ON
                 dealFxPRf.ENTITY_ID = pp.DEAL_PRICE_FX_RISK_FACTOR_ID
             INNER JOIN PRICE_RISK_FACTOR marketPRf ON
                 marketPRf.ENTITY_ID = pp.MKT_PRICE_RISK_FACTOR_ID
-            LEFT OUTER JOIN PRICE_INDEX marketIndex ON
-                marketIndex.ENTITY_ID = marketPRf.PRICE_INDEX_ID
             LEFT OUTER JOIN FX_RISK_FACTOR marketFxRf ON
                 marketFxRf.ENTITY_ID = pp.MKT_PRICE_FX_RISK_FACTOR_ID
         </createView>

@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.busmath.model;
 
+import com.onbelay.dealcapture.busmath.exceptions.OBBusinessMathException;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
@@ -40,7 +41,8 @@ public class Quantity extends CalculatedEntity{
 	@Override
 	public CalculatedEntity add(CalculatedEntity entity) {
 		if (entity instanceof Quantity == false)
-			return new Quantity(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("Invalid calculated entity. Must be Quantity");
+
 		Quantity quantity = (Quantity) entity;
 		return add(quantity);
 	}
@@ -50,7 +52,7 @@ public class Quantity extends CalculatedEntity{
 			return new Quantity(CalculatedErrorType.ERROR);
 
 		if (quantity.getUnitOfMeasureCode() != this.unitOfMeasureCode)
-			return new Quantity(CalculatedErrorType.ERROR_INCOMPAT_UOM);
+			throw new OBBusinessMathException("Incompatible UnitOfMeasure.");
 
 		return new Quantity(
 				value.add(quantity.value, mathContext),
@@ -60,7 +62,7 @@ public class Quantity extends CalculatedEntity{
 	@Override
 	public CalculatedEntity subtract(CalculatedEntity entity) {
 		if (entity instanceof Quantity == false)
-			return new Quantity(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("Invalid calculated entity.");
 		Quantity quantity = (Quantity) entity;
 		return subtract(quantity);
 	}
@@ -71,7 +73,7 @@ public class Quantity extends CalculatedEntity{
 			return new Quantity(CalculatedErrorType.ERROR);
 
 		if (quantity.getUnitOfMeasureCode() != this.unitOfMeasureCode)
-			return new Quantity(CalculatedErrorType.ERROR_INCOMPAT_UOM);
+			throw new OBBusinessMathException("Incompatible UnitOfMeasure.");
 
 		return new Quantity(
 				value.subtract(quantity.value, mathContext),
@@ -86,7 +88,7 @@ public class Quantity extends CalculatedEntity{
 		if (entity instanceof Price price)
 			return multiply(price);
 
-		return new Quantity(CalculatedErrorType.ERROR);
+		throw new OBBusinessMathException("Invalid Calculated Entity.");
 	}
 
 	public Quantity apply(Conversion conversion) {
@@ -98,13 +100,13 @@ public class Quantity extends CalculatedEntity{
 					value.multiply(conversion.getValue()),
 					conversion.getToUnitOfMeasure());
 		} else {
-			return new Quantity(CalculatedErrorType.ERROR_INCOMPAT_UOM);
+			throw new OBBusinessMathException("Invalid conversion");
 		}
 	}
 
 	@Override
 	public CalculatedEntity divide(CalculatedEntity entity) {
-		return new Quantity(CalculatedErrorType.ERROR);
+		throw new OBBusinessMathException("Invalid Operation.");
 	}
 
 	@Override
@@ -116,17 +118,17 @@ public class Quantity extends CalculatedEntity{
 	}
 
 	public Amount multiply(Price price) {
-		if (hasValue() && price.hasValue()) {
+		if (this.isInError() || price.isInError())
+			return new Amount(CalculatedErrorType.ERROR);
 
-			return new Amount(
+		if (this.unitOfMeasureCode != price.getUnitOfMeasure())
+			throw new OBBusinessMathException("Incompatible UnitOfMeasure.");
+
+		return new Amount(
 					value.multiply(
 							price.getValue(),
 							mathContext),
 					price.getCurrency());
-		}
-		else {
-			return new Amount(CalculatedErrorType.ERROR);
-		}
 	}
 
 

@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.busmath.model;
 
+import com.onbelay.dealcapture.busmath.exceptions.OBBusinessMathException;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
@@ -44,6 +45,9 @@ public class Price extends CalculatedEntity {
 	}
 
 	public Price apply(FxRate rate) {
+		if (this.isInError() || rate.isInError())
+			return this;
+
 		if (currency == rate.getFromCurrencyCode()) {
 			BigDecimal converted = getValue().multiply(rate.getValue(), MathContext.DECIMAL128);
 			converted = converted.setScale(PRICE_SCALE, RoundingMode.HALF_EVEN);
@@ -51,12 +55,23 @@ public class Price extends CalculatedEntity {
 					converted,
 					rate.getToCurrencyCode(),
 					unitOfMeasure);
+		} else if (currency == rate.getToCurrencyCode()) {
+			FxRate invertedRate = rate.getInversion();
+			BigDecimal converted = getValue().multiply(invertedRate.getValue(), MathContext.DECIMAL128);
+			converted = converted.setScale(PRICE_SCALE, RoundingMode.HALF_EVEN);
+			return new Price(
+					converted,
+					invertedRate.getToCurrencyCode(),
+					unitOfMeasure);
 		} else {
-			return new Price(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
+			throw new OBBusinessMathException("Incompatible Currency");
 		}
 	}
 
 	public Price roundPrice() {
+		if (this.isInError())
+			return this;
+
 		return new Price(
 				value.setScale(PRICE_SCALE, RoundingMode.HALF_EVEN),
 				currency,
@@ -66,7 +81,7 @@ public class Price extends CalculatedEntity {
 	@Override
 	public CalculatedEntity add(CalculatedEntity entity) {
 		if (entity instanceof Price price == false) {
-			return new Price(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("Invalid calculated entity. Must be price.");
 		} else {
 			return add((Price) entity);
 		}
@@ -75,7 +90,7 @@ public class Price extends CalculatedEntity {
 	@Override
 	public CalculatedEntity subtract(CalculatedEntity entity) {
 		if (entity instanceof Price price == false) {
-			return new Price(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("Invalid calculated entity. Must be price.");
 		} else {
 			return subtract((Price) entity);
 		}
@@ -90,12 +105,12 @@ public class Price extends CalculatedEntity {
 		else if (entity instanceof  Conversion conversion)
 			return apply(conversion);
 		else
-			return new Price(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("Invalid calculated entity. Must be quantity, fxRate or conversion.");
 	}
 
 	@Override
 	public CalculatedEntity divide(CalculatedEntity entity) {
-		return new Amount(CalculatedErrorType.ERROR);
+		throw new OBBusinessMathException("Invalid operation.");
 	}
 
 	public Price multiply(BigDecimal valueIn) {
@@ -127,6 +142,9 @@ public class Price extends CalculatedEntity {
 	}
 
 	public Price add (Price priceIn) {
+		if (!( this.currency == priceIn.currency && this.unitOfMeasure == priceIn.unitOfMeasure) )
+			throw new OBBusinessMathException("Incompatible currency and/or UnitOfMeasure");
+
 		if (hasValue() && priceIn.hasValue()) {
 
 			return new Price(
@@ -142,6 +160,9 @@ public class Price extends CalculatedEntity {
 	}
 
 	public Price subtract (Price priceIn) {
+		if (!( this.currency == priceIn.currency && this.unitOfMeasure == priceIn.unitOfMeasure) )
+			throw new OBBusinessMathException("Incompatible currency and/or UnitOfMeasure");
+
         if (hasValue() && priceIn.hasValue()) {
         	
             return new Price(
@@ -180,12 +201,16 @@ public class Price extends CalculatedEntity {
 					value.multiply(conversion.getValue(), mathContext),
 					currency,
 					conversion.getToUnitOfMeasure());
-		} else {
-			return new Price(CalculatedErrorType.ERROR_INCOMPAT_UOM);
+		}
+		else {
+			throw new OBBusinessMathException("Invalid UoM conversion.");
 		}
 	}
 
     public Amount multiply(Quantity quantity) {
+		if (this.unitOfMeasure != quantity.getUnitOfMeasureCode())
+			throw new OBBusinessMathException("Incompatible UnitOfMeasure");
+
         if (hasValue() && quantity.hasValue()) {
         	
             return new Amount(

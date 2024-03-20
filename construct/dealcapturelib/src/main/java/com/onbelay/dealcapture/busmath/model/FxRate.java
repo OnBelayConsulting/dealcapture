@@ -1,9 +1,11 @@
 package com.onbelay.dealcapture.busmath.model;
 
+import com.onbelay.dealcapture.busmath.exceptions.OBBusinessMathException;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.shared.enums.CurrencyCode;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Objects;
 
 public class FxRate extends CalculatedEntity {
@@ -21,6 +23,9 @@ public class FxRate extends CalculatedEntity {
     }
 
     public FxRate getInversion() {
+        if (isInError())
+            return this;
+
         return new FxRate(
                 BigDecimal.ONE.divide(value, divisorMathContext),
                 fromCurrencyCode,
@@ -33,17 +38,32 @@ public class FxRate extends CalculatedEntity {
 
     @Override
     public CalculatedEntity add(CalculatedEntity entity) {
-        return new FxRate(CalculatedErrorType.ERROR);
+        throw new OBBusinessMathException("Invalid calculated entity");
     }
 
     @Override
     public CalculatedEntity subtract(CalculatedEntity entity) {
-        return new FxRate(CalculatedErrorType.ERROR);
+        throw new OBBusinessMathException("Invalid calculated entity");
+    }
+
+    public FxRate apply(FxRate rate) {
+        if (this.isInError() || rate.isInError())
+            return this;
+        if (this.fromCurrencyCode != rate.toCurrencyCode)
+            throw new OBBusinessMathException("Incompatible rate currencies.");
+        BigDecimal converted = this.value.multiply(rate.getValue(), MathContext.DECIMAL128);
+        return new FxRate(
+                converted,
+                this.toCurrencyCode,
+                rate.fromCurrencyCode);
     }
 
     @Override
     public CalculatedEntity multiply(CalculatedEntity entity) {
-        return new FxRate(CalculatedErrorType.ERROR);    }
+        if (entity instanceof FxRate == false)
+            throw new OBBusinessMathException("Invalid calculated entity");
+        return apply((FxRate) entity);
+    }
 
     @Override
     public CalculatedEntity divide(CalculatedEntity entity) {

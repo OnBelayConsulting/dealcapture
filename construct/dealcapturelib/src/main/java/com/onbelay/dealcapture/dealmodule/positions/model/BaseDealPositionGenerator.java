@@ -41,7 +41,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
             LocalDate currentDate,
             PositionHolder holder) {
 
-        if (dealSummary.getReportingCurrencyCode() != targetCurrencyCode) {
+        if (dealSummary.getCostCurrencyCode() != targetCurrencyCode) {
             holder.setCostFxHolder(
                     riskFactorManager.determineFxRiskFactor(
                             dealSummary.getReportingCurrencyCode(),

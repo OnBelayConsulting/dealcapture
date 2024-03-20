@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.onbelay.core.codes.annotations.CodeLabelSerializer;
 import com.onbelay.core.codes.annotations.InjectCodeLabel;
-import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
@@ -12,7 +11,9 @@ import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Transient;
+import org.hibernate.type.YesNoConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,26 +34,30 @@ public class DealPositionViewDetail {
     private String fixedPriceCurrencyCodeValue;
     private String fixedPriceUnitOfMeasureCodeValue;
 
+    private BigDecimal fixedFxRateValue;
+    private Integer    fixedFxIndexId;
+
     private String marketPriceValuationValue;
     private String ticketNo;
     private String buySellCodeValue;
 
-    private BigDecimal fixedFxRateValue;
-
-
+    private String costCurrencyCodeValue;
     private BigDecimal costFxRateValue;
+    private Integer    costFxIndexId;
+
+    private Boolean isSettlementPosition;
     private String settlementCurrencyCodeValue;
     private String dealUnitOfMeasureCodeValue;
 
     private BigDecimal dealPriceRfValue;
-    private String dealPriceCurrencyCodeValue;
-    private String dealPriceUnitOfMeasureCodeValue;
+    private Integer dealPriceIndexId;
     private BigDecimal dealPriceFxRateValue;
+    private Integer dealPriceFxIndexId;
 
     private BigDecimal marketPriceRfValue;
-    private String marketPriceCurrencyCodeValue;
-    private String marketPriceUnitOfMeasureCodeValue;
+    private Integer marketPriceIndexId;
     private BigDecimal marketPriceFxValue;
+    private Integer marketPriceFxIndexId;
 
     @Transient
     @JsonIgnore
@@ -90,6 +95,21 @@ public class DealPositionViewDetail {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    @Transient
+    @JsonIgnore
+    public UnitOfMeasureCode getDealUnitOfMeasureCode() {
+        return UnitOfMeasureCode.lookUp(dealUnitOfMeasureCodeValue);
+    }
+
+    @Column(name = "DEAL_UNIT_OF_MEASURE")
+    public String getDealUnitOfMeasureCodeValue() {
+        return dealUnitOfMeasureCodeValue;
+    }
+
+    public void setDealUnitOfMeasureCodeValue(String dealUnitOfMeasureCodeValue) {
+        this.dealUnitOfMeasureCodeValue = dealUnitOfMeasureCodeValue;
     }
 
     @Transient
@@ -224,16 +244,6 @@ public class DealPositionViewDetail {
         return UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue);
     }
 
-    @Transient
-    @JsonIgnore
-    public Price getFixedPrice() {
-        return new Price(
-                fixedPriceValue,
-                getFixedPriceCurrencyCode(),
-                getFixedPriceUnitOfMeasure());
-    }
-
-
     @Column(name = "TICKET_NO")
     public String getTicketNo() {
         return ticketNo;
@@ -267,6 +277,15 @@ public class DealPositionViewDetail {
         this.fixedFxRateValue = fixedFxRateValue;
     }
 
+    @Column(name = "FIXED_FX_INDEX_ID")
+    public Integer getFixedFxIndexId() {
+        return fixedFxIndexId;
+    }
+
+    public void setFixedFxIndexId(Integer fixedFxIndexId) {
+        this.fixedFxIndexId = fixedFxIndexId;
+    }
+
     @Column(name = "COST_FX_VALUE")
     public BigDecimal getCostFxRateValue() {
         return costFxRateValue;
@@ -274,6 +293,15 @@ public class DealPositionViewDetail {
 
     public void setCostFxRateValue(BigDecimal costFxRateValue) {
         this.costFxRateValue = costFxRateValue;
+    }
+
+    @Column(name = "COST_FX_INDEX_ID")
+    public Integer getCostFxIndexId() {
+        return costFxIndexId;
+    }
+
+    public void setCostFxIndexId(Integer costFxIndexId) {
+        this.costFxIndexId = costFxIndexId;
     }
 
     @Transient
@@ -293,17 +321,29 @@ public class DealPositionViewDetail {
 
     @Transient
     @JsonIgnore
-    public UnitOfMeasureCode getDealUnitOfMeasureCode() {
-        return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue);
+    public CurrencyCode getCostCurrencyCode() {
+        return CurrencyCode.lookUp(costCurrencyCodeValue);
     }
 
-    @Column(name = "DEAL_UNIT_OF_MEASURE")
-    public String getDealUnitOfMeasureCodeValue() {
-        return dealUnitOfMeasureCodeValue;
+    @Column(name = "COST_CURRENCY_CODE")
+    public String getCostCurrencyCodeValue() {
+        return costCurrencyCodeValue;
     }
 
-    public void setDealUnitOfMeasureCodeValue(String dealUnitOfMeasureCodeValue) {
-        this.dealUnitOfMeasureCodeValue = dealUnitOfMeasureCodeValue;
+    public void setCostCurrencyCodeValue(String costCurrencyCodeValue) {
+        this.costCurrencyCodeValue = costCurrencyCodeValue;
+    }
+
+    @Column(name = "IS_SETTLEMENT_POSITION")
+    @Convert(
+            converter = YesNoConverter.class
+    )
+    public Boolean getIsSettlementPosition() {
+        return isSettlementPosition;
+    }
+
+    public void setIsSettlementPosition(Boolean settlementPosition) {
+        isSettlementPosition = settlementPosition;
     }
 
     @Column(name = "DEAL_PRICE_RF_VALUE")
@@ -315,22 +355,13 @@ public class DealPositionViewDetail {
         this.dealPriceRfValue = dealPriceRfValue;
     }
 
-    @Column(name = "DEAL_PRICE_CURRENCY_CODE")
-    public String getDealPriceCurrencyCodeValue() {
-        return dealPriceCurrencyCodeValue;
+    @Column(name = "DEAL_PRICE_INDEX_ID")
+    public Integer getDealPriceIndexId() {
+        return dealPriceIndexId;
     }
 
-    public void setDealPriceCurrencyCodeValue(String dealPriceCurrencyCodeValue) {
-        this.dealPriceCurrencyCodeValue = dealPriceCurrencyCodeValue;
-    }
-
-    @Column(name = "DEAL_PRICE_UOM_CODE")
-    public String getDealPriceUnitOfMeasureCodeValue() {
-        return dealPriceUnitOfMeasureCodeValue;
-    }
-
-    public void setDealPriceUnitOfMeasureCodeValue(String dealPriceUnitOfMeasureCodeValue) {
-        this.dealPriceUnitOfMeasureCodeValue = dealPriceUnitOfMeasureCodeValue;
+    public void setDealPriceIndexId(Integer dealPriceIndexId) {
+        this.dealPriceIndexId = dealPriceIndexId;
     }
 
     @Column(name = "DEAL_PRICE_FX_VALUE")
@@ -339,31 +370,17 @@ public class DealPositionViewDetail {
     }
 
 
-    @Transient
-    @JsonIgnore
-    public CurrencyCode getDealPriceCurrencyCode() {
-        return CurrencyCode.lookUp(dealPriceCurrencyCodeValue);
-    }
-
-    @Transient
-    @JsonIgnore
-    public UnitOfMeasureCode getDealPriceUnitOfMeasure() {
-        return UnitOfMeasureCode.lookUp(dealPriceUnitOfMeasureCodeValue);
-    }
-
-
-    @Transient
-    @JsonIgnore
-    public Price getDealPrice() {
-        return new Price(
-                dealPriceRfValue,
-                getDealPriceCurrencyCode(),
-                getDealPriceUnitOfMeasure());
-    }
-
-
     public void setDealPriceFxRateValue(BigDecimal dealPriceFxRateValue) {
         this.dealPriceFxRateValue = dealPriceFxRateValue;
+    }
+
+    @Column(name = "DEAL_PRICE_FX_INDEX_ID")
+    public Integer getDealPriceFxIndexId() {
+        return dealPriceFxIndexId;
+    }
+
+    public void setDealPriceFxIndexId(Integer dealPriceFxIndexId) {
+        this.dealPriceFxIndexId = dealPriceFxIndexId;
     }
 
     @Column(name = "MARKET_PRICE_RF_VALUE")
@@ -375,49 +392,26 @@ public class DealPositionViewDetail {
         this.marketPriceRfValue = marketPriceRfValue;
     }
 
-    @Column(name = "MARKET_INDEX_CURRENCY_CODE")
-    public String getMarketPriceCurrencyCodeValue() {
-        return marketPriceCurrencyCodeValue;
+    @Column(name = "MARKET_INDEX_ID")
+    public Integer getMarketPriceIndexId() {
+        return marketPriceIndexId;
     }
 
-    public void setMarketPriceCurrencyCodeValue(String marketPriceCurrencyCodeValue) {
-        this.marketPriceCurrencyCodeValue = marketPriceCurrencyCodeValue;
+    public void setMarketPriceIndexId(Integer marketPriceIndexId) {
+        this.marketPriceIndexId = marketPriceIndexId;
     }
 
-    @Column(name = "MARKET_INDEX_UOM_CODE")
-    public String getMarketPriceUnitOfMeasureCodeValue() {
-        return marketPriceUnitOfMeasureCodeValue;
+    @Column(name = "MARKET_FX_INDEX_ID")
+    public Integer getMarketPriceFxIndexId() {
+        return marketPriceFxIndexId;
     }
 
-    public void setMarketPriceUnitOfMeasureCodeValue(String marketPriceUnitOfMeasureCodeValue) {
-        this.marketPriceUnitOfMeasureCodeValue = marketPriceUnitOfMeasureCodeValue;
-    }
-
-
-    @Transient
-    @JsonIgnore
-    public CurrencyCode getMarketPriceCurrencyCode() {
-        return CurrencyCode.lookUp(marketPriceCurrencyCodeValue);
-    }
-
-    @Transient
-    @JsonIgnore
-    public UnitOfMeasureCode getMarketPriceUnitOfMeasure() {
-        return UnitOfMeasureCode.lookUp(marketPriceUnitOfMeasureCodeValue);
+    public void setMarketPriceFxIndexId(Integer marketPriceFxIndexId) {
+        this.marketPriceFxIndexId = marketPriceFxIndexId;
     }
 
 
-    @Transient
-    @JsonIgnore
-    public Price getMarketPrice() {
-        return new Price(
-                marketPriceRfValue,
-                getMarketPriceCurrencyCode(),
-                getMarketPriceUnitOfMeasure());
-    }
-
-
-    @Column(name = "MARKET_PRICE_FX_VALUE")
+    @Column(name = "MARKET_FX_VALUE")
     public BigDecimal getMarketPriceFxValue() {
         return marketPriceFxValue;
     }

@@ -42,18 +42,19 @@ import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
 	  	    + "          deal.dealDetail.endDate,"
        		+ "          deal.dealTypeValue, "
        		+ "          deal.dealDetail.buySellCodeValue,"
-		    +  "         deal.dealDetail.reportingCurrencyCodeValue," +
-			   "		 deal.dealDetail.volumeQuantity," +
-			   "         deal.dealDetail.volumeUnitOfMeasureCodeValue," +
-			   "	  	 deal.dealDetail.settlementCurrencyCodeValue," +
-			   "         deal.detail.dealPriceValuationCodeValue," +
-			   "         deal.dealPriceIndex.id," +
-			   "         deal.detail.fixedPriceValue," +
-			   "         deal.detail.fixedPriceUnitOfMeasureCodeValue," +
-			   "         deal.detail.fixedPriceCurrencyCodeValue," +
-			   "         deal.detail.marketValuationCodeValue," +
-			   "         deal.marketPriceIndex.id" +
-			   "         ) "
+		    +  "         deal.dealDetail.reportingCurrencyCodeValue,"
+	    	+  "         deal.dealDetail.costCurrencyCodeValue,"
+			+  "		 deal.dealDetail.volumeQuantity,"
+			+  "         deal.dealDetail.volumeUnitOfMeasureCodeValue,"
+			+  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"
+			+  "         deal.detail.dealPriceValuationCodeValue,"
+			+  "         deal.dealPriceIndex.id,"
+			+  "         deal.detail.fixedPriceValue,"
+			+  "         deal.detail.fixedPriceUnitOfMeasureCodeValue,"
+			+  "         deal.detail.fixedPriceCurrencyCodeValue,"
+			+  "         deal.detail.marketValuationCodeValue,"
+			+  "         deal.marketPriceIndex.id"
+			+  "         ) "
        		+ "   FROM PhysicalDeal deal " +
 			   " WHERE deal.id in (:dealIds) " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),

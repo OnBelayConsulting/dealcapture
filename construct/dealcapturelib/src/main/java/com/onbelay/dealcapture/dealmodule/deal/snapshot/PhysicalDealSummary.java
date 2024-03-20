@@ -27,6 +27,7 @@ public class PhysicalDealSummary extends DealSummary {
             String dealTypeCodeValue,
             String buySellCodeValue,
             String reportingCurrencyCodeValue,
+            String costCurrencyCodeValue,
             BigDecimal volumeQuantity,
             String volumeUnitOfMeasureCodeValue,
             String settlementCurrencyCodeValue,
@@ -46,6 +47,7 @@ public class PhysicalDealSummary extends DealSummary {
                 dealTypeCodeValue,
                 buySellCodeValue,
                 reportingCurrencyCodeValue,
+                costCurrencyCodeValue,
                 volumeQuantity,
                 volumeUnitOfMeasureCodeValue,
                 settlementCurrencyCodeValue);

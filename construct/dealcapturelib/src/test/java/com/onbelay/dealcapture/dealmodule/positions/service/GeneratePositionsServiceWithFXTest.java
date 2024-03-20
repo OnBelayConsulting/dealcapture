@@ -19,17 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GeneratePositionsServiceTest extends DealServiceTestCase {
-
-    @Autowired
-    private DealPositionService dealPositionService;
-
-    @Autowired
-    private GeneratePositionsService generatePositionsService;
-
-
-    private LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
-    private LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
+public class GeneratePositionsServiceWithFXTest extends PositionsServiceWithFxTestCase {
 
     @Test
     public void generatePhysicalPositionsWithFixedDealPrice() {
@@ -77,8 +67,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getFixedPriceCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getFixedPriceUnitOfMeasure());
 
-        assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
+        assertEquals(false, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
 
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
@@ -88,6 +77,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
                 endDate).get(0);
 
         assertEquals(marketRiskFactor.getEntityId().getId(), positionSnapshot.getMarketPriceRiskFactorId().getId());
+        assertNotNull(positionSnapshot.getMarketPriceFxRiskFactorId());
     }
 
 
@@ -115,14 +105,16 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
-        assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
-        PriceRiskFactorSnapshot dealIndexRiskFactor = priceRiskFactorService.findByPriceIndexIds(
-                List.of(dealPriceIndex.getId()),
+        assertNull(positionSnapshot.getDealPriceFxRiskFactorId());
+
+        PriceRiskFactorSnapshot marketRiskFactor = priceRiskFactorService.findByPriceIndexIds(
+                List.of(marketIndex.getId()),
                 startDate,
                 endDate).get(0);
 
-        assertEquals(dealIndexRiskFactor.getEntityId().getId(), positionSnapshot.getDealPriceRiskFactorId().getId());
+        assertEquals(marketRiskFactor.getEntityId().getId(), positionSnapshot.getMarketPriceRiskFactorId().getId());
+        assertNotNull(positionSnapshot.getMarketPriceFxRiskFactorId());
 
     }
 
@@ -133,7 +125,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexPlusBuyDeal.getId()));
         EvaluationContext context = EvaluationContext
                 .build()
-                .withCurrency(CurrencyCode.CAD)
+                .withCurrency(CurrencyCode.USD)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -147,25 +139,9 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
                 indexPlusBuyDeal.generateEntityId());
 
-        assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX_PLUS, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
-        PriceRiskFactorSnapshot dealIndexRiskFactor = priceRiskFactorService.findByPriceIndexIds(
-                List.of(dealPriceIndex.getId()),
-                startDate,
-                endDate).get(0);
-
-        assertEquals(dealIndexRiskFactor.getEntityId().getId(), positionSnapshot.getDealPriceRiskFactorId().getId());
-
-        PriceRiskFactorSnapshot marketRiskFactor = priceRiskFactorService.findByPriceIndexIds(
-                List.of(marketIndex.getId()),
-                startDate,
-                endDate).get(0);
-
-        assertEquals(marketRiskFactor.getEntityId().getId(), positionSnapshot.getMarketPriceRiskFactorId().getId());
+        assertNotNull(positionSnapshot.getFixedPriceFxRiskFactorId());
     }
 
 }

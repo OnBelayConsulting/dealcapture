@@ -83,6 +83,8 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             if (targetCurrencyCode == physicalDealSummary.getSettlementCurrencyCode()) {
                 positionSnapshot.getSettlementDetail().setIsSettlementPosition(true);
                 positionSnapshot.getSettlementDetail().setSettlementCurrencyCode(targetCurrencyCode);
+            } else {
+                positionSnapshot.getSettlementDetail().setIsSettlementPosition(false);
             }
 
             setPositionHolders(
@@ -335,12 +337,12 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
 
             if (physicalPositionHolder.getMarketFxHolder() != null) {
                 positionSnapshot.setMarketPriceFxRiskFactorId(
-                        physicalPositionHolder.getMarketFxHolder().getRiskFactor().getFxIndexId());
+                        physicalPositionHolder.getMarketFxHolder().getRiskFactor().getEntityId());
             }
 
             if (physicalPositionHolder.getCostFxHolder() != null) {
                 positionSnapshot.setCostFxRiskFactorId(
-                        physicalPositionHolder.getCostFxHolder().getRiskFactor().getFxIndexId());
+                        physicalPositionHolder.getCostFxHolder().getRiskFactor().getEntityId());
             }
 
             for (PriceRiskFactorHolder factorHolder : physicalPositionHolder.getBasisToHubMarketHolders()) {

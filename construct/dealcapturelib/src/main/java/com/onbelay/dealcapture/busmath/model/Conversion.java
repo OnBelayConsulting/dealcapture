@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.busmath.model;
 
+import com.onbelay.dealcapture.busmath.exceptions.OBBusinessMathException;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
@@ -33,22 +34,22 @@ public class Conversion extends CalculatedEntity {
 
     @Override
     public CalculatedEntity add(CalculatedEntity entity) {
-        return new Conversion(CalculatedErrorType.ERROR);
+        throw new OBBusinessMathException("Invalid calculated entity");
     }
 
     @Override
     public CalculatedEntity subtract(CalculatedEntity entity) {
-        return new Conversion(CalculatedErrorType.ERROR);
+        throw new OBBusinessMathException("Invalid calculated entity");
     }
 
     @Override
     public CalculatedEntity multiply(CalculatedEntity entity) {
-        return new Conversion(CalculatedErrorType.ERROR);
+        throw new OBBusinessMathException("Invalid calculated entity");
     }
 
     @Override
     public CalculatedEntity divide(CalculatedEntity entity) {
-        return new Conversion(CalculatedErrorType.ERROR);
+        throw new OBBusinessMathException("Invalid calculated entity");
     }
 
     public UnitOfMeasureCode getFromUnitOfMeasure() {

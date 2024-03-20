@@ -15,14 +15,17 @@
  */
 package com.onbelay.dealcapture.busmath.model;
 
+import com.onbelay.dealcapture.busmath.exceptions.OBBusinessMathException;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.shared.enums.CurrencyCode;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Amount extends CalculatedEntity {
-	
+	private static final int amountScale = 3;
 	private CurrencyCode currency;
 
 
@@ -37,17 +40,29 @@ public class Amount extends CalculatedEntity {
 		this.currency = currency;
 	}
 
+	public Amount round() {
+		if (isInError())
+			return this;
+
+		return new Amount(
+				value.setScale(3, RoundingMode.HALF_UP),
+				this.currency);
+	}
+
 	@Override
 	public CalculatedEntity add(CalculatedEntity entity) {
 		if (entity instanceof  Amount == false)
-			return new Amount(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("not an amount");
 		Amount amount = (Amount) entity;
 		return add(amount);
 	}
 
 	public Amount add(Amount amount) {
+		if (this.isInError() || amount.isInError())
+			return this;
+
 		if (this.currency != amount.currency)
-			return new Amount(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
+			throw new OBBusinessMathException("Incompatible Currency");
 		return new Amount(
 				value.add(amount.value, mathContext),
 				currency);
@@ -56,14 +71,17 @@ public class Amount extends CalculatedEntity {
 	@Override
 	public CalculatedEntity subtract(CalculatedEntity entity) {
 		if (entity instanceof  Amount == false)
-			return new Amount(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("not an amount");
 		Amount amount = (Amount) entity;
 		return subtract(amount);
 	}
 
 	public Amount subtract(Amount amount) {
+		if (this.isInError() || amount.isInError())
+			return this;
+
 		if (this.currency != amount.currency)
-			return new Amount(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
+			throw new OBBusinessMathException("Incompatible Currency");
 		return new Amount(
 				value.subtract(amount.value, mathContext),
 				currency);
@@ -73,7 +91,7 @@ public class Amount extends CalculatedEntity {
 	@Override
 	public CalculatedEntity multiply(CalculatedEntity entity) {
 		if (entity instanceof FxRate == false)
-			return new Amount(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("Invalid calculated entity");
 		FxRate rate = (FxRate) entity;
 		return apply(rate);
 	}
@@ -81,6 +99,7 @@ public class Amount extends CalculatedEntity {
 	public Amount apply(FxRate rate) {
 		if (isInError() || rate.isInError())
 			return new Amount(CalculatedErrorType.ERROR);
+
 		if (this.currency == rate.getFromCurrencyCode()) {
 			return new Amount(
 					value.multiply(rate.getValue(), mathContext),
@@ -91,7 +110,7 @@ public class Amount extends CalculatedEntity {
 					rate.getFromCurrencyCode());
 
 		} else {
-			return new Amount(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
+			throw new OBBusinessMathException("Invalid Fx Rate");
 		}
 	}
 
@@ -102,7 +121,7 @@ public class Amount extends CalculatedEntity {
 		} else if (entity instanceof Price price) {
 			return divide(price);
 		} else {
-			return new Price(CalculatedErrorType.ERROR);
+			throw new OBBusinessMathException("Invalid calculated entity");
 		}
 	}
 
@@ -123,6 +142,15 @@ public class Amount extends CalculatedEntity {
 				currency);
 	}
 
+	public Amount negate() {
+		if (isInError())
+			return this;
+
+		return new Amount(
+				this.value.negate(MathContext.DECIMAL128),
+				this.currency);
+	}
+
 	@Override
 	public String toFormula() {
 		if (calculationErrorType == CalculatedErrorType.NO_ERROR) {
@@ -140,7 +168,7 @@ public class Amount extends CalculatedEntity {
 		if (isInError() || price.isInError())
 			return new Quantity(CalculatedErrorType.ERROR);
 		if (this.currency != price.getCurrency())
-			return new Quantity(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
+			throw new OBBusinessMathException("Incompatible currency");
 
 		return new Quantity(
 				value.divide(price.getValue(), divisorMathContext),

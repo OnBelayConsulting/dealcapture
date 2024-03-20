@@ -60,6 +60,9 @@ public abstract class CalculatedEntity {
     }
     
     public boolean isInError() {
+        if (value == null)
+            return true;
+
     	return (calculationErrorType != CalculatedErrorType.NO_ERROR);
     }
     

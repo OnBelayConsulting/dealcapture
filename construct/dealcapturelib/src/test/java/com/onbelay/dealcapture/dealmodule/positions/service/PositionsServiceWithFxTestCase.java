@@ -13,13 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dealcapture.dealmodule.deal.service;
+package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
+import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
@@ -32,11 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
+public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTestCase {
 	
 	protected CompanyRole companyRole;
 	protected CounterpartyRole counterpartyRole;
@@ -65,9 +64,17 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 	
 	@Autowired
 	protected DealService dealService;
+	@Autowired
+	protected DealPositionService dealPositionService;
+
+	@Autowired
+	protected GeneratePositionsService generatePositionsService;
 
 	@Autowired
 	protected PriceRiskFactorService priceRiskFactorService;
+
+	protected LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
+	protected LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
 
 	@Override
 	public void setUp() {
@@ -78,7 +85,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 		marketIndex = PriceIndexFixture.createPriceIndex(
 				"AECO",
 				FrequencyCode.DAILY,
-				CurrencyCode.CAD,
+				CurrencyCode.USD,
 				UnitOfMeasureCode.GJ,
 				PricingLocationFixture.createPricingLocation(
 						"west"));
@@ -92,10 +99,9 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 						"east"));
 
 		fxIndex = FxIndexFixture.createFxIndex(
-				FrequencyCode.MONTHLY,
+				FrequencyCode.DAILY,
 				CurrencyCode.CAD,
 				CurrencyCode.USD);
-
 
 		flush();
 
@@ -105,7 +111,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 				startDate,
 				endDate,
 				DealStatusCode.VERIFIED,
-				CurrencyCode.CAD,
+				CurrencyCode.USD,
 				"indexSellDeal",
 				companyRole,
 				counterpartyRole,
@@ -113,7 +119,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				dealPriceIndex);
-		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
 		indexSellDeal = PhysicalDeal.create(snapshot);
 
 		snapshot = DealFixture.createIndexPhysicalDealSnapshot(
@@ -162,7 +168,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 				startDate,
 				endDate,
 				DealStatusCode.VERIFIED,
-				CurrencyCode.CAD,
+				CurrencyCode.USD,
 				"fixedBuyDeal",
 				companyRole,
 				counterpartyRole,
@@ -174,7 +180,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
-		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
 		fixedPriceBuyDeal = PhysicalDeal.create(snapshot);
 
 
@@ -191,7 +197,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 				marketIndex,
 				new Price(
 						BigDecimal.ONE,
-						CurrencyCode.CAD,
+						CurrencyCode.USD,
 						UnitOfMeasureCode.GJ),
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
@@ -206,7 +212,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 				startDate,
 				endDate,
 				DealStatusCode.VERIFIED,
-				CurrencyCode.CAD,
+				CurrencyCode.USD,
 				"indexPlusBuyDeal",
 				companyRole,
 				counterpartyRole,
@@ -219,7 +225,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 				UnitOfMeasureCode.GJ,
 				dealPriceIndex);
 
-		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
 		indexPlusBuyDeal = PhysicalDeal.create(snapshot);
 		flush();
 		clearCache();

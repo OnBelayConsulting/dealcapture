@@ -36,6 +36,7 @@ public class DealSummary {
 	private DealTypeCode dealTypeCode;
 	private BuySellCode buySellCode;
 	private CurrencyCode reportingCurrencyCode;
+	private CurrencyCode costCurrencyCode;
 	private BigDecimal volumeQuantity;
 	private UnitOfMeasureCode volumeUnitOfMeasureCode;
 	private CurrencyCode settlementCurrencyCode;
@@ -48,6 +49,7 @@ public class DealSummary {
 			String dealTypeCodeValue,
 			String buySellCodeValue,
 			String reportingCurrencyCodeValue,
+			String costCurrencyCodeValue,
 			BigDecimal volumeQuantity,
 			String volumeUnitOfMeasureCodeValue,
 			String settlementCurrencyCodeValue) {
@@ -60,6 +62,7 @@ public class DealSummary {
 		dealTypeCode = DealTypeCode.lookUp(dealTypeCodeValue);
 		this.buySellCode = BuySellCode.lookUp(buySellCodeValue);
 		this.reportingCurrencyCode = CurrencyCode.lookUp(reportingCurrencyCodeValue);
+		this.costCurrencyCode = CurrencyCode.lookUp(costCurrencyCodeValue);
 		this.volumeQuantity = volumeQuantity;
 		this.volumeUnitOfMeasureCode = UnitOfMeasureCode.lookUp(volumeUnitOfMeasureCodeValue);
 		this.settlementCurrencyCode = CurrencyCode.lookUp(settlementCurrencyCodeValue);
@@ -101,5 +104,9 @@ public class DealSummary {
 
 	public CurrencyCode getSettlementCurrencyCode() {
 		return settlementCurrencyCode;
+	}
+
+	public CurrencyCode getCostCurrencyCode() {
+		return costCurrencyCode;
 	}
 }

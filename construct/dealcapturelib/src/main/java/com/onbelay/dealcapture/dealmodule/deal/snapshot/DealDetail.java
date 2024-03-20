@@ -52,6 +52,7 @@ public class DealDetail {
 	private String volumeUnitOfMeasureCodeValue;
 	private String reportingCurrencyCodeValue;
 	private String settlementCurrencyCodeValue;
+	private String costCurrencyCodeValue;
 
 	public DealDetail() {
 		
@@ -200,6 +201,25 @@ public class DealDetail {
 
 	@Transient
 	@JsonIgnore
+	public CurrencyCode getCostCurrencyCode() {
+		return CurrencyCode.lookUp(costCurrencyCodeValue);
+	}
+
+	public void setCostCurrencyCode(CurrencyCode code) {
+		this.costCurrencyCodeValue = code.getCode();
+	}
+
+	@Column(name = "COST_CURRENCY_CODE")
+	public String getCostCurrencyCodeValue() {
+		return costCurrencyCodeValue;
+	}
+
+	public void setCostCurrencyCodeValue(String costCurrencyCodeValue) {
+		this.costCurrencyCodeValue = costCurrencyCodeValue;
+	}
+
+	@Transient
+	@JsonIgnore
 	public DealStatusCode getDealStatus() {
 		return DealStatusCode.lookUp(dealStatusCodeValue);
 	}
@@ -343,5 +363,8 @@ public class DealDetail {
 
 		if (copy.settlementCurrencyCodeValue != null)
 			this.settlementCurrencyCodeValue = copy.settlementCurrencyCodeValue;
+
+		if (copy.costCurrencyCodeValue != null)
+			this.costCurrencyCodeValue = copy.costCurrencyCodeValue;
 	}
 }

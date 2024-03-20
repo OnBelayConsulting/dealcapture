@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.busmath.model;
 
+import com.onbelay.dealcapture.busmath.exceptions.OBBusinessMathException;
 import com.onbelay.dealcapture.unitofmeasure.UnitOfMeasureConverter;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
@@ -33,6 +34,26 @@ public class BusMathTest{
     }
 
     @Test
+    public void addIncompatiblePrice() {
+        Price price = new Price(
+                BigDecimal.ONE,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ);
+
+        try {
+            price.add(
+                    new Price(
+                            BigDecimal.ONE,
+                            CurrencyCode.USD,
+                            UnitOfMeasureCode.GJ));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
+
+    @Test
     public void subtractPrice() {
         Price price = new Price(
                 BigDecimal.ONE,
@@ -47,6 +68,25 @@ public class BusMathTest{
         assertEquals(0, totalPrice.getValue().compareTo(BigDecimal.valueOf(0)));
     }
 
+    @Test
+    public void subtractIncompatiblePrice() {
+        Price price = new Price(
+                BigDecimal.ONE,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ);
+
+        try {
+            price.subtract(
+                    new Price(
+                            BigDecimal.ONE,
+                            CurrencyCode.USD,
+                            UnitOfMeasureCode.GJ));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
 
     @Test
     public void convertPriceUnitOfMeasure() {
@@ -55,7 +95,7 @@ public class BusMathTest{
                 UnitOfMeasureCode.GJ,
                 UnitOfMeasureCode.MMBTU);
 
-        logger.error(fromMMBTUToGJ.toFormula());
+        logger.debug(fromMMBTUToGJ.toFormula());
 
         Price price = new Price(
                 BigDecimal.valueOf(2),
@@ -64,10 +104,59 @@ public class BusMathTest{
 
         Price converted = price.apply(fromMMBTUToGJ);
 
-        logger.error(converted.toFormula());
+        logger.debug(converted.toFormula());
         assertEquals(CurrencyCode.CAD, converted.getCurrency());
         assertEquals(UnitOfMeasureCode.GJ, converted.getUnitOfMeasure());
         assertEquals(0, BigDecimal.valueOf(1.895634).compareTo(converted.value));
+    }
+
+    @Test
+    public void convertPriceUnitOfMeasureFail() {
+        Conversion fromMMBTUToGJ = new Conversion(
+                BigDecimal.valueOf(0.947817),
+                UnitOfMeasureCode.GJ,
+                UnitOfMeasureCode.MMBTU);
+
+        logger.debug(fromMMBTUToGJ.toFormula());
+
+        Price price = new Price(
+                BigDecimal.valueOf(2),
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ);
+
+        try {
+            price.apply(fromMMBTUToGJ);
+            fail("Should have thrown  exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
+
+
+    @Test
+    public void convertIncompatibleCurrencyFail() {
+        FxRate rateCADToUSD = new FxRate(
+                BigDecimal.valueOf(.94),
+                CurrencyCode.USD,
+                CurrencyCode.CAD);
+
+        logger.debug(rateCADToUSD.toFormula());
+
+        Price price = new Price(
+                BigDecimal.ONE,
+                CurrencyCode.EURO,
+                UnitOfMeasureCode.GJ);
+
+        logger.debug(price.toFormula());
+
+        try {
+            price.apply(rateCADToUSD);
+            fail("Should have thrown exception.");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
     }
 
     @Test
@@ -77,17 +166,17 @@ public class BusMathTest{
                 CurrencyCode.USD,
                 CurrencyCode.CAD);
 
-        logger.error(rateCADToUSD.toFormula());
+        logger.debug(rateCADToUSD.toFormula());
 
         Price price = new Price(
                 BigDecimal.ONE,
                 CurrencyCode.CAD,
                 UnitOfMeasureCode.GJ);
 
-        logger.error(price.toFormula());
+        logger.debug(price.toFormula());
 
         Price converted = price.apply(rateCADToUSD);
-        logger.error(converted.toFormula());
+        logger.debug(converted.toFormula());
         assertEquals(CurrencyCode.USD, converted.getCurrency());
         assertEquals(UnitOfMeasureCode.GJ, converted.getUnitOfMeasure());
         assertEquals(0, BigDecimal.valueOf(0.94).compareTo(converted.value));
@@ -173,6 +262,26 @@ public class BusMathTest{
     }
 
     @Test
+    public void calculateAmountFail() {
+        Price price = new Price(
+                BigDecimal.valueOf(2),
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ);
+
+        try {
+            price.multiply(
+                    new Quantity(
+                            BigDecimal.valueOf(10),
+                            UnitOfMeasureCode.MMBTU));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
+
+
+    @Test
     public void addAmount() {
         Amount amount = new Amount(
                 BigDecimal.ONE,
@@ -183,10 +292,30 @@ public class BusMathTest{
                         BigDecimal.ONE,
                         CurrencyCode.CAD));
 
-        logger.error(amount.toFormula());
+        logger.debug(amount.toFormula());
         assertEquals(CurrencyCode.CAD, total.getCurrency());
         assertEquals(0, BigDecimal.valueOf(2).compareTo(total.value));
     }
+
+
+    @Test
+    public void addAmountFail() {
+        Amount amount = new Amount(
+                BigDecimal.ONE,
+                CurrencyCode.CAD);
+
+        try {
+            amount.add(
+                    new Amount(
+                            BigDecimal.ONE,
+                            CurrencyCode.USD));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
+
 
     @Test
     public void divideAmountByPrice() {
@@ -200,9 +329,29 @@ public class BusMathTest{
                         CurrencyCode.CAD,
                         UnitOfMeasureCode.GJ));
 
-        logger.error(quantity.toFormula());
+        logger.debug(quantity.toFormula());
         assertEquals(UnitOfMeasureCode.GJ, quantity.getUnitOfMeasureCode());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(quantity.value));
+    }
+
+
+    @Test
+    public void divideAmountByPriceFail() {
+        Amount amount = new Amount(
+                BigDecimal.valueOf(20),
+                CurrencyCode.USD);
+
+        try {
+            amount.divide(
+                    new Price(
+                            BigDecimal.valueOf(2),
+                            CurrencyCode.CAD,
+                            UnitOfMeasureCode.GJ));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
     }
 
     @Test
@@ -217,11 +366,33 @@ public class BusMathTest{
                 CurrencyCode.CAD);
 
         Amount converted = amount.apply(rate);
-        logger.error(converted.toFormula());
+        logger.debug(converted.toFormula());
         assertEquals(CurrencyCode.USD, converted.getCurrency());
         assertEquals(0, BigDecimal.valueOf(18.8).compareTo(converted.value));
 
     }
+
+    @Test
+    public void convertAmountFail() {
+        Amount amount = new Amount(
+                BigDecimal.valueOf(20),
+                CurrencyCode.EURO);
+
+        FxRate rate = new FxRate(
+                BigDecimal.valueOf(.94),
+                CurrencyCode.USD,
+                CurrencyCode.CAD);
+
+        try {
+            amount.apply(rate);
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+
+    }
+
 
     @Test
     public void divideAmountByQuantity() {
@@ -234,12 +405,11 @@ public class BusMathTest{
                         BigDecimal.valueOf(2),
                         UnitOfMeasureCode.GJ));
 
-        logger.error(price.toFormula());
+        logger.debug(price.toFormula());
         assertEquals(UnitOfMeasureCode.GJ, price.getUnitOfMeasure());
         assertEquals(CurrencyCode.CAD, price.getCurrency());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(price.value));
     }
-
 
     @Test
     public void subtractAmount() {
@@ -252,10 +422,30 @@ public class BusMathTest{
                         BigDecimal.ONE,
                         CurrencyCode.CAD));
 
-        logger.error(amount.toFormula());
+        logger.debug(amount.toFormula());
         assertEquals(CurrencyCode.CAD, total.getCurrency());
         assertEquals(0, BigDecimal.ZERO.compareTo(total.value));
     }
+
+
+    @Test
+    public void subtractAmountFail() {
+        Amount amount = new Amount(
+                BigDecimal.valueOf(1.0),
+                CurrencyCode.USD);
+
+        try {
+            amount.subtract(
+                    new Amount(
+                            BigDecimal.ONE,
+                            CurrencyCode.CAD));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
+
 
     @Test
     public void addQuantity() {
@@ -274,6 +464,24 @@ public class BusMathTest{
 
 
     @Test
+    public void addQuantityFail() {
+        Quantity quantity = new Quantity(
+                BigDecimal.ONE,
+                UnitOfMeasureCode.MMBTU);
+
+        try {
+            quantity.add(
+                    new Quantity(
+                            BigDecimal.ONE,
+                            UnitOfMeasureCode.GJ));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
+
+    @Test
     public void subtractQuantity() {
         Quantity quantity = new Quantity(
                 BigDecimal.valueOf(23.78),
@@ -289,6 +497,24 @@ public class BusMathTest{
     }
 
     @Test
+    public void subtractQuantityFail() {
+        Quantity quantity = new Quantity(
+                BigDecimal.valueOf(23.78),
+                UnitOfMeasureCode.GJ);
+
+        try {
+            quantity.subtract(
+                    new Quantity(
+                            BigDecimal.ONE,
+                            UnitOfMeasureCode.MMBTU));
+            fail("Should have thrown exception");
+        } catch (OBBusinessMathException e) {
+            return;
+        }
+        fail("Should have thrown exception");
+    }
+
+    @Test
     public void convertQuantity() {
         Quantity quantity = new Quantity(
                 BigDecimal.valueOf(23.78),
@@ -301,7 +527,7 @@ public class BusMathTest{
         Quantity total = quantity.apply(fromGJToMMBTU);
         BigDecimal expected = BigDecimal.valueOf(23.78).multiply(BigDecimal.valueOf(0.947817), MathContext.DECIMAL128);
         expected = expected.setScale(6, RoundingMode.HALF_UP);
-        logger.error(expected.toPlainString());
+        logger.debug(expected.toPlainString());
         assertEquals(UnitOfMeasureCode.MMBTU, total.getUnitOfMeasureCode());
         assertEquals(0, expected.compareTo(total.getValue()));
     }
@@ -322,10 +548,10 @@ public class BusMathTest{
                         UnitOfMeasureCode.MMBTU,
                         UnitOfMeasureCode.GJ));
 
-        logger.error("Converted Price:" + convertedPrice.toFormula());
+        logger.debug("Converted Price:" + convertedPrice.toFormula());
 
         Amount amount = convertedPrice.multiply(quantity);
-        logger.error("Amt: " + amount.toFormula());
+        logger.debug("Amt: " + amount.toFormula());
 
         Amount usAmount = amount.apply(
                 new FxRate(
@@ -333,7 +559,7 @@ public class BusMathTest{
                         CurrencyCode.USD,
                         CurrencyCode.CAD));
 
-        logger.error(usAmount.toFormula());
+        logger.debug(usAmount.toFormula());
         assertEquals(0, BigDecimal.valueOf(52128.987183).compareTo(usAmount.value));
     }
 }

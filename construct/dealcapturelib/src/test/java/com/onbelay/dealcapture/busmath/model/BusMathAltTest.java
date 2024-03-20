@@ -30,7 +30,7 @@ public class BusMathAltTest {
         for (int i=0; i < 100; i++)
             total = total + floatValue;
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.##");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class BusMathAltTest {
         for (int i=0; i < 100; i++)
             total = total + doubleValue;
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.##");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class BusMathAltTest {
         for (int i=0; i < 100; i++)
             total = total.add(bgValue, MathContext.DECIMAL128);
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.##");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
 
@@ -59,7 +59,7 @@ public class BusMathAltTest {
         for (int i=0; i < 100; i++)
             total = total + doubleMorePrecisionValue;
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.##");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
     @Test
@@ -69,14 +69,14 @@ public class BusMathAltTest {
         for (int i=0; i < 100; i++)
             total = total.add(bgMorePrecisionValue, MathContext.DECIMAL128);
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.##");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
     @Test
     public void testDoubleComplex() {
         double total = (doubleMorePrecisionValue * 3.45) / 456678;
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.##");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class BusMathAltTest {
         BigDecimal total = bgMorePrecisionValue.multiply(BigDecimal.valueOf(3.45), MathContext.DECIMAL128);
         total = total.divide(BigDecimal.valueOf(456678), MathContext.DECIMAL128);
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.##");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class BusMathAltTest {
         total = total * 3;
 
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###.####");
-        logger.error(decimalFormat.format(total));
+        logger.debug(decimalFormat.format(total));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class BusMathAltTest {
 
         BigDecimal price = BigDecimal.valueOf(10).divide(BigDecimal.valueOf(3), MathContext.DECIMAL128);
         price = price.setScale(4, RoundingMode.HALF_UP);
-        logger.error(price.toPlainString());
+        logger.debug(price.toPlainString());
         BigDecimal total = BigDecimal.ZERO;
 
         BigDecimal quantity = BigDecimal.valueOf(24.5);
@@ -126,7 +126,7 @@ public class BusMathAltTest {
         }
 
         BigDecimal settlementTotal = total.setScale(2, RoundingMode.HALF_UP);
-        logger.error(settlementTotal.toPlainString());
+        logger.debug(settlementTotal.toPlainString());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class BusMathAltTest {
 
         BigDecimal price = BigDecimal.valueOf(10).divide(BigDecimal.valueOf(3), MathContext.DECIMAL128);
         price = price.setScale(4, RoundingMode.HALF_UP);
-        logger.error(price.toPlainString());
+        logger.debug(price.toPlainString());
         BigDecimal total = BigDecimal.ZERO;
 
         BigDecimal quantity = BigDecimal.valueOf(24.5);
@@ -145,7 +145,7 @@ public class BusMathAltTest {
         }
 
         BigDecimal settlementTotal = total.setScale(2, RoundingMode.HALF_UP);
-        logger.error(settlementTotal.toPlainString());
+        logger.debug(settlementTotal.toPlainString());
     }
 
     @Test
@@ -164,14 +164,14 @@ public class BusMathAltTest {
     @Test
     public void exploringMathContextMathContext32() {
         BigDecimal price = BigDecimal.valueOf(1000000).divide(BigDecimal.valueOf(3), MathContext.DECIMAL32);
-        logger.error(price.toPlainString());
+        logger.debug(price.toPlainString());
 
     }
 
     @Test
     public void exploringMathContextMathContext128() {
         BigDecimal price = BigDecimal.valueOf(1000000).divide(BigDecimal.valueOf(3), MathContext.DECIMAL128);
-        logger.error(price.toPlainString());
+        logger.debug(price.toPlainString());
 
     }
 
@@ -179,7 +179,7 @@ public class BusMathAltTest {
     public void exploringRoundingHalfDown() {
         BigDecimal value = BigDecimal.valueOf(10.4456);
         BigDecimal price = value.setScale(2, RoundingMode.DOWN);
-        logger.error(price.toPlainString());
+        logger.debug(price.toPlainString());
     }
 
 
@@ -187,7 +187,7 @@ public class BusMathAltTest {
     public void exploringRoundingHalfUp() {
         BigDecimal value = BigDecimal.valueOf(10.4456);
         BigDecimal price = value.setScale(2, RoundingMode.HALF_UP);
-        logger.error(price.toPlainString());
+        logger.debug(price.toPlainString());
     }
 
 
@@ -198,12 +198,12 @@ public class BusMathAltTest {
         double doubleValue = bigDecimalValue.doubleValue();
         assertEquals(doubleValue2, doubleValue);
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###,###.##");
-        logger.error("BG:" + decimalFormat.format(bigDecimalValue));
-        logger.error("Converted from BG:" + decimalFormat.format(doubleValue));
-        logger.error("Direct Double:" + decimalFormat.format(doubleValue2));
+        logger.debug("BG:" + decimalFormat.format(bigDecimalValue));
+        logger.debug("Converted from BG:" + decimalFormat.format(doubleValue));
+        logger.debug("Direct Double:" + decimalFormat.format(doubleValue2));
 
         BigDecimal convertedBackToBigDecimal = BigDecimal.valueOf(doubleValue);
-        logger.error("Converted back:" + convertedBackToBigDecimal.toPlainString());
+        logger.debug("Converted back:" + convertedBackToBigDecimal.toPlainString());
         assertEquals(-1, bigDecimalValue.compareTo(convertedBackToBigDecimal));
     }
 
@@ -215,12 +215,12 @@ public class BusMathAltTest {
         double doubleValue = bigDecimalValue.doubleValue();
         assertEquals(doubleValue, doubleValue2);
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###,###.##");
-        logger.error("BG:" + decimalFormat.format(bigDecimalValue));
-        logger.error("Converted from BG:" + decimalFormat.format(doubleValue));
-        logger.error("Direct Double:" + decimalFormat.format(doubleValue2));
+        logger.debug("BG:" + decimalFormat.format(bigDecimalValue));
+        logger.debug("Converted from BG:" + decimalFormat.format(doubleValue));
+        logger.debug("Direct Double:" + decimalFormat.format(doubleValue2));
 
         BigDecimal convertedBackToBigDecimal = BigDecimal.valueOf(doubleValue);
-        logger.error("Converted back:" + convertedBackToBigDecimal.toPlainString());
+        logger.debug("Converted back:" + convertedBackToBigDecimal.toPlainString());
         assertEquals(0, bigDecimalValue.compareTo(convertedBackToBigDecimal));
     }
 
