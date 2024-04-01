@@ -185,14 +185,19 @@ public class ConcurrentRiskFactorManager implements RiskFactorManager {
                     secondCode));
 
         FxIndexPositionDateContainer container = fxIndexContainerMap.get(fxIndex.getEntityId().getId());
+        LocalDate factorDate;
+        if (fxIndex.getDetail().getFrequencyCode() == FrequencyCode.MONTHLY)
+            factorDate = marketDate.withDayOfMonth(1);
+        else
+            factorDate = marketDate;
 
-        FxRiskFactorSnapshot riskFactor = container.findRiskFactor(marketDate);
+        FxRiskFactorSnapshot riskFactor = container.findRiskFactor(factorDate);
         if (riskFactor != null) {
             return new FxRiskFactorHolder(riskFactor);
         } else {
             FxRiskFactorHolder holder =  new FxRiskFactorHolder(
                     fxIndex,
-                    marketDate);
+                    factorDate);
             fxRiskFactorHolderQueue.add(holder);
             return holder;
         }
