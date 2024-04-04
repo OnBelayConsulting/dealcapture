@@ -55,6 +55,8 @@ public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTe
 	protected PhysicalDeal indexBuyDeal;
 	protected PhysicalDeal indexPlusBuyDeal;
 
+	protected LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
+
 	protected LocalDate startDate = LocalDate.of(2024, 1, 1);
 	protected LocalDate endDate = LocalDate.of(2024, 1, 31);
 

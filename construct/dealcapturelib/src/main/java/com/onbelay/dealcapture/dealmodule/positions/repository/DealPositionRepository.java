@@ -5,7 +5,9 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
+import com.onbelay.shared.enums.CurrencyCode;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DealPositionRepository {
@@ -17,11 +19,14 @@ public interface DealPositionRepository {
 
     List<DealPosition> findByDeal(EntityId dealEntityId);
 
+    List<Integer> findIdsByDeal(EntityId dealEntityId);
+
     List<Integer> findPositionIds(DefinedQuery definedQuery);
 
-    List<DealPositionView> findDealPositionViewsByDeal(EntityId dealId);
-
-    List<DealPositionView> findDealPositionViews(List<Integer> positionIds);
+    List<DealPositionView> findDealPositionViews(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
 
     List<DealPosition> fetchByIds(QuerySelectedPage page);
 }

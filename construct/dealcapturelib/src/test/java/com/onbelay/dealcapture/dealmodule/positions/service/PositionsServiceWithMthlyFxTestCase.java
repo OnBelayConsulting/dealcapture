@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public abstract class PositionsServiceWithMthlyFxTestCase extends DealCaptureSpringTestCase {
 	
@@ -54,6 +55,8 @@ public abstract class PositionsServiceWithMthlyFxTestCase extends DealCaptureSpr
 	protected PhysicalDeal fixedPriceBuyDeal;
 	protected PhysicalDeal indexBuyDeal;
 	protected PhysicalDeal indexPlusBuyDeal;
+
+	protected LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
 
 	protected LocalDate startDate = LocalDate.of(2024, 1, 1);
 	protected LocalDate endDate = LocalDate.of(2024, 1, 31);

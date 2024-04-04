@@ -5,30 +5,31 @@ import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
-import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
 import com.onbelay.dealcapture.unitofmeasure.UnitOfMeasureConverter;
 import com.onbelay.shared.enums.BuySellCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class PhysicalPositionValuator implements PositionValuator {
     private static final Logger logger = LogManager.getLogger();
     private DealPositionView positionView;
+    private TotalCostPositionSummary totalCostPositionSummary;
     private ValuationIndexManager valuationIndexManager;
 
     public PhysicalPositionValuator(
             ValuationIndexManager valuationIndexManager,
+            TotalCostPositionSummary totalCostPositionSummary,
             DealPositionView positionView) {
 
+        this.totalCostPositionSummary = totalCostPositionSummary;
         this.valuationIndexManager = valuationIndexManager;
         this.positionView = positionView;
     }
@@ -51,9 +52,11 @@ public class PhysicalPositionValuator implements PositionValuator {
         if (dealPrice.isInError())
             valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MTM_DEAL_PRICE);
 
-        final Amount totalCostAmount;
-        if (positionView.hasCosts())
-            totalCostAmount = calculateCosts();
+        Amount totalCostAmount;
+        if (totalCostPositionSummary != null)
+            totalCostAmount = new Amount(
+                    totalCostPositionSummary.getTotalCostAmount(),
+                    positionView.getDetail().getCurrencyCode());
         else
             totalCostAmount = new Amount(
                     BigDecimal.ZERO,
@@ -104,55 +107,6 @@ public class PhysicalPositionValuator implements PositionValuator {
             }
 
         }
-    }
-
-    private Amount calculateCosts() {
-        BigDecimal totalCosts = BigDecimal.ZERO;
-
-        FxRate fxRate = positionView.getCostFxRate(valuationIndexManager);
-
-        if (positionView.getDetail().getCurrencyCode() != positionView.getDetail().getCostCurrencyCode()) {
-
-            if (fxRate == null) {
-                logger.error("No fx Rate for costs.");
-                return new Amount(CalculatedErrorType.ERROR);
-            }
-
-        }
-
-        for (int i = 1; i < 6; i++) {
-            BigDecimal cost = positionView.getCostPositionDetail().getCostAmount(i);
-            if (cost != null) {
-                CostTypeCode costTypeCode = positionView.getCostPositionDetail().getCostTypeCode(i);
-
-                if (positionView.getDetail().getCurrencyCode() != positionView.getDetail().getSettlementCurrencyCode()) {
-                    cost.multiply(positionView.getDetail().getCostFxRateValue(), MathContext.DECIMAL128);
-
-                }
-                if (costTypeCode == CostTypeCode.PER_UNIT) {
-
-                    if (positionView.getDetail().getVolumeUnitOfMeasure() != positionView.getDetail().getDealUnitOfMeasureCode()) {
-                        Conversion conversion = UnitOfMeasureConverter.findConversion(
-                                positionView.getDetail().getVolumeUnitOfMeasure(),
-                                positionView.getDetail().getDealUnitOfMeasureCode());
-                        cost = cost.multiply(conversion.getValue(), MathContext.DECIMAL128);
-                        cost = cost.setScale(3, RoundingMode.HALF_UP);
-
-                        cost = cost.multiply(positionView.getDetail().getVolumeQuantityValue(), MathContext.DECIMAL128);
-                    }
-                }
-                totalCosts = totalCosts.add(cost, MathContext.DECIMAL128);
-
-            }
-        }
-        Amount totalAmount = new Amount(
-                totalCosts,
-                positionView.getDetail().getCostCurrencyCode());
-
-        if (fxRate != null && fxRate.isInError() == false)
-            totalAmount = totalAmount.apply(fxRate);
-
-       return totalAmount;
     }
 
     private void setSettlementAmounts(

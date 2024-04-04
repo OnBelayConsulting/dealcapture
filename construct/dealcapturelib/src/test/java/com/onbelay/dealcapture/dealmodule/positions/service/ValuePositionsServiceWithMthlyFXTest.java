@@ -68,6 +68,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.USD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -92,6 +93,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
 
         valuePositionsService.valuePositions(
                 fixedPriceBuyDeal.generateEntityId(),
+                CurrencyCode.USD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -124,6 +127,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -144,6 +148,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
 
         valuePositionsService.valuePositions(
                 fixedPriceSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -170,6 +176,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -190,6 +197,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
 
         valuePositionsService.valuePositions(
                 indexBuyDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -213,6 +222,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -233,6 +243,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
 
         valuePositionsService.valuePositions(
                 indexSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -261,6 +273,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.USD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -281,6 +294,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
 
         valuePositionsService.valuePositions(
                 indexPlusBuyDeal.generateEntityId(),
+                CurrencyCode.USD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -304,6 +319,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -324,6 +340,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
 
         valuePositionsService.valuePositions(
                 indexPlusSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();

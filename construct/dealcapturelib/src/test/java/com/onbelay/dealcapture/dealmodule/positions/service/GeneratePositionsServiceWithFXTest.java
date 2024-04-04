@@ -29,6 +29,7 @@ public class GeneratePositionsServiceWithFXTest extends PositionsServiceWithFxTe
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -87,6 +88,7 @@ public class GeneratePositionsServiceWithFXTest extends PositionsServiceWithFxTe
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -126,6 +128,7 @@ public class GeneratePositionsServiceWithFXTest extends PositionsServiceWithFxTe
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.USD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 

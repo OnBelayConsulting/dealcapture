@@ -11,6 +11,7 @@ import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,8 @@ public class PhysicalPositionsFixture {
 
     public static List<DealPositionSnapshot> createPositions(
             PhysicalDeal deal,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime,
             PriceRiskFactor marketPriceRiskFactor,
             FxRiskFactor fxRiskFactor) {
 
@@ -28,6 +31,9 @@ public class PhysicalPositionsFixture {
             snapshot.setDealId(deal.generateEntityId());
             snapshot.setDealPriceFxRiskFactorId(fxRiskFactor.generateEntityId());
             snapshot.setMarketPriceRiskFactorId(marketPriceRiskFactor.generateEntityId());
+
+            snapshot.getDealPositionDetail().setCurrencyCode(currencyCode);
+            snapshot.getDealPositionDetail().setCreateUpdateDateTime(createdDateTime);
 
             snapshot.getDetail().setDealMarketValuationCode(ValuationCode.INDEX);
             snapshot.getDetail().setDealPriceValuationCode(ValuationCode.FIXED);

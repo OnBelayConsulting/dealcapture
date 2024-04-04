@@ -120,50 +120,6 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
-            <column name="COST_FX_RISK_FACTOR_ID"
-                    type="java.sql.Types.NUMERIC(10, 0)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_1_NAME"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_1_AMOUNT"
-                    type="java.sql.Types.NUMERIC(8, 3)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_2_NAME"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_2_AMOUNT"
-                    type="java.sql.Types.NUMERIC(8, 3)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_3_NAME"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_3_AMOUNT"
-                    type="java.sql.Types.NUMERIC(8, 3)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_4_NAME"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_4_AMOUNT"
-                    type="java.sql.Types.NUMERIC(8, 3)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_5_NAME"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="COST_5_AMOUNT"
-                    type="java.sql.Types.NUMERIC(8, 3)">
-                <constraints nullable="true"/>
-            </column>
             <column name="ERROR_CODE"
                     type="java.sql.Types.VARCHAR(320)">
                 <constraints nullable="false"/>

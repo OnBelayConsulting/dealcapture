@@ -24,6 +24,7 @@ public class DealPositionDetail extends AbstractDetail {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime createUpdateDateTime;
+    private LocalDateTime valuedDateTime;
     private BigDecimal volumeQuantityValue;
     private String volumeUnitOfMeasureValue;
     private String frequencyCodeValue;
@@ -51,6 +52,9 @@ public class DealPositionDetail extends AbstractDetail {
 
         if (copy.createUpdateDateTime != null)
             this.createUpdateDateTime = copy.createUpdateDateTime;
+
+        if (copy.valuedDateTime != null)
+            this.valuedDateTime = copy.valuedDateTime;
 
         if (copy.volumeQuantityValue != null)
             this.volumeQuantityValue = copy.volumeQuantityValue;
@@ -90,6 +94,15 @@ public class DealPositionDetail extends AbstractDetail {
 
     public void setCreateUpdateDateTime(LocalDateTime createUpdateDate) {
         this.createUpdateDateTime = createUpdateDate;
+    }
+
+    @Column(name = "VALUED_DATETIME")
+    public LocalDateTime getValuedDateTime() {
+        return valuedDateTime;
+    }
+
+    public void setValuedDateTime(LocalDateTime valuedDateTime) {
+        this.valuedDateTime = valuedDateTime;
     }
 
     public void setEndDate(LocalDate endDate) {

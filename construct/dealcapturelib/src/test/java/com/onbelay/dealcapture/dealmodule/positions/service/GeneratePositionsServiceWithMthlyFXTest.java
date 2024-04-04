@@ -27,6 +27,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -96,6 +97,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -135,6 +137,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.USD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 

@@ -34,7 +34,6 @@ import com.onbelay.core.entity.repository.BaseRepository;
 @Transactional
 
 public class DealCostRepositoryBean extends BaseRepository<DealCost> implements DealCostRepository {
-	public static final String BEAN_NAME = "dealCostRepository";
 	public static final String FETCH_DEAL_COSTS = "DealCostRepository.FETCH_DEAL_COSTS";
 	public static final String FIND_BY_DEAL_AND_NAME = "DealCostRepository.FIND_BY_DEAL_AND_NAME";
     public static final String FETCH_DEAL_COST_SUMMARIES = "DealCostRepository.FETCH_DEAL_COST_SUMMARIES" ;

@@ -59,7 +59,6 @@ import java.util.List;
 			   + "          deal.dealTypeValue, "
 			   + "          deal.dealDetail.buySellCodeValue,"
 			   + "          deal.dealDetail.reportingCurrencyCodeValue,"
-			   + "          deal.dealDetail.costCurrencyCodeValue,"
 			   + "		    deal.dealDetail.volumeQuantity,"
 			   + "          deal.dealDetail.volumeUnitOfMeasureCodeValue,"
 			   + "          deal.dealDetail.settlementCurrencyCodeValue)"
@@ -76,7 +75,6 @@ import java.util.List;
 			   + "          deal.dealTypeValue, "
 			   + "          deal.dealDetail.buySellCodeValue,"
 			   + "          deal.dealDetail.reportingCurrencyCodeValue,"
-			   + "          deal.dealDetail.costCurrencyCodeValue,"
 			   + "		    deal.dealDetail.volumeQuantity,"
 			   + "          deal.dealDetail.volumeUnitOfMeasureCodeValue,"
 			   + "          deal.dealDetail.settlementCurrencyCodeValue)"
@@ -110,9 +108,6 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		super.createWith(snapshot);
 		this.dealDetail.setDefaults();
 		this.dealDetail.copyFrom(snapshot.getDealDetail());
-
-		if (dealDetail.getCostCurrencyCode() == null)
-			dealDetail.setCostCurrencyCode(dealDetail.getReportingCurrencyCode());
 
 		this.dealTypeValue = snapshot.getDealType().getCode();
 	}

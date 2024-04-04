@@ -80,7 +80,7 @@ public class DealPositionsBatchUpdater {
 		public void execute(Connection connection) throws SQLException {
 
 			String sqlInsert = "UPDATE DEAL_POSITION "+
-					 "SET CREATE_UPDATE_DATETIME = ?, " +
+					 "SET VALUED_DATETIME = ?, " +
 					"     ERROR_CODE = ?," +
 					"     MTM_VALUATION = ?, " +
 					"     COST_SETTLEMENT_AMOUNT = ?, " +

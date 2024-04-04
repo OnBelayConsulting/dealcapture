@@ -17,6 +17,7 @@ import org.hibernate.type.YesNoConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class DealPositionViewDetail {
 
@@ -25,6 +26,7 @@ public class DealPositionViewDetail {
     private LocalDate endDate;
     private String dealTypeCodeValue;
     private String currencyCodeValue;
+    private LocalDateTime createdDateTime;
     private String volumeUnitOfMeasureValue;
     private BigDecimal volumeQuantityValue;
 
@@ -40,10 +42,6 @@ public class DealPositionViewDetail {
     private String marketPriceValuationValue;
     private String ticketNo;
     private String buySellCodeValue;
-
-    private String costCurrencyCodeValue;
-    private BigDecimal costFxRateValue;
-    private Integer    costFxIndexId;
 
     private Boolean isSettlementPosition;
     private String settlementCurrencyCodeValue;
@@ -126,6 +124,15 @@ public class DealPositionViewDetail {
 
     public void setVolumeQuantityValue(BigDecimal volumeQuantityValue) {
         this.volumeQuantityValue = volumeQuantityValue;
+    }
+
+    @Column(name = "CREATE_UPDATE_DATETIME")
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 
     @Transient
@@ -286,24 +293,6 @@ public class DealPositionViewDetail {
         this.fixedFxIndexId = fixedFxIndexId;
     }
 
-    @Column(name = "COST_FX_VALUE")
-    public BigDecimal getCostFxRateValue() {
-        return costFxRateValue;
-    }
-
-    public void setCostFxRateValue(BigDecimal costFxRateValue) {
-        this.costFxRateValue = costFxRateValue;
-    }
-
-    @Column(name = "COST_FX_INDEX_ID")
-    public Integer getCostFxIndexId() {
-        return costFxIndexId;
-    }
-
-    public void setCostFxIndexId(Integer costFxIndexId) {
-        this.costFxIndexId = costFxIndexId;
-    }
-
     @Transient
     @JsonIgnore
     public CurrencyCode getSettlementCurrencyCode() {
@@ -317,21 +306,6 @@ public class DealPositionViewDetail {
 
     public void setSettlementCurrencyCodeValue(String settlementCurrencyCodeValue) {
         this.settlementCurrencyCodeValue = settlementCurrencyCodeValue;
-    }
-
-    @Transient
-    @JsonIgnore
-    public CurrencyCode getCostCurrencyCode() {
-        return CurrencyCode.lookUp(costCurrencyCodeValue);
-    }
-
-    @Column(name = "COST_CURRENCY_CODE")
-    public String getCostCurrencyCodeValue() {
-        return costCurrencyCodeValue;
-    }
-
-    public void setCostCurrencyCodeValue(String costCurrencyCodeValue) {
-        this.costCurrencyCodeValue = costCurrencyCodeValue;
     }
 
     @Column(name = "IS_SETTLEMENT_POSITION")

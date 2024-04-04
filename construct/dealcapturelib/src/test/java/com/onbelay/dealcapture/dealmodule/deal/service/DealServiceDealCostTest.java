@@ -23,6 +23,8 @@ import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 import com.onbelay.shared.enums.CommodityCode;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -44,9 +46,10 @@ public class DealServiceDealCostTest extends DealServiceTestCase {
 				counterpartyRole,
                 marketIndex);
 		flush();
-		DealCostFixture.createCost(
+		DealCostFixture.createPerUnitCost(
 				physicalDeal,
-				CostTypeCode.PER_UNIT,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
 				CostNameCode.FACILITY_PER_UNIT_FEE,
 				BigDecimal.TEN);
 		flush();
@@ -67,6 +70,8 @@ public class DealServiceDealCostTest extends DealServiceTestCase {
 		DealCostSnapshot costSnapshot = new DealCostSnapshot();
 		costSnapshot.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
 		costSnapshot.getDetail().setCostValue(BigDecimal.valueOf(17.45));
+		costSnapshot.getDetail().setCurrencyCode(CurrencyCode.CAD);
+
 
 		dealService.saveDealCosts(
 				physicalDeal.generateEntityId(),

@@ -43,7 +43,6 @@ import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
        		+ "          deal.dealTypeValue, "
        		+ "          deal.dealDetail.buySellCodeValue,"
 		    +  "         deal.dealDetail.reportingCurrencyCodeValue,"
-	    	+  "         deal.dealDetail.costCurrencyCodeValue,"
 			+  "		 deal.dealDetail.volumeQuantity,"
 			+  "         deal.dealDetail.volumeUnitOfMeasureCodeValue,"
 			+  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"

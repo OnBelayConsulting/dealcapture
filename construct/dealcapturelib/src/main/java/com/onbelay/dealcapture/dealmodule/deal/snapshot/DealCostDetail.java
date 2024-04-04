@@ -21,6 +21,8 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
@@ -31,6 +33,8 @@ public class DealCostDetail  {
 
 	private BigDecimal costValue;
 	private String costNameCodeValue;
+	private String currencyCodeValue;
+	private String unitOfMeasureCodeValue;
 
     @Column(name="COST_VALUE")
     public BigDecimal getCostValue() {
@@ -61,6 +65,44 @@ public class DealCostDetail  {
 		this.costNameCodeValue = name;
 	}
 
+	@Column(name = "CURRENCY_CODE")
+	public String getCurrencyCodeValue() {
+		return currencyCodeValue;
+	}
+
+	public void setCurrencyCodeValue(String currencyCodeValue) {
+		this.currencyCodeValue = currencyCodeValue;
+	}
+
+	@Transient
+	@JsonIgnore
+	public CurrencyCode getCurrencyCode() {
+		return CurrencyCode.lookUp(currencyCodeValue);
+	}
+
+	public void setCurrencyCode(CurrencyCode code) {
+		this.currencyCodeValue = code.getCode();
+	}
+
+	@Column(name = "UNIT_OF_MEASURE_CODE")
+	public String getUnitOfMeasureCodeValue() {
+		return unitOfMeasureCodeValue;
+	}
+
+	public void setUnitOfMeasureCodeValue(String unitOfMeasureCodeValue) {
+		this.unitOfMeasureCodeValue = unitOfMeasureCodeValue;
+	}
+
+	@Transient
+	@JsonIgnore
+	public UnitOfMeasureCode getUnitOfMeasureCode() {
+		return UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue);
+	}
+
+	public void setUnitOfMeasureCode(UnitOfMeasureCode code) {
+		this.unitOfMeasureCodeValue = code.getCode();
+	}
+
 
 	@Transient
 	@JsonIgnore
@@ -74,6 +116,15 @@ public class DealCostDetail  {
 		if (costValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_VALUE.getCode());
 
+		if (currencyCodeValue == null)
+			throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_CURRENCY.getCode());
+
+		if (getCostName().getCostTypeCode() == CostTypeCode.PER_UNIT) {
+			if (unitOfMeasureCodeValue == null)
+				throw new OBValidationException(DealErrorCode.MISSING_DEAL_COST_UOM.getCode());
+		}
+
+
 	}
 
 
@@ -83,6 +134,12 @@ public class DealCostDetail  {
 
 		if (copy.costNameCodeValue != null)
     		this.costNameCodeValue = copy.costNameCodeValue;
+
+		if (copy.currencyCodeValue != null)
+			this.currencyCodeValue = copy.currencyCodeValue;
+
+		if (copy.unitOfMeasureCodeValue != null)
+			this.unitOfMeasureCodeValue = copy.unitOfMeasureCodeValue;
     }
 	
 }

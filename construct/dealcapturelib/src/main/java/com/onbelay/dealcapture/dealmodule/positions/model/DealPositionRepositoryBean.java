@@ -21,7 +21,9 @@ import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
+import com.onbelay.shared.enums.CurrencyCode;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +36,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Types;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +48,7 @@ import java.util.Map;
 public class DealPositionRepositoryBean extends BaseRepository<DealPosition> implements DealPositionRepository {
 	private static final Logger logger = LogManager.getLogger();
 	public static final String FIND_BY_DEAL = "DealPositionsRepository.FIND_BY_DEAL";
+	public static final String FIND_IDS_BY_DEAL = "DealPositionsRepository.FIND_IDS_BY_DEAL";
     public static final String FIND_DEAL_POSITION_VIEWS_BY_DEAL ="DealPositionsRepository.FIND_DEAL_POSITION_VIEWS_BY_DEAL" ;
 	public static final String FIND_DEAL_POSITION_VIEWS ="DealPositionsRepository.FIND_DEAL_POSITION_VIEWS" ;
 
@@ -101,21 +107,43 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 	}
 
 	@Override
-	public List<DealPositionView> findDealPositionViewsByDeal(EntityId dealId) {
-		return (List<DealPositionView>) executeReportQuery(
-				FIND_DEAL_POSITION_VIEWS_BY_DEAL,
-				"dealId",
-				dealId.getId());
+	public List<DealPositionView> findDealPositionViews(
+			List<Integer> dealIds,
+			CurrencyCode currencyCode,
+			LocalDateTime createdDateTime) {
+
+		String[] names = {"dealIds", "currencyCode", "createdDateTime"};
+
+		if (dealIds.size() < 2000) {
+			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
+
+			return (List<DealPositionView>) executeReportQuery(
+					FIND_DEAL_POSITION_VIEWS,
+					names,
+					parms);
+		} else {
+			ArrayList<DealPositionView> views = new ArrayList<>();
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+			while (subLister.moreElements()) {
+				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), createdDateTime};
+				views.addAll (
+						(Collection<? extends DealPositionView>) executeReportQuery(
+							FIND_DEAL_POSITION_VIEWS,
+							names,
+							parmsTwo));
+
+			}
+			return views;
+		}
 	}
 
 	@Override
-	public List<DealPositionView> findDealPositionViews(List<Integer> positionIds) {
-		return (List<DealPositionView>) executeReportQuery(
-				FIND_DEAL_POSITION_VIEWS,
-				"positionIds",
-				positionIds);
+	public List<Integer> findIdsByDeal(EntityId dealId) {
+		return (List<Integer>) executeReportQuery(
+				FIND_IDS_BY_DEAL,
+				"dealId",
+				dealId);
 	}
-
 
 	@Override
 	public List<DealPosition> fetchByIds(QuerySelectedPage querySelectedPage) {

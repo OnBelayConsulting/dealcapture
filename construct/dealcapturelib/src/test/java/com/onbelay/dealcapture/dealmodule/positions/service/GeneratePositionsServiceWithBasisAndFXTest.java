@@ -40,6 +40,7 @@ public class GeneratePositionsServiceWithBasisAndFXTest extends PositionsService
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
         flush();
@@ -100,6 +101,7 @@ public class GeneratePositionsServiceWithBasisAndFXTest extends PositionsService
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.USD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 

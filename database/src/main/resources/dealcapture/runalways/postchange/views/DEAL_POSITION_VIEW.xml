@@ -20,6 +20,7 @@
             pp.END_DATE,
             pp.DEAL_TYPE_CODE,
             pp.CURRENCY_CODE,
+            pp.CREATE_UPDATE_DATETIME,
             pp.VOLUME_UOM_CODE,
             pp.VOLUME_QUANTITY,
             pp.IS_SETTLEMENT_POSITION,
@@ -32,12 +33,9 @@
             bd.BUY_SELL_CODE,
             bd.TICKET_NO,
             bd.SETTLEMENT_CURRENCY_CODE,
-            bd.COST_CURRENCY_CODE,
             bd.VOLUME_UOM_CODE AS DEAL_UNIT_OF_MEASURE,
             fixedFxRf.MARKET_VALUE as FIXED_FX_VALUE,
             fixedFxRf.FX_INDEX_ID as FIXED_FX_INDEX_ID,
-            costFxRf.MARKET_VALUE as COST_FX_VALUE,
-            costFxRf.FX_INDEX_ID as COST_FX_INDEX_ID,
             dealPRf.MARKET_VALUE as DEAL_PRICE_RF_VALUE,
             dealPRf.PRICE_INDEX_ID as DEAL_PRICE_INDEX_ID,
             dealFxPRf.MARKET_VALUE as DEAL_PRICE_FX_VALUE,
@@ -45,23 +43,11 @@
             marketPRf.MARKET_VALUE as MARKET_PRICE_RF_VALUE,
             marketPRf.PRICE_INDEX_ID as MARKET_INDEX_ID,
             marketFxRf.MARKET_VALUE as MARKET_FX_VALUE,
-            marketFxRf.FX_INDEX_ID as MARKET_FX_INDEX_ID,
-            pp.COST_1_NAME,
-            pp.COST_1_AMOUNT,
-            pp.COST_2_NAME,
-            pp.COST_2_AMOUNT,
-            pp.COST_3_NAME,
-            pp.COST_3_AMOUNT,
-            pp.COST_4_NAME,
-            pp.COST_4_AMOUNT,
-            pp.COST_5_NAME,
-            pp.COST_5_AMOUNT
+            marketFxRf.FX_INDEX_ID as MARKET_FX_INDEX_ID
             FROM
             DEAL_POSITION pp
             INNER JOIN BASE_DEAL bd ON
                 bd.ENTITY_ID = pp.DEAL_ID
-            LEFT OUTER JOIN FX_RISK_FACTOR costFxRf ON
-                costFxRf.ENTITY_ID = pp.COST_FX_RISK_FACTOR_ID
             LEFT OUTER JOIN FX_RISK_FACTOR fixedFxRf ON
                 fixedFxRf.ENTITY_ID = pp.FIXED_PRICE_FX_RISK_FACTOR_ID
             LEFT OUTER JOIN PRICE_RISK_FACTOR dealPRf ON

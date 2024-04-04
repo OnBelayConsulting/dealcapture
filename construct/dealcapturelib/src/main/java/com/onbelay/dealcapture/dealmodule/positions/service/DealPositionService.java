@@ -4,9 +4,14 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.dealmodule.positions.model.CostPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
+import com.onbelay.shared.enums.CurrencyCode;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DealPositionService {
@@ -15,15 +20,37 @@ public interface DealPositionService {
             String positionGeneratorIdentifier,
             List<DealPositionSnapshot> positions);
 
-    List<DealPositionView> fetchDealPositionViews(List<Integer> positionIds);
+    List<DealPositionView> fetchDealPositionViews(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
 
-    List<DealPositionSnapshot> findByDeal(EntityId entityId);
+    List<CostPositionView> fetchCostPositionViewsWithFX(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
 
-    public List<DealPositionView> findDealPositionViewsByDeal(EntityId dealId);
+    List<DealPositionSnapshot> findByDeal(EntityId dealId);
 
-    public QuerySelectedPage findPositionIds(DefinedQuery definedQuery);
+    List<Integer> findIdsByDeal(EntityId entityId);
 
-    public List<DealPositionSnapshot> findByIds(QuerySelectedPage selectedPage);
+    List<Integer> findCostPositionIdsByDeal(EntityId dealId);
+
+    List<CostPositionSnapshot> findCostPositionsByIds(QuerySelectedPage selectedPage);
+
+    QuerySelectedPage findPositionIds(DefinedQuery definedQuery);
+
+    List<DealPositionSnapshot> findByIds(QuerySelectedPage selectedPage);
 
     DealPositionSnapshot load(EntityId entityId);
+
+    List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
+    List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
 }
