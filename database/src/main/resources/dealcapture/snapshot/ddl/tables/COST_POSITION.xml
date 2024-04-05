@@ -77,8 +77,12 @@
                 <constraints nullable="true"/>
             </column>
             <column name="ERROR_CODE"
-                    type="java.sql.Types.VARCHAR(320)">
+                    type="java.sql.Types.VARCHAR(40)">
                 <constraints nullable="false"/>
+            </column>
+            <column name="ERROR_MSG"
+                    type="java.sql.Types.VARCHAR(1000)">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

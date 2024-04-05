@@ -36,6 +36,8 @@ public abstract class DealPositionAssembler extends EntityAssembler implements P
             DealPosition entity,
             DealPositionSnapshot snapshot) {
         super.setEntityAttributes(entity, snapshot);
+
+        snapshot.setDealId(entity.getDeal().generateEntityId());
         snapshot.getDealPositionDetail().copyFrom(entity.getDealPositionDetail());
         snapshot.getSettlementDetail().copyFrom(entity.getSettlementDetail());
     }

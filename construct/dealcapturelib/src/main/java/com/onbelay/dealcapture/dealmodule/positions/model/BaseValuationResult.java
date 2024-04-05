@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionSettlementDetail;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,7 +15,9 @@ public abstract class BaseValuationResult {
 
     private Integer positionId;
     private LocalDateTime currentDateTime;
-    private List<PositionErrorCode> errorCodes = new ArrayList<>();
+    private PositionErrorCode errorCode = PositionErrorCode.SUCCESS;
+
+    private List<String> errorMessages = new ArrayList<>();
 
     public BaseValuationResult(
             Integer positionId,
@@ -34,27 +35,28 @@ public abstract class BaseValuationResult {
     }
 
     public boolean hasErrors() {
-        return errorCodes.isEmpty() == false;
+        return errorCode != PositionErrorCode.SUCCESS;
     }
 
     public String getCompleteErrorCodeMessage() {
-        if (errorCodes.isEmpty())
+        if (errorMessages.isEmpty())
             return SUCCESS;
 
-        if (errorCodes.size() > 10) {
+        if (errorMessages.size() > 10) {
             logger.error("Error message exceeds error message and will be truncated in database.");
-            logger.error(errorCodes.toString());
-            return errorCodes.stream().limit(10).map(c -> c.getCode()).collect(Collectors.joining(","));
+            logger.error(errorMessages.toString());
+            return errorMessages.stream().limit(10).collect(Collectors.joining(","));
         } else {
-            return errorCodes.stream().map(c -> c.getCode()).collect(Collectors.joining(","));
+            return errorMessages.stream().collect(Collectors.joining(","));
         }
     }
 
-    public List<PositionErrorCode> getErrorCodes() {
-        return errorCodes;
+    public PositionErrorCode getErrorCode() {
+        return errorCode;
     }
 
-    public void addErrorCode(PositionErrorCode positionErrorCode) {
-        errorCodes.add(positionErrorCode);
+    public void addErrorMessage(PositionErrorCode positionErrorCode) {
+        this.errorCode = PositionErrorCode.ERROR_INVALID_POSITION_VALUATION;
+        errorMessages.add(positionErrorCode.getDescription());
     }
 }

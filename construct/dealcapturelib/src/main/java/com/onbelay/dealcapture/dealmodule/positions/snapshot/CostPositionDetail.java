@@ -38,6 +38,7 @@ public class CostPositionDetail {
     private String settlementReference;
 
     private String errorCode;
+    private String errorMessage;
 
 
     public void setDefaults() {
@@ -95,6 +96,9 @@ public class CostPositionDetail {
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
+
+        if (copy.errorMessage != null)
+            this.errorMessage = copy.errorMessage;
     }
 
 
@@ -281,5 +285,14 @@ public class CostPositionDetail {
 
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
+    }
+
+    @Column(name = "ERROR_MSG")
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

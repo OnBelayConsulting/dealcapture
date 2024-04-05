@@ -50,7 +50,7 @@ public class PhysicalPositionValuator implements PositionValuator {
         };
 
         if (dealPrice.isInError())
-            valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MTM_DEAL_PRICE);
+            valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MTM_DEAL_PRICE);
 
         Amount totalCostAmount;
         if (totalCostPositionSummary != null)
@@ -69,7 +69,7 @@ public class PhysicalPositionValuator implements PositionValuator {
                 totalCostAmount,
                 valuationResult);
 
-        if (positionView.getDetail().getIsSettlementPosition() == true)
+        if (positionView.getDetail().getIsSettlementPosition())
             setSettlementAmounts(
                 dealPrice,
                 totalCostAmount,
@@ -85,7 +85,7 @@ public class PhysicalPositionValuator implements PositionValuator {
 
         Price marketPrice = getMarketIndexPrice();
         if (marketPrice.isInError()) {
-            valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MISSING_MARKET_PRICE);
+            valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MISSING_MARKET_PRICE);
         }
 
         if (dealPrice.isInError() == false && marketPrice.isInError() == false) {
@@ -99,11 +99,16 @@ public class PhysicalPositionValuator implements PositionValuator {
             Amount amount = netPrice.multiply(positionView.getDetail().getQuantity());
 
             if (amount.isInError()) {
-                valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MTM_CALCULATION);
+                valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MTM_CALCULATION);
             } else {
                 amount = amount.add(totalCostAmount);
-                amount = amount.round();
-                valuationResult.getSettlementDetail().setMarkToMarketValuation(amount.getValue());
+                if (amount.isInError()) {
+                    valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MTM_CALCULATION);
+                    valuationResult.addErrorMessage(PositionErrorCode.ERROR_MISSING_COST_FX_RATE_CONVERSION);
+                } else {
+                    amount = amount.round();
+                    valuationResult.getSettlementDetail().setMarkToMarketValuation(amount.getValue());
+                }
             }
 
         }
@@ -115,7 +120,7 @@ public class PhysicalPositionValuator implements PositionValuator {
             PositionValuationResult valuationResult) {
 
         if (dealPrice.isInError()) {
-            valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_SET_DEAL_PRICE);
+            valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_SET_DEAL_PRICE);
             return;
         }
 
@@ -124,13 +129,27 @@ public class PhysicalPositionValuator implements PositionValuator {
         if (positionView.getDetail().getBuySellCode() == BuySellCode.BUY) {
             settlementAmount = settlementAmount.negate();
         }
-        Amount totalSettlementAmount = settlementAmount.add(totalCostAmount);
 
         settlementAmount = settlementAmount.round();
-        valuationResult.getSettlementDetail().setSettlementAmount(settlementAmount.getValue());
+        if (settlementAmount.isInError()) {
+            valuationResult.addErrorMessage(PositionErrorCode.ERROR_INVALID_SETTLE_AMOUNT);
+        } else {
+            valuationResult.getSettlementDetail().setSettlementAmount(settlementAmount.getValue());
+        }
 
-        totalSettlementAmount = totalSettlementAmount.round();
-        valuationResult.getSettlementDetail().setTotalSettlementAmount(totalSettlementAmount.getValue());
+        if (settlementAmount.isInError()) {
+            valuationResult.addErrorMessage(PositionErrorCode.ERROR_INVALID_TOTAL_SETTLE_MISSING_COST);
+        } else {
+            Amount totalSettlementAmount = settlementAmount.add(totalCostAmount);
+
+            if (totalSettlementAmount.isInError()) {
+                valuationResult.addErrorMessage(PositionErrorCode.ERROR_INVALID_TOTAL_SETTLE_MISSING_COST);
+            } else {
+                totalSettlementAmount = totalSettlementAmount.round();
+                valuationResult.getSettlementDetail().setTotalSettlementAmount(totalSettlementAmount.getValue());
+            }
+        }
+
     }
 
     private Price getMarketIndexPrice() {

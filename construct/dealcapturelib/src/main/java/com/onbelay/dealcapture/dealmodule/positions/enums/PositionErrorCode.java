@@ -18,15 +18,20 @@ package com.onbelay.dealcapture.dealmodule.positions.enums;
 import java.util.*;
 
 public enum PositionErrorCode {
-
-    ERROR_VALUE_POSITION_MISSING_PRICES ("DC_PS-E0001", "Error: Position valuation failed. Missing/Invalid prices."),
-    ERROR_VALUE_MISSING_MARKET_PRICE    ("DC_PS-E0002", "Error: Position valuation failed. Missing/Invalid market price."),
-    ERROR_VALUE_MTM_DEAL_PRICE          ("DC_PS-E0003", "Error: Position valuation failed. Missing/Invalid deal price for MTM."),
-    ERROR_VALUE_MTM_CALCULATION         ("DC_PS-E0005", "Error: Position valuation failed to calculate MtM."),
-    ERROR_VALUE_SET_DEAL_PRICE          ("DC_PS-E0020", "Error: Position valuation failed. Missing/Invalid deal price for settlement."),
-    ERROR_VALUE_SET_CALCULATION         ("DC_PS-E0021", "Error: Position valuation failed to calculate settlement amount"),
-    ERROR_MISSING_FX_RATE_CONVERSION    ("DC_PS-E0022", "Error: Position valuation for risk factor - missing fx rate conversion."),
-    MISSING_BASIS_CONTAINER             ("DC_PS-E0100", "Error: Missing basis container in position generation.");
+    SUCCESS                                 ("0", "Success"),
+    ERROR_VALUE_POSITION_MISSING_PRICES     ("DC_PS-E0001", "Error: Position valuation failed. Missing/Invalid prices."),
+    ERROR_VALUE_MISSING_MARKET_PRICE        ("DC_PS-E0002", "Error: Position valuation failed. Missing/Invalid market price."),
+    ERROR_VALUE_MTM_DEAL_PRICE              ("DC_PS-E0003", "Error: Position valuation failed. Missing/Invalid deal price for MTM."),
+    ERROR_VALUE_MTM_CALCULATION             ("DC_PS-E0005", "Error: Position valuation failed to calculate MtM."),
+    ERROR_VALUE_SET_DEAL_PRICE              ("DC_PS-E0020", "Error: Position valuation failed. Missing/Invalid deal price for settlement."),
+    ERROR_VALUE_SET_CALCULATION             ("DC_PS-E0021", "Error: Position valuation failed to calculate settlement amount"),
+    ERROR_MISSING_FX_RATE_CONVERSION        ("DC_PS-E0022", "Error: Position valuation for risk factor - missing fx rate conversion."),
+    ERROR_MISSING_COST_FX_RATE_CONVERSION   ("DC_PS-E0030", "Error: Position valuation missing cost fx rate conversion."),
+    ERROR_INVALID_MTM_MISSING_COST          ("DC_PS-E0031", "Error: Position valuation invalid MtM - missing cost."),
+    ERROR_INVALID_SETTLE_AMOUNT             ("DC_PS-E0032", "Error: Position valuation invalid settlement amount."),
+    ERROR_INVALID_TOTAL_SETTLE_MISSING_COST ("DC_PS-E0033", "Error: Position valuation invalid total settlement amount - missing cost."),
+    ERROR_INVALID_POSITION_VALUATION        ("DC_PS-E0040", "Error: Position valuation failed. See Error Messages."),
+    MISSING_BASIS_CONTAINER                 ("DC_PS-E0100", "Error: Missing basis container in position generation.");
 
     private String code;
     private String description;

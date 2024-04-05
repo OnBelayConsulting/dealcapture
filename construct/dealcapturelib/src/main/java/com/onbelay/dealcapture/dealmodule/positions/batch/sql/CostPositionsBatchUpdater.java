@@ -83,6 +83,7 @@ public class CostPositionsBatchUpdater {
 			String sqlInsert = "UPDATE COST_POSITION "+
 					 "SET VALUED_DATETIME = ?, " +
 					"     ERROR_CODE = ?," +
+					"     ERROR_MSG = ?, " +
 					"     COST_AMOUNT = ? " +
 					" WHERE ENTITY_ID = ?";
 
@@ -94,15 +95,20 @@ public class CostPositionsBatchUpdater {
 
 					for (CostPositionValuationResult valuation : myList) {
 						preparedStatement.setTimestamp(1, Timestamp.valueOf(valuation.getCurrentDateTime()));
-						preparedStatement.setString(2, valuation.getCompleteErrorCodeMessage());
+						preparedStatement.setString(2, valuation.getErrorCode().getCode());
+
+						if (valuation.hasErrors())
+							preparedStatement.setString(3, valuation.getCompleteErrorCodeMessage());
+						else
+							preparedStatement.setNull(3, Types.VARCHAR);
 
 						if (valuation.getCostAmount() != null)
-							preparedStatement.setBigDecimal(3, valuation.getCostAmount());
+							preparedStatement.setBigDecimal(4, valuation.getCostAmount());
 						else
-							preparedStatement.setNull(3, Types.DECIMAL);
+							preparedStatement.setNull(4, Types.DECIMAL);
 
 
-						preparedStatement.setInt(4, valuation.getPositionId());
+						preparedStatement.setInt(5, valuation.getPositionId());
 						preparedStatement.addBatch();
 					}
 

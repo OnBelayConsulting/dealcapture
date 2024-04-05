@@ -82,6 +82,7 @@ public class DealPositionsBatchUpdater {
 			String sqlInsert = "UPDATE DEAL_POSITION "+
 					 "SET VALUED_DATETIME = ?, " +
 					"     ERROR_CODE = ?," +
+					"     ERROR_MSG = ?, " +
 					"     MTM_VALUATION = ?, " +
 					"     COST_SETTLEMENT_AMOUNT = ?, " +
 					"     SETTLEMENT_AMOUNT = ?, " +
@@ -96,29 +97,33 @@ public class DealPositionsBatchUpdater {
 
 					for (PositionValuationResult valuation : myList) {
 						preparedStatement.setTimestamp(1, Timestamp.valueOf(valuation.getCurrentDateTime()));
-						preparedStatement.setString(2, valuation.getCompleteErrorCodeMessage());
+						preparedStatement.setString(2, valuation.getErrorCode().getCode());
+						if (valuation.hasErrors())
+							preparedStatement.setString(3, valuation.getCompleteErrorCodeMessage());
+						else
+							preparedStatement.setNull(3, Types.VARCHAR);
 
 						if (valuation.getSettlementDetail().getMarkToMarketValuation() != null)
-							preparedStatement.setBigDecimal(3, valuation.getSettlementDetail().getMarkToMarketValuation());
-						else
-							preparedStatement.setNull(3, Types.DECIMAL);
-
-						if (valuation.getSettlementDetail().getCostSettlementAmount() != null)
-							preparedStatement.setBigDecimal(4, valuation.getSettlementDetail().getCostSettlementAmount());
+							preparedStatement.setBigDecimal(4, valuation.getSettlementDetail().getMarkToMarketValuation());
 						else
 							preparedStatement.setNull(4, Types.DECIMAL);
 
-						if (valuation.getSettlementDetail().getSettlementAmount() != null)
-							preparedStatement.setBigDecimal(5, valuation.getSettlementDetail().getSettlementAmount());
+						if (valuation.getSettlementDetail().getCostSettlementAmount() != null)
+							preparedStatement.setBigDecimal(5, valuation.getSettlementDetail().getCostSettlementAmount());
 						else
 							preparedStatement.setNull(5, Types.DECIMAL);
 
-						if (valuation.getSettlementDetail().getTotalSettlementAmount() != null)
-							preparedStatement.setBigDecimal(6, valuation.getSettlementDetail().getTotalSettlementAmount());
+						if (valuation.getSettlementDetail().getSettlementAmount() != null)
+							preparedStatement.setBigDecimal(6, valuation.getSettlementDetail().getSettlementAmount());
 						else
 							preparedStatement.setNull(6, Types.DECIMAL);
 
-						preparedStatement.setInt(7, valuation.getPositionId());
+						if (valuation.getSettlementDetail().getTotalSettlementAmount() != null)
+							preparedStatement.setBigDecimal(7, valuation.getSettlementDetail().getTotalSettlementAmount());
+						else
+							preparedStatement.setNull(7, Types.DECIMAL);
+
+						preparedStatement.setInt(8, valuation.getPositionId());
 						preparedStatement.addBatch();
 					}
 

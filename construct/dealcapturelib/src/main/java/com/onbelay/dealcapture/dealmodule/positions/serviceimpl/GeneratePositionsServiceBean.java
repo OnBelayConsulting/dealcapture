@@ -270,11 +270,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
 
         for (Integer priceIndexId : newPriceRiskFactors.keySet()) {
             SubLister<PriceRiskFactorSnapshot> subLister = new SubLister<>(
-                    newPriceRiskFactors.get(priceIndexId)
-                            .values()
-                            .stream()
-                            .collect(Collectors.toList()),
-                    100);
+                    new ArrayList<>(newPriceRiskFactors.get(priceIndexId).values()),100);
 
             ArrayList<Integer> ids = new ArrayList<>();
 

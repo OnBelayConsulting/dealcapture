@@ -229,7 +229,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
             costPositionSnapshot.getDetail().setErrorCode("0");
 
             if (holder.getCostFxHolder() != null) {
-                costPositionSnapshot.setCostFxRiskFactorId(holder.getSnapshot().getCostFxRiskFactorId());
+                costPositionSnapshot.setCostFxRiskFactorId(holder.getCostFxHolder().getRiskFactor().getEntityId());
             }
 
             if (holder.getSnapshot().getDetail().getIsFixedValued()) {

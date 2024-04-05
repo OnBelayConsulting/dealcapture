@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
+public class GeneratePositionsServiceWithCostsAndFXTest extends DealServiceTestCase {
 
     @Autowired
     private DealPositionService dealPositionService;
@@ -55,7 +55,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         DealCostSnapshot cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
         cost.getDetail().setCostValue(BigDecimal.valueOf(-.50));
-        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
+        cost.getDetail().setCurrencyCode(CurrencyCode.USD);
         fixedPriceBuyDeal.saveDealCosts(List.of(cost));
         flush();
 
@@ -110,6 +110,23 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
+        List<Integer> costPositionIds = dealPositionService.findCostPositionIdsByDeal(deal.generateEntityId());
+        List<CostPositionSnapshot> costSnapshots = dealPositionService.findCostPositionsByIds(new QuerySelectedPage(costPositionIds));
+        assertEquals(31, costSnapshots.size());
+        List<CostPositionSnapshot> costsPerPosition = costSnapshots
+                .stream()
+                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDealPositionDetail().getStartDate()))
+                .toList();
+
+        assertEquals(1, costsPerPosition.size());
+        CostPositionSnapshot facilityPerUnitFee = costsPerPosition
+                .stream()
+                .filter(c-> c.getDetail().getCostNameCode() == CostNameCode.BROKERAGE_DAILY_FEE)
+                .findFirst()
+                .get();
+
+        assertNotNull(facilityPerUnitFee.getCostFxRiskFactorId());
+        assertFalse(facilityPerUnitFee.getDetail().getIsFixedValued());
     }
 
 

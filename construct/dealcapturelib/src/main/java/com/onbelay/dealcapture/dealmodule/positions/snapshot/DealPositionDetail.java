@@ -32,6 +32,7 @@ public class DealPositionDetail extends AbstractDetail {
     private String currencyCodeValue;
 
     private String errorCode;
+    private String errorMessage;
 
 
     public void setDefaults() {
@@ -70,6 +71,10 @@ public class DealPositionDetail extends AbstractDetail {
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
+
+        if (copy.errorMessage != null)
+            this.errorMessage = copy.errorMessage;
+
     }
 
 
@@ -194,4 +199,15 @@ public class DealPositionDetail extends AbstractDetail {
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
+
+
+    @Column(name = "ERROR_MSG")
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
 }

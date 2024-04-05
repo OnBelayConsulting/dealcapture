@@ -62,7 +62,7 @@ public class CostPositionValuator implements CostEvaluator {
         costAmount = costAmount.round();
 
         if (costAmount.isInError())
-            valuationResult.addErrorCode(PositionErrorCode.ERROR_VALUE_MTM_DEAL_PRICE);
+            valuationResult.addErrorMessage(PositionErrorCode.ERROR_MISSING_COST_FX_RATE_CONVERSION);
         else
             valuationResult.setCostAmount(costAmount.getValue());
 
