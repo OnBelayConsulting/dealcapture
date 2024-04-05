@@ -22,16 +22,12 @@ import java.util.stream.Collectors;
 @Immutable
 @NamedQueries({
         @NamedQuery(
-                name = DealPositionRepositoryBean.FIND_DEAL_POSITION_VIEWS_BY_DEAL,
-                query = "SELECT position " +
-                        "  FROM DealPositionView position " +
-                        " WHERE position.dealId = :dealId " +
-                        "ORDER BY position.detail.startDate "),
-        @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_DEAL_POSITION_VIEWS,
                 query = "SELECT position " +
                         "  FROM DealPositionView position " +
-                        " WHERE position.id in (:positionIds) " +
+                        " WHERE position.dealId in (:dealIds) " +
+                        "   AND detail.currencyCodeValue = :currencyCode " +
+                        "   AND detail.createdDateTime = :createdDateTime " +
                         "ORDER BY position.detail.startDate ")
 })
 public class DealPositionView extends AbstractEntity {
@@ -40,8 +36,6 @@ public class DealPositionView extends AbstractEntity {
     private Integer dealId;
 
     private DealPositionViewDetail detail = new DealPositionViewDetail();
-
-    private CostPositionDetail costPositionDetail = new CostPositionDetail();
 
     private List<PositionRiskFactorMappingSummary> mappingSummaries = new ArrayList<>();
 
@@ -73,27 +67,6 @@ public class DealPositionView extends AbstractEntity {
         this.detail = detail;
     }
 
-    @Transient
-    public boolean hasCosts() {
-        return costPositionDetail != null;
-    }
-
-    @Transient
-    @JsonIgnore
-    public FxRate getCostFxRate(ValuationIndexManager valuationIndexManager) {
-        return valuationIndexManager.generateFxRate(
-                detail.getCostFxIndexId(),
-                detail.getCostFxRateValue());
-    }
-
-    @Embedded
-    public CostPositionDetail getCostPositionDetail() {
-        return costPositionDetail;
-    }
-
-    public void setCostPositionDetail(CostPositionDetail costPositionDetail) {
-        this.costPositionDetail = costPositionDetail;
-    }
 
     @Transient
     @JsonIgnore

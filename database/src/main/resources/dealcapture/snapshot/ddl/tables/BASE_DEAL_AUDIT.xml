@@ -50,9 +50,6 @@
             <column name="SETTLEMENT_CURRENCY_CODE" type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="COST_CURRENCY_CODE" type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
             <column name="COUNTERPARTY_ROLE_ID" type="java.sql.Types.NUMERIC(10, 0)"/>
             <column name="COMPANY_ROLE_ID" type="java.sql.Types.NUMERIC(10, 0)"/>
             <column name="VOLUME_UOM_CODE" type="java.sql.Types.VARCHAR(32)"/>

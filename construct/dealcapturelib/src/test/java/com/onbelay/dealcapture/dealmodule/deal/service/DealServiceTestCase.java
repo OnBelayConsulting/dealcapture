@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -55,6 +56,8 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 	protected PhysicalDeal fixedPriceBuyDeal;
 	protected PhysicalDeal indexBuyDeal;
 	protected PhysicalDeal indexPlusBuyDeal;
+
+	protected LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
 
 	protected LocalDate startDate = LocalDate.of(2024, 1, 1);
 	protected LocalDate endDate = LocalDate.of(2024, 1, 31);
@@ -92,7 +95,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 						"east"));
 
 		fxIndex = FxIndexFixture.createFxIndex(
-				FrequencyCode.MONTHLY,
+				FrequencyCode.DAILY,
 				CurrencyCode.CAD,
 				CurrencyCode.USD);
 

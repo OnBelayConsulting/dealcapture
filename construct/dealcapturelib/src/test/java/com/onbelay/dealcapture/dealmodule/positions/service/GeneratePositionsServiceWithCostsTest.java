@@ -1,25 +1,33 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.busmath.model.Amount;
+import com.onbelay.dealcapture.busmath.model.Conversion;
+import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
+import com.onbelay.dealcapture.unitofmeasure.UnitOfMeasureConverter;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.conversions.BigDecimalConversion;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,6 +39,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
     @Autowired
     private GeneratePositionsService generatePositionsService;
 
+    private LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
 
     private LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
     private LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
@@ -46,6 +55,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         DealCostSnapshot cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
         cost.getDetail().setCostValue(BigDecimal.valueOf(-.50));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
         fixedPriceBuyDeal.saveDealCosts(List.of(cost));
         flush();
 
@@ -56,6 +66,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
                 .build()
                 .withCurrency(CurrencyCode.CAD)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
+                .withCreatedDateTime(createdDateTime)
                 .withStartPositionDate(fromMarketDate);
 
         generatePositionsService.generatePositions(
@@ -98,9 +109,6 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
-
-        assertEquals(CostNameCode.BROKERAGE_DAILY_FEE.getCode(), positionSnapshot.getCostDetail().getCost1Name());
-        assertEquals(0, BigDecimal.valueOf(-.50).compareTo(positionSnapshot.getCostDetail().getCost1Amount()));
 
     }
 
@@ -110,30 +118,16 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         ArrayList<DealCostSnapshot> costs = new ArrayList<>();
         DealCostSnapshot cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
-        cost.getDetail().setCostValue(BigDecimal.valueOf(-.50));
+        cost.getDetail().setCostValue(BigDecimal.valueOf(2.0));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
         costs.add(cost);
 
         cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.FACILITY_PER_UNIT_FEE);
-        cost.getDetail().setCostValue(BigDecimal.valueOf(-.25));
+        cost.getDetail().setCostValue(BigDecimal.valueOf(1.0));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
+        cost.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
         costs.add(cost);
-
-        cost = new DealCostSnapshot();
-        cost.getDetail().setCostName(CostNameCode.FACILITY_FLAT_FEE);
-        cost.getDetail().setCostValue(BigDecimal.valueOf(-1.00));
-        costs.add(cost);
-
-        cost = new DealCostSnapshot();
-        cost.getDetail().setCostName(CostNameCode.BROKERAGE_PER_UNIT_FEE);
-        cost.getDetail().setCostValue(BigDecimal.valueOf(-1.00));
-        costs.add(cost);
-
-
-        cost = new DealCostSnapshot();
-        cost.getDetail().setCostName(CostNameCode.TRANSPORTATION_FLAT_FEE);
-        cost.getDetail().setCostValue(BigDecimal.valueOf(-1.00));
-        costs.add(cost);
-
 
         fixedPriceBuyDeal.saveDealCosts(costs);
         flush();
@@ -144,6 +138,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -188,18 +183,36 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
-        for (int i =1; i < 6; i++) {
-            assertNotNull(positionSnapshot.getCostDetail().getCostAmount(i));
-            assertNotNull(positionSnapshot.getCostDetail().getCostName(i));
-        }
-        assertEquals(CostNameCode.BROKERAGE_DAILY_FEE.getCode(), positionSnapshot.getCostDetail().getCost1Name());
-        assertEquals(0, BigDecimal.valueOf(-.50).compareTo(positionSnapshot.getCostDetail().getCost1Amount()));
+        List<Integer> costPositionIds = dealPositionService.findCostPositionIdsByDeal(deal.generateEntityId());
+        List<CostPositionSnapshot> costSnapshots = dealPositionService.findCostPositionsByIds(new QuerySelectedPage(costPositionIds));
+        assertEquals(62, costSnapshots.size());
+        List<CostPositionSnapshot> costsPerPosition = costSnapshots
+                .stream()
+                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDealPositionDetail().getStartDate()))
+                .toList();
+
+        assertEquals(2, costsPerPosition.size());
+        CostPositionSnapshot facilityPerUnitFee = costsPerPosition
+                .stream()
+                .filter(c-> c.getDetail().getCostNameCode() == CostNameCode.FACILITY_PER_UNIT_FEE)
+                .findFirst()
+                .get();
+        assertEquals(0, BigDecimal.TEN.compareTo(facilityPerUnitFee.getDetail().getCostAmount()));
+        assertEquals(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
+
+        List<TotalCostPositionSummary> summaries = dealPositionService.calculateTotalCostPositionSummaries(
+                fixedPriceBuyDeal.getId(),
+                CurrencyCode.CAD,
+                createdDateTime);
+        assertEquals(31, summaries.size());
+        TotalCostPositionSummary summary = summaries.get(0);
+        assertEquals(0, BigDecimal.valueOf(12).compareTo(summary.getTotalCostAmount()));
 
     }
 
 
     @Test
-    public void generateWithCostsOverFive() {
+    public void generateWithMultipleCostsDifferentUoM() {
         ArrayList<DealCostSnapshot> costs = new ArrayList<>();
         DealCostSnapshot cost = new DealCostSnapshot();
         BigDecimal totalFixed = BigDecimal.ZERO;
@@ -207,29 +220,37 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         cost.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
         cost.getDetail().setCostValue(BigDecimal.valueOf(-.50));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
+        cost.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.MMBTU);
         totalFixed = totalFixed.add(cost.getDetail().getCostValue(), MathContext.DECIMAL128);
         costs.add(cost);
 
         cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.FACILITY_PER_UNIT_FEE);
-        cost.getDetail().setCostValue(BigDecimal.valueOf(-.25));
+        cost.getDetail().setCostValue(BigDecimal.valueOf(1.00));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
+        cost.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.MMBTU);
         totalPerUnit = totalPerUnit.add(cost.getDetail().getCostValue(), MathContext.DECIMAL128);
         costs.add(cost);
 
         cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.FACILITY_FLAT_FEE);
-        cost.getDetail().setCostValue(BigDecimal.valueOf(-1.00));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
+        cost.getDetail().setCostValue(BigDecimal.valueOf(1.00));
         totalFixed = totalFixed.add(cost.getDetail().getCostValue(), MathContext.DECIMAL128);
         costs.add(cost);
 
         cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.BROKERAGE_PER_UNIT_FEE);
         cost.getDetail().setCostValue(BigDecimal.valueOf(-1.00));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
+        cost.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.MMBTU);
         totalPerUnit = totalPerUnit.add(cost.getDetail().getCostValue(), MathContext.DECIMAL128);
         costs.add(cost);
 
         cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.TRANSPORTATION_FLAT_FEE);
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
         cost.getDetail().setCostValue(BigDecimal.valueOf(-1.00));
         totalFixed = totalFixed.add(cost.getDetail().getCostValue(), MathContext.DECIMAL128);
         costs.add(cost);
@@ -238,6 +259,8 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.TRANSPORTATION_PER_UNIT_FEE);
         cost.getDetail().setCostValue(BigDecimal.valueOf(-1.00));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
+        cost.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.MMBTU);
         totalPerUnit = totalPerUnit.add(cost.getDetail().getCostValue(), MathContext.DECIMAL128);
         costs.add(cost);
 
@@ -251,6 +274,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -295,12 +319,31 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
-        assertEquals(CostNameCode.TOTAL_FIXED_FEE.getCode(), positionSnapshot.getCostDetail().getCost1Name());
-        assertEquals(0, totalFixed.compareTo(positionSnapshot.getCostDetail().getCost1Amount()));
+        List<Integer> costPositionIds = dealPositionService.findCostPositionIdsByDeal(deal.generateEntityId());
+        List<CostPositionSnapshot> costSnapshots = dealPositionService.findCostPositionsByIds(new QuerySelectedPage(costPositionIds));
+        assertEquals(186, costSnapshots.size());
+        List<CostPositionSnapshot> costsPerPosition = costSnapshots
+                .stream()
+                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDealPositionDetail().getStartDate()))
+                .collect(Collectors.toList());
 
-        assertEquals(CostNameCode.TOTAL_PER_UNIT_FEE.getCode(), positionSnapshot.getCostDetail().getCost2Name());
-        assertEquals(0, totalPerUnit.compareTo(positionSnapshot.getCostDetail().getCost2Amount()));
+        assertEquals(6, costsPerPosition.size());
+        CostPositionSnapshot facilityPerUnitFee = costsPerPosition
+                .stream()
+                .filter(c-> c.getDetail().getCostNameCode() == CostNameCode.FACILITY_PER_UNIT_FEE)
+                .findFirst()
+                .get();
+        Conversion conversion = UnitOfMeasureConverter.findConversion(UnitOfMeasureCode.GJ, UnitOfMeasureCode.MMBTU);
+        Price costPrice = new Price(
+                facilityPerUnitFee.getDetail().getCostValue(),
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.MMBTU);
 
+        costPrice = costPrice.apply(conversion);
+        Amount amount = costPrice.multiply(facilityPerUnitFee.getQuantity());
+        amount = amount.round();
+        assertEquals(0, amount.getValue().compareTo(facilityPerUnitFee.getDetail().getCostAmount()));
+        assertEquals(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
     }
 
 

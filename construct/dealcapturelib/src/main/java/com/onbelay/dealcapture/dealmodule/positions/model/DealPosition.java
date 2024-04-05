@@ -24,6 +24,12 @@ import java.util.List;
 @DiscriminatorColumn(name = "DEAL_TYPE_CODE")
 @NamedQueries({
         @NamedQuery(
+                name = DealPositionRepositoryBean.FIND_IDS_BY_DEAL,
+                query = "SELECT position.id " +
+                        "  FROM DealPosition position " +
+                        " WHERE position.deal.id = :dealId " +
+                      "ORDER BY position.dealPositionDetail.startDate "),
+        @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_BY_DEAL,
                 query = "SELECT position " +
                         "  FROM DealPosition position " +
@@ -37,11 +43,7 @@ public abstract class DealPosition extends AbstractEntity {
 
     private BaseDeal deal;
 
-    private FxRiskFactor costFxRiskFactor;
-
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
-
-    private CostPositionDetail costDetail = new CostPositionDetail();
 
     private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
 
@@ -107,15 +109,6 @@ public abstract class DealPosition extends AbstractEntity {
     }
 
     @Embedded
-    public CostPositionDetail getCostDetail() {
-        return costDetail;
-    }
-
-    public void setCostDetail(CostPositionDetail costDetail) {
-        this.costDetail = costDetail;
-    }
-
-    @Embedded
     public PositionSettlementDetail getSettlementDetail() {
         return settlementDetail;
     }
@@ -123,18 +116,6 @@ public abstract class DealPosition extends AbstractEntity {
     public void setSettlementDetail(PositionSettlementDetail settlementDetail) {
         this.settlementDetail = settlementDetail;
     }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "COST_FX_RISK_FACTOR_ID")
-    public FxRiskFactor getCostFxRiskFactor() {
-        return costFxRiskFactor;
-    }
-
-
-    public void setCostFxRiskFactor(FxRiskFactor costFxRiskFactor) {
-        this.costFxRiskFactor = costFxRiskFactor;
-    }
-
 
     public List<EntityId> savePositionRiskFactorMappings(List<PositionRiskFactorMappingSnapshot> snapshots) {
         ArrayList<EntityId> ids = new ArrayList<>();
@@ -176,13 +157,11 @@ public abstract class DealPosition extends AbstractEntity {
 
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
         this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
-        this.costDetail.copyFrom(snapshot.getCostDetail());
     }
 
     public void updateWith(DealPositionSnapshot snapshot) {
         this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
         this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
-        this.costDetail.copyFrom(snapshot.getCostDetail());
     }
 
     @Transient

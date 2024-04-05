@@ -36,12 +36,10 @@ public abstract class DealPositionAssembler extends EntityAssembler implements P
             DealPosition entity,
             DealPositionSnapshot snapshot) {
         super.setEntityAttributes(entity, snapshot);
+
+        snapshot.setDealId(entity.getDeal().generateEntityId());
         snapshot.getDealPositionDetail().copyFrom(entity.getDealPositionDetail());
         snapshot.getSettlementDetail().copyFrom(entity.getSettlementDetail());
-        snapshot.getCostDetail().copyFrom(entity.getCostDetail());
-
-        if (entity.getCostFxRiskFactor() != null)
-            snapshot.setCostFxRiskFactorId(entity.getCostFxRiskFactor().generateEntityId());
     }
 
     protected PositionRiskFactorMappingSnapshot assemble(

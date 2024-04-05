@@ -1,0 +1,89 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/COST_POSITION.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="COST_POSITION_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="COST_POSITION" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID"
+                    defaultValueSequenceNext="COST_POSITION_SEQ"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="COST_POSITION_PK" nullable="false"/>
+            </column>
+            <column name="DEAL_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEAL_COST_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COST_NAME_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_SETTLEMENT_POSITION"
+                    type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_FIXED_VALUED"
+                    type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="START_DATE"  type="java.sql.Types.TIMESTAMP"/>
+            <column name="END_DATE"  type="java.sql.Types.TIMESTAMP"/>
+            <column name="CREATE_UPDATE_DATETIME"  type="java.sql.Types.TIMESTAMP"/>
+            <column name="VALUED_DATETIME"  type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="FREQUENCY_CODE" type="java.sql.Types.VARCHAR(32)"/>
+            <column name="CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name='UNIT_OF_MEASURE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='true'/>
+            </column>
+            <column name="COST_VALUE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="VOLUME_QUANTITY"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_AMOUNT"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="SETTLEMENT_REFERENCE"
+                    type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="COST_FX_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ERROR_CODE"
+                    type="java.sql.Types.VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ERROR_MSG"
+                    type="java.sql.Types.VARCHAR(1000)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -3,6 +3,7 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,9 @@ public interface DealPositionGenerator {
 
     public void generatePositionHolders(EvaluationContext context);
 
-    public List<DealPositionSnapshot> generateDealPositionSnapshots(LocalDateTime observedDateTime);
+    public List<DealPositionSnapshot> generateDealPositionSnapshots(LocalDateTime createdDateTime);
+
+    public List<CostPositionSnapshot> generateCostPositionSnapshots(LocalDateTime createdDateTime);
 
     public DealSummary getDealSummary();
 

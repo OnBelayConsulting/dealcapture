@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import java.util.List;
 
 public interface DealCostRepository {
+    public static final String BEAN_NAME = "dealCostRepository";
     DealCost load(EntityId entityId);
 
     DealCost findByDealAndName(

@@ -18,9 +18,12 @@
     <include file="FK_BASE_DEAL_TO_POSITION_GEN_STATUS_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_BASE_DEAL_TO_UNIT_OF_MEASURE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_COMPANY_ROLE_TO_ORG_ROLE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_COST_POSITION_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="FK_COUNTERPARTY_ROLE_TO_ORG_ROLE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_COST_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_COST_TO_COST_NAME_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_DEAL_COST_TO_CURRENCY_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="FK_DEAL_COST_TO_UNIT_OF_MEASURE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_DAY_TO_DAY_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_POSITION_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_POSITION_TO_VALUATION_CODE.xml" relativeToChangelogFile="true"/>

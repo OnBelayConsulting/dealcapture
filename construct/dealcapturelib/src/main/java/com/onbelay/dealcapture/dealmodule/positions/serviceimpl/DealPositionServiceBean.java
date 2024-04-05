@@ -5,23 +5,25 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.positions.assembler.CostPositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.DealPositionAssemblerFactory;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.PositionAssembler;
-import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
-import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
-import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPosition;
+import com.onbelay.dealcapture.dealmodule.positions.model.*;
+import com.onbelay.dealcapture.dealmodule.positions.repository.CostPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
+import com.onbelay.shared.enums.CurrencyCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class DealPositionServiceBean implements DealPositionService {
 
     @Autowired
     private DealPositionRepository dealPositionRepository;
+
+    @Autowired
+    private CostPositionRepository costPositionRepository;
 
     @Autowired
     private PositionRiskFactorMappingRepository positionRiskFactorMappingRepository;
@@ -58,26 +63,26 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
-    public List<DealPositionView> fetchDealPositionViews(List<Integer> positionIds) {
-        SubLister<Integer> subLister = new SubLister<>(positionIds, 2000);
-        ArrayList<DealPositionView> reports = new ArrayList<>();
-        while (subLister.moreElements()) {
+    public List<DealPositionView> fetchDealPositionViews(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
 
-            List<Integer> idList = subLister.nextList();
-            List<DealPositionView> subReports = dealPositionRepository.findDealPositionViews(idList);
-            HashMap<Integer, DealPositionView> reportMap = new HashMap<>();
-            subReports.forEach(c-> reportMap.put(c.getId(), c));
-            for (PositionRiskFactorMappingSummary summary : positionRiskFactorMappingRepository.findAllMappingSummaries(idList)) {
-                DealPositionView report = reportMap.get(summary.getDealPositionId());
-                report.addMappingSummary(summary);
-            }
+        List<DealPositionView> views = dealPositionRepository.findDealPositionViews(
+                    dealIds,
+                    currencyCode,
+                    createdDateTime);
 
-            reports.addAll(subReports);
+        HashMap<Integer, DealPositionView> viewMap = new HashMap<>();
+        views.forEach(c-> viewMap.put(c.getId(), c));
+
+        List<Integer> positionIds = viewMap.keySet().stream().toList();
+        for (PositionRiskFactorMappingSummary summary : positionRiskFactorMappingRepository.findAllMappingSummaries(positionIds)) {
+            DealPositionView view = viewMap.get(summary.getDealPositionId());
+            view.addMappingSummary(summary);
         }
 
-
-
-        return reports;
+        return views;
     }
 
     @Override
@@ -89,8 +94,49 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
-    public List<DealPositionView> findDealPositionViewsByDeal(EntityId dealId) {
-        return dealPositionRepository.findDealPositionViewsByDeal(dealId);
+    public List<CostPositionView> fetchCostPositionViewsWithFX(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        return costPositionRepository.findCostPositionViewsWithFX(
+                dealIds,
+                currencyCode,
+                createdDateTime);
+    }
+
+
+    @Override
+    public List<Integer> findIdsByDeal(EntityId entityId) {
+        return dealPositionRepository.findIdsByDeal(entityId);
+    }
+
+    @Override
+    public List<Integer> findCostPositionIdsByDeal(EntityId dealId) {
+        return costPositionRepository.findCostPositionIdsByDeal(dealId);
+    }
+
+    @Override
+    public List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        return costPositionRepository.calculateTotalCostSummaries(
+                dealId,
+                currencyCode,
+                createdDateTime);
+    }
+
+    @Override
+    public List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+        return costPositionRepository.calculateTotalCostSummaries(
+                dealIds,
+                currencyCode,
+                createdDateTime);
     }
 
     @Override
@@ -107,4 +153,10 @@ public class DealPositionServiceBean implements DealPositionService {
         return factory.assemble(positions);
     }
 
+    @Override
+    public List<CostPositionSnapshot> findCostPositionsByIds(QuerySelectedPage selectedPage) {
+        List<CostPosition> costs = costPositionRepository.fetchByIds(selectedPage);
+        CostPositionAssembler assembler = new CostPositionAssembler();
+        return assembler.assemble(costs);
+    }
 }

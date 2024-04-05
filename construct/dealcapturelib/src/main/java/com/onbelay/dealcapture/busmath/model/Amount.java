@@ -59,7 +59,7 @@ public class Amount extends CalculatedEntity {
 
 	public Amount add(Amount amount) {
 		if (this.isInError() || amount.isInError())
-			return this;
+			return new Amount(CalculatedErrorType.ERROR);
 
 		if (this.currency != amount.currency)
 			throw new OBBusinessMathException("Incompatible Currency");
@@ -78,7 +78,7 @@ public class Amount extends CalculatedEntity {
 
 	public Amount subtract(Amount amount) {
 		if (this.isInError() || amount.isInError())
-			return this;
+			return new Amount(CalculatedErrorType.ERROR);
 
 		if (this.currency != amount.currency)
 			throw new OBBusinessMathException("Incompatible Currency");
@@ -97,6 +97,9 @@ public class Amount extends CalculatedEntity {
 	}
 
 	public Amount apply(FxRate rate) {
+		if (rate == null)
+			return new Amount(CalculatedErrorType.ERROR);
+
 		if (isInError() || rate.isInError())
 			return new Amount(CalculatedErrorType.ERROR);
 

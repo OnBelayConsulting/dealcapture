@@ -21,7 +21,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DealPositionSqlMapper {
+public abstract class DealPositionSqlMapper extends AbstractBaseSqlMapper {
 
 	private final  boolean isAddPrimaryKey;
 
@@ -32,9 +32,9 @@ public abstract class DealPositionSqlMapper {
 
 	protected int getStartingPoint() {
 		if (isAddPrimaryKey == false)
-			return 28;
+			return 17;
 		else
-			return 29;
+			return 18;
 	}
 
 	public String getTableName() {
@@ -61,18 +61,7 @@ public abstract class DealPositionSqlMapper {
 		list.add("TOTAL_SETTLEMENT_AMOUNT");
 		list.add("SETTLEMENT_CURRENCY");
 		list.add("SETTLEMENT_REFERENCE");
-		list.add("COST_1_NAME");
-		list.add("COST_1_AMOUNT");
-		list.add("COST_2_NAME");
-		list.add("COST_2_AMOUNT");
-		list.add("COST_3_NAME");
-		list.add("COST_3_AMOUNT");
-		list.add("COST_4_NAME");
-		list.add("COST_4_AMOUNT");
-		list.add("COST_5_NAME");
-		list.add("COST_5_AMOUNT");
 		list.add("IS_SETTLEMENT_POSITION");
-		list.add("COST_FX_RISK_FACTOR_ID");
 		list.add("ERROR_CODE");
 
 		return list;
@@ -132,52 +121,6 @@ public abstract class DealPositionSqlMapper {
 		else
 			preparedStatement.setNull(n + 15, Types.VARCHAR);
 
-		// Costs
-		if (position.getCostDetail().getCost1Name() != null)
-			preparedStatement.setString(n + 16, position.getCostDetail().getCost1Name());
-		else
-			preparedStatement.setNull(n + 16, Types.VARCHAR);
-		if (position.getCostDetail().getCost1Amount() != null)
-			preparedStatement.setBigDecimal(n + 17, position.getCostDetail().getCost1Amount());
-		else
-			preparedStatement.setNull(n + 17, Types.DECIMAL);
-
-		if (position.getCostDetail().getCost2Name() != null)
-			preparedStatement.setString(n + 18, position.getCostDetail().getCost2Name());
-		else
-			preparedStatement.setNull(n + 18, Types.VARCHAR);
-		if (position.getCostDetail().getCost2Amount() != null)
-			preparedStatement.setBigDecimal(n + 19, position.getCostDetail().getCost2Amount());
-		else
-			preparedStatement.setNull(n + 19, Types.DECIMAL);
-
-		if (position.getCostDetail().getCost3Name() != null)
-			preparedStatement.setString(n + 20, position.getCostDetail().getCost3Name());
-		else
-			preparedStatement.setNull(n + 20, Types.VARCHAR);
-		if (position.getCostDetail().getCost3Amount() != null)
-			preparedStatement.setBigDecimal(n + 21, position.getCostDetail().getCost3Amount());
-		else
-			preparedStatement.setNull(n + 21, Types.DECIMAL);
-
-		if (position.getCostDetail().getCost4Name() != null)
-			preparedStatement.setString(n + 22, position.getCostDetail().getCost4Name());
-		else
-			preparedStatement.setNull(n + 22, Types.VARCHAR);
-		if (position.getCostDetail().getCost4Amount() != null)
-			preparedStatement.setBigDecimal(n + 23, position.getCostDetail().getCost4Amount());
-		else
-			preparedStatement.setNull(n + 23, Types.DECIMAL);
-
-		if (position.getCostDetail().getCost5Name() != null)
-			preparedStatement.setString(n + 24, position.getCostDetail().getCost5Name());
-		else
-			preparedStatement.setNull(n + 24, Types.VARCHAR);
-		if (position.getCostDetail().getCost5Amount() != null)
-			preparedStatement.setBigDecimal(n + 25, position.getCostDetail().getCost5Amount());
-		else
-			preparedStatement.setNull(n + 25, Types.DECIMAL);
-
 
 		if (position.getSettlementDetail().getIsSettlementPosition() != null) {
 			String value;
@@ -185,21 +128,16 @@ public abstract class DealPositionSqlMapper {
 				value = "Y";
 			else
 				value = "N";
-			preparedStatement.setString(n + 26, value);
+			preparedStatement.setString(n + 16, value);
 		} else {
-			preparedStatement.setNull(n + 26, Types.CHAR);
+			preparedStatement.setNull(n + 16, Types.CHAR);
 		}
-
-		if (position.getCostFxRiskFactorId() != null)
-			preparedStatement.setInt(n+ 27, position.getCostFxRiskFactorId().getId());
-		else
-			preparedStatement.setNull(n+ 27, Types.INTEGER);
 
 		// Error Code
 		if (position.getDealPositionDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 28, position.getDealPositionDetail().getErrorCode());
+			preparedStatement.setString(n + 17, position.getDealPositionDetail().getErrorCode());
 		else
-			preparedStatement.setNull(n + 28, Types.VARCHAR);
+			preparedStatement.setNull(n + 17, Types.VARCHAR);
 
 
 
@@ -207,19 +145,6 @@ public abstract class DealPositionSqlMapper {
 
 	public boolean isAddPrimaryKey() {
 		return isAddPrimaryKey;
-	}
-
-	public String createPlaceHolders() {
-		if (getColumnNames().size() < 1)
-			return "()";
-		
-		StringBuffer buffer = new StringBuffer("(?");
-		
-		for (int i=1; i < getColumnNames().size(); i++) {
-			buffer.append(",?");
-		}
-		buffer.append(")");
-		return buffer.toString();
 	}
 
 }

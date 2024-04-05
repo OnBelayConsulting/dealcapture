@@ -10,17 +10,35 @@ import java.math.BigDecimal;
 
 public class DealCostFixture {
 
-    public static DealCost createCost(
+    public static DealCost createFixedCost(
             BaseDeal  deal,
-            CostTypeCode costTypeCode,
+            CurrencyCode currencyCode,
             CostNameCode costNameCode,
             BigDecimal value) {
 
         DealCostSnapshot snapshot = new DealCostSnapshot();
         snapshot.getDetail().setCostName(costNameCode);
         snapshot.getDetail().setCostValue(value);
+        snapshot.getDetail().setCurrencyCode(currencyCode);
 
         return DealCost.create(deal, snapshot);
     }
+
+    public static DealCost createPerUnitCost(
+            BaseDeal  deal,
+            CurrencyCode currencyCode,
+            UnitOfMeasureCode unitOfMeasureCode,
+            CostNameCode costNameCode,
+            BigDecimal value) {
+
+        DealCostSnapshot snapshot = new DealCostSnapshot();
+        snapshot.getDetail().setCostName(costNameCode);
+        snapshot.getDetail().setCostValue(value);
+        snapshot.getDetail().setCurrencyCode(currencyCode);
+        snapshot.getDetail().setUnitOfMeasureCode(unitOfMeasureCode);
+
+        return DealCost.create(deal, snapshot);
+    }
+
 
 }

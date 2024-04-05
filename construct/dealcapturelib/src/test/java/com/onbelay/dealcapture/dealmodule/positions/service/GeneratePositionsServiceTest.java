@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +28,6 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
     @Autowired
     private GeneratePositionsService generatePositionsService;
 
-
     private LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
     private LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
 
@@ -39,6 +39,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -97,6 +98,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -134,6 +136,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 

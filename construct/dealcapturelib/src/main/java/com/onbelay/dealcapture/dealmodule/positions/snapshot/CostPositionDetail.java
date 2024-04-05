@@ -1,200 +1,298 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.onbelay.core.codes.annotations.CodeLabelSerializer;
+import com.onbelay.core.codes.annotations.InjectCodeLabel;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Transient;
+import org.hibernate.type.YesNoConverter;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CostPositionDetail {
 
-    private String cost1Name;
-    private BigDecimal cost1Amount;
-    private String cost2Name;
-    private BigDecimal cost2Amount;
-    private String cost3Name;
-    private BigDecimal cost3Amount;
-    private String cost4Name;
-    private BigDecimal cost4Amount;
-    private String cost5Name;
-    private BigDecimal cost5Amount;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDateTime createdDateTime;
+    private LocalDateTime valuedDateTime;
 
-    private HashMap<Integer, Consumer<String>> costNameSetterMap = new HashMap<>();
-    private  HashMap<Integer, Supplier<String>> costNameGetterMap = new HashMap<>();
+    private String costNameCodeValue;
+    private Boolean isFixedValued;
+    private BigDecimal volumeQuantityValue;
+    private BigDecimal costValue;
+    private BigDecimal costAmount;
+    private String currencyCodeValue;
+    private String unitOfMeasureValue;
+    private String frequencyCodeValue;
+    private Boolean isSettlementPosition;
 
-    private HashMap<Integer, Consumer<BigDecimal>> costAmtSetterMap = new HashMap<>();
-    private  HashMap<Integer, Supplier<BigDecimal>> costAmtGetterMap = new HashMap<>();
+    private String settlementReference;
 
-    public CostPositionDetail() {
-        initializeSetterMaps();
-        initializeGetterMaps();
+    private String errorCode;
+    private String errorMessage;
+
+
+    public void setDefaults() {
+        errorCode = "0";
     }
 
-    @Transient
-    @JsonIgnore
-    public BigDecimal getCostAmount(Integer day) {
-        return costAmtGetterMap.get(day).get();
-    }
+    public void validate() throws OBValidationException {
 
-    public void setCostAmount(Integer day, BigDecimal value) {
-        costAmtSetterMap.get(day).accept(value);
-    }
-
-    @Transient
-    @JsonIgnore
-    public String getCostName(Integer day) {
-        return costNameGetterMap.get(day).get();
-    }
-
-    public CostTypeCode getCostTypeCode(Integer day) {
-        String name = costNameGetterMap.get(day).get();
-        if (name != null)
-            return CostNameCode.lookUp(name).getCostTypeCode();
-        else
-            return null;
-    }
-
-    public void setCostName(Integer day, String value) {
-        costNameSetterMap.get(day).accept(value);
     }
 
 
     public void copyFrom(CostPositionDetail copy) {
-        if (copy == null)
-            return;
 
-        for (int i=0; i < 5; i++) {
-            int selector = i+1;
-            this.costAmtSetterMap.get(selector).accept(
-                    copy.costAmtGetterMap.get(selector).get());
-            this.costNameSetterMap.get(selector).accept(
-                    copy.costNameGetterMap.get(selector).get());
-        }
+        if (copy.startDate != null)
+            this.startDate = copy.startDate;
+
+        if (copy.endDate != null)
+            this.endDate = copy.endDate;
+
+        if (copy.isFixedValued != null)
+            this.isFixedValued = copy.isFixedValued;
+
+        if (copy.volumeQuantityValue != null)
+            this.volumeQuantityValue = copy.volumeQuantityValue;
+
+        if (copy.isSettlementPosition != null)
+            this.isSettlementPosition = copy.isSettlementPosition;
+
+        if (copy.createdDateTime != null)
+            this.createdDateTime = copy.createdDateTime;
+
+        if (copy.valuedDateTime != null)
+            this.valuedDateTime = copy.valuedDateTime;
+
+        if (copy.unitOfMeasureValue != null)
+            this.unitOfMeasureValue = copy.unitOfMeasureValue;
+
+        if (copy.frequencyCodeValue != null)
+            this.frequencyCodeValue = copy.frequencyCodeValue;
+
+        if (copy.currencyCodeValue != null)
+            this.currencyCodeValue = copy.currencyCodeValue;
+
+        if (copy.costNameCodeValue != null)
+            this.costNameCodeValue = copy.costNameCodeValue;
+
+        if (copy.costAmount != null)
+            this.costAmount = copy.costAmount;
+
+        if (copy.costValue != null)
+            this.costValue = copy.costValue;
+
+        if (copy.settlementReference != null)
+            this.settlementReference = copy.settlementReference;
+
+        if (copy.errorCode != null)
+            this.errorCode = copy.errorCode;
+
+        if (copy.errorMessage != null)
+            this.errorMessage = copy.errorMessage;
     }
 
-    private void initializeSetterMaps() {
-        costAmtSetterMap.put(1, (BigDecimal c) -> setCost1Amount(c));
-        costAmtSetterMap.put(2, (BigDecimal c) -> setCost2Amount(c));
-        costAmtSetterMap.put(3, (BigDecimal c) -> setCost3Amount(c));
-        costAmtSetterMap.put(4, (BigDecimal c) -> setCost4Amount(c));
-        costAmtSetterMap.put(5, (BigDecimal c) -> setCost5Amount(c));
 
-        costNameSetterMap.put(1, (String c) -> setCost1Name(c));
-        costNameSetterMap.put(2, (String c) -> setCost2Name(c));
-        costNameSetterMap.put(3, (String c) -> setCost3Name(c));
-        costNameSetterMap.put(4, (String c) -> setCost4Name(c));
-        costNameSetterMap.put(5, (String c) -> setCost5Name(c));
-
+    @Column(name = "START_DATE")
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    private void initializeGetterMaps() {
-        costAmtGetterMap.put(1, () -> getCost1Amount());
-        costAmtGetterMap.put(2, () -> getCost2Amount());
-        costAmtGetterMap.put(3, () -> getCost3Amount());
-        costAmtGetterMap.put(4, () -> getCost4Amount());
-        costAmtGetterMap.put(5, () -> getCost5Amount());
-
-        costNameGetterMap.put(1, () -> getCost1Name());
-        costNameGetterMap.put(2, () -> getCost2Name());
-        costNameGetterMap.put(3, () -> getCost3Name());
-        costNameGetterMap.put(4, () -> getCost4Name());
-        costNameGetterMap.put(5, () -> getCost5Name());
-
-
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    @Column(name = "COST_1_NAME")
-    public String getCost1Name() {
-        return cost1Name;
+    @Column(name = "END_DATE")
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setCost1Name(String cost1Name) {
-        this.cost1Name = cost1Name;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
-    @Column(name = "COST_1_AMOUNT")
-    public BigDecimal getCost1Amount() {
-        return cost1Amount;
+    @Column(name = "CREATE_UPDATE_DATETIME")
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
     }
 
-    public void setCost1Amount(BigDecimal cost1Amount) {
-        this.cost1Amount = cost1Amount;
+    public void setCreatedDateTime(LocalDateTime createUpdateDate) {
+        this.createdDateTime = createUpdateDate;
     }
 
-    @Column(name = "COST_2_NAME")
-    public String getCost2Name() {
-        return cost2Name;
+    @Column(name = "VOLUME_QUANTITY")
+    public BigDecimal getVolumeQuantityValue() {
+        return volumeQuantityValue;
     }
 
-    public void setCost2Name(String cost2Name) {
-        this.cost2Name = cost2Name;
+    public void setVolumeQuantityValue(BigDecimal volumeQuantityValue) {
+        this.volumeQuantityValue = volumeQuantityValue;
     }
 
-    @Column(name = "COST_2_AMOUNT")
-    public BigDecimal getCost2Amount() {
-        return cost2Amount;
+    @Column(name = "VALUED_DATETIME")
+    public LocalDateTime getValuedDateTime() {
+        return valuedDateTime;
     }
 
-    public void setCost2Amount(BigDecimal cost2Amount) {
-        this.cost2Amount = cost2Amount;
+    public void setValuedDateTime(LocalDateTime valuedDateTime) {
+        this.valuedDateTime = valuedDateTime;
     }
 
-    @Column(name = "COST_3_NAME")
-    public String getCost3Name() {
-        return cost3Name;
+    @Column(name = "IS_SETTLEMENT_POSITION")
+    @Convert(
+            converter = YesNoConverter.class
+    )
+    public Boolean getIsSettlementPosition() {
+        return isSettlementPosition;
     }
 
-    public void setCost3Name(String cost3Name) {
-        this.cost3Name = cost3Name;
+    public void setIsSettlementPosition(Boolean settlementPosition) {
+        isSettlementPosition = settlementPosition;
     }
 
-    @Column(name = "COST_3_AMOUNT")
-    public BigDecimal getCost3Amount() {
-        return cost3Amount;
+    @Column(name = "IS_FIXED_VALUED")
+    @Convert(
+            converter = YesNoConverter.class
+    )
+    public Boolean getIsFixedValued() {
+        return isFixedValued;
     }
 
-    public void setCost3Amount(BigDecimal cost3Amount) {
-        this.cost3Amount = cost3Amount;
+    public void setIsFixedValued(Boolean fixedValued) {
+        isFixedValued = fixedValued;
     }
 
-    @Column(name = "COST_4_NAME")
-    public String getCost4Name() {
-        return cost4Name;
+    @Transient
+    @JsonIgnore
+    public CostNameCode getCostNameCode() {
+        return CostNameCode.lookUp(costNameCodeValue);
     }
 
-    public void setCost4Name(String cost4Name) {
-        this.cost4Name = cost4Name;
+    public void setCostNameCode(CostNameCode code) {
+        this.costNameCodeValue = code.getCode();
     }
 
-    @Column(name = "COST_4_AMOUNT")
-    public BigDecimal getCost4Amount() {
-        return cost4Amount;
+    @Column(name = "COST_NAME_CODE")
+    public String getCostNameCodeValue() {
+        return costNameCodeValue;
     }
 
-    public void setCost4Amount(BigDecimal cost4Amount) {
-        this.cost4Amount = cost4Amount;
+    public void setCostNameCodeValue(String costNameCodeValue) {
+        this.costNameCodeValue = costNameCodeValue;
     }
 
-    @Column(name = "COST_5_NAME")
-    public String getCost5Name() {
-        return cost5Name;
+    @Column(name = "COST_VALUE")
+    public BigDecimal getCostValue() {
+        return costValue;
     }
 
-    public void setCost5Name(String cost5Name) {
-        this.cost5Name = cost5Name;
+    public void setCostValue(BigDecimal costValue) {
+        this.costValue = costValue;
     }
 
-    @Column(name = "COST_5_AMOUNT")
-    public BigDecimal getCost5Amount() {
-        return cost5Amount;
+    @Column(name = "COST_AMOUNT")
+    public BigDecimal getCostAmount() {
+        return costAmount;
     }
 
-    public void setCost5Amount(BigDecimal cost5Amount) {
-        this.cost5Amount = cost5Amount;
+    public void setCostAmount(BigDecimal amount) {
+        this.costAmount = amount;
+    }
+
+    @Transient
+    @JsonIgnore
+    public CurrencyCode getCurrencyCode() {
+        return CurrencyCode.lookUp(currencyCodeValue);
+    }
+
+    public void setCurrencyCode(CurrencyCode code) {
+        this.currencyCodeValue = code.getCode();
+    }
+
+    @Column(name = "CURRENCY_CODE")
+    public String getCurrencyCodeValue() {
+        return currencyCodeValue;
+    }
+
+    public void setCurrencyCodeValue(String currencyCodeValue) {
+        this.currencyCodeValue = currencyCodeValue;
+    }
+
+    @Transient
+    @JsonIgnore
+    public UnitOfMeasureCode getUnitOfMeasure() {
+        return UnitOfMeasureCode.lookUp(unitOfMeasureValue);
+    }
+
+    public void setUnitOfMeasure(UnitOfMeasureCode code) {
+        this.unitOfMeasureValue = code.getCode();
+    }
+
+    @Column(name = "UNIT_OF_MEASURE_CODE")
+    @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "UnitOfMeasureCodeItem")
+    @JsonSerialize(using = CodeLabelSerializer.class)
+    public String getUnitOfMeasureValue() {
+        return unitOfMeasureValue;
+    }
+
+    public void setUnitOfMeasureValue(String unitOfMeasureValue) {
+        this.unitOfMeasureValue = unitOfMeasureValue;
+    }
+
+    @Transient
+    @JsonIgnore
+    public FrequencyCode getFrequencyCode() {
+        return FrequencyCode.lookUp(frequencyCodeValue);
+    }
+
+    public void setFrequencyCode(FrequencyCode code) {
+        this.frequencyCodeValue = code.getCode();
+    }
+
+    @Column(name = "FREQUENCY_CODE")
+    @InjectCodeLabel(codeFamily = "frequencyCode", injectedPropertyName = "frequencyCodeItem")
+    @JsonSerialize(using = CodeLabelSerializer.class)
+    public String getFrequencyCodeValue() {
+        return frequencyCodeValue;
+    }
+
+    public void setFrequencyCodeValue(String frequencyCodeValue) {
+        this.frequencyCodeValue = frequencyCodeValue;
+    }
+
+    @Column(name = "SETTLEMENT_REFERENCE")
+    public String getSettlementReference() {
+        return settlementReference;
+    }
+
+    public void setSettlementReference(String settlementReference) {
+        this.settlementReference = settlementReference;
+    }
+
+    @Column(name = "ERROR_CODE")
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    @Column(name = "ERROR_MSG")
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

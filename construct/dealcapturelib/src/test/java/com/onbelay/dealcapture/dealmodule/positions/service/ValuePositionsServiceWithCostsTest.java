@@ -76,6 +76,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         DealCostSnapshot cost = new DealCostSnapshot();
         cost.getDetail().setCostName(CostNameCode.BROKERAGE_DAILY_FEE);
         cost.getDetail().setCostValue(BigDecimal.valueOf(-.50));
+        cost.getDetail().setCurrencyCode(CurrencyCode.CAD);
         fixedPriceBuyDeal.saveDealCosts(List.of(cost));
         flush();
 
@@ -84,6 +85,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -104,6 +106,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         valuePositionsService.valuePositions(
                 fixedPriceBuyDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -141,6 +145,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -161,6 +166,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         valuePositionsService.valuePositions(
                 fixedPriceSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -196,6 +203,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -216,6 +224,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         valuePositionsService.valuePositions(
                 indexBuyDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -244,6 +254,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -264,6 +275,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         valuePositionsService.valuePositions(
                 indexSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -292,6 +305,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -312,6 +326,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         valuePositionsService.valuePositions(
                 indexPlusBuyDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();
@@ -340,6 +356,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         EvaluationContext context = EvaluationContext
                 .build()
                 .withCurrency(CurrencyCode.CAD)
+                .withCreatedDateTime(createdDateTime)
                 .withUnitOfMeasure(UnitOfMeasureCode.GJ)
                 .withStartPositionDate(fromMarketDate);
 
@@ -360,6 +377,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         valuePositionsService.valuePositions(
                 indexPlusSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
                 LocalDateTime.now());
         flush();
         clearCache();

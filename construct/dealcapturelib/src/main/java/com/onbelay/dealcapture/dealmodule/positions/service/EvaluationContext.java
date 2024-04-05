@@ -10,7 +10,7 @@ public class EvaluationContext {
 
     private LocalDate startPositionDate;
     private LocalDate endPositionDate;
-    private LocalDateTime observedDateTime = LocalDateTime.now();
+    private LocalDateTime createdDateTime;
     private CurrencyCode currencyCode;
     private UnitOfMeasureCode unitOfMeasureCode = UnitOfMeasureCode.GJ;
 
@@ -33,8 +33,8 @@ public class EvaluationContext {
     }
 
 
-    public EvaluationContext withObservedDateTime(LocalDateTime observedDateTime) {
-        this.observedDateTime = observedDateTime;
+    public EvaluationContext withCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
         return this;
     }
 
@@ -56,8 +56,8 @@ public class EvaluationContext {
         return endPositionDate;
     }
 
-    public LocalDateTime getObservedDateTime() {
-        return observedDateTime;
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
     }
 
     public CurrencyCode getCurrencyCode() {
@@ -76,8 +76,8 @@ public class EvaluationContext {
         this.endPositionDate = endPositionDate;
     }
 
-    public void setObservedDateTime(LocalDateTime observedDateTime) {
-        this.observedDateTime = observedDateTime;
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 
     public void setCurrencyCode(CurrencyCode currencyCode) {

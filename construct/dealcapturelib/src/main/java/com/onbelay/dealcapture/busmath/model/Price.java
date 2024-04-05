@@ -45,8 +45,11 @@ public class Price extends CalculatedEntity {
 	}
 
 	public Price apply(FxRate rate) {
+		if (rate == null)
+			return new Price(CalculatedErrorType.ERROR);
+
 		if (this.isInError() || rate.isInError())
-			return this;
+			return new Price(CalculatedErrorType.ERROR);
 
 		if (currency == rate.getFromCurrencyCode()) {
 			BigDecimal converted = getValue().multiply(rate.getValue(), MathContext.DECIMAL128);
@@ -114,7 +117,7 @@ public class Price extends CalculatedEntity {
 	}
 
 	public Price multiply(BigDecimal valueIn) {
-		if (value == null || isInError())
+		if (valueIn == null || isInError())
 			return new Price(CalculatedErrorType.ERROR);
 		return new Price(
 				value.multiply(valueIn, mathContext),
@@ -124,7 +127,7 @@ public class Price extends CalculatedEntity {
 
 
 	public Price divide(BigDecimal valueIn) {
-		if (value == null || isInError())
+		if (valueIn == null || isInError())
 			return new Price(CalculatedErrorType.ERROR);
 		return new Price(
 				value.divide(valueIn, divisorMathContext),
@@ -142,6 +145,9 @@ public class Price extends CalculatedEntity {
 	}
 
 	public Price add (Price priceIn) {
+		if (this.isInError() || priceIn.isInError())
+			return new Price(CalculatedErrorType.ERROR);
+
 		if (!( this.currency == priceIn.currency && this.unitOfMeasure == priceIn.unitOfMeasure) )
 			throw new OBBusinessMathException("Incompatible currency and/or UnitOfMeasure");
 
@@ -160,6 +166,9 @@ public class Price extends CalculatedEntity {
 	}
 
 	public Price subtract (Price priceIn) {
+		if (this.isInError() || priceIn.isInError())
+			return new Price(CalculatedErrorType.ERROR);
+
 		if (!( this.currency == priceIn.currency && this.unitOfMeasure == priceIn.unitOfMeasure) )
 			throw new OBBusinessMathException("Incompatible currency and/or UnitOfMeasure");
 
@@ -194,7 +203,7 @@ public class Price extends CalculatedEntity {
 
 	public Price apply(Conversion conversion) {
 		if (isInError() || conversion.isInError())
-			return this;
+			return new Price(CalculatedErrorType.ERROR);
 
 		if (this.unitOfMeasure == conversion.getFromUnitOfMeasure()) {
 			return new Price(
@@ -208,6 +217,9 @@ public class Price extends CalculatedEntity {
 	}
 
     public Amount multiply(Quantity quantity) {
+		if (this.isInError() || quantity.isInError())
+			return new Amount(CalculatedErrorType.ERROR);
+
 		if (this.unitOfMeasure != quantity.getUnitOfMeasureCode())
 			throw new OBBusinessMathException("Incompatible UnitOfMeasure");
 

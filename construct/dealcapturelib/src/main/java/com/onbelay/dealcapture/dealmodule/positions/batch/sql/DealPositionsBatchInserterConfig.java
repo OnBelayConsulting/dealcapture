@@ -18,4 +18,13 @@ public class DealPositionsBatchInserterConfig {
             return new DealPositionsDefaultBatchInserter();
     }
 
+    @Bean
+    public CostPositionsBatchInserter getCostPositionsBatchInserter() {
+        if (isSqlServer)
+            return new CostPositionsSqlServerBatchInserter();
+        else
+            return new CostPositionsDefaultBatchInserter();
+    }
+
+
 }

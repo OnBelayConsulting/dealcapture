@@ -24,6 +24,7 @@ public class DealPositionDetail extends AbstractDetail {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime createUpdateDateTime;
+    private LocalDateTime valuedDateTime;
     private BigDecimal volumeQuantityValue;
     private String volumeUnitOfMeasureValue;
     private String frequencyCodeValue;
@@ -31,6 +32,7 @@ public class DealPositionDetail extends AbstractDetail {
     private String currencyCodeValue;
 
     private String errorCode;
+    private String errorMessage;
 
 
     public void setDefaults() {
@@ -52,6 +54,9 @@ public class DealPositionDetail extends AbstractDetail {
         if (copy.createUpdateDateTime != null)
             this.createUpdateDateTime = copy.createUpdateDateTime;
 
+        if (copy.valuedDateTime != null)
+            this.valuedDateTime = copy.valuedDateTime;
+
         if (copy.volumeQuantityValue != null)
             this.volumeQuantityValue = copy.volumeQuantityValue;
 
@@ -66,6 +71,10 @@ public class DealPositionDetail extends AbstractDetail {
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
+
+        if (copy.errorMessage != null)
+            this.errorMessage = copy.errorMessage;
+
     }
 
 
@@ -90,6 +99,15 @@ public class DealPositionDetail extends AbstractDetail {
 
     public void setCreateUpdateDateTime(LocalDateTime createUpdateDate) {
         this.createUpdateDateTime = createUpdateDate;
+    }
+
+    @Column(name = "VALUED_DATETIME")
+    public LocalDateTime getValuedDateTime() {
+        return valuedDateTime;
+    }
+
+    public void setValuedDateTime(LocalDateTime valuedDateTime) {
+        this.valuedDateTime = valuedDateTime;
     }
 
     public void setEndDate(LocalDate endDate) {
@@ -181,4 +199,15 @@ public class DealPositionDetail extends AbstractDetail {
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
+
+
+    @Column(name = "ERROR_MSG")
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
 }

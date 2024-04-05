@@ -28,11 +28,7 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     private EntityId dealId;
 
-    private EntityId costFxRiskFactorId;
-
     private DealPositionDetail dealPositionDetail = new DealPositionDetail();
-
-    private CostPositionDetail costDetail = new CostPositionDetail();
 
     private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
 
@@ -100,14 +96,6 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
         this.dealPositionDetail = dealPositionDetail;
     }
 
-    public CostPositionDetail getCostDetail() {
-        return costDetail;
-    }
-
-    public void setCostDetail(CostPositionDetail costDetail) {
-        this.costDetail = costDetail;
-    }
-
     public PositionSettlementDetail getSettlementDetail() {
         return settlementDetail;
     }
@@ -126,14 +114,6 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     public void setRiskFactorMappingSnapshots(List<PositionRiskFactorMappingSnapshot> riskFactorMappingSnapshots) {
         this.riskFactorMappingSnapshots = riskFactorMappingSnapshots;
-    }
-
-    public EntityId getCostFxRiskFactorId() {
-        return costFxRiskFactorId;
-    }
-
-    public void setCostFxRiskFactorId(EntityId costFxRiskFactorId) {
-        this.costFxRiskFactorId = costFxRiskFactorId;
     }
 
     @Transient

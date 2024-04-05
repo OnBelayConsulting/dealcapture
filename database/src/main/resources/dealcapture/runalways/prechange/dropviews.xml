@@ -58,5 +58,22 @@
 				viewName='DEAL_POSITION_VIEW'
 		/>
 	</changeSet>
+	<changeSet
+			author='lefeuvrem'
+			id='drop COST_POSITION_VIEW'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='COST_POSITION_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='COST_POSITION_VIEW'
+		/>
+	</changeSet>
 
 </databaseChangeLog>

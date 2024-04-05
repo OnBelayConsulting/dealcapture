@@ -9,12 +9,14 @@ import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
+import com.onbelay.shared.enums.CurrencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,6 +34,8 @@ public class DealPositionServiceTest extends DealServiceTestCase {
     private PriceRiskFactor priceRiskFactor;
 
     private FxRiskFactor fxRiskFactor;
+
+    private LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
 
     private LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
     private LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
@@ -60,6 +64,8 @@ public class DealPositionServiceTest extends DealServiceTestCase {
     public void createPositionsForFixedBuyDeal() {
         List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
                 fixedPriceBuyDeal,
+                CurrencyCode.CAD,
+                createdDateTime,
                 priceRiskFactor,
                 fxRiskFactor);
 
@@ -82,6 +88,8 @@ public class DealPositionServiceTest extends DealServiceTestCase {
     public void fetchDealPositionViews() {
         List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
                 fixedPriceBuyDeal,
+                CurrencyCode.CAD,
+                createdDateTime,
                 priceRiskFactor,
                 fxRiskFactor);
 
@@ -91,8 +99,10 @@ public class DealPositionServiceTest extends DealServiceTestCase {
 
         flush();
 
-        List<DealPositionView> reports = dealPositionService.findDealPositionViewsByDeal(
-                fixedPriceBuyDeal.generateEntityId());
+        List<DealPositionView> reports = dealPositionService.fetchDealPositionViews(
+                List.of(fixedPriceBuyDeal.getId()),
+                CurrencyCode.CAD,
+                createdDateTime);
 
         assertTrue(reports.size() > 0);
 

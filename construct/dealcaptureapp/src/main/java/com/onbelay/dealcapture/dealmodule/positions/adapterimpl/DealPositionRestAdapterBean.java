@@ -77,9 +77,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
                 .withCurrency(evaluationContextRequest.getCurrencyCode());
 
         if (evaluationContextRequest.getObservedDateTime() != null)
-            evaluationContext.withObservedDateTime(evaluationContextRequest.getObservedDateTime());
+            evaluationContext.withCreatedDateTime(evaluationContextRequest.getObservedDateTime());
         else
-            evaluationContext.withObservedDateTime(LocalDateTime.now());
+            evaluationContext.withCreatedDateTime(LocalDateTime.now());
 
         if (evaluationContextRequest.getUnitOfMeasureCode() != null)
             evaluationContext.withUnitOfMeasure(evaluationContextRequest.getUnitOfMeasureCode());

@@ -11,6 +11,7 @@ import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.CostPositionsBatchInserter;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchInserter;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.PositionRiskFactorMappingBatchInserter;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
@@ -18,6 +19,7 @@ import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGeneratorF
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
@@ -50,6 +52,9 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
     private DealPositionsBatchInserter dealPositionsBatchInserter;
 
     @Autowired
+    private CostPositionsBatchInserter costPositionsBatchInserter;
+
+    @Autowired
     private PositionRiskFactorMappingBatchInserter positionRiskFactorMappingBatchInserter;
 
     @Autowired
@@ -76,6 +81,9 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
             EvaluationContext context,
             Integer dealId) {
 
+        if (context.getCreatedDateTime() == null)
+            throw new RuntimeException("Missing createdDateTime");
+
            return generatePositions(
                    positionGenerationIdentifier,
                    context,
@@ -87,6 +95,9 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
             String positionGenerationIdentifier,
             EvaluationContext context,
             List<Integer> dealIds) {
+
+        if (context.getCreatedDateTime() == null)
+            throw new RuntimeException("Missing createdDateTime");
 
         logger.info("assign pg identifiers start: " + LocalDateTime.now().toString());
         dealService.assignPositionIdentifierToDeals(
@@ -195,7 +206,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         processFxRiskFactors(riskFactorManager);
 
         batchSavePositions(
-                context.getObservedDateTime(),
+                context.getCreatedDateTime(),
                 dealPositionGenerators);
 
         return  new TransactionResult();
@@ -259,11 +270,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
 
         for (Integer priceIndexId : newPriceRiskFactors.keySet()) {
             SubLister<PriceRiskFactorSnapshot> subLister = new SubLister<>(
-                    newPriceRiskFactors.get(priceIndexId)
-                            .values()
-                            .stream()
-                            .collect(Collectors.toList()),
-                    100);
+                    new ArrayList<>(newPriceRiskFactors.get(priceIndexId).values()),100);
 
             ArrayList<Integer> ids = new ArrayList<>();
 
@@ -368,24 +375,37 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
     }
 
     private void batchSavePositions(
-            LocalDateTime observedDateTime,
+            LocalDateTime createdDateTime,
             List<DealPositionGenerator> dealPositionGenerators) {
 
 
         logger.info("save deal positions start: " + LocalDateTime.now().toString());
 
         ArrayList<DealPositionSnapshot> positionSnapshots = new ArrayList<>();
+        ArrayList<CostPositionSnapshot> costPositionSnapshots = new ArrayList<>();
+
         ArrayList<Integer> dealIds = new ArrayList<>();
         for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
             dealIds.add(dealPositionGenerator.getDealSummary().getDealId().getId());
+            costPositionSnapshots.addAll(
+                    dealPositionGenerator.generateCostPositionSnapshots(createdDateTime));
             positionSnapshots.addAll(
-                    dealPositionGenerator.generateDealPositionSnapshots(observedDateTime));
+                    dealPositionGenerator.generateDealPositionSnapshots(createdDateTime));
         }
+
+
         SubLister<DealPositionSnapshot> positionSubLister = new SubLister<>(positionSnapshots, 1000);
         while (positionSubLister.moreElements()) {
             dealPositionsBatchInserter.savePositions(
                     DealTypeCode.PHYSICAL_DEAL,
                     positionSubLister.nextList());
+        }
+
+        if (costPositionSnapshots.isEmpty() == false) {
+            SubLister<CostPositionSnapshot> costPositionSubLister = new SubLister<>(costPositionSnapshots, 1000);
+            while (costPositionSubLister.moreElements()) {
+                costPositionsBatchInserter.savePositions(costPositionSubLister.nextList());
+            }
         }
 
         logger.info("save deal positions end: " + LocalDateTime.now().toString());
@@ -410,7 +430,7 @@ public class GeneratePositionsServiceBean implements GeneratePositionsService {
         while (subLister.moreElements()) {
             dealService.updateDealPositionStatusToComplete(
                     subLister.nextList(),
-                    observedDateTime);
+                    createdDateTime);
         }
         logger.info("Update deal position generation end: " + LocalDateTime.now().toString());
 
