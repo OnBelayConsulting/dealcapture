@@ -15,15 +15,14 @@
  */
 package com.onbelay.dealcapture.busmath.model;
 
+import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.List;
-
-import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 
 public abstract class CalculatedEntity {
-	protected static final MathContext mathContext = MathContext.UNLIMITED;
+	protected static final MathContext mathContext = MathContext.DECIMAL128;
     protected static final MathContext divisorMathContext = MathContext.DECIMAL128;
     protected static int roundingScale = 6;
     protected static final BigDecimal ZERO = BigDecimal.ZERO;

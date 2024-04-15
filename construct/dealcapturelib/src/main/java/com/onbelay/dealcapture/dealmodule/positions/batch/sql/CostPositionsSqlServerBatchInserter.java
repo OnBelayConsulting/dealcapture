@@ -1,13 +1,10 @@
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
+import com.onbelay.core.entity.repository.EntityRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.repository.CostPositionRepository;
-import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,13 +29,13 @@ public class CostPositionsSqlServerBatchInserter implements CostPositionsBatchIn
 
 
     @Autowired
-    private CostPositionRepository costPositionRepository;
+    private EntityRepository entityRepository;
 
     @Override
     public void savePositions(List<CostPositionSnapshot> positions) {
 
 
-        Long startId = costPositionRepository.reserveSequenceRange("COST_POSITION_SEQ", positions.size());
+        Long startId = entityRepository.reserveSequenceRange("COST_POSITION_SEQ", positions.size());
         for (CostPositionSnapshot snapshot : positions) {
             snapshot.setEntityId(new EntityId(startId.intValue()));
             startId++;

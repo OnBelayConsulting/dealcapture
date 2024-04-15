@@ -25,10 +25,7 @@ import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import com.onbelay.shared.enums.BuySellCode;
-import com.onbelay.shared.enums.CommodityCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
+import com.onbelay.shared.enums.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
@@ -50,6 +47,8 @@ public class DealDetail {
 	private LocalDate endDate;
 	private BigDecimal volumeQuantity;
 	private String volumeUnitOfMeasureCodeValue;
+	private String volumeFrequencyCodeValue;
+
 	private String reportingCurrencyCodeValue;
 	private String settlementCurrencyCodeValue;
 
@@ -92,6 +91,11 @@ public class DealDetail {
 		
 		if (volumeUnitOfMeasureCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_VOL_UNIT_OF_MEASURE.getCode());
+
+
+		if (volumeFrequencyCodeValue == null)
+			throw new OBValidationException(DealErrorCode.MISSING_VOL_FREQUENCY.getCode());
+
 
 		if (reportingCurrencyCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_REPORTING_CURRENCY.getCode());
@@ -159,6 +163,25 @@ public class DealDetail {
 
 	public void setVolumeUnitOfMeasureCodeValue(String volumeUnitOfMeasureCodeValue) {
 		this.volumeUnitOfMeasureCodeValue = volumeUnitOfMeasureCodeValue;
+	}
+
+	@Transient
+	@JsonIgnore
+	public FrequencyCode getVolumeFrequencyCode() {
+		return FrequencyCode.lookUp(volumeFrequencyCodeValue);
+	}
+
+	public void setVolumeFrequencyCode(FrequencyCode code) {
+		this.volumeFrequencyCodeValue = code.getCode();
+	}
+
+	@Column(name = "VOLUME_FREQUENCY_CODE")
+	public String getVolumeFrequencyCodeValue() {
+		return volumeFrequencyCodeValue;
+	}
+
+	public void setVolumeFrequencyCodeValue(String volumeFrequencyCodeValue) {
+		this.volumeFrequencyCodeValue = volumeFrequencyCodeValue;
 	}
 
 	@Transient
@@ -337,6 +360,9 @@ public class DealDetail {
 		
 		if (copy.volumeUnitOfMeasureCodeValue != null)
 			this.volumeUnitOfMeasureCodeValue = copy.volumeUnitOfMeasureCodeValue;
+
+		if (copy.volumeFrequencyCodeValue != null)
+			this.volumeFrequencyCodeValue = copy.volumeFrequencyCodeValue;
 
 		if (copy.reportingCurrencyCodeValue != null)
 			this.reportingCurrencyCodeValue = copy.reportingCurrencyCodeValue;

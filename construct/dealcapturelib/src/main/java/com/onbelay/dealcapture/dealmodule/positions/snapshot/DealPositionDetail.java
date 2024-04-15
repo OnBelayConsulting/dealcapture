@@ -8,6 +8,7 @@ import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Quantity;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
@@ -23,11 +24,12 @@ public class DealPositionDetail extends AbstractDetail {
 
     private LocalDate startDate;
     private LocalDate endDate;
-    private LocalDateTime createUpdateDateTime;
+    private LocalDateTime createdDateTime;
     private LocalDateTime valuedDateTime;
     private BigDecimal volumeQuantityValue;
     private String volumeUnitOfMeasureValue;
     private String frequencyCodeValue;
+    private String powerFlowCodeValue;
 
     private String currencyCodeValue;
 
@@ -51,8 +53,11 @@ public class DealPositionDetail extends AbstractDetail {
         if (copy.endDate != null)
             this.endDate = copy.endDate;
 
-        if (copy.createUpdateDateTime != null)
-            this.createUpdateDateTime = copy.createUpdateDateTime;
+        if (copy.powerFlowCodeValue != null)
+            this.powerFlowCodeValue = copy.powerFlowCodeValue;
+
+        if (copy.createdDateTime != null)
+            this.createdDateTime = copy.createdDateTime;
 
         if (copy.valuedDateTime != null)
             this.valuedDateTime = copy.valuedDateTime;
@@ -91,14 +96,32 @@ public class DealPositionDetail extends AbstractDetail {
     public LocalDate getEndDate() {
         return endDate;
     }
-
-    @Column(name = "CREATE_UPDATE_DATETIME")
-    public LocalDateTime getCreateUpdateDateTime() {
-        return createUpdateDateTime;
+    @Transient
+    @JsonIgnore
+    public PowerFlowCode getPowerFlowCode(int hourEnding) {
+        return PowerFlowCode.lookUp(powerFlowCodeValue);
     }
 
-    public void setCreateUpdateDateTime(LocalDateTime createUpdateDate) {
-        this.createUpdateDateTime = createUpdateDate;
+    public void setPowerFlowCode(int hourEnding, PowerFlowCode powerFlowCode) {
+        this.powerFlowCodeValue = powerFlowCode.getCode();
+    }
+
+    @Column(name = "POWER_FLOW_CODE")
+    public String getPowerFlowCodeValue() {
+        return powerFlowCodeValue;
+    }
+
+    public void setPowerFlowCodeValue(String powerFlowCodeValue) {
+        this.powerFlowCodeValue = powerFlowCodeValue;
+    }
+
+    @Column(name = "CREATE_UPDATE_DATETIME")
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(LocalDateTime createUpdateDate) {
+        this.createdDateTime = createUpdateDate;
     }
 
     @Column(name = "VALUED_DATETIME")

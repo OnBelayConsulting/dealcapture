@@ -15,15 +15,15 @@
  */
 package com.onbelay.dealcapture.organization.assembler;
 
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
+import com.onbelay.dealcapture.organization.model.OrganizationRole;
+import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
-import com.onbelay.dealcapture.organization.model.OrganizationRole;
-import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
 
 public class OrganizationRoleSnapshotAssemblerFactory {
 	

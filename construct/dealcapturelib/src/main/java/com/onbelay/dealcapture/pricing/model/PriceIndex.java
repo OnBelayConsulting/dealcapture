@@ -15,29 +15,6 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
-import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
-import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
@@ -47,9 +24,17 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
+import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
+import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
+import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "PRICE_INDEX")
@@ -150,17 +135,6 @@ public class PriceIndex extends TemporalAbstractEntity {
 		this.detail = detail;
 	}
 
-	@Transient
-	public Price getCurrentPrice(LocalDate marketDate) {
-		PriceCurve curve = getPriceRepository().fetchCurrentPrice(
-				generateEntityId(),
-				marketDate);
-		if (curve != null)
-			return curve.generatePrice();
-		else
-			return new Price(CalculatedErrorType.ERROR);
-	}
-
 	protected void createWith(PriceIndexSnapshot snapshot) {
 		super.createWith(snapshot);
 		detail.setDefaults();
@@ -182,7 +156,7 @@ public class PriceIndex extends TemporalAbstractEntity {
 		ArrayList<Integer> ids = new ArrayList<>();
 		for (PriceCurveSnapshot s : prices) {
 			if (s.getEntityState() == EntityState.NEW) {
-				PriceCurve price = new PriceCurve(this, s);
+				PriceCurve price = PriceCurve.newPriceCurve(this, s);
 				ids.add(price.getId());
 			} if (s.getEntityState() == EntityState.MODIFIED) {
 				PriceCurve price = getPriceRepository().load(s.getEntityId());
@@ -199,10 +173,6 @@ public class PriceIndex extends TemporalAbstractEntity {
 	protected void addPriceCurve(PriceCurve curve) {
 		curve.setPriceIndex(this);
 		curve.save();
-	}
-
-	public PriceRiskFactor getPriceRiskFactor(LocalDate marketDate) {
-		return getPriceRiskFactorRepository().fetchByMarketDate(generateEntityId(), marketDate);
 	}
 
 	public List<PriceRiskFactor> getPriceRiskFactorsByDates(

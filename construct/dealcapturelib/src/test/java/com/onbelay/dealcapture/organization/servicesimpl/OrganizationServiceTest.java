@@ -17,7 +17,10 @@ package com.onbelay.dealcapture.organization.servicesimpl;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.enums.ExpressionOperator;
-import com.onbelay.core.query.snapshot.*;
+import com.onbelay.core.query.snapshot.DefinedOrderByClause;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
 import com.onbelay.dealcapture.organization.snapshot.*;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
@@ -27,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

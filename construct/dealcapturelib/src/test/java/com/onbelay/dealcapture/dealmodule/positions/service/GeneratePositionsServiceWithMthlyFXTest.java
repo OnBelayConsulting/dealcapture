@@ -43,7 +43,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
 
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertEquals(31, positionSnapshots.size());
@@ -56,7 +56,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime());
+        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
         assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
 
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
@@ -108,7 +108,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
 
         flush();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -148,7 +148,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
 
         flush();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusBuyDeal.generateEntityId());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);

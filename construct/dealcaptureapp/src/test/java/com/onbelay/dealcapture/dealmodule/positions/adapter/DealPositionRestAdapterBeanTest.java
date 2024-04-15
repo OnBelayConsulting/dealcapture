@@ -161,7 +161,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                 "WHERE dealId eq " + physicalDeal.getId(),
                 request);
 
-        List<DealPositionSnapshot> snapshots = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+        List<DealPositionSnapshot> snapshots = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
         assertTrue(snapshots.size() > 0);
     }
 

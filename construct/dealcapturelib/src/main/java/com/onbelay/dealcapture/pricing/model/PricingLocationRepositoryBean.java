@@ -15,20 +15,18 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
-import java.util.List;
-
-import jakarta.transaction.Transactional;
-
-import com.onbelay.core.enums.CoreTransactionErrorCode;
-import com.onbelay.core.exception.OBRuntimeException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository (value="pricingLocationRepository")
 @Transactional

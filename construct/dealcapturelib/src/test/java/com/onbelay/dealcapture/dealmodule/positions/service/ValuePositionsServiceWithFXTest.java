@@ -4,14 +4,11 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.pricing.model.FxIndexFixture;
-import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
-import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
@@ -19,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -106,7 +102,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceBuyDeal.generateEntityId());
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
@@ -161,7 +157,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceSellDeal.generateEntityId());
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceSellDeal.generateEntityId());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
@@ -207,7 +203,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexBuyDeal.generateEntityId());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
@@ -253,7 +249,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexSellDeal.generateEntityId());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
@@ -304,7 +300,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusBuyDeal.generateEntityId());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
@@ -350,7 +346,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusSellDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);

@@ -52,14 +52,6 @@ public class DealPositionServiceTest extends DealServiceTestCase {
 
     }
 
-    //@Test
-    public void getSequences() {
-        long start = dealPositionRepository.reserveSequenceRange("DEAL_POSITION_SEQ", 10);
-        logger.error("firstcall: " + start);
-        start = dealPositionRepository.reserveSequenceRange("DEAL_POSITION_SEQ", 10);
-        logger.error("secondcall" + start);
-    }
-
     @Test
     public void createPositionsForFixedBuyDeal() {
         List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
@@ -75,7 +67,7 @@ public class DealPositionServiceTest extends DealServiceTestCase {
 
         flush();
 
-        List<DealPositionSnapshot> snapshots1 = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> snapshots1 = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertTrue(snapshots1.size() > 0);

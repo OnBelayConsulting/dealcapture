@@ -15,20 +15,17 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
-import jakarta.persistence.*;
-
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
+import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
+import jakarta.persistence.*;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL")
@@ -45,6 +42,7 @@ import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
 		    +  "         deal.dealDetail.reportingCurrencyCodeValue,"
 			+  "		 deal.dealDetail.volumeQuantity,"
 			+  "         deal.dealDetail.volumeUnitOfMeasureCodeValue,"
+		    +  "         deal.dealDetail.volumeFrequencyCodeValue,"
 			+  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"
 			+  "         deal.detail.dealPriceValuationCodeValue,"
 			+  "         deal.dealPriceIndex.id,"

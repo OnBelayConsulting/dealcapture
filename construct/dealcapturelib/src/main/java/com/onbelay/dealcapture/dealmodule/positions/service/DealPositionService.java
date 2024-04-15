@@ -7,6 +7,7 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.model.CostPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -30,7 +31,10 @@ public interface DealPositionService {
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
 
-    List<DealPositionSnapshot> findByDeal(EntityId dealId);
+    List<DealPositionSnapshot> findPositionsByDeal(EntityId dealId);
+
+    List<DealHourlyPositionSnapshot> findHourlyPositionsByDeal(EntityId dealId);
+
 
     List<Integer> findIdsByDeal(EntityId entityId);
 

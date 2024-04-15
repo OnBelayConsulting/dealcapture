@@ -12,7 +12,6 @@ import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.*;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

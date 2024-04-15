@@ -15,12 +15,11 @@
  */
 package com.onbelay.dealcapture.organization.snapshot;
 
-import jakarta.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationErrorCode;
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import org.hibernate.type.YesNoConverter;
 

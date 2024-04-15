@@ -14,29 +14,26 @@
             runOnChange='true'
     >
     <createView viewName="COST_POSITION_VIEW">
-    SELECT
-            pp.ENTITY_ID,
-            pp.DEAL_ID,
-            pp.START_DATE,
-            pp.END_DATE,
-            pp.CURRENCY_CODE,
-            pp.CREATE_UPDATE_DATETIME,
-            pp.UNIT_OF_MEASURE_CODE,
-            pp.VOLUME_QUANTITY,
-            pp.COST_NAME_CODE,
-            pp.COST_VALUE,
-            pp.IS_SETTLEMENT_POSITION,
-            pp.IS_FIXED_VALUED,
-            dc.UNIT_OF_MEASURE_CODE AS COST_UNIT_OF_MEASURE,
-            dc.CURRENCY_CODE AS COST_CURRENCY_CODE,
-            costFxRf.MARKET_VALUE as COST_FX_VALUE,
-            costFxRf.FX_INDEX_ID as COST_FX_INDEX_ID
-            FROM
-            COST_POSITION pp
-            INNER JOIN DEAL_COST dc ON
-                dc.ENTITY_ID = pp.DEAL_COST_ID
-            LEFT OUTER JOIN FX_RISK_FACTOR costFxRf ON
-                costFxRf.ENTITY_ID = pp.COST_FX_RISK_FACTOR_ID
+        SELECT
+                pp.ENTITY_ID,
+                pp.DEAL_ID,
+                pp.START_DATE,
+                pp.END_DATE,
+                pp.CURRENCY_CODE,
+                pp.CREATE_UPDATE_DATETIME,
+                pp.UNIT_OF_MEASURE_CODE,
+                pp.VOLUME_QUANTITY,
+                pp.COST_NAME_CODE,
+                pp.COST_VALUE,
+                pp.IS_SETTLEMENT_POSITION,
+                pp.IS_FIXED_VALUED,
+                dc.UNIT_OF_MEASURE_CODE AS COST_UNIT_OF_MEASURE,
+                dc.CURRENCY_CODE AS COST_CURRENCY_CODE,
+                pp.COST_FX_RISK_FACTOR_ID
+        FROM
+                COST_POSITION pp
+                INNER JOIN DEAL_COST dc ON
+                    dc.ENTITY_ID = pp.DEAL_COST_ID
         </createView>
     </changeSet>
 

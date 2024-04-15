@@ -15,12 +15,12 @@
  */
 package com.onbelay.dealcapture.organization.assembler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.onbelay.core.entity.assembler.EntityAssembler;
 import com.onbelay.dealcapture.organization.model.OrganizationRole;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummary;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrganizationRoleSummaryAssembler extends EntityAssembler {
 	

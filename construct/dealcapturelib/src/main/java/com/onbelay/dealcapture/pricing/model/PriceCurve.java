@@ -22,7 +22,6 @@ import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.snapshot.CurveDetail;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -34,11 +33,13 @@ import jakarta.persistence.*;
        		+ "   FROM PriceCurve price " +
        	     "   WHERE price.priceIndex.id = :priceIndexId "
        	     + "   AND price.detail.curveDate = :curveDate "
+			 + "   AND price.detail.hourEnding = :hourEnding "
        	     + "   AND price.detail.observedDateTime = "
        	     + "    (SELECT MAX(searchPrice.detail.observedDateTime)"
        	     + "       FROM PriceCurve searchPrice"
        	     + "      WHERE searchPrice.priceIndex.id = price.priceIndex.id "
        	     + "        AND searchPrice.detail.curveDate = price.detail.curveDate "
+		     + "        AND searchPrice.detail.hourEnding = price.detail.hourEnding "
 		    +  "        AND searchPrice.detail.frequencyCodeValue = price.detail.frequencyCodeValue "
        	     + "        AND searchPrice.detail.observedDateTime <= :currentDateTime"
        	     + "     )  "),
@@ -47,6 +48,7 @@ import jakarta.persistence.*;
        query = "SELECT new com.onbelay.dealcapture.pricing.snapshot.CurveReport(" +
 			   "		price.priceIndex.id, " +
 			   "		price.detail.curveDate, " +
+			   "        price.detail.hourEnding," +
 			   "		price.detail.curveValue, " +
 			   "        price.detail.frequencyCodeValue) "
        		+ "   FROM PriceCurve price " +
@@ -58,10 +60,11 @@ import jakarta.persistence.*;
        	     + "       FROM PriceCurve searchPrice"
        	     + "      WHERE searchPrice.priceIndex.id = price.priceIndex.id "
 			   + "      AND searchPrice.detail.curveDate = price.detail.curveDate "
+			   + "      AND searchPrice.detail.hourEnding = price.detail.hourEnding "
 			   + "      AND searchPrice.detail.frequencyCodeValue = price.detail.frequencyCodeValue "
        	     + "        AND searchPrice.detail.observedDateTime <= :observedDateTime"
        	     + "     )  " +
-			   "   ORDER BY price.priceIndex.id, price.detail.curveDate, price.detail.frequencyCodeValue")
+			   "   ORDER BY price.priceIndex.id, price.detail.frequencyCodeValue, price.detail.curveDate, price.detail.hourEnding ")
 
 })
 public class PriceCurve extends TemporalAbstractEntity {
@@ -76,12 +79,14 @@ public class PriceCurve extends TemporalAbstractEntity {
 	protected PriceCurve() {
 	}
 	
-	public PriceCurve(
+	public static PriceCurve newPriceCurve(
 			PriceIndex priceIndex,
 			PriceCurveSnapshot snapshot) {
-		createWith(
+		PriceCurve priceCurve = new PriceCurve();
+		priceCurve.createWith(
 				priceIndex,
 				snapshot);
+		return priceCurve;
 	}
 	
 	@Override
@@ -136,6 +141,8 @@ public class PriceCurve extends TemporalAbstractEntity {
 	private void createWith(
 			PriceIndex priceIndex,
 			PriceCurveSnapshot snapshot) {
+
+		detail.setDefaults();
 		this.detail.copyFrom(snapshot.getDetail());
 		priceIndex.addPriceCurve(this);
 	}

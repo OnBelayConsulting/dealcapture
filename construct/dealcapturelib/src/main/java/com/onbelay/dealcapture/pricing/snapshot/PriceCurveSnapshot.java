@@ -15,11 +15,8 @@
  */
 package com.onbelay.dealcapture.pricing.snapshot;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
-import com.onbelay.dealcapture.busmath.model.Price;
-import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceCurveSnapshot extends AbstractSnapshot {

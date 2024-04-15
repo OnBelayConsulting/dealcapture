@@ -1,11 +1,8 @@
 package com.onbelay.dealcapture.riskfactor.components;
 
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
-import com.onbelay.dealcapture.riskfactor.components.BaseRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.enums.RiskFactorType;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 

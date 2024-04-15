@@ -1,0 +1,266 @@
+package com.onbelay.dealcapture.dealmodule.positions.snapshot;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.onbelay.core.codes.annotations.CodeLabelSerializer;
+import com.onbelay.core.codes.annotations.InjectCodeLabel;
+import com.onbelay.core.entity.snapshot.AbstractDetail;
+import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.Quantity;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Transient;
+import org.hibernate.type.YesNoConverter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class DealHourlyPositionDetail extends AbstractDetail {
+
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String powerFlowCodeValue;
+    private String priceTypeCodeValue;
+
+    private LocalDateTime createdDateTime;
+    private LocalDateTime valuedDateTime;
+
+    private String currencyCodeValue;
+    private String volumeUnitOfMeasureValue;
+    private BigDecimal totalQuantityValue;
+
+    private Boolean isSettlementPosition;
+    private BigDecimal positionAmount;
+
+    private String errorCode;
+    private String errorMessage;
+
+
+    public void setDefaults() {
+        errorCode = "0";
+    }
+
+    public void validate() throws OBValidationException {
+
+    }
+
+    public void copyFrom(DealHourlyPositionDetail copy) {
+
+        if (copy.startDate != null)
+            this.startDate = copy.startDate;
+
+        if (copy.endDate != null)
+            this.endDate = copy.endDate;
+
+        if (copy.powerFlowCodeValue != null)
+            this.powerFlowCodeValue = copy.powerFlowCodeValue;
+
+        if (copy.priceTypeCodeValue != null)
+            this.priceTypeCodeValue = copy.priceTypeCodeValue;
+
+        if (copy.createdDateTime != null)
+            this.createdDateTime = copy.createdDateTime;
+
+        if (copy.valuedDateTime != null)
+            this.valuedDateTime = copy.valuedDateTime;
+
+        if (copy.totalQuantityValue != null)
+            this.totalQuantityValue = copy.totalQuantityValue;
+
+        if (copy.volumeUnitOfMeasureValue != null)
+            this.volumeUnitOfMeasureValue = copy.volumeUnitOfMeasureValue;
+
+        if (copy.currencyCodeValue != null)
+            this.currencyCodeValue = copy.currencyCodeValue;
+
+        if (copy.isSettlementPosition != null)
+            this.isSettlementPosition = copy.isSettlementPosition;
+
+        if (copy.positionAmount != null)
+            this.positionAmount = copy.positionAmount;
+
+        if (copy.errorCode != null)
+            this.errorCode = copy.errorCode;
+
+        if (copy.errorMessage != null)
+            this.errorMessage = copy.errorMessage;
+
+    }
+
+    @Column(name = "START_DATE")
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    @Column(name = "END_DATE")
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+    @Transient
+    @JsonIgnore
+    public PowerFlowCode getPowerFlowCode() {
+        return PowerFlowCode.lookUp(powerFlowCodeValue);
+    }
+
+    public void setPowerFlowCode(PowerFlowCode powerFlowCode) {
+        this.powerFlowCodeValue = powerFlowCode.getCode();
+    }
+
+    @Column(name = "POWER_FLOW_CODE")
+    public String getPowerFlowCodeValue() {
+        return powerFlowCodeValue;
+    }
+
+    public void setPowerFlowCodeValue(String powerFlowCodeValue) {
+        this.powerFlowCodeValue = powerFlowCodeValue;
+    }
+
+    @Transient
+    @JsonIgnore
+    public PriceTypeCode getPriceTypeCode() {
+        return PriceTypeCode.lookUp(priceTypeCodeValue);
+    }
+
+    public void setPriceTypeCode(PriceTypeCode priceTypeCode) {
+        this.priceTypeCodeValue = priceTypeCode.getCode();
+    }
+
+    @Column(name = "PRICE_TYPE_CODE")
+    public String getPriceTypeCodeValue() {
+        return priceTypeCodeValue;
+    }
+
+    public void setPriceTypeCodeValue(String priceTypeCodeValue) {
+        this.priceTypeCodeValue = priceTypeCodeValue;
+    }
+
+    @Column(name = "CREATE_UPDATE_DATETIME")
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(LocalDateTime createUpdateDate) {
+        this.createdDateTime = createUpdateDate;
+    }
+
+    @Column(name = "VALUED_DATETIME")
+    public LocalDateTime getValuedDateTime() {
+        return valuedDateTime;
+    }
+
+    public void setValuedDateTime(LocalDateTime valuedDateTime) {
+        this.valuedDateTime = valuedDateTime;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    @Transient
+    public Quantity getQuantity() {
+        return new Quantity(
+                totalQuantityValue,
+                getVolumeUnitOfMeasure());
+    }
+
+    @Column(name = "TOTAL_QUANTITY")
+    public BigDecimal getTotalQuantityValue() {
+        return totalQuantityValue;
+    }
+
+    public void setTotalQuantityValue(BigDecimal totalQuantityValue) {
+        this.totalQuantityValue = totalQuantityValue;
+    }
+
+    @Transient
+    @JsonIgnore
+    public CurrencyCode getCurrencyCode() {
+        return CurrencyCode.lookUp(currencyCodeValue);
+    }
+
+    public void setCurrencyCode(CurrencyCode code) {
+        this.currencyCodeValue = code.getCode();
+    }
+
+    @Column(name = "CURRENCY_CODE")
+    public String getCurrencyCodeValue() {
+        return currencyCodeValue;
+    }
+
+    public void setCurrencyCodeValue(String currencyCodeValue) {
+        this.currencyCodeValue = currencyCodeValue;
+    }
+
+    @Transient
+    @JsonIgnore
+    public UnitOfMeasureCode getVolumeUnitOfMeasure() {
+        return UnitOfMeasureCode.lookUp(volumeUnitOfMeasureValue);
+    }
+
+    public void setVolumeUnitOfMeasure(UnitOfMeasureCode code) {
+        this.volumeUnitOfMeasureValue = code.getCode();
+    }
+
+    @Column(name = "VOLUME_UOM_CODE")
+    @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
+    @JsonSerialize(using = CodeLabelSerializer.class)
+    public String getVolumeUnitOfMeasureValue() {
+        return volumeUnitOfMeasureValue;
+    }
+
+    public void setVolumeUnitOfMeasureValue(String volumeUnitOfMeasureValue) {
+        this.volumeUnitOfMeasureValue = volumeUnitOfMeasureValue;
+    }
+
+    @Column(name = "IS_SETTLEMENT_POSITION")
+    @Convert(
+            converter = YesNoConverter.class
+    )
+    public Boolean getIsSettlementPosition() {
+        return isSettlementPosition;
+    }
+
+    public void setIsSettlementPosition(Boolean settlementPosition) {
+        isSettlementPosition = settlementPosition;
+    }
+
+    @Column(name = "POSITION_AMOUNT")
+    public BigDecimal getPositionAmount() {
+        return positionAmount;
+    }
+
+    public void setPositionAmount(BigDecimal positionAmount) {
+        this.positionAmount = positionAmount;
+    }
+
+    @Column(name = "ERROR_CODE")
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+
+    @Column(name = "ERROR_MSG")
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+}

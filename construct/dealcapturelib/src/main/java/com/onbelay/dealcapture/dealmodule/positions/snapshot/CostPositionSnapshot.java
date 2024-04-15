@@ -7,7 +7,6 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
-import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CostPositionSnapshot extends AbstractSnapshot {

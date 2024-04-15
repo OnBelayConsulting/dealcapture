@@ -21,7 +21,6 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.assembler.PricingLocationSnapshotAssembler;
 import com.onbelay.dealcapture.pricing.model.PricingLocation;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;

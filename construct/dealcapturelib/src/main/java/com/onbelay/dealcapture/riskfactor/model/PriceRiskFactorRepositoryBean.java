@@ -44,7 +44,7 @@ public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFacto
 	@Override
 	public PriceRiskFactor load(EntityId entityId) {
 		if (entityId.isSet())
-			return (PriceRiskFactor) find(PriceRiskFactor.class, entityId.getId());
+			return find(PriceRiskFactor.class, entityId.getId());
 		else
 			return null;
 		
@@ -94,10 +94,10 @@ public class PriceRiskFactorRepositoryBean extends BaseRepository<PriceRiskFacto
 	}
 
 	@Override
-	public PriceRiskFactor fetchByMarketDate(EntityId entityId, LocalDate marketDate) {
+	public List<PriceRiskFactor> fetchByMarketDate(EntityId entityId, LocalDate marketDate) {
 		String[] names = {"indexId", "marketDate"};
 		Object[] values = {entityId.getId(), marketDate};
-		return executeSingleResultQuery(FETCH_RISK_FACTOR_BY_MARKET_DATE, names, values);
+		return executeQuery(FETCH_RISK_FACTOR_BY_MARKET_DATE, names, values);
 	}
 
 	@Override

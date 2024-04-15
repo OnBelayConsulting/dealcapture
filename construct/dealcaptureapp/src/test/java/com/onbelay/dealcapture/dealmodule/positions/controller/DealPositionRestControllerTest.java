@@ -190,7 +190,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
 		assertTrue(transactionResult.isSuccessful());
 
-		List<DealPositionSnapshot> created = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+		List<DealPositionSnapshot> created = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
 		assertTrue(created.size() > 0);
 
 	}
@@ -225,7 +225,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
 		assertTrue(transactionResult.isSuccessful());
 
-		List<DealPositionSnapshot> created = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+		List<DealPositionSnapshot> created = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
 		assertTrue(created.size() > 0);
 
 	}
@@ -295,7 +295,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		assertEquals(true, transactionResult.isSuccessful());
 
 
-		List<DealPositionSnapshot> snapshots = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+		List<DealPositionSnapshot> snapshots = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
 		DealPositionSnapshot snapshot = snapshots.get(0);
 		assertNotNull(snapshot.getSettlementDetail().getMarkToMarketValuation());
 
@@ -330,7 +330,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
 
 		assertEquals(true, transactionResult.isSuccessful());
-		List<DealPositionSnapshot> created = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+		List<DealPositionSnapshot> created = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
 		assertTrue(created.size() > 0);
 
 	}

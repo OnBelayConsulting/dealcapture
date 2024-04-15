@@ -23,7 +23,6 @@ import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;

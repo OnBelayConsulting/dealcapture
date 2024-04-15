@@ -7,17 +7,16 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.CostPositionAssembler;
+import com.onbelay.dealcapture.dealmodule.positions.assembler.DealHourlyPositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.DealPositionAssemblerFactory;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.PositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.model.*;
 import com.onbelay.dealcapture.dealmodule.positions.repository.CostPositionRepository;
+import com.onbelay.dealcapture.dealmodule.positions.repository.DealHourlyPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.*;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,9 @@ public class DealPositionServiceBean implements DealPositionService {
 
     @Autowired
     private DealPositionRepository dealPositionRepository;
+
+    @Autowired
+    private DealHourlyPositionRepository dealHourlyPositionRepository;
 
     @Autowired
     private CostPositionRepository costPositionRepository;
@@ -86,10 +88,17 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
-    public List<DealPositionSnapshot> findByDeal(EntityId entityId) {
+    public List<DealPositionSnapshot> findPositionsByDeal(EntityId entityId) {
         List<DealPosition> positions =  dealPositionRepository.findByDeal(entityId);
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();
         PositionAssembler assembler = factory.newAssembler(DealTypeCode.PHYSICAL_DEAL);
+        return assembler.assemble(positions);
+    }
+
+    @Override
+    public List<DealHourlyPositionSnapshot> findHourlyPositionsByDeal(EntityId dealId) {
+        List<DealHourlyPosition> positions =  dealHourlyPositionRepository.findByDeal(dealId);
+        DealHourlyPositionAssembler assembler = new DealHourlyPositionAssembler();
         return assembler.assemble(positions);
     }
 

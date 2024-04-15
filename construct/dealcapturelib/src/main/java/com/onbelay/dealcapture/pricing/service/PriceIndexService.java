@@ -24,7 +24,6 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,10 +57,6 @@ public interface PriceIndexService {
 			LocalDate fromCurveDate,
 			LocalDate toCurveDate,
 			LocalDateTime observedDateTime);
-
-	public BigDecimal fetchPrice(
-			EntityId pricingIndexId,
-			LocalDate currentDate);
 
 	public QuerySelectedPage findPriceCurveIds(DefinedQuery definedQuery);
 

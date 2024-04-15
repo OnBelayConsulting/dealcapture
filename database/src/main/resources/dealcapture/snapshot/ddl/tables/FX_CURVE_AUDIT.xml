@@ -35,6 +35,10 @@
                     type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
+            <column name="HOUR_ENDING"
+                    type="java.sql.Types.NUMERIC(3, 0)">
+                <constraints nullable="false"/>
+            </column>
             <column name="CURVE_VALUE"
                     type="java.sql.Types.NUMERIC(6, 3)">
                 <constraints nullable="true"/>

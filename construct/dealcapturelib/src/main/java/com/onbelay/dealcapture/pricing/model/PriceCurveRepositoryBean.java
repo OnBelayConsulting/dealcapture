@@ -15,23 +15,21 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
-import jakarta.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.pricing.repository.PriceCurveRepository;
+import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository (value="priceCurveRepository")
 @Transactional
@@ -84,12 +82,25 @@ public class PriceCurveRepositoryBean extends BaseRepository<PriceCurve> impleme
  		}
 	}
 
+
+
 	@Override
 	public PriceCurve fetchCurrentPrice(EntityId entityId, LocalDate priceDate) {
-		String[] names = {"priceIndexId", "curveDate", "currentDateTime"};
-		Object[] values = {entityId.getId(), priceDate, LocalDateTime.now()};
+		String[] names = {"priceIndexId", "curveDate", "hourEnding", "currentDateTime"};
+		Object[] values = {entityId.getId(), priceDate, 0, LocalDateTime.now()};
 		return executeSingleResultQuery(FETCH_PRICE_BY_PRICE_DATE_OBS_DATE, names, values);
 	}
+
+	@Override
+	public PriceCurve fetchCurrentPrice(
+			EntityId entityId,
+			LocalDate priceDate,
+			Integer hourEnding) {
+		String[] names = {"priceIndexId", "curveDate", "hourEnding", "currentDateTime"};
+		Object[] values = {entityId.getId(), priceDate, hourEnding, LocalDateTime.now()};
+		return executeSingleResultQuery(FETCH_PRICE_BY_PRICE_DATE_OBS_DATE, names, values);
+	}
+
 
 
 

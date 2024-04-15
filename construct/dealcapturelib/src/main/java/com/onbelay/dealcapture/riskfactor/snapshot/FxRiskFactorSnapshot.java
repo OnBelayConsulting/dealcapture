@@ -1,9 +1,7 @@
 package com.onbelay.dealcapture.riskfactor.snapshot;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.busmath.model.FxRate;
 
 import java.util.List;
 

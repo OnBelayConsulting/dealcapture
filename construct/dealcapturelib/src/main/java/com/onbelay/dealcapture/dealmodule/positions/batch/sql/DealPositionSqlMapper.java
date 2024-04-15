@@ -83,7 +83,7 @@ public abstract class DealPositionSqlMapper extends AbstractBaseSqlMapper {
 
 		preparedStatement.setDate(n + 3, Date.valueOf(position.getDealPositionDetail().getStartDate()));
 		preparedStatement.setDate(n + 4, Date.valueOf(position.getDealPositionDetail().getEndDate()));
-		preparedStatement.setTimestamp(n + 5, Timestamp.valueOf(position.getDealPositionDetail().getCreateUpdateDateTime()));
+		preparedStatement.setTimestamp(n + 5, Timestamp.valueOf(position.getDealPositionDetail().getCreatedDateTime()));
 
 		preparedStatement.setBigDecimal(n + 6, position.getDealPositionDetail().getVolumeQuantityValue());
 		preparedStatement.setString(n + 7, position.getDealPositionDetail().getCurrencyCodeValue());

@@ -1,16 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.onbelay.core.codes.annotations.CodeLabelSerializer;
-import com.onbelay.core.codes.annotations.InjectCodeLabel;
-import com.onbelay.dealcapture.busmath.model.Amount;
-import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
@@ -35,9 +27,6 @@ public class CostPositionViewDetail {
     private BigDecimal  volumeQuantityValue;
     private String      costNameCodeValue;
     private BigDecimal  costValue;
-
-    private BigDecimal costFxRateValue;
-    private Integer    costFxIndexId;
 
     private Boolean    isSettlementPosition;
     private Boolean    isFixedValued;
@@ -184,25 +173,6 @@ public class CostPositionViewDetail {
     public void setCostUnitOfMeasureValue(String costUnitOfMeasureValue) {
         this.costUnitOfMeasureValue = costUnitOfMeasureValue;
     }
-
-    @Column(name = "COST_FX_VALUE")
-    public BigDecimal getCostFxRateValue() {
-        return costFxRateValue;
-    }
-
-    public void setCostFxRateValue(BigDecimal costFxRateValue) {
-        this.costFxRateValue = costFxRateValue;
-    }
-
-    @Column(name = "COST_FX_INDEX_ID")
-    public Integer getCostFxIndexId() {
-        return costFxIndexId;
-    }
-
-    public void setCostFxIndexId(Integer costFxIndexId) {
-        this.costFxIndexId = costFxIndexId;
-    }
-
 
     @Column(name = "IS_SETTLEMENT_POSITION")
     @Convert(

@@ -4,6 +4,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 
 import java.time.LocalDateTime;
@@ -13,13 +14,20 @@ public interface DealPositionGenerator {
 
     public void generatePositionHolders(EvaluationContext context);
 
-    public List<DealPositionSnapshot> generateDealPositionSnapshots(LocalDateTime createdDateTime);
+    public void generateDealPositionSnapshots(LocalDateTime createdDateTime);
 
-    public List<CostPositionSnapshot> generateCostPositionSnapshots(LocalDateTime createdDateTime);
+    public void generateCostPositionSnapshots(LocalDateTime createdDateTime);
+
+    public List<DealPositionSnapshot> getDealPositionSnapshots();
+
+    public List<DealHourlyPositionSnapshot> getDealHourlyPositionSnapshots();
+
+    public List<CostPositionSnapshot> getCostPositionSnapshots();
+
 
     public DealSummary getDealSummary();
 
-    public List<PositionHolder> getPositionHolders();
+    public List<BasePositionHolder> getPositionHolders();
 
     public void withCosts(List<DealCostSummary> summaries);
 

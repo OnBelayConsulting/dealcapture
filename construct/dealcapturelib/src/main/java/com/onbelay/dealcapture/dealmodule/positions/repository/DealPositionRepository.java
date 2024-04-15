@@ -15,8 +15,6 @@ public interface DealPositionRepository {
 
     DealPosition load(EntityId entityId);
 
-    long reserveSequenceRange(String sequenceName, int rangeSize);
-
     List<DealPosition> findByDeal(EntityId dealEntityId);
 
     List<Integer> findIdsByDeal(EntityId dealEntityId);

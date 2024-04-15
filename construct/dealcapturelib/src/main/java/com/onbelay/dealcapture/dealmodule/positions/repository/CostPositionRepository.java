@@ -16,8 +16,6 @@ public interface CostPositionRepository {
 
     CostPosition load(EntityId entityId);
 
-    long reserveSequenceRange(String sequenceName, int rangeSize);
-
     List<CostPosition> findByDeal(EntityId dealId);
 
     List<CostPositionView> findCostPositionViewsWithFX(

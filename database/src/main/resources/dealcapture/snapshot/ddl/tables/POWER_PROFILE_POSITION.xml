@@ -1,0 +1,250 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/POWER_PROFILE_POSITION.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="POWER_PROFILE_POSITION_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="POWER_PROFILE_POSITION" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID"
+                    defaultValueSequenceNext="POWER_PROFILE_POSITION_SEQ"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="POWER_PROFILE_POSITION_PK" nullable="false"/>
+            </column>
+            <column name="POWER_PROFILE_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_DATE"  type="java.sql.Types.TIMESTAMP"/>
+            <column name="END_DATE"  type="java.sql.Types.TIMESTAMP"/>
+            <column name="CREATE_UPDATE_DATETIME"  type="java.sql.Types.TIMESTAMP"/>
+            <column name="VALUED_DATETIME"  type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="POWER_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name='UNIT_OF_MEASURE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='true'/>
+            </column>
+            <column name="HOUR_1_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_2_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_3_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_4_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_5_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_6_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_7_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_8_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_9_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_10_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_11_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_12_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_13_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_14_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_15_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_16_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_17_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_18_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_19_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_20_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_21_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_22_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_23_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_24_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="HOUR_1_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_2_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_3_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_4_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_5_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_6_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_7_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_8_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_9_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_10_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_11_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_12_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_13_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_14_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_15_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_16_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_17_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_18_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_19_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_20_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_21_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_22_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_23_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_24_RF_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+
+
+            <column name="ERROR_CODE"
+                    type="java.sql.Types.VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ERROR_MSG"
+                    type="java.sql.Types.VARCHAR(1000)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

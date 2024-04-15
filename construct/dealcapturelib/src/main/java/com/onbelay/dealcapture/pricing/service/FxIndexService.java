@@ -7,7 +7,6 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 
 import java.time.LocalDate;

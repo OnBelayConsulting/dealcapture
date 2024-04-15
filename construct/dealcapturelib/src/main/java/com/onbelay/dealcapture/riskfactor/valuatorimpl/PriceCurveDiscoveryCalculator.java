@@ -55,11 +55,18 @@ public class PriceCurveDiscoveryCalculator {
         return this;
     }
 
-    public Price calculatePrice(Integer priceIndexId, LocalDate curveDate) {
+    public Price calculatePrice(
+            Integer priceIndexId,
+            LocalDate curveDate,
+            int hourEnding) {
         PriceIndexCurveContainer container = containerMap.get(priceIndexId);
+
         if (container == null)
             throw new OBRuntimeException("error");
-        return container.calculatePrice(curveDate);
+
+        return container.calculatePrice(
+                curveDate,
+                hourEnding);
     }
 
     private PriceIndexCurveContainer newContainer(PriceIndexReport report) {

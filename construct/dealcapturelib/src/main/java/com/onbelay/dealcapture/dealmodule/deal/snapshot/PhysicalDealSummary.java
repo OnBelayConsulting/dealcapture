@@ -29,6 +29,7 @@ public class PhysicalDealSummary extends DealSummary {
             String reportingCurrencyCodeValue,
             BigDecimal volumeQuantity,
             String volumeUnitOfMeasureCodeValue,
+            String volumeFrequencyCodeValue,
             String settlementCurrencyCodeValue,
             String dealPriceValuationCodeValue,
             Integer dealPriceIndexId,
@@ -48,6 +49,7 @@ public class PhysicalDealSummary extends DealSummary {
                 reportingCurrencyCodeValue,
                 volumeQuantity,
                 volumeUnitOfMeasureCodeValue,
+                volumeFrequencyCodeValue,
                 settlementCurrencyCodeValue);
 
         this.DealPriceValuationCode = ValuationCode.lookUp(dealPriceValuationCodeValue);

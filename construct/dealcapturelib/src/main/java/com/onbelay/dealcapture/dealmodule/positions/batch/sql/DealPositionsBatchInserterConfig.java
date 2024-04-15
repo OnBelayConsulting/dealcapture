@@ -18,12 +18,30 @@ public class DealPositionsBatchInserterConfig {
             return new DealPositionsDefaultBatchInserter();
     }
 
+
+    @Bean
+    public DealHourlyPositionsBatchInserter getDealHourlyPositionsBatchInserter() {
+        if (isSqlServer)
+            return new DealHourlyPositionsSqlServerBatchInserter();
+        else
+            return new DealHourlyPositionsDefaultBatchInserter();
+    }
+
+
     @Bean
     public CostPositionsBatchInserter getCostPositionsBatchInserter() {
         if (isSqlServer)
             return new CostPositionsSqlServerBatchInserter();
         else
             return new CostPositionsDefaultBatchInserter();
+    }
+
+    @Bean
+    public PowerProfilePositionsBatchInserter getPowerProfilePositionsBatchInserter() {
+        if (isSqlServer)
+            return new PowerProfilePositionsSqlServerBatchInserter();
+        else
+            return new PowerProfilePositionsDefaultBatchInserter();
     }
 
 

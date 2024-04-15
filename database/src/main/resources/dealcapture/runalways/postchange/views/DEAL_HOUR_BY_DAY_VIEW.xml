@@ -1,0 +1,58 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/runalways/postchange/views/DEAL_HOUR_BY_DAY_VIEW.xml'
+>
+    <changeSet
+            author='lefeuvrem'
+            id='1'
+            runAlways='true'
+            runOnChange='true'
+    >
+    <createView viewName="DEAL_HOUR_BY_DAY_VIEW">
+    SELECT
+              dealHour.ENTITY_ID,
+              dealHour.DEAL_ID,
+              deal.REPORTING_CURRENCY_CODE,
+              deal.VOLUME_UOM_CODE,
+              dealHour.DEAL_DAY_DATE,
+              dealHour.DAY_TYPE_CODE,
+              dealHour.DAY_SUBTYPE_CODE,
+              dealHour.EXPIRED_FLG,
+              dealHour.HOUR_1_VALUE,
+              dealHour.HOUR_2_VALUE,
+              dealHour.HOUR_3_VALUE,
+              dealHour.HOUR_4_VALUE,
+              dealHour.HOUR_5_VALUE,
+              dealHour.HOUR_6_VALUE,
+              dealHour.HOUR_7_VALUE,
+              dealHour.HOUR_8_VALUE,
+              dealHour.HOUR_9_VALUE,
+              dealHour.HOUR_10_VALUE,
+              dealHour.HOUR_11_VALUE,
+              dealHour.HOUR_12_VALUE,
+              dealHour.HOUR_13_VALUE,
+              dealHour.HOUR_14_VALUE,
+              dealHour.HOUR_15_VALUE,
+              dealHour.HOUR_16_VALUE,
+              dealHour.HOUR_17_VALUE,
+              dealHour.HOUR_18_VALUE,
+              dealHour.HOUR_19_VALUE,
+              dealHour.HOUR_20_VALUE,
+              dealHour.HOUR_21_VALUE,
+              dealHour.HOUR_22_VALUE,
+              dealHour.HOUR_23_VALUE,
+              dealHour.HOUR_24_VALUE
+            FROM
+            DEAL_HOUR_BY_DAY dealHour
+            INNER JOIN BASE_DEAL deal ON
+                deal.ENTITY_ID = dealHour.DEAL_ID
+        </createView>
+    </changeSet>
+
+
+</databaseChangeLog>

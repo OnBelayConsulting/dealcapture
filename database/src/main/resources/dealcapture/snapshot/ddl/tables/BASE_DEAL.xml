@@ -27,6 +27,11 @@
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
+            <column name="POWER_PROFILE_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+
             <column name="COMMODITY_CODE" type="java.sql.Types.VARCHAR(32)"/>
             <column name="BUY_SELL_CODE" type="java.sql.Types.VARCHAR(32)"/>
             <column name="START_DATE" type="java.sql.Types.TIMESTAMP"/>

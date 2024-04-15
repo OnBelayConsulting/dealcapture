@@ -18,7 +18,6 @@ package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.positions.model.CostPositionValuationResult;
-import com.onbelay.dealcapture.dealmodule.positions.model.PositionValuationResult;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

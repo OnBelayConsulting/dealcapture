@@ -15,16 +15,15 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 
 public class DealSummary {
@@ -38,6 +37,7 @@ public class DealSummary {
 	private CurrencyCode reportingCurrencyCode;
 	private BigDecimal volumeQuantity;
 	private UnitOfMeasureCode volumeUnitOfMeasureCode;
+	private FrequencyCode volumeFrequencyCode;
 	private CurrencyCode settlementCurrencyCode;
 
 	public DealSummary(
@@ -50,6 +50,7 @@ public class DealSummary {
 			String reportingCurrencyCodeValue,
 			BigDecimal volumeQuantity,
 			String volumeUnitOfMeasureCodeValue,
+			String volumeFrequencyCodeValue,
 			String settlementCurrencyCodeValue) {
 		
 		super();
@@ -62,6 +63,7 @@ public class DealSummary {
 		this.reportingCurrencyCode = CurrencyCode.lookUp(reportingCurrencyCodeValue);
 		this.volumeQuantity = volumeQuantity;
 		this.volumeUnitOfMeasureCode = UnitOfMeasureCode.lookUp(volumeUnitOfMeasureCodeValue);
+		this.volumeFrequencyCode = FrequencyCode.lookUp(volumeFrequencyCodeValue);
 		this.settlementCurrencyCode = CurrencyCode.lookUp(settlementCurrencyCodeValue);
 	}
 	
@@ -101,5 +103,9 @@ public class DealSummary {
 
 	public CurrencyCode getSettlementCurrencyCode() {
 		return settlementCurrencyCode;
+	}
+
+	public FrequencyCode getVolumeFrequencyCode() {
+		return volumeFrequencyCode;
 	}
 }

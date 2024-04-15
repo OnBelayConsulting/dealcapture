@@ -11,8 +11,8 @@
 
         <addForeignKeyConstraint
                 baseColumnNames="DAY_TYPE_CODE"
-                baseTableName="DEAL_DAY"
-                constraintName="DEAL_DAY_FK01"
+                baseTableName="DEAL_DAY_BY_MTH"
+                constraintName="DEAL_DAY_BY_MTH_FK01"
                 deferrable="false"
                 initiallyDeferred="false"
                 onDelete="RESTRICT"

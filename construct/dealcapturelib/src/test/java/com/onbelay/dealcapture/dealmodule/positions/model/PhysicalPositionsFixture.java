@@ -33,7 +33,7 @@ public class PhysicalPositionsFixture {
             snapshot.setMarketPriceRiskFactorId(marketPriceRiskFactor.generateEntityId());
 
             snapshot.getDealPositionDetail().setCurrencyCode(currencyCode);
-            snapshot.getDealPositionDetail().setCreateUpdateDateTime(createdDateTime);
+            snapshot.getDealPositionDetail().setCreatedDateTime(createdDateTime);
 
             snapshot.getDetail().setDealMarketValuationCode(ValuationCode.INDEX);
             snapshot.getDetail().setDealPriceValuationCode(ValuationCode.FIXED);

@@ -28,10 +28,7 @@ import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
-import com.onbelay.shared.enums.BuySellCode;
-import com.onbelay.shared.enums.CommodityCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
+import com.onbelay.shared.enums.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -164,6 +161,7 @@ public class DealServiceTest extends DealServiceTestCase {
 
 		dealSnapshot.setMarketPriceIndexId(marketIndex.generateEntityId());
 		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
+		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
 
 		dealSnapshot.getDealDetail().setVolume(
 				new Quantity(
@@ -178,6 +176,8 @@ public class DealServiceTest extends DealServiceTestCase {
 		TransactionResult result  = dealService.save(dealSnapshot);
 		flush();
 		clearCache();
+		PhysicalDeal physicalDeal = (PhysicalDeal) dealRepository.load(result.getEntityId());
+		assertEquals(dealPriceIndex.getId(), physicalDeal.getDealPriceIndex().getId());
 	}
 
 	@Test
@@ -201,7 +201,7 @@ public class DealServiceTest extends DealServiceTestCase {
 				new Quantity(
 						BigDecimal.valueOf(34.78),
 						UnitOfMeasureCode.GJ));
-
+		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
 		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
 		dealSnapshot.getDetail().setFixedPrice(

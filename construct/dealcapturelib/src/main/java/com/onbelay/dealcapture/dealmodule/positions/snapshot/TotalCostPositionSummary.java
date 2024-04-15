@@ -42,4 +42,8 @@ public class TotalCostPositionSummary {
     public BigDecimal getTotalCostAmount() {
         return totalCostAmount;
     }
+
+    public CurrencyCode getCurrencyCode() {
+        return currencyCode;
+    }
 }

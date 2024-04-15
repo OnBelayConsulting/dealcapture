@@ -1,26 +1,17 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.core.query.snapshot.DefinedQuery;
-import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealRepositoryBean;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.*;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
-import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +106,7 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceBuyDeal.generateEntityId());
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -175,7 +166,7 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceSellDeal.generateEntityId());
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceSellDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -230,7 +221,7 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -281,7 +272,7 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexSellDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -332,7 +323,7 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -383,7 +374,7 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusSellDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);

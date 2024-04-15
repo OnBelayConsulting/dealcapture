@@ -13,11 +13,13 @@ public class RiskFactorDetail {
 
     private BigDecimal value;
     private LocalDate marketDate;
+    private Integer hourEnding;
     private LocalDateTime createUpdateDateTime;
 
     @Transient
     public  void setDefaults() {
         createUpdateDateTime = LocalDateTime.now();
+        hourEnding = 0;
     }
 
     @Column(name = "MARKET_VALUE")
@@ -38,6 +40,15 @@ public class RiskFactorDetail {
         this.marketDate = marketDate;
     }
 
+    @Column(name = "HOUR_ENDING")
+    public Integer getHourEnding() {
+        return hourEnding;
+    }
+
+    public void setHourEnding(Integer hourEnding) {
+        this.hourEnding = hourEnding;
+    }
+
     public void validate() throws OBValidationException {
         if (marketDate == null)
             throw new OBValidationException(RiskFactorErrorCode.MISSING_RISK_FACTOR_DATE.getCode());
@@ -55,6 +66,9 @@ public class RiskFactorDetail {
     public void copyFrom(RiskFactorDetail copy) {
         if (copy.marketDate != null)
             this.marketDate = copy.marketDate;
+
+        if (copy.hourEnding != null)
+            this.hourEnding = copy.hourEnding;
 
         if (copy.createUpdateDateTime != null)
             this.createUpdateDateTime = copy.createUpdateDateTime;

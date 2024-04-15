@@ -8,6 +8,7 @@ import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionViewDetail;
+import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
 
@@ -30,6 +31,8 @@ public class CostPositionView extends AbstractEntity {
 
     private Integer dealId;
 
+    private Integer costFXRiskFactorId;
+
     private CostPositionViewDetail detail = new CostPositionViewDetail();
 
     @Id
@@ -51,6 +54,15 @@ public class CostPositionView extends AbstractEntity {
         this.dealId = dealId;
     }
 
+    @Column(name = "COST_FX_RISK_FACTOR_ID")
+    public Integer getCostFXRiskFactorId() {
+        return costFXRiskFactorId;
+    }
+
+    public void setCostFXRiskFactorId(Integer costFXRiskFactorId) {
+        this.costFXRiskFactorId = costFXRiskFactorId;
+    }
+
     @Embedded
     public CostPositionViewDetail getDetail() {
         return detail;
@@ -63,9 +75,13 @@ public class CostPositionView extends AbstractEntity {
     @Transient
     @JsonIgnore
     public FxRate getCostFxRate(ValuationIndexManager valuationIndexManager) {
+        if (costFXRiskFactorId == null)
+            return null;
+
+        FxRiskFactorSnapshot snapshot = valuationIndexManager.getFxRiskFactor(costFXRiskFactorId);
         return valuationIndexManager.generateFxRate(
-                detail.getCostFxIndexId(),
-                detail.getCostFxRateValue());
+                snapshot.getFxIndexId().getId(),
+                snapshot.getDetail().getValue());
     }
 
     @Transient

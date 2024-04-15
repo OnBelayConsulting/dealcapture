@@ -22,7 +22,6 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-
 import jakarta.persistence.*;
 
 @Entity

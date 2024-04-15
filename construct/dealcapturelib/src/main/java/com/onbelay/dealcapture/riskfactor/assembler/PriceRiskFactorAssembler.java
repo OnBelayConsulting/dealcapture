@@ -15,7 +15,7 @@ public class PriceRiskFactorAssembler extends EntityAssembler {
         super.setEntityAttributes(factor, snapshot);
         snapshot.getDetail().copyFrom(factor.getDetail());
         snapshot.setPriceIndexId(factor.getIndex().generateEntityId());
-        
+        snapshot.setFrequencyCode(factor.getIndex().getDetail().getFrequencyCode());
         return snapshot;
     }
     

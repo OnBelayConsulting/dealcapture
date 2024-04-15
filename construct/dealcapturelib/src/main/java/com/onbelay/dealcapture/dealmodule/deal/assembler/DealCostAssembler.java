@@ -15,14 +15,14 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.assembler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.onbelay.core.entity.assembler.EntityAssembler;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealCost;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DealCostAssembler extends EntityAssembler {
 	

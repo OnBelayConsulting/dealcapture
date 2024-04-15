@@ -22,15 +22,12 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.dealmodule.deal.assembler.AbstractDealAssembler;
-import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
-import com.onbelay.dealcapture.dealmodule.deal.assembler.DealDayAssembler;
-import com.onbelay.dealcapture.dealmodule.deal.assembler.DealSnapshotAssemblerFactory;
+import com.onbelay.dealcapture.dealmodule.deal.assembler.*;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.*;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealCostRepository;
-import com.onbelay.dealcapture.dealmodule.deal.repository.DealDayRepository;
+import com.onbelay.dealcapture.dealmodule.deal.repository.DealDayByMonthRepository;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
@@ -61,7 +58,9 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	private DealCostRepository dealCostRepository;
 
 	@Autowired
-	private DealDayRepository dealDayRepository;
+	private DealDayByMonthRepository dealDayByMonthRepository;
+    @Autowired
+    private DealHourByDayRepositoryBean dealHourByDayRepository;
 
 	@Override
 	public QuerySelectedPage findDealIds(DefinedQuery definedQuery) {
@@ -199,15 +198,33 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
-	public List<DealDayView> fetchDealDayViewsByDates(
+	public List<DealDayByMonthView> fetchDealDayByMonthViewsByDates(
 			List<Integer> dealIds,
 			LocalDate fromDate,
 			LocalDate toDate) {
 
-		return dealDayRepository.fetchAllDealDayViewsByDates(
+		return dealDayByMonthRepository.fetchAllDealDayViewsByDates(
 				dealIds,
 				fromDate,
 				toDate);
+	}
+
+
+	@Override
+	public List<DealHourByDayView> fetchDealHourByDayViewsByDates(
+			List<Integer> dealIds,
+			LocalDate fromDate,
+			LocalDate toDate) {
+
+		return dealHourByDayRepository.fetchAllDealDayViewsByDates(
+				dealIds,
+				fromDate,
+				toDate);
+	}
+
+	@Override
+	public List<DealHourByDayView> fetchDealDealHourByDayViews(EntityId dealId) {
+		return dealHourByDayRepository.fetchDealHourByDayViews(dealId);
 	}
 
 	@Override
@@ -216,35 +233,54 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
-	public List<DealDaySnapshot> fetchDealDays(EntityId dealId) {
+	public List<DealDayByMonthSnapshot> fetchDealDayByMonths(EntityId dealId) {
 		BaseDeal deal = dealRepository.load(dealId);
-		List<DealDay> dealDays = deal.fetchDealDays();
-		DealDayAssembler assembler = new DealDayAssembler(deal);
-		return assembler.assemble(dealDays);
+		List<DealDayByMonth> dealDayByMonths = deal.fetchDealDayByMonths();
+		DealDayByMonthAssembler assembler = new DealDayByMonthAssembler(deal);
+		return assembler.assemble(dealDayByMonths);
+	}
+
+
+	@Override
+	public List<DealHourByDaySnapshot> fetchDealHourByDays(EntityId dealId) {
+		BaseDeal deal = dealRepository.load(dealId);
+		List<DealHourByDay> hourByDays = deal.fetchDealHourByDays();
+		DealHourByDayAssembler assembler = new DealHourByDayAssembler(deal);
+		return assembler.assemble(hourByDays);
+	}
+
+
+	@Override
+	public List<DealDayByMonthView> fetchDealDayByMonthViews(EntityId dealId) {
+		return dealDayByMonthRepository.fetchDealDayViews(dealId);
 	}
 
 	@Override
-	public List<DealDayView> fetchDealDayViews(EntityId dealId) {
-		return dealDayRepository.fetchDealDayViews(dealId);
-	}
-
-	@Override
-	public List<DealDaySnapshot> fetchDealDaysByType(
+	public List<DealDayByMonthSnapshot> fetchDealDaysByType(
 			EntityId dealId,
 			DayTypeCode code) {
 		BaseDeal deal = dealRepository.load(dealId);
-		List<DealDay> dealDays = deal.fetchDealDays(code);
-		DealDayAssembler assembler = new DealDayAssembler(deal);
-		return assembler.assemble(dealDays);
+		List<DealDayByMonth> dealDayByMonths = deal.fetchDealDayByMonths(code);
+		DealDayByMonthAssembler assembler = new DealDayByMonthAssembler(deal);
+		return assembler.assemble(dealDayByMonths);
 	}
 
 	@Override
-	public TransactionResult saveDealDays(
+	public TransactionResult saveDealDayByMonths(
 			EntityId dealId,
-			List<DealDaySnapshot> snapshots) {
+			List<DealDayByMonthSnapshot> snapshots) {
 
 		BaseDeal deal = dealRepository.load(dealId);
-		List<Integer> keys = deal.saveDealDays(snapshots);
+		List<Integer> keys = deal.saveDealDayByMonths(snapshots);
+		return new TransactionResult(keys);
+	}
+
+	@Override
+	public TransactionResult saveDealHourByDays(
+			EntityId dealId,
+			List<DealHourByDaySnapshot> snapshots) {
+		BaseDeal deal = dealRepository.load(dealId);
+		List<Integer> keys = deal.saveDealHourByDays(snapshots);
 		return new TransactionResult(keys);
 	}
 }

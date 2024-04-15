@@ -20,7 +20,9 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealDayView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDay;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 
 import java.time.LocalDate;
@@ -48,23 +50,39 @@ public interface DealService {
 			EntityId dealId,
 			List<DealCostSnapshot> snapshots);
 
-	public List<DealDaySnapshot> fetchDealDays(EntityId dealId);
+	public List<DealDayByMonthSnapshot> fetchDealDayByMonths(EntityId dealId);
 
-    List<DealDayView> fetchDealDayViews(EntityId dealId);
+	public List<DealHourByDaySnapshot> fetchDealHourByDays(EntityId dealId);
 
-	List<DealDayView> fetchDealDayViewsByDates(
+
+	List<DealDayByMonthView> fetchDealDayByMonthViews(EntityId dealId);
+
+	List<DealDayByMonthView> fetchDealDayByMonthViewsByDates(
 			List<Integer> dealIds,
 			LocalDate fromDate,
 			LocalDate toDate);
 
+	List<DealHourByDayView> fetchDealHourByDayViewsByDates(
+			List<Integer> dealIds,
+			LocalDate fromDate,
+			LocalDate toDate);
 
-	public List<DealDaySnapshot> fetchDealDaysByType(
+	List<DealHourByDayView> fetchDealDealHourByDayViews(EntityId dealId);
+
+
+	public List<DealDayByMonthSnapshot> fetchDealDaysByType(
 			EntityId dealId,
 			DayTypeCode code);
 
-	public TransactionResult saveDealDays(
+	public TransactionResult saveDealDayByMonths(
 			EntityId dealId,
-			List<DealDaySnapshot> snapshots);
+			List<DealDayByMonthSnapshot> snapshots);
+
+
+	public TransactionResult saveDealHourByDays(
+			EntityId dealId,
+			List<DealHourByDaySnapshot> snapshots);
+
 
 	public List<DealSummary> getAssignedDealSummaries(String positionGenerationIdentifier);
 

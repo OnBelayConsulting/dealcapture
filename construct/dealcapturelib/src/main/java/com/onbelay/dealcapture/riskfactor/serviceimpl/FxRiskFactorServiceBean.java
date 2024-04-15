@@ -5,17 +5,15 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.pricing.assembler.PriceIndexSnapshotAssembler;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
-import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.repository.FxIndexRepository;
 import com.onbelay.dealcapture.riskfactor.assembler.FxRiskFactorAssembler;
+import com.onbelay.dealcapture.riskfactor.evaluator.FxRiskFactorEvaluator;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
-import com.onbelay.dealcapture.riskfactor.valuator.FxRiskFactorValuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +33,7 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
     private FxIndexRepository fxIndexRepository;
 
     @Autowired
-    private FxRiskFactorValuator fxRiskFactorValuator;
+    private FxRiskFactorEvaluator fxRiskFactorEvaluator;
 
 
     @Override
@@ -89,14 +87,14 @@ public class FxRiskFactorServiceBean implements FxRiskFactorService {
 
     @Override
     public void valueRiskFactors(EntityId fxIndexId) {
-        fxRiskFactorValuator.valueRiskFactors(fxIndexId);
+        fxRiskFactorEvaluator.valueRiskFactors(fxIndexId);
     }
 
     @Override
     public void valueRiskFactors(
             DefinedQuery definedQuery,
             LocalDateTime currentDateTime) {
-        fxRiskFactorValuator.valueRiskFactors(
+        fxRiskFactorEvaluator.valueRiskFactors(
                 definedQuery,
                 currentDateTime);
     }

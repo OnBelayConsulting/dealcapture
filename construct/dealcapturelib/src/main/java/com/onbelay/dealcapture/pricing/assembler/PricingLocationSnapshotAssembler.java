@@ -15,12 +15,12 @@
  */
 package com.onbelay.dealcapture.pricing.assembler;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.onbelay.core.entity.assembler.EntityAssembler;
 import com.onbelay.dealcapture.pricing.model.PricingLocation;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshot;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PricingLocationSnapshotAssembler extends EntityAssembler {
 

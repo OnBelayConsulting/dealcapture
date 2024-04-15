@@ -12,10 +12,6 @@ import com.onbelay.dealcapture.dealmodule.positions.model.*;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
-import com.onbelay.dealcapture.pricing.service.FxIndexService;
-import com.onbelay.dealcapture.pricing.service.PriceIndexService;
-import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ValuePositionsServiceBean implements ValuePositionsService {
+public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean implements ValuePositionsService {
     private static final Logger logger = LogManager.getLogger();
 
     @Autowired
@@ -38,12 +34,6 @@ public class ValuePositionsServiceBean implements ValuePositionsService {
 
     @Autowired
     private DealService dealService;
-
-    @Autowired
-    private FxIndexService fxIndexService;
-
-    @Autowired
-    private PriceIndexService priceIndexService;
 
     @Autowired
     private DealPositionsBatchUpdater dealPositionsBatchUpdater;
@@ -92,13 +82,17 @@ public class ValuePositionsServiceBean implements ValuePositionsService {
 
         logger.info("value positions start: " + LocalDateTime.now().toString());
 
-        List<PriceIndexSnapshot> activePriceIndices = priceIndexService.findActivePriceIndices();
+        List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
+                dealIds,
+                currencyCode,
+                createdDateTime);
 
-        List<FxIndexSnapshot> activeFxIndices = fxIndexService.findActiveFxIndices();
+        LocalDate startDate = views.stream().map(c -> c.getDetail().getStartDate()).min(LocalDate::compareTo).get();
+        LocalDate endDate = views.stream().map(c -> c.getDetail().getStartDate()).max(LocalDate::compareTo).get();
 
-        ValuationIndexManager valuationIndexManager = new ValuationIndexManager(
-                activeFxIndices,
-                activePriceIndices);
+        ValuationIndexManager valuationIndexManager = createValuationIndexManager(
+                startDate,
+                endDate);
 
 
         valueCostPositions(
@@ -123,11 +117,6 @@ public class ValuePositionsServiceBean implements ValuePositionsService {
             map.put(summary.getStartDate(), summary);
         }
 
-        List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
-                dealIds,
-                currencyCode,
-                createdDateTime);
-
         ArrayList<PositionValuationResult> results = new ArrayList<>();
 
         for (DealPositionView view : views) {
@@ -135,7 +124,7 @@ public class ValuePositionsServiceBean implements ValuePositionsService {
             Map<LocalDate, TotalCostPositionSummary> map = totalCostMap.get(view.getDealId());
             if (map != null)
                 summary = map.get(view.getDetail().getStartDate());
-            PhysicalPositionValuator valuator = new PhysicalPositionValuator(
+            PhysicalPositionEvaluator valuator = new PhysicalPositionEvaluator(
                     valuationIndexManager,
                     summary,
                     view);
@@ -171,10 +160,10 @@ public class ValuePositionsServiceBean implements ValuePositionsService {
         }
 
         for (CostPositionView costPositionView : views) {
-            CostPositionValuator valuator = new CostPositionValuator(
+            CostPositionEvaluator evaluator = new CostPositionEvaluator(
                     valuationIndexManager,
                     costPositionView);
-            results.add(valuator.valuePosition(currentDateTime));
+            results.add(evaluator.valuePosition(currentDateTime));
 
         }
 

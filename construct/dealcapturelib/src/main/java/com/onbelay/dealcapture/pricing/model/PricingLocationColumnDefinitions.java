@@ -15,15 +15,11 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.onbelay.core.query.model.BaseColumnDefinitions;
-import org.springframework.stereotype.Component;
-
 import com.onbelay.core.query.enums.ColumnDataType;
+import com.onbelay.core.query.model.BaseColumnDefinitions;
 import com.onbelay.core.query.model.ColumnDefinition;
 import com.onbelay.core.query.model.ColumnDefinitions;
+import org.springframework.stereotype.Component;
 
 @Component(value = "pricingLocationColumnDefinitions")
 public class PricingLocationColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{

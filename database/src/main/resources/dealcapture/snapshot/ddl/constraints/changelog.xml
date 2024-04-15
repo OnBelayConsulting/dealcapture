@@ -40,7 +40,8 @@
     <include file="FK_PRICE_INDEX_TO_UOM_CODE.xml" relativeToChangelogFile="true"/>
     <include file="UC_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="UC_DEAL_COST.xml" relativeToChangelogFile="true"/>
-    <include file="UC_DEAL_DAY.xml" relativeToChangelogFile="true"/>
+    <include file="UC_DEAL_DAY_BY_MTH.xml" relativeToChangelogFile="true"/>
+    <include file="UC_DEAL_HOUR_BY_DAY.xml" relativeToChangelogFile="true"/>
     <include file="UC_FX_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="UC_FX_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="UC_FX_RISK_FACTOR.xml" relativeToChangelogFile="true"/>

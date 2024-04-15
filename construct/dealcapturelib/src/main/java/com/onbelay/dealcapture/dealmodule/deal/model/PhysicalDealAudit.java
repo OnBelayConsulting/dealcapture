@@ -15,15 +15,10 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import jakarta.persistence.*;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL_AUDIT")

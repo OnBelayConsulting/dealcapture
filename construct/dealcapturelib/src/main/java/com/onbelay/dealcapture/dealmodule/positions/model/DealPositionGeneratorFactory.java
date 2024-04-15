@@ -1,7 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealDayView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
@@ -28,10 +29,16 @@ public class DealPositionGeneratorFactory {
         return this;
     }
 
-    public DealPositionGeneratorFactory withDealDays( List<DealDayView> dealDayViews) {
-        initializeDealDayMap(dealDayViews);
+    public DealPositionGeneratorFactory withDealDayByMonthViews(List<DealDayByMonthView> dealDayByMonthViews) {
+        initializeDealDayByMonthMap(dealDayByMonthViews);
         return this;
     }
+
+    public DealPositionGeneratorFactory withHourByDayViews(List<DealHourByDayView> dealHourByDayView) {
+        initializeDealHourByDayMap(dealHourByDayView);
+        return this;
+    }
+
 
     private DealPositionGeneratorFactory() {
         initialize();
@@ -53,16 +60,29 @@ public class DealPositionGeneratorFactory {
         }
     }
 
-    private void initializeDealDayMap(List<DealDayView> dealDayViews) {
-        for (DealDayView summary : dealDayViews) {
-            DealDaysContainer container = dealDayMap.get(summary.getDealId());
+    private void initializeDealDayByMonthMap(List<DealDayByMonthView> views) {
+        for (DealDayByMonthView view : views) {
+            DealDaysContainer container = dealDayMap.get(view.getDealId());
             if (container == null) {
-                container = new DealDaysContainer(summary.getDealId());
-                dealDayMap.put(summary.getDealId(),  container);
+                container = new DealDaysContainer(view.getDealId());
+                dealDayMap.put(view.getDealId(),  container);
             }
-            container.processDealDayView(summary);
+            container.processDealDayByMonthView(view);
         }
     }
+
+
+    private void initializeDealHourByDayMap(List<DealHourByDayView> views) {
+        for (DealHourByDayView view : views) {
+            DealDaysContainer container = dealDayMap.get(view.getDealId());
+            if (container == null) {
+                container = new DealDaysContainer(view.getDealId());
+                dealDayMap.put(view.getDealId(),  container);
+            }
+            container.processDealHourByDayView(view);
+        }
+    }
+
 
     public DealPositionGenerator newGenerator(
             DealSummary dealSummary,

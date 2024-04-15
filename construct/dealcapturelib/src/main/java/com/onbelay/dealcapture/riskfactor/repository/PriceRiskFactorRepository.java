@@ -13,7 +13,7 @@ public interface PriceRiskFactorRepository {
 
     PriceRiskFactor load(EntityId entityId);
 
-    PriceRiskFactor fetchByMarketDate(EntityId entityId, LocalDate marketDate);
+    List<PriceRiskFactor> fetchByMarketDate(EntityId entityId, LocalDate marketDate);
 
     List<PriceRiskFactor> fetchByDatesInclusive(
             EntityId entityId,

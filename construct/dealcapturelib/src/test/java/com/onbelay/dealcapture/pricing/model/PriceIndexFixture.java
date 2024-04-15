@@ -15,7 +15,6 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
-import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
@@ -127,6 +126,32 @@ public class PriceIndexFixture {
         }
         return priceIndex.savePriceCurves(prices);
     }
+
+    public static List<Integer> generateHourlyPriceCurves(
+            PriceIndex priceIndex,
+            LocalDate startMarketDate,
+            LocalDate endMarketDate,
+            BigDecimal priceValue,
+            LocalDateTime observedDateTime) {
+
+        LocalDate currentDate = startMarketDate;
+        ArrayList<PriceCurveSnapshot> prices = new ArrayList<>();
+        while (currentDate.isAfter(endMarketDate) == false) {
+            for (int i=1; i< 25;i++) {
+                PriceCurveSnapshot curveSnapshot = new PriceCurveSnapshot();
+                curveSnapshot.getDetail().setCurveDate(currentDate);
+                curveSnapshot.getDetail().setHourEnding(i);
+                curveSnapshot.getDetail().setCurveValue(priceValue);
+                curveSnapshot.getDetail().setObservedDateTime(observedDateTime);
+                curveSnapshot.getDetail().setFrequencyCode(FrequencyCode.HOURLY);
+                prices.add(curveSnapshot);
+            }
+
+            currentDate = currentDate.plusDays(1);
+        }
+        return priceIndex.savePriceCurves(prices);
+    }
+
 
     public static PriceIndex createBasisPriceIndex(
             PriceIndex hubIndex,

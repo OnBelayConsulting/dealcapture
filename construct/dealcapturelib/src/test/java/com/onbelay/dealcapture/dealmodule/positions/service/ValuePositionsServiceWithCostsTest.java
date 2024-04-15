@@ -115,7 +115,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceBuyDeal.generateEntityId());
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -175,7 +175,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceSellDeal.generateEntityId());
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceSellDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -230,7 +230,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -281,7 +281,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexSellDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -332,7 +332,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -383,7 +383,7 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         flush();
         clearCache();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusSellDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);

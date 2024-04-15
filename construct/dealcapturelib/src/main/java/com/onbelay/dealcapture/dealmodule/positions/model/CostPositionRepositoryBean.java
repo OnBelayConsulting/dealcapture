@@ -29,19 +29,12 @@ import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @Repository (value="costPositionRepository")
 @Transactional
@@ -53,9 +46,6 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 	public static final String FIND_BY_DEAL = "CostPositionsRepository.FIND_BY_DEAL";
 	public static final String FIND_COST_POSITION_VIEWS_FX = "CostPositionsRepository.FIND_COST_POSITION_VIEWS_FX";
 	public static final String FIND_IDS_BY_DEAL = "CostPositionsRepository.FIND_IDS_BY_DEAL";
-
-	@Autowired
-	JdbcTemplate jdbcTemplate;
 
     @Autowired
 	private CostPositionColumnDefinitions costPositionColumnDefinitions;
@@ -76,27 +66,6 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 			return find(CostPosition.class, entityId.getId());
 		else
 			return null;
-	}
-
-	@Override
-	public long reserveSequenceRange(String sequenceName, int rangeSize) {
-		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("sp_sequence_get_range")
-				.declareParameters(new SqlParameter("sequence_name", Types.VARCHAR),
-									new SqlParameter("range_size", Types.INTEGER),
-									new SqlOutParameter("range_first_value", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("range_last_value", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("range_cycle_count", Types.INTEGER),
-						new SqlOutParameter("sequence_increment", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("sequence_min_value", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("sequence_max_value", microsoft.sql.Types.SQL_VARIANT)
-						);
-
-		MapSqlParameterSource parmSource = new MapSqlParameterSource();
-		parmSource.addValue("sequence_name", sequenceName);
-		parmSource.addValue("range_size", rangeSize);
-		Map<String, Object> results = simpleJdbcCall.execute(parmSource);
-		return (long) results.get("range_first_value");
 	}
 
 	@Override

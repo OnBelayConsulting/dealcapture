@@ -17,13 +17,12 @@ package com.onbelay.dealcapture.dealmodule.deal.assembler;
 
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PhysicalDealAssembler extends AbstractDealAssembler {
 	private static Logger logger = LogManager.getLogger(PhysicalDealAssembler.class);

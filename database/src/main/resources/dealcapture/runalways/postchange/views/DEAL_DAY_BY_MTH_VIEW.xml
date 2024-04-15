@@ -1,0 +1,65 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/runalways/postchange/views/DEAL_DAY_BY_MTH_VIEW.xml'
+>
+    <changeSet
+            author='lefeuvrem'
+            id='1'
+            runAlways='true'
+            runOnChange='true'
+    >
+    <createView viewName="DEAL_DAY_BY_MTH_VIEW">
+    SELECT
+              dealDayByMonth.ENTITY_ID,
+              dealDayByMonth.DEAL_ID,
+              deal.REPORTING_CURRENCY_CODE,
+              deal.VOLUME_UOM_CODE,
+              dealDayByMonth.DEAL_MTH_DATE,
+              dealDayByMonth.DAY_TYPE_CODE,
+              dealDayByMonth.DAY_SUBTYPE_CODE,
+              dealDayByMonth.EXPIRED_FLG,
+              dealDayByMonth.DAY_1_VALUE,
+              dealDayByMonth.DAY_2_VALUE,
+              dealDayByMonth.DAY_3_VALUE,
+              dealDayByMonth.DAY_4_VALUE,
+              dealDayByMonth.DAY_5_VALUE,
+              dealDayByMonth.DAY_6_VALUE,
+              dealDayByMonth.DAY_7_VALUE,
+              dealDayByMonth.DAY_8_VALUE,
+              dealDayByMonth.DAY_9_VALUE,
+              dealDayByMonth.DAY_10_VALUE,
+              dealDayByMonth.DAY_11_VALUE,
+              dealDayByMonth.DAY_12_VALUE,
+              dealDayByMonth.DAY_13_VALUE,
+              dealDayByMonth.DAY_14_VALUE,
+              dealDayByMonth.DAY_15_VALUE,
+              dealDayByMonth.DAY_16_VALUE,
+              dealDayByMonth.DAY_17_VALUE,
+              dealDayByMonth.DAY_18_VALUE,
+              dealDayByMonth.DAY_19_VALUE,
+              dealDayByMonth.DAY_20_VALUE,
+              dealDayByMonth.DAY_21_VALUE,
+              dealDayByMonth.DAY_22_VALUE,
+              dealDayByMonth.DAY_23_VALUE,
+              dealDayByMonth.DAY_24_VALUE,
+              dealDayByMonth.DAY_25_VALUE,
+              dealDayByMonth.DAY_26_VALUE,
+              dealDayByMonth.DAY_27_VALUE,
+              dealDayByMonth.DAY_28_VALUE,
+              dealDayByMonth.DAY_29_VALUE,
+              dealDayByMonth.DAY_30_VALUE,
+              dealDayByMonth.DAY_31_VALUE
+            FROM
+            DEAL_DAY_BY_MTH dealDayByMonth
+            INNER JOIN BASE_DEAL deal ON
+                deal.ENTITY_ID = dealDayByMonth.DEAL_ID
+        </createView>
+    </changeSet>
+
+
+</databaseChangeLog>

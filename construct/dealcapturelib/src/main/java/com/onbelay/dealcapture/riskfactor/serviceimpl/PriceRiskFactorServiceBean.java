@@ -7,11 +7,11 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import com.onbelay.dealcapture.riskfactor.assembler.PriceRiskFactorAssembler;
+import com.onbelay.dealcapture.riskfactor.evaluator.PriceRiskFactorEvaluator;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
-import com.onbelay.dealcapture.riskfactor.valuator.PriceRiskFactorValuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,7 @@ public class PriceRiskFactorServiceBean implements PriceRiskFactorService {
     private PriceIndexRepository priceIndexRepository;
 
     @Autowired
-    private PriceRiskFactorValuator priceRiskFactorValuator;
+    private PriceRiskFactorEvaluator priceRiskFactorEvaluator;
 
     @Override
     public PriceRiskFactorSnapshot load(EntityId id) {
@@ -71,14 +71,14 @@ public class PriceRiskFactorServiceBean implements PriceRiskFactorService {
 
     @Override
     public void valueRiskFactors(EntityId priceIndexId) {
-        priceRiskFactorValuator.valueRiskFactors(priceIndexId);
+        priceRiskFactorEvaluator.valueRiskFactors(priceIndexId);
     }
 
     @Override
     public void valueRiskFactors(
             DefinedQuery definedQuery,
             LocalDateTime currentDateTime) {
-        priceRiskFactorValuator.valueRiskFactors(
+        priceRiskFactorEvaluator.valueRiskFactors(
                 definedQuery,
                 currentDateTime);
     }
@@ -94,18 +94,16 @@ public class PriceRiskFactorServiceBean implements PriceRiskFactorService {
     }
 
     @Override
-    public PriceRiskFactorSnapshot findByMarketDate(
+    public List<PriceRiskFactorSnapshot> findByMarketDate(
             EntityId priceIndexId,
             LocalDate marketDate) {
 
-        PriceRiskFactor factor =  priceRiskFactorRepository.fetchByMarketDate(
+        List<PriceRiskFactor> factors =  priceRiskFactorRepository.fetchByMarketDate(
                 priceIndexId,
                 marketDate);
 
-        if (factor == null)
-            return null;
 
         PriceRiskFactorAssembler assembler = new PriceRiskFactorAssembler();
-        return assembler.assemble(factor);
+        return assembler.assemble(factors);
     }
 }

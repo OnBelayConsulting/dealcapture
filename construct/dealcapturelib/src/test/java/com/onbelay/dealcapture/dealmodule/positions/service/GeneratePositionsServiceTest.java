@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,7 +54,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
 
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertEquals(31, positionSnapshots.size());
@@ -68,7 +67,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime());
+        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
         assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
 
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
@@ -109,7 +108,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
 
         flush();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);
@@ -147,7 +146,7 @@ public class GeneratePositionsServiceTest extends DealServiceTestCase {
 
         flush();
 
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexPlusBuyDeal.generateEntityId());
 
         assertTrue(positionSnapshots.size() > 0);

@@ -22,10 +22,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import com.onbelay.shared.enums.BuySellCode;
-import com.onbelay.shared.enums.CommodityCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
+import com.onbelay.shared.enums.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -53,6 +50,8 @@ public class DealFixture {
 		
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+
+		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
 
 		dealSnapshot.getDealDetail().setCommodityCode(commodityCode);
 		dealSnapshot.getDealDetail().setDealStatus(dealStatusCode);
@@ -97,6 +96,8 @@ public class DealFixture {
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 
+		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
+
 		dealSnapshot.getDealDetail().setCommodityCode(commodityCode);
 		dealSnapshot.getDealDetail().setDealStatus(dealStatusCode);
 		dealSnapshot.getDealDetail().setReportingCurrencyCode(reportingCurrencyCode);
@@ -139,6 +140,8 @@ public class DealFixture {
 
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+
+		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
 
 		dealSnapshot.getDealDetail().setCommodityCode(commodityCode);
 		dealSnapshot.getDealDetail().setDealStatus(dealStatusCode);

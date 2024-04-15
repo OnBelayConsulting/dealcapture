@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.codes.model;
 
 import com.onbelay.core.codes.model.AbstractCodeEntity;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 

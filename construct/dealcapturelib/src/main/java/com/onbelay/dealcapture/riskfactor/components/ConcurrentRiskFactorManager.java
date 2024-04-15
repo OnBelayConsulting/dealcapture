@@ -121,12 +121,82 @@ public class ConcurrentRiskFactorManager implements RiskFactorManager {
     }
 
     @Override
+    public PriceIndexSnapshot findPriceIndex(Integer priceIndexId) {
+        PriceIndexPositionDateContainer container = priceIndexContainerMap.get(priceIndexId);
+        if (container == null)
+            throw new OBRuntimeException(PositionErrorCode.ERROR_INVALID_POSITION_VALUATION.getCode());
+        return container.getPriceIndex();
+    }
+
+    @Override
+    public PriceRiskFactorSnapshot findPriceRiskFactor(Integer priceIndexId, LocalDate positionDate) {
+        PriceIndexPositionDateContainer container = priceIndexContainerMap.get(priceIndexId);
+        return container.findRiskFactor(positionDate);
+    }
+
+    @Override
+    public PriceRiskFactorSnapshot findPriceRiskFactor(
+            Integer priceIndexId,
+            LocalDate positionDate,
+            Integer hourEnding) {
+
+        PriceIndexPositionDateContainer container = priceIndexContainerMap.get(priceIndexId);
+        return container.findRiskFactor(positionDate, hourEnding);
+    }
+
+    @Override
     public PriceRiskFactorHolder determinePriceRiskFactor(
             Integer priceIndexId,
             LocalDate marketDate) {
 
         PriceIndexPositionDateContainer container = priceIndexContainerMap.get(priceIndexId);
         return determinePriceRiskFactor(container, marketDate);
+    }
+
+    @Override
+    public PriceRiskFactorHolder determinePriceRiskFactor(
+            Integer priceIndexId,
+            LocalDate positionDate,
+            Integer hourEnding) {
+
+        PriceIndexPositionDateContainer container = priceIndexContainerMap.get(priceIndexId);
+        return determinePriceRiskFactor(
+                container,
+                positionDate,
+                hourEnding);
+    }
+
+    @Override
+    public PriceRiskFactorHolder determinePriceRiskFactor(
+            PriceIndexPositionDateContainer container,
+            LocalDate marketDate,
+            Integer hourEnding) {
+
+        PriceRiskFactorSnapshot riskFactor = container.findRiskFactor(
+                marketDate,
+                hourEnding);
+
+        if (riskFactor != null) {
+            return new PriceRiskFactorHolder(
+                    riskFactor,
+                    container.getPriceIndex());
+        } else {
+            PriceRiskFactorHolder holder =  new PriceRiskFactorHolder(
+                    container.getPriceIndex(),
+                    marketDate,
+                    hourEnding);
+
+            if (container.isInitialized() == false) {
+                List<PriceRiskFactorHolder> marketDateHolders = priceRiskFactorsSearch.get(container.getPriceIndex().getEntityId().getId());
+                if (marketDateHolders == null) {
+                    marketDateHolders = new ArrayList<>();
+                    priceRiskFactorsSearch.put(container.getPriceIndex().getEntityId().getId(), marketDateHolders);
+                }
+                marketDateHolders.add(holder);
+            }
+            priceRiskFactorHolderQueue.add(holder);
+            return holder;
+        }
     }
 
     @Override

@@ -15,11 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.enums;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum DealErrorCode {
 
@@ -35,6 +31,7 @@ public enum DealErrorCode {
     MISSING_END_DATE                 ("DC_DL-E0158", "Error: Missing end  date."),
     MISSING_VOL_QUANTITY             ("DC_DL-E0159", "Error: Missing volume quantity."),
     MISSING_VOL_UNIT_OF_MEASURE      ("DC_DL-E0160", "Error: Missing volume unit of measure."),
+    MISSING_VOL_FREQUENCY            ("DC_DL-E0161", "Error: Missing volume frequency."),
     MISSING_REPORTING_CURRENCY		 ("DC_DL-E0180", "Error: Missing reporting currency."),
 
     MISSING_DEAL_PRICE_VALUATION     ("DC_DL-E0200", "Error: Missing Deal Price Valuation Code."),

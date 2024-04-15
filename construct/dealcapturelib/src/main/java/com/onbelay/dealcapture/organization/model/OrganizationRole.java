@@ -22,7 +22,6 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleDetail;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
-
 import jakarta.persistence.*;
 
 @Entity

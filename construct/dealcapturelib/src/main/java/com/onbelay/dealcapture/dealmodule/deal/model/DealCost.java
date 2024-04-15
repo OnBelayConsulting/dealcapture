@@ -21,7 +21,6 @@ import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealCostRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
-
 import jakarta.persistence.*;
 
 @Entity

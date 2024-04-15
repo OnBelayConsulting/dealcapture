@@ -15,22 +15,27 @@
  */
 package com.onbelay.dealcapture.pricing.repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.PriceCurve;
 import com.onbelay.dealcapture.pricing.snapshot.CurveReport;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface PriceCurveRepository {
 	public static final String BEAN_NAME = "priceCurveRepository";
 	
 	public PriceCurve load(EntityId id);
-	
-	public List<Integer> findPriceCurveIds(DefinedQuery definedQuery);
+
+    PriceCurve fetchCurrentPrice(
+            EntityId entityId,
+            LocalDate priceDate,
+            Integer hourEnding);
+
+    public List<Integer> findPriceCurveIds(DefinedQuery definedQuery);
 	
 	public List<PriceCurve> fetchByIds(QuerySelectedPage selectedPage);
 

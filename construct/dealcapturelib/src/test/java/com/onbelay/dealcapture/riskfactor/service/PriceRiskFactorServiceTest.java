@@ -95,9 +95,12 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
         DefinedQuery query = new DefinedQuery("PriceRiskFactor");
         List<Integer> ids = priceRiskFactorRepository.findPriceRiskFactorIds(query);
 
-        PriceRiskFactor factor = priceRiskFactorRepository.fetchByMarketDate(
+        List<PriceRiskFactor> factors = priceRiskFactorRepository.fetchByMarketDate(
                 priceDailyIndex.generateEntityId(),
                 LocalDate.of(2023, 6, 23));
+        assertEquals(1, factors.size());
+        PriceRiskFactor factor = factors.get(0);
+
         assertNotNull(factor);
         assertEquals(0, BigDecimal.ONE.compareTo(factor.getDetail().getValue()));
         assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreateUpdateDateTime());
@@ -129,9 +132,11 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
 
     @Test
     public void testFindByMarketDate() {
-        PriceRiskFactorSnapshot snapshot = priceRiskFactorService.findByMarketDate(
+        List<PriceRiskFactorSnapshot> snapshots = priceRiskFactorService.findByMarketDate(
                 aceeDailyPriceIndex.generateEntityId(),
                 LocalDate.of(2023, 2, 4));
+        assertEquals(1, snapshots.size());
+        PriceRiskFactorSnapshot snapshot = snapshots.get(0);
 
         assertNotNull(snapshot.getPriceIndexId());
         assertEquals(LocalDate.of(2023, 2, 4),snapshot.getDetail().getMarketDate());
@@ -141,9 +146,11 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
     @Test
     public void valueRiskFactors() {
         priceRiskFactorService.valueRiskFactors(aceeDailyPriceIndex.generateEntityId());
-        PriceRiskFactorSnapshot snapshot = priceRiskFactorService.findByMarketDate(
+        List<PriceRiskFactorSnapshot> snapshots = priceRiskFactorService.findByMarketDate(
                 aceeDailyPriceIndex.generateEntityId(),
                 LocalDate.of(2023, 2, 4));
+        assertEquals(1, snapshots.size());
+        PriceRiskFactorSnapshot snapshot = snapshots.get(0);
 
         assertNotNull(snapshot.getPriceIndexId());
         assertEquals(0, BigDecimal.valueOf(1.23).compareTo(snapshot.getDetail().getValue()));

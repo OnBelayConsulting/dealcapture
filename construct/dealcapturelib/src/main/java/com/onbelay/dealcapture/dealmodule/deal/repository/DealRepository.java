@@ -18,12 +18,9 @@ package com.onbelay.dealcapture.dealmodule.deal.repository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealDayView;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
-import jakarta.persistence.Entity;
 
 import java.time.LocalDateTime;
 import java.util.List;

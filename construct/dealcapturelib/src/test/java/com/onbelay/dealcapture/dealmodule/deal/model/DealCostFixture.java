@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
