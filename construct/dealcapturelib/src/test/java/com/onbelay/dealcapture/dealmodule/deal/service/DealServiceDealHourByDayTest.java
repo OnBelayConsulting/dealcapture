@@ -54,7 +54,6 @@ public class DealServiceDealHourByDayTest extends DealServiceTestCase {
 				physicalDeal,
 				physicalDeal.getDealDetail().getStartDate(),
 				2,
-				2,
 				7,
 				BigDecimal.valueOf(30));
 		flush();
@@ -63,15 +62,15 @@ public class DealServiceDealHourByDayTest extends DealServiceTestCase {
 
 
 	@Test
-	public void fetchDealDayByMonths() {
+	public void fetchDealHourByDay() {
 
 		List<DealHourByDaySnapshot> dealDays = dealService.fetchDealHourByDays(physicalDeal.generateEntityId());
 		assertEquals(1, dealDays.size());
 	}
 
 	@Test
-	public void fetchDealDayView() {
-		List<DealHourByDayView> dealDays = dealService.fetchDealDealHourByDayViews(physicalDeal.generateEntityId());
+	public void fetchView() {
+		List<DealHourByDayView> dealDays = dealService.fetchDealHourByDayViews(physicalDeal.generateEntityId());
 		assertEquals(1, dealDays.size());
 	}
 

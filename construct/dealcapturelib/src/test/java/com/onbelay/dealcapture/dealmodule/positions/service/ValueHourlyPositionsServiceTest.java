@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
+import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
@@ -9,6 +10,9 @@ import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
+import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
+import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
@@ -18,11 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHourlyTestCase {
+public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyTestCase {
 
     @Autowired
     private DealPositionService dealPositionService;
@@ -30,8 +35,50 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
     @Autowired
     private GeneratePositionsService generatePositionsService;
 
+    @Autowired
+    private ValuePositionsService valuePositionsService;
+
+    @Autowired
+    private PriceRiskFactorService priceRiskFactorService;
+
+    @Autowired
+    private FxRiskFactorService fxRiskFactorService;
+    private LocalDateTime observedDateTime = LocalDateTime.of(2023, 12, 31, 2, 43);
+
+
     private LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
     private LocalDate toMarketDate = LocalDate.of(2024, 1, 2);
+
+    @Override
+    public void setUp() {
+        super.setUp();
+
+        PriceIndexFixture.generateHourlyPriceCurves(
+                marketHourlyIndex,
+                fromMarketDate,
+                toMarketDate,
+                BigDecimal.valueOf(1.34),
+                observedDateTime);
+
+
+        PriceIndexFixture.generateHourlyPriceCurves(
+                dealPriceHourlyIndex,
+                fromMarketDate,
+                toMarketDate,
+                BigDecimal.valueOf(1.67),
+                observedDateTime);
+
+
+        PriceIndexFixture.generateDailyPriceCurves(
+                dealPriceIndex,
+                fromMarketDate,
+                toMarketDate,
+                BigDecimal.valueOf(2),
+                observedDateTime);
+
+
+    }
+
 
     @Test
     public void generatePhysicalPositionsWithFixedDealPrice() {
@@ -51,6 +98,22 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
                 fixedPriceSellDeal.getId());
 
         flush();
+
+
+        priceRiskFactorService.valueRiskFactors(
+                new DefinedQuery("PriceRiskFactor"),
+                LocalDateTime.now());
+
+        fxRiskFactorService.valueRiskFactors(
+                new DefinedQuery("FxRiskFactor"),
+                LocalDateTime.now());
+
+        valuePositionsService.valuePositions(
+                fixedPriceSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
+                LocalDateTime.now());
+
         clearCache();
 
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceSellDeal.generateEntityId());
@@ -82,6 +145,10 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
+        assertEquals(0, BigDecimal.valueOf(-3.4).compareTo(positionSnapshot.getSettlementDetail().getMarkToMarketValuation()));
+        assertEquals(0, BigDecimal.ZERO.compareTo(positionSnapshot.getSettlementDetail().getCostSettlementAmount()));
+        assertEquals(0, BigDecimal.valueOf(10).compareTo(positionSnapshot.getSettlementDetail().getSettlementAmount()));
+        assertEquals(0, BigDecimal.valueOf(10).compareTo(positionSnapshot.getSettlementDetail().getTotalSettlementAmount()));
 
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
@@ -130,6 +197,22 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
                 context,
                 fixedPriceSellDeal.getId());
 
+        flush();
+
+
+        priceRiskFactorService.valueRiskFactors(
+                new DefinedQuery("PriceRiskFactor"),
+                LocalDateTime.now());
+
+        fxRiskFactorService.valueRiskFactors(
+                new DefinedQuery("FxRiskFactor"),
+                LocalDateTime.now());
+
+        valuePositionsService.valuePositions(
+                fixedPriceSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
+                LocalDateTime.now());
         flush();
         clearCache();
 
@@ -203,6 +286,23 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
                 fixedPriceHourlySellDeal.getId());
 
         flush();
+
+
+        priceRiskFactorService.valueRiskFactors(
+                new DefinedQuery("PriceRiskFactor"),
+                LocalDateTime.now());
+
+        fxRiskFactorService.valueRiskFactors(
+                new DefinedQuery("FxRiskFactor"),
+                LocalDateTime.now());
+
+        valuePositionsService.valuePositions(
+                fixedPriceHourlySellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
+                LocalDateTime.now());
+        flush();
+
         clearCache();
 
         PhysicalDeal deal = (PhysicalDeal) dealRepository.load(fixedPriceHourlySellDeal.generateEntityId());
@@ -259,6 +359,21 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
                 context,
                 indexSellDeal.getId());
 
+        flush();
+
+        priceRiskFactorService.valueRiskFactors(
+                new DefinedQuery("PriceRiskFactor"),
+                LocalDateTime.now());
+
+        fxRiskFactorService.valueRiskFactors(
+                new DefinedQuery("FxRiskFactor"),
+                LocalDateTime.now());
+
+        valuePositionsService.valuePositions(
+                indexSellDeal.generateEntityId(),
+                CurrencyCode.CAD,
+                createdDateTime,
+                LocalDateTime.now());
         flush();
 
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(

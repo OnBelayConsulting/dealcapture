@@ -82,7 +82,7 @@ public class DealHourByDayRepositoryBean extends BaseRepository<DealHourByDay> i
 	}
 
 	@Override
-	public List<DealHourByDayView> fetchDealDayViewsByType(
+	public List<DealHourByDayView> fetchDealHourByDayViewsByType(
 			EntityId dealId,
 			DayTypeCode dayTypeCode,
 			LocalDateTime fromDate,
@@ -106,7 +106,7 @@ public class DealHourByDayRepositoryBean extends BaseRepository<DealHourByDay> i
 				dealId.getId());
 	}
 	@Override
-	public List<DealHourByDayView> fetchAllDealDayViewsByDates(
+	public List<DealHourByDayView> fetchAllDealHourByDayViewsByDates(
 			List<Integer> dealIds,
 			LocalDate fromDate,
 			LocalDate toDate) {

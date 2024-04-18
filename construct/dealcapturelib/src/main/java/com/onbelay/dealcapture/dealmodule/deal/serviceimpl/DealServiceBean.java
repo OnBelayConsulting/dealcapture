@@ -216,14 +216,14 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 			LocalDate fromDate,
 			LocalDate toDate) {
 
-		return dealHourByDayRepository.fetchAllDealDayViewsByDates(
+		return dealHourByDayRepository.fetchAllDealHourByDayViewsByDates(
 				dealIds,
 				fromDate,
 				toDate);
 	}
 
 	@Override
-	public List<DealHourByDayView> fetchDealDealHourByDayViews(EntityId dealId) {
+	public List<DealHourByDayView> fetchDealHourByDayViews(EntityId dealId) {
 		return dealHourByDayRepository.fetchDealHourByDayViews(dealId);
 	}
 

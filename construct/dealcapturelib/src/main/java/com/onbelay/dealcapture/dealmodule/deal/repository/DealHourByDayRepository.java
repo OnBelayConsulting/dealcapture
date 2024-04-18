@@ -19,7 +19,7 @@ public interface DealHourByDayRepository {
 
     List<DealHourByDay> fetchDealHourByDays(Integer dealId);
 
-    List<DealHourByDayView> fetchDealDayViewsByType(
+    List<DealHourByDayView> fetchDealHourByDayViewsByType(
             EntityId dealId,
             DayTypeCode dayTypeCode,
             LocalDateTime fromDate,
@@ -27,7 +27,7 @@ public interface DealHourByDayRepository {
 
     List<DealHourByDayView> fetchDealHourByDayViews(EntityId dealId);
 
-    List<DealHourByDayView> fetchAllDealDayViewsByDates(
+    List<DealHourByDayView> fetchAllDealHourByDayViewsByDates(
             List<Integer> dealIds,
             LocalDate fromDate,
             LocalDate toDate);

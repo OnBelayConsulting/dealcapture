@@ -53,6 +53,8 @@ public abstract class PositionsServiceWithHourlyTestCase extends DealCaptureSpri
 
 
 	protected PhysicalDeal fixedPriceSellDeal;
+	protected PhysicalDeal fixedPriceHourlySellDeal;
+
 	protected PhysicalDeal indexSellDeal;
 
 	protected LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
@@ -161,6 +163,30 @@ public abstract class PositionsServiceWithHourlyTestCase extends DealCaptureSpri
 
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		fixedPriceSellDeal = PhysicalDeal.create(snapshot);
+
+
+		snapshot = DealFixture.createPhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.SELL,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"fixedSellDeal_H",
+				companyRole,
+				counterpartyRole,
+				marketHourlyIndex,
+				BigDecimal.valueOf(2),
+				UnitOfMeasureCode.GJ,
+				new Price(
+						BigDecimal.valueOf(4),
+						CurrencyCode.CAD,
+						UnitOfMeasureCode.GJ));
+
+		snapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.HOURLY);
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		fixedPriceHourlySellDeal = PhysicalDeal.create(snapshot);
+
 		flush();
 		clearCache();
 

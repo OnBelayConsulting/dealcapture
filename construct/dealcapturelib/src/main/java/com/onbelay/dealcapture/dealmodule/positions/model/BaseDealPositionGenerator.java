@@ -120,39 +120,39 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
     }
 
-    public boolean hasDealDaysContainerForCosts(LocalDate positionDate) {
+    public boolean hasDealDayByMonthCosts(LocalDate positionDate) {
         if (dealDaysContainer == null)
             return false;
         return (dealDaysContainer.hasDayByMonthCosts(positionDate));
     }
 
-    public boolean hasDealDaysContainerForQuantity(LocalDate positionDate) {
+    public boolean hasDealDayByMonthQuantities(LocalDate positionDate) {
         if (dealDaysContainer == null)
             return false;
         return (dealDaysContainer.hasDayByMonthQuantity(positionDate));
     }
 
 
-    public boolean hasDealDaysContainerForPrice(LocalDate positionDate) {
+    public boolean hasDealDayByMonthPrices(LocalDate positionDate) {
         if (dealDaysContainer == null)
             return false;
         return (dealDaysContainer.hasDayByMonthPrice(positionDate));
     }
 
-    public boolean hasDealHourByDayPrice(LocalDate positionDate) {
+    public boolean hasDealHourByDayPrices(LocalDate positionDate) {
         if (dealDaysContainer == null)
             return false;
        return (dealDaysContainer.hasHourByDayPrice(positionDate));
     }
 
-    public boolean hasDealHourByDayQuantity(LocalDate positionDate) {
+    public boolean hasDealHourByDayQuantities(LocalDate positionDate) {
         if (dealDaysContainer == null)
             return false;
         return (dealDaysContainer.hasHourByDayQuantity(positionDate));
     }
 
     protected BigDecimal getHourPrice(LocalDate positionDate, int hourEnding) {
-        if (hasDealHourByDayPrice(positionDate)) {
+        if (hasDealHourByDayPrices(positionDate)) {
             return dealDaysContainer.getHourPrice(positionDate, hourEnding);
         } else {
             return null;
@@ -160,7 +160,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     }
 
     protected BigDecimal getHourQuantity(LocalDate positionDate, int hourEnding) {
-        if (hasDealHourByDayQuantity(positionDate)) {
+        if (hasDealHourByDayQuantities(positionDate)) {
             return dealDaysContainer.getHourQuantity(positionDate, hourEnding);
         } else {
             return null;
@@ -168,7 +168,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     }
 
     protected BigDecimal getDayQuantity(LocalDate positionDate) {
-        if (hasDealDaysContainerForQuantity(positionDate)) {
+        if (hasDealDayByMonthQuantities(positionDate)) {
             return dealDaysContainer.getDayQuantity(positionDate);
         } else {
             return null;
@@ -177,7 +177,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
 
     protected BigDecimal getDayPrice(LocalDate positionDate) {
-        if (hasDealDaysContainerForPrice(positionDate)) {
+        if (hasDealDayByMonthPrices(positionDate)) {
             return dealDaysContainer.getDayPrice(positionDate);
         } else {
             return null;
@@ -204,7 +204,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
             holder.getSnapshot().getDetail().setUnitOfMeasureValue(context.getUnitOfMeasureCode().getCode());
 
             BigDecimal cost = null;
-            if (hasDealDaysContainerForCosts(currentDate))
+            if (hasDealDayByMonthCosts(currentDate))
                 cost = dealDaysContainer.getDayCost(currentDate, summary.getCostNameCode().getCode());
 
             if (cost != null)

@@ -33,11 +33,9 @@ public class DealHourlyPositionDetail extends AbstractDetail {
     private LocalDateTime valuedDateTime;
 
     private String currencyCodeValue;
-    private String volumeUnitOfMeasureValue;
-    private BigDecimal totalQuantityValue;
+    private String unitOfMeasureValue;
 
     private Boolean isSettlementPosition;
-    private BigDecimal positionAmount;
 
     private String errorCode;
     private String errorMessage;
@@ -71,20 +69,14 @@ public class DealHourlyPositionDetail extends AbstractDetail {
         if (copy.valuedDateTime != null)
             this.valuedDateTime = copy.valuedDateTime;
 
-        if (copy.totalQuantityValue != null)
-            this.totalQuantityValue = copy.totalQuantityValue;
-
-        if (copy.volumeUnitOfMeasureValue != null)
-            this.volumeUnitOfMeasureValue = copy.volumeUnitOfMeasureValue;
+        if (copy.unitOfMeasureValue != null)
+            this.unitOfMeasureValue = copy.unitOfMeasureValue;
 
         if (copy.currencyCodeValue != null)
             this.currencyCodeValue = copy.currencyCodeValue;
 
         if (copy.isSettlementPosition != null)
             this.isSettlementPosition = copy.isSettlementPosition;
-
-        if (copy.positionAmount != null)
-            this.positionAmount = copy.positionAmount;
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
@@ -166,23 +158,6 @@ public class DealHourlyPositionDetail extends AbstractDetail {
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
-
-    @Transient
-    public Quantity getQuantity() {
-        return new Quantity(
-                totalQuantityValue,
-                getVolumeUnitOfMeasure());
-    }
-
-    @Column(name = "TOTAL_QUANTITY")
-    public BigDecimal getTotalQuantityValue() {
-        return totalQuantityValue;
-    }
-
-    public void setTotalQuantityValue(BigDecimal totalQuantityValue) {
-        this.totalQuantityValue = totalQuantityValue;
-    }
-
     @Transient
     @JsonIgnore
     public CurrencyCode getCurrencyCode() {
@@ -204,23 +179,23 @@ public class DealHourlyPositionDetail extends AbstractDetail {
 
     @Transient
     @JsonIgnore
-    public UnitOfMeasureCode getVolumeUnitOfMeasure() {
-        return UnitOfMeasureCode.lookUp(volumeUnitOfMeasureValue);
+    public UnitOfMeasureCode getUnitOfMeasure() {
+        return UnitOfMeasureCode.lookUp(unitOfMeasureValue);
     }
 
-    public void setVolumeUnitOfMeasure(UnitOfMeasureCode code) {
-        this.volumeUnitOfMeasureValue = code.getCode();
+    public void setUnitOfMeasure(UnitOfMeasureCode code) {
+        this.unitOfMeasureValue = code.getCode();
     }
 
-    @Column(name = "VOLUME_UOM_CODE")
+    @Column(name = "UNIT_OF_MEASURE_CODE")
     @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
     @JsonSerialize(using = CodeLabelSerializer.class)
-    public String getVolumeUnitOfMeasureValue() {
-        return volumeUnitOfMeasureValue;
+    public String getUnitOfMeasureValue() {
+        return unitOfMeasureValue;
     }
 
-    public void setVolumeUnitOfMeasureValue(String volumeUnitOfMeasureValue) {
-        this.volumeUnitOfMeasureValue = volumeUnitOfMeasureValue;
+    public void setUnitOfMeasureValue(String unitOfMeasureValue) {
+        this.unitOfMeasureValue = unitOfMeasureValue;
     }
 
     @Column(name = "IS_SETTLEMENT_POSITION")
@@ -233,15 +208,6 @@ public class DealHourlyPositionDetail extends AbstractDetail {
 
     public void setIsSettlementPosition(Boolean settlementPosition) {
         isSettlementPosition = settlementPosition;
-    }
-
-    @Column(name = "POSITION_AMOUNT")
-    public BigDecimal getPositionAmount() {
-        return positionAmount;
-    }
-
-    public void setPositionAmount(BigDecimal positionAmount) {
-        this.positionAmount = positionAmount;
     }
 
     @Column(name = "ERROR_CODE")

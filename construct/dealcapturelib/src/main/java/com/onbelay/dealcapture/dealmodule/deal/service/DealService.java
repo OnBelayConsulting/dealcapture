@@ -21,7 +21,6 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDay;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 
@@ -67,7 +66,7 @@ public interface DealService {
 			LocalDate fromDate,
 			LocalDate toDate);
 
-	List<DealHourByDayView> fetchDealDealHourByDayViews(EntityId dealId);
+	List<DealHourByDayView> fetchDealHourByDayViews(EntityId dealId);
 
 
 	public List<DealDayByMonthSnapshot> fetchDealDaysByType(

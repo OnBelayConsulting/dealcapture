@@ -18,6 +18,10 @@ public class EvaluationContext {
 
     }
 
+    public boolean validate() {
+        return startPositionDate != null && createdDateTime != null && currencyCode != null;
+    }
+
     public static EvaluationContext build() {
         return new EvaluationContext();
     }

@@ -17,7 +17,7 @@
     SELECT
             pp.ENTITY_ID,
             pp.DEAL_ID,
-            pp.POWER_PROFILE_ID,
+            pp.POWER_PROFILE_POSITION_ID,
             pp.START_DATE,
             pp.END_DATE,
             pp.POWER_FLOW_CODE,
@@ -25,10 +25,8 @@
             pp.CREATE_UPDATE_DATETIME,
             pp.VALUED_DATETIME,
             pp.CURRENCY_CODE,
-            pp.VOLUME_UOM_CODE,
-            pp.TOTAL_QUANTITY,
+            pp.UNIT_OF_MEASURE_CODE,
             pp.IS_SETTLEMENT_POSITION,
-            pp.POSITION_AMOUNT,
             pp.ERROR_CODE,
             pp.ERROR_MSG,
             pp.HOUR_1_VALUE,
@@ -80,7 +78,7 @@
             pp.HOUR_23_RF_ID,
             pp.HOUR_24_RF_ID
             FROM
-            POWER_PROFILE_POSITION pp
+            DEAL_HOURLY_POSITION pp
         </createView>
     </changeSet>
 

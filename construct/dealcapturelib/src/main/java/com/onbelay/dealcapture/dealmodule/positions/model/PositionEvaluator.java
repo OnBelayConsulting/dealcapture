@@ -4,5 +4,5 @@ import java.time.LocalDateTime;
 
 public interface PositionEvaluator {
 
-    public PositionValuationResult valuePosition(LocalDateTime currentDateTime);
+    public PositionValuationResult valuePosition();
 }

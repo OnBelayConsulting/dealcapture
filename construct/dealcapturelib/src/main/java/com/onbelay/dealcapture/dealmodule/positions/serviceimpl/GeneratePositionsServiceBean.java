@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,8 +74,11 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
             EvaluationContext context,
             List<Integer> dealIds) {
 
-        if (context.getCreatedDateTime() == null)
-            throw new RuntimeException("Missing createdDateTime");
+        if (context.validate() == false)
+            throw new RuntimeException("Missing at least one EvaluationContext required fields:createdDateTime, currencyCode, startPositionDate");
+
+        if (context.getEndPositionDate() == null)
+            context.setEndPositionDate(context.getStartPositionDate().withMonth(12).withDayOfMonth(31));
 
         logger.info("assign pg identifiers start: " + LocalDateTime.now().toString());
         dealService.assignPositionIdentifierToDeals(
@@ -88,13 +92,12 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         List<DealCostSummary> dealCostSummaries = dealService.fetchDealCostSummaries(dealIds);
 
-        List<DealDayByMonthView> dealDayByMonthViews = dealService.fetchDealDayByMonthViewsByDates(
+        List<DealHourByDayView> dealHourByDayViews = dealService.fetchDealHourByDayViewsByDates(
                 dealIds,
                 context.getStartPositionDate(),
                 context.getEndPositionDate());
 
-
-        List<DealHourByDayView> dealHourByDayViews = dealService.fetchDealHourByDayViewsByDates(
+        List<DealDayByMonthView> dealDayByMonthViews = dealService.fetchDealDayByMonthViewsByDates(
                 dealIds,
                 context.getStartPositionDate(),
                 context.getEndPositionDate());

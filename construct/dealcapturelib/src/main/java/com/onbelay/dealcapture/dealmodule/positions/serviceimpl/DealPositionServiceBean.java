@@ -88,6 +88,18 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
+    public List<DealHourlyPositionView> fetchDealHourlyPositionViews(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        return dealHourlyPositionRepository.findDealHourlyPositionViews(
+                dealIds,
+                currencyCode,
+                createdDateTime);
+    }
+
+    @Override
     public List<DealPositionSnapshot> findPositionsByDeal(EntityId entityId) {
         List<DealPosition> positions =  dealPositionRepository.findByDeal(entityId);
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();

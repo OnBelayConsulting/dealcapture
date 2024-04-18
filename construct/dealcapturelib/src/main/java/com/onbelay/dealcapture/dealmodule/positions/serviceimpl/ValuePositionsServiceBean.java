@@ -7,6 +7,7 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.CostPositionsBatchUpdater;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealHourlyPositionsBatchUpdater;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchUpdater;
 import com.onbelay.dealcapture.dealmodule.positions.model.*;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
@@ -40,6 +41,9 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
 
     @Autowired
     private CostPositionsBatchUpdater costPositionsBatchUpdater;
+
+    @Autowired
+    private DealHourlyPositionsBatchUpdater dealHourlyPositionsBatchUpdater;
 
     @Override
     public TransactionResult valuePositions(
@@ -117,25 +121,65 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             map.put(summary.getStartDate(), summary);
         }
 
+        List<DealHourlyPositionView> hourlyPositionViews = dealPositionService.fetchDealHourlyPositionViews(
+                dealIds,
+                currencyCode,
+                createdDateTime);
+
+        HashMap<Integer, Map<LocalDate, List<DealHourlyPositionView>>> hourlyPositionViewMap = new HashMap<>();
+        for (DealHourlyPositionView view : hourlyPositionViews) {
+            Map<LocalDate, List<DealHourlyPositionView>> viewMap = hourlyPositionViewMap.computeIfAbsent(
+                    view.getDealId(),
+                    k -> new HashMap<>());
+
+            List<DealHourlyPositionView> viewList = viewMap.computeIfAbsent(
+                    view.getDetail().getStartDate(),
+                    k -> new ArrayList<>());
+
+            viewList.add(view);
+        }
+
+
         ArrayList<PositionValuationResult> results = new ArrayList<>();
+        ArrayList<HourlyPositionValuationResult> hourlyPositionValuationResults = new ArrayList<>();
 
         for (DealPositionView view : views) {
-            TotalCostPositionSummary summary = null;
-            Map<LocalDate, TotalCostPositionSummary> map = totalCostMap.get(view.getDealId());
-            if (map != null)
-                summary = map.get(view.getDetail().getStartDate());
-            PhysicalPositionEvaluator valuator = new PhysicalPositionEvaluator(
+
+            PhysicalPositionEvaluator evaluator = PhysicalPositionEvaluator.build(
+                    currentDateTime,
                     valuationIndexManager,
-                    summary,
                     view);
 
-            results.add(valuator.valuePosition(currentDateTime));
+            Map<LocalDate, TotalCostPositionSummary> map = totalCostMap.get(view.getDealId());
+            if (map != null)
+                evaluator.withCosts(map.get(view.getDetail().getStartDate()));
+
+            Map<LocalDate, List<DealHourlyPositionView>> viewMap = hourlyPositionViewMap.get(view.getDealId());
+            if (viewMap != null) {
+                List<DealHourlyPositionView> viewList = viewMap.get(view.getDetail().getStartDate());
+                if (viewList != null) {
+                    evaluator.withHourlyPositions(viewList);
+                }
+            }
+
+            PositionValuationResult valuationResult = evaluator.valuePosition();
+            hourlyPositionValuationResults.addAll(valuationResult.getHourlyPositionResults());
+            results.add(valuationResult);
         }
 
         SubLister<PositionValuationResult> subLister = new SubLister<>(results, 1000);
         while (subLister.moreElements()) {
             dealPositionsBatchUpdater.updatePositions(subLister.nextList());
         }
+
+        if (hourlyPositionValuationResults.isEmpty() == false) {
+            SubLister<HourlyPositionValuationResult> hourlySubLister = new SubLister<>(hourlyPositionValuationResults, 1000);
+            while (hourlySubLister.moreElements()) {
+                dealHourlyPositionsBatchUpdater.updatePositions(hourlySubLister.nextList());
+            }
+        }
+
+
         logger.info("value positions end: " + LocalDateTime.now().toString());
     }
 
@@ -161,9 +205,10 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
 
         for (CostPositionView costPositionView : views) {
             CostPositionEvaluator evaluator = new CostPositionEvaluator(
+                    currentDateTime,
                     valuationIndexManager,
                     costPositionView);
-            results.add(evaluator.valuePosition(currentDateTime));
+            results.add(evaluator.valuePosition());
 
         }
 

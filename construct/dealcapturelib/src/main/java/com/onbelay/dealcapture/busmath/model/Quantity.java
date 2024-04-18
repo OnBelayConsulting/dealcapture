@@ -132,7 +132,7 @@ public class Quantity extends CalculatedEntity{
 					price.getCurrency());
 	}
 
-	public boolean isNotZero() {
+	public boolean isZero() {
 		if (isInError())
 			return false;
 
@@ -160,7 +160,7 @@ public class Quantity extends CalculatedEntity{
 		if (this.isInError() || divisor == 0)
 			return new Quantity(CalculatedErrorType.ERROR);
 		return new Quantity(
-				value.multiply(BigDecimal.valueOf(divisor), mathContext),
+				value.divide(BigDecimal.valueOf(divisor), mathContext),
 				this.unitOfMeasureCode);
 	}
 

@@ -16,16 +16,19 @@ public class CostPositionEvaluator implements CostEvaluator {
     private static final Logger logger = LogManager.getLogger();
     private CostPositionView positionView;
     private ValuationIndexManager valuationIndexManager;
+    private LocalDateTime currentDateTime;
 
     public CostPositionEvaluator(
+            LocalDateTime currentDateTime,
             ValuationIndexManager valuationIndexManager,
             CostPositionView positionView) {
 
+        this.currentDateTime = currentDateTime;
         this.valuationIndexManager = valuationIndexManager;
         this.positionView = positionView;
     }
 
-    public CostPositionValuationResult valuePosition(LocalDateTime currentDateTime) {
+    public CostPositionValuationResult valuePosition() {
         CostPositionValuationResult valuationResult = new CostPositionValuationResult(
                 positionView.getId(),
                 currentDateTime);
