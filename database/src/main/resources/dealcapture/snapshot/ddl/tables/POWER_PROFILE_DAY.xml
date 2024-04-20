@@ -28,99 +28,99 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="HOUR_1_VALUE"
+            <column name="HOUR_1_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_2_VALUE"
+            <column name="HOUR_2_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_3_VALUE"
+            <column name="HOUR_3_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_4_VALUE"
+            <column name="HOUR_4_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_5_VALUE"
+            <column name="HOUR_5_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_6_VALUE"
+            <column name="HOUR_6_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_7_VALUE"
+            <column name="HOUR_7_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_8_VALUE"
+            <column name="HOUR_8_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_9_VALUE"
+            <column name="HOUR_9_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_10_VALUE"
+            <column name="HOUR_10_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_11_VALUE"
+            <column name="HOUR_11_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_12_VALUE"
+            <column name="HOUR_12_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_13_VALUE"
+            <column name="HOUR_13_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_14_VALUE"
+            <column name="HOUR_14_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_15_VALUE"
+            <column name="HOUR_15_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_16_VALUE"
+            <column name="HOUR_16_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_17_VALUE"
+            <column name="HOUR_17_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_18_VALUE"
+            <column name="HOUR_18_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_19_VALUE"
+            <column name="HOUR_19_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_20_VALUE"
+            <column name="HOUR_20_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_21_VALUE"
+            <column name="HOUR_21_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_22_VALUE"
+            <column name="HOUR_22_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_23_VALUE"
+            <column name="HOUR_23_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>
-            <column name="HOUR_24_VALUE"
+            <column name="HOUR_24_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="true"/>
             </column>

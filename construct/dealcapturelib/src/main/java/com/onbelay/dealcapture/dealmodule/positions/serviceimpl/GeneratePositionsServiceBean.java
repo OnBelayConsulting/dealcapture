@@ -15,8 +15,10 @@ import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatch
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.PositionRiskFactorMappingBatchInserter;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGeneratorFactory;
+import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionView;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.service.PowerProfilePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -29,9 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +52,9 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
     @Autowired
     private DealService dealService;
+
+    @Autowired
+    private PowerProfilePositionsService powerProfilePositionsService;
 
     @Override
     public TransactionResult generatePositions(
@@ -102,7 +105,6 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
                 context.getStartPositionDate(),
                 context.getEndPositionDate());
 
-
         return createAndSavePositions(
                 context,
                 summaries,
@@ -151,15 +153,39 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         if (dealHourByDayViews.size() > 0)
             factory.withHourByDayViews(dealHourByDayViews);
 
+
+        List<PowerProfilePositionView> powerProfilePositionViews = powerProfilePositionsService.fetchPowerProfilePositionViews(
+                context.getStartPositionDate(),
+                context.getEndPositionDate(),
+                context.getCurrencyCode(),
+                context.getCreatedDateTime());
+
+        HashMap<Integer, Map<LocalDate, List<PowerProfilePositionView>>> powerProfileToPositionMap = new HashMap<>();
+        for (PowerProfilePositionView view : powerProfilePositionViews) {
+            Map<LocalDate, List<PowerProfilePositionView>> powerProfileDateMap = powerProfileToPositionMap.computeIfAbsent(
+                    view.getPowerProfileId(),
+                    k -> new HashMap<>());
+            List<PowerProfilePositionView> positionList = powerProfileDateMap.computeIfAbsent(
+                    view.getDetail().getStartDate(),
+                    k-> new ArrayList<>());
+            positionList.add(view);
+        }
+
+
         List<DealPositionGenerator> dealPositionGenerators = new ArrayList<>(dealSummaries.size());
 
         logger.info("generate position holders start: " + LocalDateTime.now().toString());
         for (PhysicalDealSummary summary : physicalDealSummaries) {
-
             DealPositionGenerator dealPositionGenerator = factory.newGenerator(
                         summary,
                         riskFactorManager);
             dealPositionGenerators.add(dealPositionGenerator);
+            if (summary.getPowerProfileId() != null) {
+                Map<LocalDate, List<PowerProfilePositionView>> positionMap = powerProfileToPositionMap.get(summary.getPowerProfileId().getId());
+                if (positionMap != null) {
+                    dealPositionGenerator.withPowerProfilePositionViews(positionMap.get(summary.getStartDate()));
+                }
+            }
 
             // create position control
             dealPositionGenerator.generatePositionHolders(context);

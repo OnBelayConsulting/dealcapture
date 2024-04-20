@@ -25,6 +25,7 @@ import jakarta.persistence.*;
 public class PhysicalDealAudit extends BaseDealAudit {
 
 	private PriceIndex marketPriceIndex;
+	private PriceIndex dealPriceIndex;
 	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
 	protected PhysicalDealAudit() {
@@ -52,6 +53,16 @@ public class PhysicalDealAudit extends BaseDealAudit {
 		this.marketPriceIndex = priceIndex;
 	}
 
+	@ManyToOne
+	@JoinColumn(name ="DEAL_PRICE_INDEX_ID")
+	public PriceIndex getDealPriceIndex() {
+		return dealPriceIndex;
+	}
+
+	public void setDealPriceIndex(PriceIndex dealPriceIndex) {
+		this.dealPriceIndex = dealPriceIndex;
+	}
+
 	@Embedded
 	public PhysicalDealDetail getDetail() {
 		return detail;
@@ -67,6 +78,7 @@ public class PhysicalDealAudit extends BaseDealAudit {
 		super.copyFrom(entity);
 		PhysicalDeal physicalDeal = (PhysicalDeal) entity;
 		marketPriceIndex = physicalDeal.getMarketPriceIndex();
+		dealPriceIndex = physicalDeal.getDealPriceIndex();
 		detail.copyFrom(physicalDeal.getDetail());
 	}
 

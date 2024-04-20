@@ -6,8 +6,6 @@ import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 
 public class PowerProfilePositionHolder {
 
-    private PriceRiskFactorHolder priceRiskFactorHolder;
-
     private FxRiskFactorHolder priceFxHolder;
 
     private ProfilePriceHourHolderMap hourHolderMap = new ProfilePriceHourHolderMap();
@@ -20,14 +18,6 @@ public class PowerProfilePositionHolder {
 
     public ProfilePriceHourHolderMap getHourHolderMap() {
         return hourHolderMap;
-    }
-
-    public PriceRiskFactorHolder getPriceRiskFactorHolder() {
-        return priceRiskFactorHolder;
-    }
-
-    public void setPriceRiskFactorHolder(PriceRiskFactorHolder priceRiskFactorHolder) {
-        this.priceRiskFactorHolder = priceRiskFactorHolder;
     }
 
     public FxRiskFactorHolder getPriceFxHolder() {

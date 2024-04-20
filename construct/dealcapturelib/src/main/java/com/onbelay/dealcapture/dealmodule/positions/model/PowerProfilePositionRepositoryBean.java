@@ -28,6 +28,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.List;
 public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProfilePosition> implements PowerProfilePositionRepository {
 	public static final String FIND_BY_POWER_PROFILE = "PowerProfilePositionsRepository.FIND_BY_POWER_PROFILE";
 	public static final String FIND_PROFILE_POSITION_VIEWS ="PowerProfilePositionsRepository.FIND_PROFILE_POSITION_VIEWS";
+	public static final String FIND_PROFILE_POSITION_VIEWS_BY_CONTEXT ="PowerProfilePositionsRepository.FIND_PROFILE_POSITION_VIEWS_BY_CONTEXT";
 
 	@Autowired
 	private PowerProfilePositionColumnDefinitions powerProfilePositionColumnDefinitions;
@@ -67,7 +69,7 @@ public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProf
 		return executeQuery(
 				FIND_BY_POWER_PROFILE,
 				"powerProfileId",
-				powerProfileId);
+				powerProfileId.getId());
 	}
 
 	@Override
@@ -101,6 +103,20 @@ public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProf
 		}
 	}
 
+	@Override
+	public List<PowerProfilePositionView> findPowerProfilePositionViewsByDate(
+			LocalDate startDate,
+			LocalDate endDate,
+			CurrencyCode currencyCode,
+			LocalDateTime createdDateTime) {
+
+		String[] names = {"startDate", "endDate", "currencyCode", "createdDateTime"};
+		Object[] parms = {startDate, endDate, currencyCode.getCode(), createdDateTime};
+		return (List<PowerProfilePositionView>) executeReportQuery(
+				FIND_PROFILE_POSITION_VIEWS_BY_CONTEXT,
+				names,
+				parms);
+	}
 
 	@Override
 	public List<PowerProfilePosition> fetchByIds(QuerySelectedPage querySelectedPage) {

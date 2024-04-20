@@ -25,6 +25,8 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDaySnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileIndexMappingSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -32,10 +34,20 @@ import java.util.List;
 
 @Entity
 @Table (name = "POWER_PROFILE")
+@NamedQueries({
+		@NamedQuery(
+				name = PowerProfileRepositoryBean.FETCH_ASSIGNED_POWER_PROFILES,
+				query = "SELECT profile " +
+						"  FROM PowerProfile profile " +
+						"   WHERE profile.detail.positionGenerationIdentifier = :positionGenerationIdentifier " +
+						"ORDER BY profile.detail.name ")
+})
 public class PowerProfile extends TemporalAbstractEntity {
 
 	private Integer id;
-	
+
+	private PriceIndex settledPriceIndex;
+
 	private PowerProfileDetail detail = new PowerProfileDetail();
 	
 	protected PowerProfile() {
@@ -53,16 +65,37 @@ public class PowerProfile extends TemporalAbstractEntity {
 
 	protected void createWith(PowerProfileSnapshot snapshot) {
 		super.createWith(snapshot);
+		detail.setDefaults();
 		detail.copyFrom(snapshot.getDetail());
 		save();
 		savePowerProfileDays(snapshot.getProfileDays());
+		savePowerProfileIndexMappings(snapshot.getIndexMappings());
+		updateRelationships(snapshot);
 	}
 
 	public void updateWith(PowerProfileSnapshot snapshot) {
 		super.updateWith(snapshot);
 		detail.copyFrom(snapshot.getDetail());
 		savePowerProfileDays(snapshot.getProfileDays());
+		savePowerProfileIndexMappings(snapshot.getIndexMappings());
+		updateRelationships(snapshot);
 		update();
+	}
+
+	private void updateRelationships(PowerProfileSnapshot snapshot) {
+		if (snapshot.getSettledPriceIndexId() != null) {
+			this.settledPriceIndex = getPriceIndexRepository().load(snapshot.getSettledPriceIndexId());
+		}
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "SETTLED_PRICE_INDEX_ID")
+	public PriceIndex getSettledPriceIndex() {
+		return settledPriceIndex;
+	}
+
+	public void setSettledPriceIndex(PriceIndex settledPriceIndex) {
+		this.settledPriceIndex = settledPriceIndex;
 	}
 
 	protected void addPowerProfileDay(PowerProfileDay powerProfileDay) {
@@ -178,6 +211,13 @@ public class PowerProfile extends TemporalAbstractEntity {
 	protected static PowerProfileRepository getPowerProfileRepository() {
 		return (PowerProfileRepository) ApplicationContextFactory.getBean(PowerProfileRepositoryBean.BEAN_NAME);
 	}
+
+
+	@Transient
+	protected static PriceIndexRepository getPriceIndexRepository() {
+		return (PriceIndexRepository) ApplicationContextFactory.getBean(PriceIndexRepository.BEAN_NAME);
+	}
+
 
 	@Transient
 	protected static PowerProfileDayRepository getPowerProfileDayRepository() {

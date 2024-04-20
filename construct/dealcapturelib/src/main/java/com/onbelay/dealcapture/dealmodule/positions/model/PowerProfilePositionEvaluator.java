@@ -24,8 +24,10 @@ public class PowerProfilePositionEvaluator {
 
         for (int i=1; i < 25; i++) {
             Integer riskFactorId = view.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i);
-            PriceRiskFactorSnapshot snapshot = valuationIndexManager.getPriceRiskFactor(riskFactorId);
-            result.getHourPriceDayDetail().setHourPrice(i, snapshot.getDetail().getValue());
+            if (riskFactorId != null) {
+                PriceRiskFactorSnapshot snapshot = valuationIndexManager.getPriceRiskFactor(riskFactorId);
+                result.getHourPriceDayDetail().setHourPrice(i, snapshot.getDetail().getValue());
+            }
         }
 
         return result;

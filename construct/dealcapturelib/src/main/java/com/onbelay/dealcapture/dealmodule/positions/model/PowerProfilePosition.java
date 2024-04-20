@@ -6,8 +6,11 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.model.PowerProfile;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourPriceDayDetail;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourPriceRiskFactorIdMap;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,10 +18,10 @@ import jakarta.persistence.*;
 @NamedQueries({
         @NamedQuery(
                 name = PowerProfilePositionRepositoryBean.FIND_BY_POWER_PROFILE,
-                query = "SELECT position.id " +
+                query = "SELECT position " +
                         "  FROM PowerProfilePosition position " +
                         " WHERE position.powerProfile.id = :powerProfileId " +
-                      "ORDER BY position.detail.startDate ")
+                      "ORDER BY position.detail.startDate, position.detail.powerFlowCodeValue ")
 })
 public class PowerProfilePosition extends AbstractEntity {
 
@@ -26,9 +29,14 @@ public class PowerProfilePosition extends AbstractEntity {
 
     private PowerProfile powerProfile;
 
+    private PriceIndex priceIndex;
+
     private PowerProfilePositionDetail detail = new PowerProfilePositionDetail();
 
-    private HourPriceDayDetail priceDetail = new HourPriceDayDetail();
+    private HourPriceDayDetail hourPriceDayDetail = new HourPriceDayDetail();
+
+    private HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap = new HourPriceRiskFactorIdMap();
+
 
     @Id
     @Column(name="ENTITY_ID", insertable =  false, updatable = false)
@@ -52,14 +60,59 @@ public class PowerProfilePosition extends AbstractEntity {
         this.powerProfile = powerProfile;
     }
 
-    @Embedded
-    public HourPriceDayDetail getPriceDetail() {
-        return priceDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "PRICE_INDEX_ID")
+    public PriceIndex getPriceIndex() {
+        return priceIndex;
     }
 
-    public void setPriceDetail(HourPriceDayDetail costDetail) {
-        this.priceDetail = costDetail;
+    public void setPriceIndex(PriceIndex priceIndex) {
+        this.priceIndex = priceIndex;
     }
+
+    @Transient
+    public HourPriceDayDetail getHourPriceDayDetail() {
+        if (hourPriceDayDetail != null)
+            return hourPriceDayDetail;
+        return new HourPriceDayDetail();
+    }
+
+    public void setHourPriceDayDetail(HourPriceDayDetail hourPriceDayDetail) {
+        this.hourPriceDayDetail = hourPriceDayDetail;
+    }
+
+    @Embedded
+    public HourPriceDayDetail getInternalPriceDetail() {
+        return hourPriceDayDetail;
+    }
+
+    public void setInternalPriceDetail(HourPriceDayDetail priceDetail) {
+        this.hourPriceDayDetail = priceDetail;
+    }
+
+    @Transient
+    public HourPriceRiskFactorIdMap getHourPriceRiskFactorIdMap() {
+        if (hourPriceRiskFactorIdMap != null)
+            return hourPriceRiskFactorIdMap;
+        else
+            return new HourPriceRiskFactorIdMap();
+    }
+
+    public void setHourPriceRiskFactorIdMap(HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap) {
+        this.hourPriceRiskFactorIdMap = hourPriceRiskFactorIdMap;
+    }
+
+
+    @Embedded
+    public HourPriceRiskFactorIdMap getInternalHourPriceRiskFactorIdMap() {
+        return hourPriceRiskFactorIdMap;
+    }
+
+    public void setInternalHourPriceRiskFactorIdMap(HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap) {
+        this.hourPriceRiskFactorIdMap = hourPriceRiskFactorIdMap;
+    }
+
 
     @Embedded
     public PowerProfilePositionDetail getDetail() {
@@ -78,17 +131,31 @@ public class PowerProfilePosition extends AbstractEntity {
     public void createWith(PowerProfilePositionSnapshot snapshot) {
         this.powerProfile = getPowerProfileRepository().load(snapshot.getPowerProfileId());
         this.detail.copyFrom(snapshot.getDetail());
-        this.priceDetail.copyFrom(snapshot.getHourPriceDayDetail());
+        this.hourPriceDayDetail.copyFrom(snapshot.getHourPriceDayDetail());
+        updateRelationships(snapshot);
+        save();
     }
 
     public void updateWith(PowerProfilePositionSnapshot snapshot) {
         this.detail.copyFrom(snapshot.getDetail());
-        this.priceDetail.copyFrom(snapshot.getHourPriceDayDetail());
+        this.hourPriceDayDetail.copyFrom(snapshot.getHourPriceDayDetail());
+        updateRelationships(snapshot);
+        update();
+    }
+
+    private void updateRelationships(PowerProfilePositionSnapshot snapshot) {
+        if (snapshot.getPriceIndexId() != null)
+            this.priceIndex = getPriceIndexRepository().load(snapshot.getPriceIndexId());
     }
 
     @Transient
     protected static PowerProfileRepository getPowerProfileRepository() {
         return (PowerProfileRepository) ApplicationContextFactory.getBean(PowerProfileRepository.BEAN_NAME);
+    }
+
+    @Transient
+    protected static PriceIndexRepository getPriceIndexRepository() {
+        return (PriceIndexRepository) ApplicationContextFactory.getBean(PriceIndexRepository.BEAN_NAME);
     }
 
 }

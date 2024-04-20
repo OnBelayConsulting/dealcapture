@@ -32,62 +32,75 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
     public void generatePositionHolders(EvaluationContext context) {
 
         LocalDate todayDate = context.getCreatedDateTime().toLocalDate();
+        LocalDate endOfMonthDate = todayDate.plusMonths(1);
+        endOfMonthDate = endOfMonthDate.withDayOfMonth(1);
 
         LocalDate currentDate = context.getStartPositionDate();
         while (currentDate.isAfter(context.getEndPositionDate()) == false) {
-            if (currentDate.isAfter(todayDate) == false) {
+            int dayOfWeek = currentDate.getDayOfWeek().getValue();
+            PowerProfileDaySnapshot profileDaySnapshot = powerProfile.getPowerProfileDayByDayOfWeek(dayOfWeek);
+            if (profileDaySnapshot != null) {
 
-                PowerProfilePositionHolder holder = new PowerProfilePositionHolder();
-                holder.getSnapshot().getDetail().setPowerFlowCode(PowerFlowCode.SETTLED);
-                holder.getSnapshot().getDetail().setStartDate(currentDate);
-                holder.getSnapshot().getDetail().setEndDate(currentDate);
-
-                holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
-                holder.getSnapshot().getDetail().setCurrencyCode(context.getCurrencyCode());
-                determineHourlySettledRiskFactors(holder);
-
-                positionHolders.add(holder);
-            } else {
-                int dayOfWeek = currentDate.getDayOfWeek().getValue();
-                PowerProfileDaySnapshot profileDaySnapshot = powerProfile.getPowerProfileDayByDayOfWeek(dayOfWeek);
-
-                HashSet<PowerFlowCode> codes = new HashSet<>();
-                for (int i =1; i < 25; i++) {
-
-                    codes.add(profileDaySnapshot.getDetail().getPowerFlowCode(i));
-                }
-
-                for (PowerFlowCode code : codes) {
-                    EntityId priceIndexId = powerProfile.findPriceIndexMappingByFlowCode(code);
+                if (currentDate.isAfter(todayDate) == false) {
                     PowerProfilePositionHolder holder = new PowerProfilePositionHolder();
-
-
-
-                    holder.getSnapshot().getDetail().setPowerFlowCode(code);
                     holder.getSnapshot().getDetail().setStartDate(currentDate);
                     holder.getSnapshot().getDetail().setEndDate(currentDate);
+                    holder.getSnapshot().setPowerProfileId(powerProfile.getEntityId());
+                    holder.getSnapshot().setPriceIndexId(powerProfile.getSettledPriceIndexId());
 
                     holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
                     holder.getSnapshot().getDetail().setCurrencyCode(context.getCurrencyCode());
-                    holder.setPriceRiskFactorHolder(
-                            riskFactorManager.determinePriceRiskFactor(
-                                priceIndexId.getId(),
-                                currentDate));
-
-                    int totalHours = 0;
-                    for (int i =1; i < 25; i++) {
-
-                        if (profileDaySnapshot.getDetail().getPowerFlowCode(i) == code) {
-                            totalHours++;
-                            holder.getHourHolderMap().setHourPriceHolder(i, holder.getPriceRiskFactorHolder());
-                        }
-                    }
-                    holder.getSnapshot().getDetail().setNumberOfHours(totalHours);
+                    holder.getSnapshot().getDetail().setErrorCode("0");
+                    holder.getSnapshot().getDetail().setPowerFlowCode(PowerFlowCode.SETTLED);
+                    determineHourlySettledRiskFactors(holder);
 
                     positionHolders.add(holder);
+                } else {
+
+                    HashSet<PowerFlowCode> codes = new HashSet<>();
+                    for (int i = 1; i < 25; i++) {
+                        if (profileDaySnapshot.getDetail().getPowerFlowCode(i) != null)
+                            codes.add(profileDaySnapshot.getDetail().getPowerFlowCode(i));
                     }
 
+                    for (PowerFlowCode code : codes) {
+                        EntityId priceIndexId = null;
+                        if (currentDate.isBefore(endOfMonthDate)) {
+                            priceIndexId = powerProfile.findPriceIndexMappingByFlowCode(PowerFlowCode.HOURLY);
+                        }
+                        if (priceIndexId == null)
+                            priceIndexId = powerProfile.findPriceIndexMappingByFlowCode(code);
+                        PowerProfilePositionHolder holder = new PowerProfilePositionHolder();
+                        holder.getSnapshot().setPriceIndexId(new EntityId(priceIndexId));
+                        holder.getSnapshot().getDetail().setPowerFlowCode(code);
+                        holder.getSnapshot().getDetail().setStartDate(currentDate);
+                        holder.getSnapshot().getDetail().setEndDate(currentDate);
+                        holder.getSnapshot().setPowerProfileId(powerProfile.getEntityId());
+                        holder.getSnapshot().getDetail().setErrorCode("0");
+
+                        holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
+                        holder.getSnapshot().getDetail().setCurrencyCode(context.getCurrencyCode());
+
+                        int totalHours = 0;
+                        for (int i = 1; i < 25; i++) {
+
+                            if (profileDaySnapshot.getDetail().getPowerFlowCode(i) == code) {
+                                totalHours++;
+                                PriceRiskFactorHolder priceRiskFactorHolder = riskFactorManager.determinePriceRiskFactor(
+                                        priceIndexId.getId(),
+                                        currentDate);
+
+                                holder.getHourHolderMap().setHourPriceHolder(i, priceRiskFactorHolder);
+                            }
+                        }
+                        holder.getSnapshot().getDetail().setNumberOfHours(totalHours);
+
+                        positionHolders.add(holder);
+                    }
+
+                }
             }
+            currentDate = currentDate.plusDays(1);
         }
 
 
@@ -96,9 +109,10 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
     private void determineHourlySettledRiskFactors(PowerProfilePositionHolder holder) {
         int dayOfWeek = holder.getSnapshot().getDetail().getStartDate().getDayOfWeek().getValue();
         PowerProfileDaySnapshot profileDaySnapshot = powerProfile.getPowerProfileDayByDayOfWeek(dayOfWeek);
+        int totalHours = 0;
         for (int i =1; i < 25; i++) {
             if (profileDaySnapshot.getDetail().getPowerFlowCode(i)!= null) {
-
+                totalHours++;
                 PriceRiskFactorHolder priceHolder = riskFactorManager.determinePriceRiskFactor(
                         powerProfile.getSettledPriceIndexId().getId(),
                         holder.getSnapshot().getDetail().getStartDate(),
@@ -110,6 +124,7 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
 
             }
         }
+        holder.getSnapshot().getDetail().setNumberOfHours(totalHours);
     }
 
     @Override
@@ -126,11 +141,6 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
                             i,
                             priceHolder.getRiskFactor().getEntityId().getId());
                 }
-            }
-
-            if (holder.getPriceRiskFactorHolder() != null) {
-                Integer priceRiskFactorId = holder.getPriceRiskFactorHolder().getRiskFactor().getEntityId().getId();
-                snapshot.setPriceRiskFactorId(new EntityId(priceRiskFactorId) );
             }
 
             snapshots.add(snapshot);

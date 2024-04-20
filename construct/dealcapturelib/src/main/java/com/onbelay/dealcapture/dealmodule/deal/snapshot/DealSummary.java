@@ -29,6 +29,7 @@ import java.time.LocalDate;
 public class DealSummary {
 
 	private EntityId dealId;
+	private EntityId powerProfileId;
 	private String ticketNo;
 	private LocalDate startDate;
 	private LocalDate endDate;
@@ -42,6 +43,7 @@ public class DealSummary {
 
 	public DealSummary(
 			Integer dealId,
+			Integer powerProfileId,
 			String ticketNo,
 			LocalDate startDate,
 			LocalDate endDate,
@@ -54,6 +56,7 @@ public class DealSummary {
 			String settlementCurrencyCodeValue) {
 		
 		super();
+		this.powerProfileId = new EntityId(powerProfileId);
 		this.dealId = new EntityId(dealId, ticketNo, ticketNo, false);
 		this.ticketNo = ticketNo;
 		this.startDate = startDate;
@@ -70,6 +73,11 @@ public class DealSummary {
 	public EntityId getDealId() {
 		return dealId;
 	}
+
+	public EntityId getPowerProfileId() {
+		return powerProfileId;
+	}
+
 	public String getTicketNo() {
 		return ticketNo;
 	}

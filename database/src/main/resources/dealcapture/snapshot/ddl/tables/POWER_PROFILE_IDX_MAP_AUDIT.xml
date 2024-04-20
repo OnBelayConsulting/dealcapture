@@ -2,47 +2,37 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/POWER_PROFILE_AUDIT.xml">
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/POWER_PROFILE_IDX_MAP_AUDIT.xml">
 
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
         <createSequence
                 incrementBy="1"
-                sequenceName="POWER_PROFILE_AUDIT_SEQ"
+                sequenceName="POWER_PROFILE_IDX_MAP_AUDIT_SEQ"
                 startValue="1"
         />
 
-
-        <createTable tableName="POWER_PROFILE_AUDIT" tablespace="${tblspace_data}">
+        <createTable tableName="POWER_PROFILE_IDX_MAP_AUDIT" tablespace="${tblspace_data}">
             <column name="AUDIT_ID"
-                    defaultValueSequenceNext="POWER_PROFILE_AUDIT_SEQ"
+                    defaultValueSequenceNext="POWER_PROFILE_IDX_MAP_AUDIT_SEQ"
                     type="java.sql.Types.NUMERIC(10, 0)">
-                <constraints primaryKey="true" primaryKeyName="POWER_PROFILE_AUDIT_PK" nullable="false"/>
+                <constraints primaryKey="true" primaryKeyName="POWER_PROFILE_IDX_MAP_AUDIT_PK" nullable="false"/>
             </column>
             <column name="ENTITY_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PROFILE_NAME"
-                    type="java.sql.Types.VARCHAR(40)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="PROFILE_DESCRIPTION"
-                    type="java.sql.Types.VARCHAR(100)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="SETTLED_PRICE_INDEX_ID"
+            <column name="POWER_PROFILE_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="POSITION_GENERATION_STATUS_CODE" type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
-            <column name="POSITION_GENERATION_IDENTIFIER" type="java.sql.Types.VARCHAR(500)">
-                <constraints nullable="true"/>
+            <column name="PRICE_INDEX_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
             </column>
-            <column name="POSITION_GENERATION_DATE_TIME" type="java.sql.Types.TIMESTAMP">
-                <constraints nullable="true"/>
+            <column name="POWER_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
             </column>
             <column name="AUDIT_LOCK_NO"
                     defaultValueNumeric="0"

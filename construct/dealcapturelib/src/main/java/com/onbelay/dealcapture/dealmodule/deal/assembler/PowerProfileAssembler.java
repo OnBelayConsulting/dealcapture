@@ -13,6 +13,9 @@ public class PowerProfileAssembler extends EntityAssembler {
         setEntityAttributes(powerProfile, powerProfileSnapshot);
         powerProfileSnapshot.getDetail().copyFrom(powerProfile.getDetail());
 
+        if (powerProfile.getSettledPriceIndex() != null)
+            powerProfileSnapshot.setSettledPriceIndexId(powerProfile.getSettledPriceIndex().generateEntityId());
+
         PowerProfileDayAssembler dayAssembler = new PowerProfileDayAssembler();
         powerProfileSnapshot.setProfileDays(
                 dayAssembler.assemble(powerProfile.fetchPowerProfileDays()));

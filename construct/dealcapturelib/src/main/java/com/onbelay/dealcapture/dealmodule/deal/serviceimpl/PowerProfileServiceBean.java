@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,37 @@ public class PowerProfileServiceBean extends BaseDomainService implements PowerP
         List<PowerProfile> profiles = powerProfileRepository.fetchByIds(selectedPage);
         PowerProfileAssembler assembler = new PowerProfileAssembler();
         return assembler.assemble(profiles);
+    }
+
+    @Override
+    public void assignPositionIdentifierToPowerProfiles(
+            String positionGenerationIdentifier,
+            List<Integer> entityIds) {
+
+        powerProfileRepository.executeUpdateAssignForPositionGeneration(
+                entityIds,
+                positionGenerationIdentifier);
+    }
+
+    @Override
+    public List<PowerProfileSnapshot> getAssignedPowerProfiles(String positionGenerationIdentifier) {
+        List<PowerProfile> profiles = powerProfileRepository.getAssignedPowerProfiles(positionGenerationIdentifier);
+        PowerProfileAssembler assembler = new PowerProfileAssembler();
+        return assembler.assemble(profiles);
+    }
+
+    @Override
+    public void updatePositionStatusToComplete(
+            List<Integer> powerProfileIds,
+            LocalDateTime createdDateTime) {
+        powerProfileRepository.executeUpdatePositionGenerationToComplete(
+                powerProfileIds,
+                createdDateTime);
+    }
+
+    @Override
+    public void updatePositionGenerationStatusToPending(List<Integer> powerProfileIds) {
+        powerProfileRepository.executeUpdateSetPositionGenerationToPending(powerProfileIds);
     }
 
     @Override

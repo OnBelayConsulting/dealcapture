@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,13 +54,21 @@ public class PowerProfilePositionServiceBean implements PowerProfilePositionsSer
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime) {
 
-        List<PowerProfilePositionView> views = powerProfilePositionRepository.findPowerProfilePositionViews(
+        return powerProfilePositionRepository.findPowerProfilePositionViews(
                     dealIds,
                     currencyCode,
                     createdDateTime);
 
+    }
 
-        return views;
+    @Override
+    public List<PowerProfilePositionView> fetchPowerProfilePositionViews(
+            LocalDate startPositionDate,
+            LocalDate endPositionDate,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        return List.of();
     }
 
     @Override

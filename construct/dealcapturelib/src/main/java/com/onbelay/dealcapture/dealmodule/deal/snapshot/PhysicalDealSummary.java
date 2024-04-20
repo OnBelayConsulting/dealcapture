@@ -21,6 +21,7 @@ public class PhysicalDealSummary extends DealSummary {
 
     public PhysicalDealSummary(
             Integer dealId,
+            Integer powerProfileId,
             String ticketNo,
             LocalDate startDate,
             LocalDate endDate,
@@ -41,6 +42,7 @@ public class PhysicalDealSummary extends DealSummary {
 
         super(
                 dealId,
+                powerProfileId,
                 ticketNo,
                 startDate,
                 endDate,

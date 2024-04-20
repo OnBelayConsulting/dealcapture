@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
@@ -17,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +36,11 @@ public class GeneratePowerProfilePositionsServiceBean extends BasePositionsServi
             EvaluationContext context,
             List<Integer> powerProfileIds) {
 
-        List<PowerProfileSnapshot> profiles = powerProfileService.findByIds(new QuerySelectedPage(powerProfileIds));
+        powerProfileService.assignPositionIdentifierToPowerProfiles(
+                positionGenerationIdentifier,
+                powerProfileIds);
+
+        List<PowerProfileSnapshot> profiles = powerProfileService.getAssignedPowerProfiles(positionGenerationIdentifier);
 
         List<PriceIndexSnapshot> activePriceIndices = priceIndexService.findActivePriceIndices();
         List<Integer> uniquePriceIndexIds = activePriceIndices.stream().map( c-> c.getEntityId().getId()).toList();
@@ -77,13 +81,25 @@ public class GeneratePowerProfilePositionsServiceBean extends BasePositionsServi
         processFxRiskFactors(riskFactorManager);
 
         ArrayList<PowerProfilePositionSnapshot> snapshots = new ArrayList<>();
+        ArrayList<Integer> powerProfileIds = new ArrayList<>();
+
         for (PowerProfilePositionGenerator generator : generators) {
+            powerProfileIds.add(generator.getPowerProfile().getEntityId().getId());
+
             snapshots.addAll(generator.generatePowerProfilePositionSnapshots());
         }
 
         SubLister<PowerProfilePositionSnapshot> subLister = new SubLister<>(snapshots, 1000);
         while (subLister.moreElements()) {
             powerProfilePositionsBatchInserter.savePositions(subLister.nextList());
+        }
+
+        SubLister<Integer> profileSubLister = new SubLister<>(powerProfileIds, 2000);
+        logger.info("Update power profile position generation start: " + LocalDateTime.now().toString());
+        while (profileSubLister.moreElements()) {
+            powerProfileService.updatePositionStatusToComplete(
+                    profileSubLister.nextList(),
+                    context.getCreatedDateTime());
         }
 
     }

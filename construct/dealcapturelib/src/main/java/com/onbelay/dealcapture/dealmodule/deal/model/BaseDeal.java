@@ -53,6 +53,7 @@ import java.util.List;
        name = DealRepositoryBean.FETCH_ASSIGNED_DEAL_SUMMARIES,
        query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary( "
 			   + "          deal.id, "
+			   + "          powerProfile.id, "
 			   + "          deal.dealDetail.ticketNo, "
 			   + "          deal.dealDetail.startDate,"
 			   + "          deal.dealDetail.endDate,"
@@ -63,13 +64,15 @@ import java.util.List;
 			   + "          deal.dealDetail.volumeUnitOfMeasureCodeValue,"
 			   + "          deal.dealDetail.volumeFrequencyCodeValue,"
 			   + "          deal.dealDetail.settlementCurrencyCodeValue)"
-			   + "   FROM BaseDeal deal " +
-			   " WHERE deal.dealDetail.positionGenerationIdentifier = :identifier " +
-       	     "ORDER BY deal.dealDetail.ticketNo DESC"),
+	   + "      FROM BaseDeal deal "
++ "  LEFT OUTER JOIN deal.powerProfile as powerProfile "
+ 	   +   "   WHERE deal.dealDetail.positionGenerationIdentifier = :identifier " +
+          " ORDER BY deal.dealDetail.ticketNo DESC"),
     @NamedQuery(
        name = DealRepositoryBean.GET_DEAL_SUMMARY,
        query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary( "
 			   + "          deal.id, "
+			   + "          powerProfile.id, "
 			   + "          deal.dealDetail.ticketNo, "
 			   + "          deal.dealDetail.startDate,"
 			   + "          deal.dealDetail.endDate,"
@@ -80,8 +83,9 @@ import java.util.List;
 			   + "          deal.dealDetail.volumeUnitOfMeasureCodeValue,"
 			   + "          deal.dealDetail.volumeFrequencyCodeValue,"
 			   + "          deal.dealDetail.settlementCurrencyCodeValue)"
-       		+ "   FROM BaseDeal deal " +
-       	     "   WHERE deal.id = :dealId"),
+       	+ "    FROM BaseDeal deal "
+ + "LEFT OUTER JOIN deal.powerProfile as powerProfile " +
+       	    " WHERE deal.id = :dealId"),
     @NamedQuery(
        name = DealRepositoryBean.FIND_DEAL_BY_TICKET_NO,
        query = "SELECT deal " +
@@ -92,7 +96,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	
 	private Integer id;
     private DealDetail dealDetail = new DealDetail();
-    
+    private PowerProfile powerProfile;
 	private String dealTypeValue;
 
     private CompanyRole companyRole;
@@ -169,8 +173,17 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		this.id = dealId;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "POWER_PROFILE_ID")
+	public PowerProfile getPowerProfile() {
+		return powerProfile;
+	}
 
-    public List<DealCostSnapshot> fetchCurrentDealCosts() {
+	public void setPowerProfile(PowerProfile powerProfile) {
+		this.powerProfile = powerProfile;
+	}
+
+	public List<DealCostSnapshot> fetchCurrentDealCosts() {
     	DealCostAssembler assembler = new DealCostAssembler(this);
     	return assembler.assemble(
     			getDealCostRepository().fetchDealCosts(this.id));

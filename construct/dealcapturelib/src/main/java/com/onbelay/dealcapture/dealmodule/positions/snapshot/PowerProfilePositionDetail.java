@@ -61,6 +61,9 @@ public class PowerProfilePositionDetail extends AbstractDetail {
         if (copy.unitOfMeasureValue != null)
             this.unitOfMeasureValue = copy.unitOfMeasureValue;
 
+        if (copy.numberOfHours != null)
+            this.numberOfHours = copy.numberOfHours;
+
         if (copy.currencyCodeValue != null)
             this.currencyCodeValue = copy.currencyCodeValue;
 

@@ -34,6 +34,7 @@ import jakarta.persistence.*;
        name = DealRepositoryBean.FETCH_PHYSICAL_DEAL_SUMMARIES,
        query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary( "
        		+ "          deal.id, "
+	        + "          powerProfile.id, "
        		+ "          deal.dealDetail.ticketNo, "
        		+ "          deal.dealDetail.startDate,"
 	  	    + "          deal.dealDetail.endDate,"
@@ -52,7 +53,8 @@ import jakarta.persistence.*;
 			+  "         deal.detail.marketValuationCodeValue,"
 			+  "         deal.marketPriceIndex.id"
 			+  "         ) "
-       		+ "   FROM PhysicalDeal deal " +
+       		+ "   FROM PhysicalDeal deal "
+ + "   LEFT OUTER JOIN deal.powerProfile as powerProfile " +
 			   " WHERE deal.id in (:dealIds) " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),
 		@NamedQuery(

@@ -138,11 +138,11 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	@Override
 	public void updateDealPositionStatusToComplete(
 			List<Integer> dealIds,
-			LocalDateTime observedDateTime) {
+			LocalDateTime positionGenerationDateTime) {
 
 		dealRepository.executeDealUpdatePositionGenerationToComplete(
 				dealIds,
-				observedDateTime);
+				positionGenerationDateTime);
 
 	}
 

@@ -19,6 +19,7 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDetail;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import jakarta.persistence.*;
 
 @Entity
@@ -37,6 +38,9 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 	private Integer id;
 
 	private PowerProfile powerProfile;
+
+	private PriceIndex settledPriceIndex;
+
 	private PowerProfileDetail detail = new PowerProfileDetail();
 
 	public static PowerProfileAudit create(PowerProfile powerProfile) {
@@ -52,6 +56,7 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 
 	protected PowerProfileAudit(PowerProfile powerProfile) {
 		this.powerProfile = powerProfile;
+		this.settledPriceIndex = powerProfile.getSettledPriceIndex();
 		this.detail.copyFrom(powerProfile.getDetail());
 	}
 
@@ -77,6 +82,17 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 		this.powerProfile = powerProfile;
 	}
 
+	@ManyToOne
+	@JoinColumn(name = "SETTLED_PRICE_INDEX_ID")
+	public PriceIndex getSettledPriceIndex() {
+		return settledPriceIndex;
+	}
+
+	public void setSettledPriceIndex(PriceIndex settledPriceIndex) {
+		this.settledPriceIndex = settledPriceIndex;
+	}
+
+
 	@Embedded
 	public PowerProfileDetail getDetail() {
 		return detail;
@@ -95,6 +111,7 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 	@Override
 	public void copyFrom(TemporalAbstractEntity entity) {
 		PowerProfile powerProfile = (PowerProfile) entity;
+		this.settledPriceIndex = powerProfile.getSettledPriceIndex();
 		this.detail.copyFrom(powerProfile.getDetail());
 	}
 

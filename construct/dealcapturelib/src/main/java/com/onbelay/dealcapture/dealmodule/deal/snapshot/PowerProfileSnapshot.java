@@ -64,4 +64,8 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
                 .map(d -> d.getPriceIndexId())
                 .findFirst().orElse(null);
     }
+
+    public void addIndexMappingSnapshot(PowerProfileIndexMappingSnapshot indexMappingSnapshot) {
+        indexMappings.add(indexMappingSnapshot);
+    }
 }

@@ -41,6 +41,8 @@
     <include file="POWER_PROFILE_DAY.xml" relativeToChangelogFile="true"/>
     <include file="POWER_PROFILE_DAY_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="POWER_PROFILE_POSITION.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_IDX_MAP.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_IDX_MAP_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_INDEX_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICING_LOCATION.xml" relativeToChangelogFile="true"/>

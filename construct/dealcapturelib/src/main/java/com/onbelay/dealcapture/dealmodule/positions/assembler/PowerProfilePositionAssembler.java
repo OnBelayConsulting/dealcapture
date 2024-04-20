@@ -13,9 +13,12 @@ public class PowerProfilePositionAssembler extends EntityAssembler  {
         PowerProfilePositionSnapshot snapshot = new PowerProfilePositionSnapshot();
         super.setEntityAttributes(position, snapshot);
         snapshot.setPowerProfileId(position.getPowerProfile().generateEntityId());
+        snapshot.setPriceIndexId(position.getPriceIndex().generateEntityId());
 
         snapshot.getDetail().copyFrom(position.getDetail());
-        snapshot.getHourPriceDayDetail().copyFrom(position.getPriceDetail());
+        snapshot.getHourPriceDayDetail().copyFrom(position.getHourPriceDayDetail());
+        snapshot.getHourPriceRiskFactorIdMap().copyFrom(position.getHourPriceRiskFactorIdMap());
+
         return snapshot;
     }
 

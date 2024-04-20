@@ -16,8 +16,17 @@ import org.hibernate.annotations.Immutable;
                 query = "SELECT position " +
                         "  FROM PowerProfilePositionView position " +
                         " WHERE position.powerProfileId in (:powerProfileIds) " +
-                        "   AND detail.currencyCodeValue = :currencyCode " +
-                        "   AND detail.createdDateTime = :createdDateTime " +
+                        "   AND position.detail.currencyCodeValue = :currencyCode " +
+                        "   AND position.detail.createdDateTime = :createdDateTime " +
+                        "ORDER BY position.detail.startDate "),
+        @NamedQuery(
+                name = PowerProfilePositionRepositoryBean.FIND_PROFILE_POSITION_VIEWS_BY_CONTEXT,
+                query = "SELECT position " +
+                        "  FROM PowerProfilePositionView position " +
+                        " WHERE position.detail.startDate >= :startDate" +
+                        "   AND position.detail.endDate  < :endDate " +
+                        "   AND position.detail.currencyCodeValue = :currencyCode " +
+                        "   AND position.detail.createdDateTime = :createdDateTime " +
                         "ORDER BY position.detail.startDate ")
 })
 public class PowerProfilePositionView extends AbstractEntity {

@@ -16,6 +16,10 @@ public class PowerProfileDetail {
     private LocalDateTime positionGenerationDateTime;
 
 
+    public void setDefaults() {
+        this.setPositionGenerationStatusCode(PositionGenerationStatusCode.NONE);
+    }
+
     public void copyFrom(PowerProfileDetail copy) {
 
         if (copy.name != null)

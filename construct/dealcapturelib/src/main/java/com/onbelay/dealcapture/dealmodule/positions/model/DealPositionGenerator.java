@@ -33,6 +33,8 @@ public interface DealPositionGenerator {
 
     public void withDealDays(DealDaysContainer container);
 
+    void withPowerProfilePositionViews(List<PowerProfilePositionView> views);
+
     public List<DealCostSummary> getCostSummaries();
 
     public DealDaysContainer getDealDayContainer();

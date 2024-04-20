@@ -35,6 +35,8 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
     protected List<DealCostSummary> costSummaries = new ArrayList<>();
 
+    protected List<PowerProfilePositionView> powerProfilePositionViews = new ArrayList<>();
+
     protected DealDaysContainer dealDaysContainer;
 
     protected List<CostPositionHolder> costPositionHolders = new ArrayList<>();
@@ -310,6 +312,11 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     @Override
     public void withDealDays(DealDaysContainer container) {
         this.dealDaysContainer = container;
+    }
+
+    @Override
+    public void withPowerProfilePositionViews(List<PowerProfilePositionView> views) {
+        this.powerProfilePositionViews = views;
     }
 
     @Override

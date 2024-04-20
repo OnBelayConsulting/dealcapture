@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePosition;
 import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionView;
 import com.onbelay.shared.enums.CurrencyCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,6 +23,14 @@ public interface PowerProfilePositionRepository {
             List<Integer> dealIds,
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
+
+
+    List<PowerProfilePositionView> findPowerProfilePositionViewsByDate(
+            LocalDate startDate,
+            LocalDate endDate,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
 
     List<PowerProfilePosition> fetchByIds(QuerySelectedPage querySelectedPage);
 

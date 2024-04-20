@@ -20,16 +20,12 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.model.PowerProfile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PowerProfileRepository {
 	public static final String BEAN_NAME = "powerProfileRepository";
 
-	/**
-	 * Fetch a list of deals by ids. This is usually used in paging.
-	 * @param querySelectedPage
-	 * @return
-	 */
 	public List<PowerProfile> fetchByIds(QuerySelectedPage querySelectedPage);
 	
 	/**
@@ -48,4 +44,21 @@ public interface PowerProfileRepository {
 
 
 	public PowerProfile load(EntityId entityId);
+
+	/**
+	 * Update power profiles by assigning deals to a position generation identifier.
+	 * @param powerProfileIds - list of  ids
+	 * @param positionGeneratorId - owning generator process name;
+	 */
+	public void executeUpdateAssignForPositionGeneration(
+			List<Integer> powerProfileIds,
+			String positionGeneratorId);
+
+	void executeUpdatePositionGenerationToComplete(
+			List<Integer> powerProfileIds,
+			LocalDateTime createdDateTime);
+
+	public void executeUpdateSetPositionGenerationToPending(List<Integer> powerProfileIds);
+
+	List<PowerProfile> getAssignedPowerProfiles(String positionGeneratorId);
 }

@@ -7,7 +7,7 @@ public class PowerProfilePositionSnapshot extends AbstractSnapshot {
 
     private EntityId powerProfileId;
 
-    private EntityId priceRiskFactorId;
+    private EntityId priceIndexId;
 
     private PowerProfilePositionDetail detail = new PowerProfilePositionDetail();
 
@@ -47,11 +47,11 @@ public class PowerProfilePositionSnapshot extends AbstractSnapshot {
         this.powerProfileId = powerProfileId;
     }
 
-    public EntityId getPriceRiskFactorId() {
-        return priceRiskFactorId;
+    public EntityId getPriceIndexId() {
+        return priceIndexId;
     }
 
-    public void setPriceRiskFactorId(EntityId priceRiskFactorId) {
-        this.priceRiskFactorId = priceRiskFactorId;
+    public void setPriceIndexId(EntityId priceIndexId) {
+        this.priceIndexId = priceIndexId;
     }
 }

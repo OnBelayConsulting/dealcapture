@@ -42,6 +42,7 @@ public abstract class BaseDealAudit extends AuditAbstractEntity {
 	private DealDetail dealDetail = new DealDetail();
 
 	private BaseDeal deal;
+	private PowerProfile powerProfile;
 	
 	private String dealTypeValue;
 	
@@ -68,10 +69,20 @@ public abstract class BaseDealAudit extends AuditAbstractEntity {
 		return id;
 	}
 
-
 	public void setId(Integer dealAuditId) {
 		this.id = dealAuditId;
 	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "POWER_PROFILE_ID")
+	public PowerProfile getPowerProfile() {
+		return powerProfile;
+	}
+
+	public void setPowerProfile(PowerProfile powerProfile) {
+		this.powerProfile = powerProfile;
+	}
+
 
 
 	@Transient
@@ -144,6 +155,7 @@ public abstract class BaseDealAudit extends AuditAbstractEntity {
 	@Override
 	public void copyFrom(TemporalAbstractEntity entity) {
 		BaseDeal deal = (BaseDeal) entity;
+		this.powerProfile = deal.getPowerProfile();
 		this.dealTypeValue = deal.getDealType().getCode();
 		this.companyRole = deal.getCompanyRole();
 		this.counterpartyRole = deal.getCounterpartyRole();
