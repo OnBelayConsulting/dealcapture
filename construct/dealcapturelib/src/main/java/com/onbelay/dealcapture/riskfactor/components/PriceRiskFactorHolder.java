@@ -58,4 +58,8 @@ public class PriceRiskFactorHolder extends BaseRiskFactorHolder {
         this.fxRiskFactorHolder = fxRiskFactorHolder;
     }
 
+    @Override
+    public String generateUniqueKey() {
+        return  "PI:" + priceIndex.getEntityId().getId() + ":" + super.generateUniqueKey();
+    }
 }

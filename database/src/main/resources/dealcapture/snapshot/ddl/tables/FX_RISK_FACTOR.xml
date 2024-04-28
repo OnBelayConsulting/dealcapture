@@ -39,14 +39,13 @@
                     type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
-            <column name="OPTIMISTIC_LOCK_NO"
-                    defaultValueNumeric="0"
-                    type="java.sql.Types.NUMERIC(10, 0)">
-                <constraints nullable="false"/>
+            <column name="ERROR_CODE"
+                    type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="true"/>
             </column>
-            <column name="EXPIRED_FLG"
-                    type="java.sql.Types.CHAR(1)">
-                <constraints nullable="false"/>
+            <column name="ERROR_MSG"
+                    type="java.sql.Types.VARCHAR(1000)">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

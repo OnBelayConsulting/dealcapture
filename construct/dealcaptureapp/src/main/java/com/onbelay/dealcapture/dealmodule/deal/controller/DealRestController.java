@@ -21,17 +21,18 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
+import com.onbelay.dealcapture.dealmodule.deal.adapter.MarkToMarketRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.ErrorDealSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.MarkToMarketResult;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.hibernate.sql.exec.spi.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,8 @@ public class DealRestController extends BaseRestController {
 	
 	@Autowired
 	private DealRestAdapter dealRestAdapter;
-	
+
+	private MarkToMarketRestAdapter markToMarketAdapter;
 	
 	@Operation(summary="Create or update a deal")
 	@PostMapping(
@@ -170,7 +172,7 @@ public class DealRestController extends BaseRestController {
 	}
 
 
-	@Operation(summary="Create or update a deal")
+	@Operation(summary="Generate Positions for a deal")
 	@PostMapping(
 			value = "/{id}/positions",
 			produces="application/json",
@@ -178,7 +180,7 @@ public class DealRestController extends BaseRestController {
 	public ResponseEntity<TransactionResult> generatePositions(
 			@RequestHeader Map<String, String> headers,
 			@PathVariable Integer id,
-			@RequestBody ExecutionContext context,
+			@RequestBody EvaluationContextRequest request,
 			BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
@@ -191,7 +193,7 @@ public class DealRestController extends BaseRestController {
 
 		TransactionResult result;
 		try {
-			result = dealRestAdapter.generatePositions(id, context);
+			result = dealRestAdapter.generatePositions(id, request);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
 			result = new TransactionResult(r.getErrorCode(), r.getParms());
@@ -201,6 +203,42 @@ public class DealRestController extends BaseRestController {
 		}
 
 		return processResponse(result);
+	}
+
+
+	@Operation(summary="Run Mark to Market")
+	@PostMapping(
+			value = "/{id}/mtm",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<MarkToMarketResult> runMarkToMarket(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@RequestBody EvaluationContextRequest request,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+
+		MarkToMarketResult result;
+		try {
+			result = markToMarketAdapter.runMarkToMarket(request);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new MarkToMarketResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new MarkToMarketResult(e.getMessage());
+		}
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", "application/json; charset=utf-8");
+		return result.isSuccessful() ? new ResponseEntity(result, httpHeaders, HttpStatus.OK) : new ResponseEntity(result, httpHeaders, HttpStatus.BAD_REQUEST);
 	}
 
 }

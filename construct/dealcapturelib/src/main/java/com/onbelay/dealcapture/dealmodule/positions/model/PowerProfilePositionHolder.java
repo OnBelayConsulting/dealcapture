@@ -1,14 +1,11 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
-import com.onbelay.dealcapture.riskfactor.components.FxRiskFactorHolder;
-import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 
 public class PowerProfilePositionHolder {
 
-    private FxRiskFactorHolder priceFxHolder;
 
-    private ProfilePriceHourHolderMap hourHolderMap = new ProfilePriceHourHolderMap();
+    private PriceHourHolderMap hourHolderMap = new PriceHourHolderMap();
 
     private PowerProfilePositionSnapshot snapshot = new PowerProfilePositionSnapshot();
 
@@ -16,15 +13,8 @@ public class PowerProfilePositionHolder {
         return snapshot;
     }
 
-    public ProfilePriceHourHolderMap getHourHolderMap() {
+    public PriceHourHolderMap getHourHolderMap() {
         return hourHolderMap;
     }
 
-    public FxRiskFactorHolder getPriceFxHolder() {
-        return priceFxHolder;
-    }
-
-    public void setPriceFxHolder(FxRiskFactorHolder priceFxHolder) {
-        this.priceFxHolder = priceFxHolder;
-    }
 }

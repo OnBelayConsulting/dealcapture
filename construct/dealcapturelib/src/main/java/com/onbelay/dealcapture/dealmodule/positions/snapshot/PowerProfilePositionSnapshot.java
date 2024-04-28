@@ -3,6 +3,8 @@ package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
 
+import java.util.List;
+
 public class PowerProfilePositionSnapshot extends AbstractSnapshot {
 
     private EntityId powerProfileId;
@@ -14,6 +16,25 @@ public class PowerProfilePositionSnapshot extends AbstractSnapshot {
     private HourPriceDayDetail hourPriceDayDetail = new HourPriceDayDetail();
 
     private HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap = new HourPriceRiskFactorIdMap();
+
+    public PowerProfilePositionSnapshot() {
+    }
+
+    public PowerProfilePositionSnapshot(EntityId entityId) {
+        super(entityId);
+    }
+
+    public PowerProfilePositionSnapshot(String errorCode) {
+        super(errorCode);
+    }
+
+    public PowerProfilePositionSnapshot(String errorCode, boolean isPermissionException) {
+        super(errorCode, isPermissionException);
+    }
+
+    public PowerProfilePositionSnapshot(String errorCode, List<String> parameters) {
+        super(errorCode, parameters);
+    }
 
     public HourPriceDayDetail getHourPriceDayDetail() {
         return hourPriceDayDetail;

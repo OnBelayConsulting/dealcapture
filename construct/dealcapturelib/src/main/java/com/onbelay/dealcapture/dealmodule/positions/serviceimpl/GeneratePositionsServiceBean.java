@@ -9,27 +9,25 @@ import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
-import com.onbelay.dealcapture.dealmodule.positions.batch.sql.CostPositionsBatchInserter;
-import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealHourlyPositionsBatchInserter;
-import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchInserter;
-import com.onbelay.dealcapture.dealmodule.positions.batch.sql.PositionRiskFactorMappingBatchInserter;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.*;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGeneratorFactory;
+import com.onbelay.dealcapture.dealmodule.positions.model.PositionGenerationResult;
 import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionView;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.service.PowerProfilePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
+import com.onbelay.dealcapture.riskfactor.batch.sql.PriceRiskFactorBatchInserter;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,6 +46,9 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
     private CostPositionsBatchInserter costPositionsBatchInserter;
 
     @Autowired
+    private PriceRiskFactorBatchInserter priceRiskFactorBatchInserter;
+
+    @Autowired
     private PositionRiskFactorMappingBatchInserter positionRiskFactorMappingBatchInserter;
 
     @Autowired
@@ -59,7 +60,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
     @Override
     public TransactionResult generatePositions(
             String positionGenerationIdentifier,
-            EvaluationContext context,
+            DealPositionsEvaluationContext context,
             Integer dealId) {
 
         if (context.getCreatedDateTime() == null)
@@ -74,14 +75,11 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
     @Override
     public TransactionResult generatePositions(
             String positionGenerationIdentifier,
-            EvaluationContext context,
+            DealPositionsEvaluationContext context,
             List<Integer> dealIds) {
 
         if (context.validate() == false)
             throw new RuntimeException("Missing at least one EvaluationContext required fields:createdDateTime, currencyCode, startPositionDate");
-
-        if (context.getEndPositionDate() == null)
-            context.setEndPositionDate(context.getStartPositionDate().withMonth(12).withDayOfMonth(31));
 
         logger.info("assign pg identifiers start: " + LocalDateTime.now().toString());
         dealService.assignPositionIdentifierToDeals(
@@ -115,7 +113,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
     }
 
     private TransactionResult createAndSavePositions(
-            EvaluationContext context,
+            DealPositionsEvaluationContext context,
             List<DealSummary> dealSummaries,
             List<DealCostSummary> dealCostSummaries,
             List<DealDayByMonthView> dealDayByMonthViews,
@@ -124,7 +122,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         List<Integer> physicalDealIds = dealSummaries
                 .stream()
                 .filter(c-> c.getDealTypeCode() == DealTypeCode.PHYSICAL_DEAL)
-                .map(c-> c.getDealId().getId())
+                .map(c-> c.getDealId())
                 .collect(Collectors.toList());
 
         logger.info("get physical deal summaries start: " + LocalDateTime.now().toString());
@@ -157,19 +155,10 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         List<PowerProfilePositionView> powerProfilePositionViews = powerProfilePositionsService.fetchPowerProfilePositionViews(
                 context.getStartPositionDate(),
                 context.getEndPositionDate(),
-                context.getCurrencyCode(),
                 context.getCreatedDateTime());
 
-        HashMap<Integer, Map<LocalDate, List<PowerProfilePositionView>>> powerProfileToPositionMap = new HashMap<>();
-        for (PowerProfilePositionView view : powerProfilePositionViews) {
-            Map<LocalDate, List<PowerProfilePositionView>> powerProfileDateMap = powerProfileToPositionMap.computeIfAbsent(
-                    view.getPowerProfileId(),
-                    k -> new HashMap<>());
-            List<PowerProfilePositionView> positionList = powerProfileDateMap.computeIfAbsent(
-                    view.getDetail().getStartDate(),
-                    k-> new ArrayList<>());
-            positionList.add(view);
-        }
+        if(powerProfilePositionViews.size() > 0)
+            factory.withPowerProfilePositionViews(powerProfilePositionViews);
 
 
         List<DealPositionGenerator> dealPositionGenerators = new ArrayList<>(dealSummaries.size());
@@ -177,18 +166,13 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         logger.info("generate position holders start: " + LocalDateTime.now().toString());
         for (PhysicalDealSummary summary : physicalDealSummaries) {
             DealPositionGenerator dealPositionGenerator = factory.newGenerator(
+                        context,
                         summary,
                         riskFactorManager);
             dealPositionGenerators.add(dealPositionGenerator);
-            if (summary.getPowerProfileId() != null) {
-                Map<LocalDate, List<PowerProfilePositionView>> positionMap = powerProfileToPositionMap.get(summary.getPowerProfileId().getId());
-                if (positionMap != null) {
-                    dealPositionGenerator.withPowerProfilePositionViews(positionMap.get(summary.getStartDate()));
-                }
-            }
 
             // create position control
-            dealPositionGenerator.generatePositionHolders(context);
+            dealPositionGenerator.generatePositionHolders();
 
         }
         logger.info("generate position holders end: " + LocalDateTime.now().toString());
@@ -196,9 +180,12 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         processPriceRiskFactors(
                 riskFactorManager,
                 context.getStartPositionDate(),
-                context.getEndPositionDate());
+                context.getEndPositionDate(),
+                context.getCreatedDateTime());
 
-        processFxRiskFactors(riskFactorManager);
+        processFxRiskFactors(
+                riskFactorManager,
+                context.getCreatedDateTime());
 
         batchSavePositions(
                 context.getCreatedDateTime(),
@@ -221,15 +208,14 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         ArrayList<Integer> dealIds = new ArrayList<>();
         for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
-            dealIds.add(dealPositionGenerator.getDealSummary().getDealId().getId());
-            dealPositionGenerator.generateCostPositionSnapshots(createdDateTime);
-            dealPositionGenerator.generateDealPositionSnapshots(createdDateTime);
+            dealIds.add(dealPositionGenerator.getDealSummary().getDealId());
+            PositionGenerationResult generationResult = dealPositionGenerator.generatePositionSnapshots();
             costPositionSnapshots.addAll(
-                    dealPositionGenerator.getCostPositionSnapshots());
+                    generationResult.getCostPositionSnapshots());
             positionSnapshots.addAll(
-                    dealPositionGenerator.getDealPositionSnapshots());
+                    generationResult.getDealPositionSnapshots());
             hourlyPositionSnapshots.addAll(
-                    dealPositionGenerator.getDealHourlyPositionSnapshots());
+                    generationResult.getDealHourlyPositionSnapshots());
         }
 
 

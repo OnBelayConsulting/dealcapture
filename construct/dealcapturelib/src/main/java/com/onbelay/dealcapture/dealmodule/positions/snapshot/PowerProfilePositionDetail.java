@@ -25,9 +25,6 @@ public class PowerProfilePositionDetail extends AbstractDetail {
     private LocalDateTime valuedDateTime;
     private String powerFlowCodeValue;
     private Integer numberOfHours;
-    
-    private String currencyCodeValue;
-    private String unitOfMeasureValue;
 
     private String errorCode;
     private String errorMessage;
@@ -58,14 +55,8 @@ public class PowerProfilePositionDetail extends AbstractDetail {
         if (copy.valuedDateTime != null)
             this.valuedDateTime = copy.valuedDateTime;
 
-        if (copy.unitOfMeasureValue != null)
-            this.unitOfMeasureValue = copy.unitOfMeasureValue;
-
         if (copy.numberOfHours != null)
             this.numberOfHours = copy.numberOfHours;
-
-        if (copy.currencyCodeValue != null)
-            this.currencyCodeValue = copy.currencyCodeValue;
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
@@ -130,45 +121,6 @@ public class PowerProfilePositionDetail extends AbstractDetail {
         this.endDate = endDate;
     }
 
-    @Transient
-    @JsonIgnore
-    public CurrencyCode getCurrencyCode() {
-        return CurrencyCode.lookUp(currencyCodeValue);
-    }
-
-    public void setCurrencyCode(CurrencyCode code) {
-        this.currencyCodeValue = code.getCode();
-    }
-
-    @Column(name = "CURRENCY_CODE")
-    public String getCurrencyCodeValue() {
-        return currencyCodeValue;
-    }
-
-    public void setCurrencyCodeValue(String currencyCodeValue) {
-        this.currencyCodeValue = currencyCodeValue;
-    }
-
-    @Transient
-    @JsonIgnore
-    public UnitOfMeasureCode getUnitOfMeasure() {
-        return UnitOfMeasureCode.lookUp(unitOfMeasureValue);
-    }
-
-    public void setUnitOfMeasure(UnitOfMeasureCode code) {
-        this.unitOfMeasureValue = code.getCode();
-    }
-
-    @Column(name = "UNIT_OF_MEASURE_CODE")
-    @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "unitOfMeasureCodeItem")
-    @JsonSerialize(using = CodeLabelSerializer.class)
-    public String getUnitOfMeasureValue() {
-        return unitOfMeasureValue;
-    }
-
-    public void setUnitOfMeasureValue(String volumeUnitOfMeasureValue) {
-        this.unitOfMeasureValue = volumeUnitOfMeasureValue;
-    }
 
     @Column(name = "NUMBER_OF_HOURS")
     public Integer getNumberOfHours() {

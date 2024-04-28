@@ -15,18 +15,18 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PowerProfilePositionSqlMapper extends AbstractBaseSqlMapper {
+public class PowerProfilePositionSqlMapper extends BaseSqlMapper {
 
-	private final  boolean isAddPrimaryKey;
-
-	public PowerProfilePositionSqlMapper(Boolean isAddPrimaryKey) {
-		this.isAddPrimaryKey = isAddPrimaryKey;
+	public PowerProfilePositionSqlMapper(boolean isAddPrimaryKey) {
+		super(isAddPrimaryKey);
 	}
 
 	public String getTableName() {
@@ -44,8 +44,6 @@ public class PowerProfilePositionSqlMapper extends AbstractBaseSqlMapper {
 		list.add("END_DATE");
 		list.add("CREATE_UPDATE_DATETIME");
 		list.add("POWER_FLOW_CODE");
-		list.add("CURRENCY_CODE");
-		list.add("UNIT_OF_MEASURE_CODE");
 		list.add("NUMBER_OF_HOURS");
 		list.add("ERROR_CODE");
 		list.add("ERROR_MSG");
@@ -58,8 +56,9 @@ public class PowerProfilePositionSqlMapper extends AbstractBaseSqlMapper {
 	
 	
 	public void setValuesOnPreparedStatement(
-			PowerProfilePositionSnapshot position,
+			AbstractSnapshot snapshot,
 			PreparedStatement preparedStatement) throws SQLException {
+		PowerProfilePositionSnapshot position = (PowerProfilePositionSnapshot) snapshot;
 		int n;
 		if (isAddPrimaryKey) {
 			n= 1;
@@ -76,22 +75,20 @@ public class PowerProfilePositionSqlMapper extends AbstractBaseSqlMapper {
 
 		preparedStatement.setString(n + 6, position.getDetail().getPowerFlowCodeValue());
 
-		preparedStatement.setString(n + 7, position.getDetail().getCurrencyCodeValue());
-		preparedStatement.setString(n + 8, position.getDetail().getUnitOfMeasureValue());
-		preparedStatement.setInt(n + 9, position.getDetail().getNumberOfHours());
+		preparedStatement.setInt(n + 7, position.getDetail().getNumberOfHours());
 
 		// Error Code
 		if (position.getDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 10, position.getDetail().getErrorCode());
+			preparedStatement.setString(n + 8, position.getDetail().getErrorCode());
 		else
-			preparedStatement.setNull(n + 10, Types.VARCHAR);
+			preparedStatement.setNull(n + 8, Types.VARCHAR);
 
 		if (position.getDetail().getErrorMessage() != null)
-			preparedStatement.setString(n + 11, position.getDetail().getErrorMessage());
+			preparedStatement.setString(n + 9, position.getDetail().getErrorMessage());
 		else
-			preparedStatement.setNull(n + 11, Types.VARCHAR);
+			preparedStatement.setNull(n + 9, Types.VARCHAR);
 
-		int start = n + 12;
+		int start = n + 10;
 		for (int i = 1; i < 25; i++) {
 			if (position.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i) != null)
 				preparedStatement.setInt(start, position.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i));

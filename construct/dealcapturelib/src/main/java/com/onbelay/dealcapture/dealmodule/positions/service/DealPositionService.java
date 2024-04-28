@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
+import com.onbelay.core.entity.enums.AssemblerDirectiveCopyType;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
@@ -39,6 +40,11 @@ public interface DealPositionService {
             LocalDateTime createdDateTime);
 
     List<DealPositionSnapshot> findPositionsByDeal(EntityId dealId);
+
+    List<DealPositionSnapshot> findPositionsByDeal(
+            EntityId dealId,
+            AssemblerDirectiveCopyType copyType);
+
 
     List<DealHourlyPositionSnapshot> findHourlyPositionsByDeal(EntityId dealId);
 

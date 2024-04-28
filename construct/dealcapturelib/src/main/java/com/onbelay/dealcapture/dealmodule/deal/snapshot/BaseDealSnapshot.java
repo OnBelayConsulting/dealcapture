@@ -40,6 +40,9 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 	
 	private EntityId companyRoleId;
 	private EntityId counterpartyRoleId;
+
+	private EntityId powerProfileId;
+
 	private DealDetail dealDetail = new DealDetail();
 	
 	private String dealTypeValue;
@@ -118,6 +121,14 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 
 	public void setCounterpartyRoleId(EntityId counterpartyRoleId) {
 		this.counterpartyRoleId = counterpartyRoleId;
+	}
+
+	public EntityId getPowerProfileId() {
+		return powerProfileId;
+	}
+
+	public void setPowerProfileId(EntityId powerProfileId) {
+		this.powerProfileId = powerProfileId;
 	}
 
 	public String toString() {

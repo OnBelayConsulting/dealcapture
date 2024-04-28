@@ -28,8 +28,8 @@ import java.time.LocalDate;
 
 public class DealSummary {
 
-	private EntityId dealId;
-	private EntityId powerProfileId;
+	private Integer dealId;
+	private Integer powerProfileId;
 	private String ticketNo;
 	private LocalDate startDate;
 	private LocalDate endDate;
@@ -56,8 +56,8 @@ public class DealSummary {
 			String settlementCurrencyCodeValue) {
 		
 		super();
-		this.powerProfileId = new EntityId(powerProfileId);
-		this.dealId = new EntityId(dealId, ticketNo, ticketNo, false);
+		this.powerProfileId = powerProfileId;
+		this.dealId = dealId;
 		this.ticketNo = ticketNo;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -69,13 +69,17 @@ public class DealSummary {
 		this.volumeFrequencyCode = FrequencyCode.lookUp(volumeFrequencyCodeValue);
 		this.settlementCurrencyCode = CurrencyCode.lookUp(settlementCurrencyCodeValue);
 	}
-	
-	public EntityId getDealId() {
+
+	public Integer getDealId() {
 		return dealId;
 	}
 
-	public EntityId getPowerProfileId() {
+	public Integer getPowerProfileId() {
 		return powerProfileId;
+	}
+
+	public boolean hasPowerProfile() {
+		return powerProfileId != null;
 	}
 
 	public String getTicketNo() {

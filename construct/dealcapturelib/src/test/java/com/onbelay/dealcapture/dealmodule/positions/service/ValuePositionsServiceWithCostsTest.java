@@ -82,12 +82,12 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
 
         generatePositionsService.generatePositions(
                 "test",
@@ -99,6 +99,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
@@ -142,12 +144,12 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceSellDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
 
         generatePositionsService.generatePositions(
                 "test",
@@ -159,6 +161,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
@@ -200,12 +204,12 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
     @Test
     public void valuePhysicalPositionsWithBuyDealIndexPrice() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexBuyDeal.getId()));
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
 
         generatePositionsService.generatePositions(
                 "test",
@@ -217,6 +221,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
@@ -251,12 +257,12 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
     @Test
     public void valuePhysicalPositionsWithSellDealIndexPrice() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexSellDeal.getId()));
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
 
         generatePositionsService.generatePositions(
                 "test",
@@ -268,6 +274,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
@@ -302,12 +310,12 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
     @Test
     public void valuePhysicalPositionsWithBuyDealIndexPricePlus() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexPlusBuyDeal.getId()));
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
 
         generatePositionsService.generatePositions(
                 "test",
@@ -319,6 +327,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
@@ -353,12 +363,12 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
     @Test
     public void valuePhysicalPositionsWithSellDealIndexPricePlus() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexPlusSellDeal.getId()));
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
 
         generatePositionsService.generatePositions(
                 "test",
@@ -370,6 +380,8 @@ public class ValuePositionsServiceWithCostsTest extends DealServiceTestCase {
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),

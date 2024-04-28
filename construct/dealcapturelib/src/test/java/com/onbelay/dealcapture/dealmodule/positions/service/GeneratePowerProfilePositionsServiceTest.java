@@ -2,23 +2,15 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.model.PowerProfile;
-import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionView;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
-import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -43,13 +35,10 @@ public class GeneratePowerProfilePositionsServiceTest extends PowerProfilePositi
 
         powerProfileService.updatePositionGenerationStatusToPending(List.of(powerProfile.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate)
-                .withEndPositionDate(toMarketDate);
+        EvaluationContext context = new EvaluationContext(
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate);
 
         generatePowerProfilePositionsService.generatePowerProfilePositions(
                 "test",
@@ -58,6 +47,13 @@ public class GeneratePowerProfilePositionsServiceTest extends PowerProfilePositi
 
         flush();
         clearCache();
+
+        List<PowerProfilePositionView> views = powerProfilePositionsService.fetchPowerProfilePositionViews(
+                fromMarketDate,
+                toMarketDate,
+                createdDateTime);
+
+        assertEquals(31, views.size());
 
         PowerProfileSnapshot snapshot =  powerProfileService.load(powerProfile.generateEntityId());
 
@@ -82,13 +78,10 @@ public class GeneratePowerProfilePositionsServiceTest extends PowerProfilePositi
 
         powerProfileService.updatePositionGenerationStatusToPending(List.of(mixedPowerProfile.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate)
-                .withEndPositionDate(toMarketDate);
+        EvaluationContext context = new EvaluationContext(
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate);
 
         generatePowerProfilePositionsService.generatePowerProfilePositions(
                 "test",

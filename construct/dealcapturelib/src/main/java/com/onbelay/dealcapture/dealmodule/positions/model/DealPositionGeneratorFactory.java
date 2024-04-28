@@ -5,8 +5,10 @@ import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,7 @@ public class DealPositionGeneratorFactory {
 
     private HashMap<Integer, List<DealCostSummary>> costMap = new HashMap<>();
     private HashMap<Integer, DealDaysContainer> dealDayMap = new HashMap<>();
+    private HashMap<Integer, Map<LocalDate, List<PowerProfilePositionView>>> powerProfileToPositionMap = new HashMap<>();
 
     public static DealPositionGeneratorFactory newFactory() {
         return new DealPositionGeneratorFactory();
@@ -36,6 +39,11 @@ public class DealPositionGeneratorFactory {
 
     public DealPositionGeneratorFactory withHourByDayViews(List<DealHourByDayView> dealHourByDayView) {
         initializeDealHourByDayMap(dealHourByDayView);
+        return this;
+    }
+
+    public DealPositionGeneratorFactory withPowerProfilePositionViews(List<PowerProfilePositionView> powerProfilePositionViews) {
+        initializePowerProfilePositionViews(powerProfilePositionViews);
         return this;
     }
 
@@ -57,6 +65,18 @@ public class DealPositionGeneratorFactory {
             }
             summaries.add(summary);
 
+        }
+    }
+
+    private void initializePowerProfilePositionViews(List<PowerProfilePositionView> powerProfilePositionViews) {
+        for (PowerProfilePositionView view : powerProfilePositionViews) {
+            Map<LocalDate, List<PowerProfilePositionView>> powerProfileDateMap = powerProfileToPositionMap.computeIfAbsent(
+                    view.getPowerProfileId(),
+                    k -> new HashMap<>());
+            List<PowerProfilePositionView> positionList = powerProfileDateMap.computeIfAbsent(
+                    view.getDetail().getStartDate(),
+                    k-> new ArrayList<>());
+            positionList.add(view);
         }
     }
 
@@ -85,18 +105,26 @@ public class DealPositionGeneratorFactory {
 
 
     public DealPositionGenerator newGenerator(
+            DealPositionsEvaluationContext context,
             DealSummary dealSummary,
             RiskFactorManager riskFactorManager) {
         DealPositionGenerator generator = generatorMap.get(dealSummary.getDealTypeCode()).apply(
                  dealSummary,
                  riskFactorManager);
 
-        if (costMap.containsKey(dealSummary.getDealId().getId()))
-            generator.withCosts(costMap.get(dealSummary.getDealId().getId()));
+        if (costMap.containsKey(dealSummary.getDealId()))
+            generator.withCosts(costMap.get(dealSummary.getDealId()));
 
-        if (dealDayMap.containsKey(dealSummary.getDealId().getId()))
-            generator.withDealDays(dealDayMap.get(dealSummary.getDealId().getId()));
+        if (dealDayMap.containsKey(dealSummary.getDealId()))
+            generator.withDealDays(dealDayMap.get(dealSummary.getDealId()));
 
+        if (dealSummary.getPowerProfileId() != null) {
+            Map<LocalDate, List<PowerProfilePositionView>> positionMap = powerProfileToPositionMap.get(dealSummary.getPowerProfileId());
+            if (positionMap != null) {
+                generator.withPowerProfilePositionViews(positionMap);
+            }
+        }
+        generator.setEvaluationContext(context);
         return generator;
     }
 

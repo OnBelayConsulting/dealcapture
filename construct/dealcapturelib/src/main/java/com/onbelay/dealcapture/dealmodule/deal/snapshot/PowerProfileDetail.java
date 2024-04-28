@@ -1,7 +1,9 @@
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerProfileErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
@@ -18,6 +20,12 @@ public class PowerProfileDetail {
 
     public void setDefaults() {
         this.setPositionGenerationStatusCode(PositionGenerationStatusCode.NONE);
+    }
+
+    public void validate()  throws OBValidationException {
+        if (name == null || name.isEmpty()) {
+            throw new OBValidationException(PowerProfileErrorCode.MISSING_NAME.getCode());
+        }
     }
 
     public void copyFrom(PowerProfileDetail copy) {

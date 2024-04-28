@@ -16,6 +16,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.controller;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
@@ -26,7 +27,7 @@ import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsSer
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -95,6 +96,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 	private FxIndex fxIndex;
 
 	private List<FxRiskFactor> fxRiskFactors;
+	private LocalDateTime createdDateTime = LocalDateTime.of(2023, 1, 1, 1, 0);
 
 	private LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
 	private LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
@@ -169,6 +171,8 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 		List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
 				physicalDeal,
+				CurrencyCode.CAD,
+				createdDateTime,
 				priceRiskFactors.get(0),
 				fxRiskFactors.get(0));
 
@@ -204,6 +208,8 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 		List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
 				physicalDeal,
+				CurrencyCode.CAD,
+				createdDateTime,
 				priceRiskFactors.get(0),
 				fxRiskFactors.get(0));
 
@@ -239,11 +245,11 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDeal.getId()));
 		generatePositionsService.generatePositions(
 				"test",
-				EvaluationContext
-						.build()
-						.withCurrency(CurrencyCode.CAD)
-						.withStartPositionDate(fromMarketDate)
-						.withEndPositionDate(toMarketDate),
+				new DealPositionsEvaluationContext(
+						CurrencyCode.CAD,
+						createdDateTime,
+						fromMarketDate,
+						toMarketDate),
 				List.of(physicalDeal.getId()));
 		
 		ResultActions result = mvc.perform(get("/api/positions"));
@@ -274,16 +280,38 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 		generatePositionsService.generatePositions(
 				"test",
-				EvaluationContext
-						.build()
-						.withCurrency(CurrencyCode.CAD)
-						.withStartPositionDate(fromMarketDate)
-						.withEndPositionDate(toMarketDate),
+				new DealPositionsEvaluationContext(
+						CurrencyCode.CAD,
+						createdDateTime,
+						fromMarketDate,
+						toMarketDate),
 				List.of(physicalDeal.getId()));
 		flush();
+		clearCache();
 
-		ResultActions result = mvc.perform(post("/api/positions/valued"));
-		
+		priceRiskFactorService.valueRiskFactors(
+				new DefinedQuery("PriceRiskFactor"),
+				LocalDateTime.now());
+
+		fxRiskFactorService.valueRiskFactors(
+				new DefinedQuery("FxRiskFactor"),
+				LocalDateTime.now());
+		flush();
+		clearCache();
+
+		EvaluationContextRequest context = new EvaluationContextRequest();
+		context.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
+		context.setCreatedDateTime(createdDateTime);
+		context.setFromDate(fromMarketDate);
+		context.setToDate(fromMarketDate);
+
+		String jsonPayload = objectMapper.writeValueAsString(context);
+
+		ResultActions result = mvc.perform(post("/api/positions/valued")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonPayload));
+
 		MvcResult mvcResult = result.andReturn();
 		
 		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
@@ -311,7 +339,9 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 		EvaluationContextRequest context = new EvaluationContextRequest();
 		context.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
-		context.setObservedDateTime(LocalDateTime.now());
+		context.setCreatedDateTime(LocalDateTime.now());
+		context.setFromDate(fromMarketDate);
+		context.setToDate(fromMarketDate);
 
 		String jsonPayload = objectMapper.writeValueAsString(context);
 

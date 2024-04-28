@@ -15,6 +15,8 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 
 import java.sql.PreparedStatement;
@@ -23,7 +25,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PositionRiskFactorMappingSqlMapper extends AbstractBaseSqlMapper {
+public class PositionRiskFactorMappingSqlMapper extends BaseSqlMapper {
 
 	public List<String> getColumnNames() {
 		List<String> columnNames = new ArrayList<String>();
@@ -34,14 +36,19 @@ public class PositionRiskFactorMappingSqlMapper extends AbstractBaseSqlMapper {
 		return columnNames;
 	}
 
+	public PositionRiskFactorMappingSqlMapper(boolean isAddPrimaryKey) {
+		super(isAddPrimaryKey);
+	}
+
 	@Override
 	public String getTableName() {
 		return "POSITION_RISK_FACTOR_MAP";
 	}
 
 	public void setValuesOnPreparedStatement(
-			PositionRiskFactorMappingSnapshot mapping,
+			AbstractSnapshot snapshot,
 			PreparedStatement preparedStatement) throws SQLException {
+		PositionRiskFactorMappingSnapshot mapping = (PositionRiskFactorMappingSnapshot) snapshot;
 
 		preparedStatement.setInt(1, mapping.getDealPositionId().getId());
 

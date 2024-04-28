@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileDayRepository;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileIndexMappingRepository;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileRepository;
@@ -39,8 +40,13 @@ import java.util.List;
 				name = PowerProfileRepositoryBean.FETCH_ASSIGNED_POWER_PROFILES,
 				query = "SELECT profile " +
 						"  FROM PowerProfile profile " +
-						"   WHERE profile.detail.positionGenerationIdentifier = :positionGenerationIdentifier " +
-						"ORDER BY profile.detail.name ")
+						" WHERE profile.detail.positionGenerationIdentifier = :positionGenerationIdentifier " +
+					"  ORDER BY profile.detail.name "),
+		@NamedQuery(
+				name = PowerProfileRepositoryBean.FIND_BY_NAME,
+				query = "SELECT profile " +
+						"  FROM PowerProfile profile " +
+					"     WHERE profile.detail.name = :name ")
 })
 public class PowerProfile extends TemporalAbstractEntity {
 
@@ -80,6 +86,13 @@ public class PowerProfile extends TemporalAbstractEntity {
 		savePowerProfileIndexMappings(snapshot.getIndexMappings());
 		updateRelationships(snapshot);
 		update();
+	}
+
+	@Override
+	protected void validate() throws OBValidationException {
+		super.validate();
+		detail.validate();
+
 	}
 
 	private void updateRelationships(PowerProfileSnapshot snapshot) {

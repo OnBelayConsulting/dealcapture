@@ -23,7 +23,7 @@ import org.hibernate.annotations.Immutable;
                         "   WHERE view.dealId = :dealId " +
                         "     AND view.detail.dayTypeCodeValue = :dayTypeCode " +
                         "     AND view.detail.dealMonthDate >= :fromDate " +
-                        "     AND view.detail.dealMonthDate < :toDate" +
+                        "     AND view.detail.dealMonthDate <= :toDate" +
                       "  ORDER BY view.detail.dealMonthDate"),
         @NamedQuery(
                 name = DealDayByMonthRepositoryBean.FETCH_ALL_DEAL_DAY_VIEWS_BY_DATE,
@@ -31,7 +31,7 @@ import org.hibernate.annotations.Immutable;
                         "    FROM DealDayByMonthView view " +
                         "   WHERE view.dealId in (:dealIds) " +
                         "     AND view.detail.dealMonthDate >= :fromDate " +
-                        "     AND view.detail.dealMonthDate < :toDate" +
+                        "     AND view.detail.dealMonthDate <= :toDate" +
                       "  ORDER BY view.dealId, view.detail.dealMonthDate")
 })
 public class DealDayByMonthView extends AbstractEntity {

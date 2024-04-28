@@ -18,6 +18,7 @@
         bd.BUY_SELL_CODE,
         bd.TICKET_NO,
         bd.SETTLEMENT_CURRENCY_CODE,
+        bd.POWER_PROFILE_ID,
         bd.VOLUME_UOM_CODE AS DEAL_UNIT_OF_MEASURE,
             pp.ENTITY_ID,
             pp.DEAL_ID,

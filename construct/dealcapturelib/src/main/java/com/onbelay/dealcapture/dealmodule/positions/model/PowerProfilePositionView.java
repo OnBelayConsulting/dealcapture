@@ -16,7 +16,6 @@ import org.hibernate.annotations.Immutable;
                 query = "SELECT position " +
                         "  FROM PowerProfilePositionView position " +
                         " WHERE position.powerProfileId in (:powerProfileIds) " +
-                        "   AND position.detail.currencyCodeValue = :currencyCode " +
                         "   AND position.detail.createdDateTime = :createdDateTime " +
                         "ORDER BY position.detail.startDate "),
         @NamedQuery(
@@ -24,8 +23,7 @@ import org.hibernate.annotations.Immutable;
                 query = "SELECT position " +
                         "  FROM PowerProfilePositionView position " +
                         " WHERE position.detail.startDate >= :startDate" +
-                        "   AND position.detail.endDate  < :endDate " +
-                        "   AND position.detail.currencyCodeValue = :currencyCode " +
+                        "   AND position.detail.endDate  <= :endDate " +
                         "   AND position.detail.createdDateTime = :createdDateTime " +
                         "ORDER BY position.detail.startDate ")
 })
@@ -33,6 +31,8 @@ public class PowerProfilePositionView extends AbstractEntity {
     private Integer id;
 
     private Integer powerProfileId;
+
+    private Integer priceIndexId;
 
     private PowerProfilePositionDetail detail = new PowerProfilePositionDetail();
 
@@ -55,6 +55,15 @@ public class PowerProfilePositionView extends AbstractEntity {
 
     public void setPowerProfileId(Integer dealId) {
         this.powerProfileId = dealId;
+    }
+
+    @Column(name = "PRICE_INDEX_ID")
+    public Integer getPriceIndexId() {
+        return priceIndexId;
+    }
+
+    public void setPriceIndexId(Integer priceIndexId) {
+        this.priceIndexId = priceIndexId;
     }
 
     @Embedded

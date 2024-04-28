@@ -4,6 +4,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDaySnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
@@ -31,6 +32,9 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
     @Override
     public void generatePositionHolders(EvaluationContext context) {
 
+        if (context.getEndPositionDate().isBefore(context.getStartPositionDate()))
+            return;
+
         LocalDate todayDate = context.getCreatedDateTime().toLocalDate();
         LocalDate endOfMonthDate = todayDate.plusMonths(1);
         endOfMonthDate = endOfMonthDate.withDayOfMonth(1);
@@ -49,7 +53,6 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
                     holder.getSnapshot().setPriceIndexId(powerProfile.getSettledPriceIndexId());
 
                     holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
-                    holder.getSnapshot().getDetail().setCurrencyCode(context.getCurrencyCode());
                     holder.getSnapshot().getDetail().setErrorCode("0");
                     holder.getSnapshot().getDetail().setPowerFlowCode(PowerFlowCode.SETTLED);
                     determineHourlySettledRiskFactors(holder);
@@ -79,7 +82,6 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
                         holder.getSnapshot().getDetail().setErrorCode("0");
 
                         holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
-                        holder.getSnapshot().getDetail().setCurrencyCode(context.getCurrencyCode());
 
                         int totalHours = 0;
                         for (int i = 1; i < 25; i++) {

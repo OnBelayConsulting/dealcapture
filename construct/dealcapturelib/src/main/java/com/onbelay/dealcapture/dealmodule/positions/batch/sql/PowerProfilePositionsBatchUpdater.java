@@ -105,7 +105,7 @@ public class PowerProfilePositionsBatchUpdater {
 						}
 
 
-						preparedStatement.setInt(start, valuation.getPositionId());
+						preparedStatement.setInt(start, valuation.getDomainId());
 						preparedStatement.addBatch();
 					}
 

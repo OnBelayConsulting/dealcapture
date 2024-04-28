@@ -6,7 +6,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
@@ -49,7 +49,7 @@ public abstract class AbstractGeneratePositionsServiceBean extends BaseDomainSer
 
     protected RiskFactorManager createRiskFactorManager(
             List<Integer> uniquePriceIndexIds,
-            EvaluationContext context) {
+            DealPositionsEvaluationContext context) {
 
 
         List<PriceIndexSnapshot> activePriceIndices = priceIndexService.findActivePriceIndices();

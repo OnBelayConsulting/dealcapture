@@ -37,4 +37,8 @@ public class FxRiskFactorHolder extends BaseRiskFactorHolder {
         return riskFactor != null;
     }
 
+    @Override
+    public String generateUniqueKey() {
+        return "FXI:" + ":" + super.generateUniqueKey();
+    }
 }

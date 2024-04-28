@@ -92,6 +92,7 @@ public class PriceRiskFactorEvaluatorTest extends DealCaptureSpringTestCase {
     public void valueRiskFactorsWithPrices() {
         priceRiskFactorEvaluator.valueRiskFactors(dailyPriceIndex.generateEntityId());
         flush();
+        clearCache();
         List<PriceRiskFactor> factors = priceRiskFactorRepository.fetchByPriceIndex(dailyPriceIndex.generateEntityId());
         factors.forEach( f -> assertNotNull(f.getDetail().getValue()));
     }

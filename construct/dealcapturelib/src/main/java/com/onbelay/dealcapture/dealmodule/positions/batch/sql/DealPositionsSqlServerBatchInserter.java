@@ -4,6 +4,7 @@ import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.repository.EntityRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.batch.BatchSqlServerInsertWorker;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import jakarta.persistence.EntityManager;
@@ -46,7 +47,7 @@ public class DealPositionsSqlServerBatchInserter extends DealPositionsBaseBatchI
 
         try {
             session.doWork(
-                    new BatchDealPositionSqlServerInsertWorker(
+                    new BatchSqlServerInsertWorker(
                             sqlMapper,
                             positions,
                             batchSize));
@@ -58,55 +59,5 @@ public class DealPositionsSqlServerBatchInserter extends DealPositionsBaseBatchI
 
     }
 
-
-    protected static class BatchDealPositionSqlServerInsertWorker implements Work {
-
-        private DealPositionSqlMapper sqlMapper;
-        private List<DealPositionSnapshot> positions;
-        private int batchSize;
-
-        public BatchDealPositionSqlServerInsertWorker(
-                DealPositionSqlMapper sqlMapper,
-                List<DealPositionSnapshot> positions,
-                int batchSize) {
-
-            super();
-            this.sqlMapper = sqlMapper;
-            this.positions = positions;
-            this.batchSize = batchSize;
-        }
-
-        @Override
-        public void execute(Connection connection) throws SQLException {
-
-            String sqlInsert = "INSERT into " +
-                    sqlMapper.getTableName() +
-                    " (" + String.join(",", sqlMapper.getColumnNames()) + ")" +
-                    " VALUES " + sqlMapper.createPlaceHolders();
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
-
-                SubLister<DealPositionSnapshot> subLister = new SubLister<>(positions, batchSize);
-                while (subLister.moreElements()) {
-                    List<DealPositionSnapshot> myList = subLister.nextList();
-                    for (DealPositionSnapshot position : myList) {
-                        sqlMapper.setValuesOnPreparedStatement(
-                                position,
-                                preparedStatement);
-                        preparedStatement.addBatch();
-                    }
-
-                    preparedStatement.executeBatch();
-                }
-
-            } catch (RuntimeException e) {
-                logger.error(e.getMessage());
-                throw e;
-            }
-
-
-        }
-
-    }
 
 }

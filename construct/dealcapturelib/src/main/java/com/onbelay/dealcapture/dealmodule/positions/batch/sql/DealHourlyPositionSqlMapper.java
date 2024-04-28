@@ -15,20 +15,20 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DealHourlyPositionSqlMapper extends AbstractBaseSqlMapper {
+public class DealHourlyPositionSqlMapper extends BaseSqlMapper {
 
-	private final  boolean isAddPrimaryKey;
 
-	public DealHourlyPositionSqlMapper(Boolean isAddPrimaryKey) {
-		this.isAddPrimaryKey = isAddPrimaryKey;
+	public DealHourlyPositionSqlMapper(boolean isAddPrimaryKey) {
+		super(isAddPrimaryKey);
 	}
-
 
 	public String getTableName() {
 		return "DEAL_HOURLY_POSITION";
@@ -41,6 +41,8 @@ public class DealHourlyPositionSqlMapper extends AbstractBaseSqlMapper {
 
 		list.add("DEAL_ID");
 		list.add("POWER_PROFILE_POSITION_ID");
+		list.add("PRICE_INDEX_ID");
+		list.add("FX_RISK_FACTOR_ID");
 		list.add("START_DATE");
 		list.add("END_DATE");
 		list.add("POWER_FLOW_CODE");
@@ -63,8 +65,9 @@ public class DealHourlyPositionSqlMapper extends AbstractBaseSqlMapper {
 	
 	
 	public void setValuesOnPreparedStatement(
-			DealHourlyPositionSnapshot position,
+			AbstractSnapshot snapshot,
 			PreparedStatement preparedStatement) throws SQLException {
+		DealHourlyPositionSnapshot position = (DealHourlyPositionSnapshot) snapshot;
 		int n;
 		if (isAddPrimaryKey) {
 			n= 1;
@@ -80,16 +83,27 @@ public class DealHourlyPositionSqlMapper extends AbstractBaseSqlMapper {
 			preparedStatement.setNull(n + 2, Types.INTEGER);
 
 
-		preparedStatement.setDate(n + 3, Date.valueOf(position.getDetail().getStartDate()));
-		preparedStatement.setDate(n + 4, Date.valueOf(position.getDetail().getEndDate()));
+		if (position.getPriceIndexId() != null)
+			preparedStatement.setInt(n + 3, position.getPriceIndexId().getId());
+		else
+			preparedStatement.setNull(n + 3, Types.INTEGER);
 
-		preparedStatement.setString(n + 5, position.getDetail().getPowerFlowCodeValue());
-		preparedStatement.setString(n + 6, position.getDetail().getPriceTypeCodeValue());
 
-		preparedStatement.setTimestamp(n + 7, Timestamp.valueOf(position.getDetail().getCreatedDateTime()));
+		if (position.getFxRiskFactorId() != null)
+			preparedStatement.setInt(n + 4, position.getFxRiskFactorId().getId());
+		else
+			preparedStatement.setNull(n + 4, Types.INTEGER);
 
-		preparedStatement.setString(n + 8, position.getDetail().getCurrencyCodeValue());
-		preparedStatement.setString(n + 9, position.getDetail().getUnitOfMeasureValue());
+		preparedStatement.setDate(n + 5, Date.valueOf(position.getDetail().getStartDate()));
+		preparedStatement.setDate(n + 6, Date.valueOf(position.getDetail().getEndDate()));
+
+		preparedStatement.setString(n + 7, position.getDetail().getPowerFlowCodeValue());
+		preparedStatement.setString(n + 8, position.getDetail().getPriceTypeCodeValue());
+
+		preparedStatement.setTimestamp(n + 9, Timestamp.valueOf(position.getDetail().getCreatedDateTime()));
+
+		preparedStatement.setString(n + 10, position.getDetail().getCurrencyCodeValue());
+		preparedStatement.setString(n + 11, position.getDetail().getUnitOfMeasureValue());
 
 
 		if (position.getDetail().getIsSettlementPosition() != null) {
@@ -98,23 +112,23 @@ public class DealHourlyPositionSqlMapper extends AbstractBaseSqlMapper {
 				value = "Y";
 			else
 				value = "N";
-			preparedStatement.setString(n + 10, value);
+			preparedStatement.setString(n + 12, value);
 		} else {
-			preparedStatement.setNull(n + 10, Types.CHAR);
+			preparedStatement.setNull(n + 12, Types.CHAR);
 		}
 
 		// Error Code
 		if (position.getDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 11, position.getDetail().getErrorCode());
+			preparedStatement.setString(n + 13, position.getDetail().getErrorCode());
 		else
-			preparedStatement.setNull(n + 11, Types.VARCHAR);
+			preparedStatement.setNull(n + 13, Types.VARCHAR);
 
 		if (position.getDetail().getErrorMessage() != null)
-			preparedStatement.setString(n + 12, position.getDetail().getErrorMessage());
+			preparedStatement.setString(n + 14, position.getDetail().getErrorMessage());
 		else
-			preparedStatement.setNull(n + 12, Types.VARCHAR);
+			preparedStatement.setNull(n + 14, Types.VARCHAR);
 
-		int offset = 13;
+		int offset = 15;
 		for (int i=1;i < 25; i++) {
 			if (position.getHourFixedValueDetail().getHourFixedValue(i) != null)
 				preparedStatement.setBigDecimal(n + offset, position.getHourFixedValueDetail().getHourFixedValue(i));

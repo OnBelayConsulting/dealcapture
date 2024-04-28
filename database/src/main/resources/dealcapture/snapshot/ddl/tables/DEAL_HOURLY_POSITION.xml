@@ -27,6 +27,14 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
+            <column name="FX_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PRICE_INDEX_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
 
             <column name="START_DATE"  type="java.sql.Types.TIMESTAMP"/>
             <column name="END_DATE"  type="java.sql.Types.TIMESTAMP"/>

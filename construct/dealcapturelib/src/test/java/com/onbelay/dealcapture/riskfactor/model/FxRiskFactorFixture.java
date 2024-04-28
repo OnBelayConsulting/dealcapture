@@ -32,7 +32,7 @@ public class FxRiskFactorFixture {
             while (current.isAfter(toMarketDate) == false) {
                 FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
                 snapshot.getDetail().setMarketDate(current);
-                snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 1, 1, 23, 10));
+                snapshot.getDetail().setCreatedDateTime(LocalDateTime.of(2023, 1, 1, 23, 10));
                 factors.add(
                         FxRiskFactor.create(
                                 index,
@@ -44,7 +44,7 @@ public class FxRiskFactorFixture {
             while (current.isAfter(toMarketDate) == false) {
                 FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
                 snapshot.getDetail().setMarketDate(current);
-                snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 1, 1, 23, 10));
+                snapshot.getDetail().setCreatedDateTime(LocalDateTime.of(2023, 1, 1, 23, 10));
                 factors.add(
                         FxRiskFactor.create(
                                 index,

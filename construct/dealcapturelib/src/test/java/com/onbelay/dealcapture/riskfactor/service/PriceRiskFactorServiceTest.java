@@ -1,6 +1,6 @@
 package com.onbelay.dealcapture.riskfactor.service;
 
-import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
@@ -8,7 +8,6 @@ import com.onbelay.dealcapture.pricing.model.PricingLocation;
 import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.riskfactor.enums.RiskFactorErrorCode;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorAudit;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
@@ -85,7 +84,7 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
         PriceRiskFactorSnapshot snapshot = new PriceRiskFactorSnapshot();
         snapshot.getDetail().setDefaults();
         snapshot.getDetail().setMarketDate(LocalDate.of(2023, 6, 23));
-        snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 7, 1, 11, 6));
+        snapshot.getDetail().setCreatedDateTime(LocalDateTime.of(2023, 7, 1, 11, 6));
         snapshot.getDetail().setValue(BigDecimal.ONE);
         priceRiskFactorService.save(
                 priceDailyIndex.generateEntityId(),
@@ -103,10 +102,7 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
 
         assertNotNull(factor);
         assertEquals(0, BigDecimal.ONE.compareTo(factor.getDetail().getValue()));
-        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreateUpdateDateTime());
-        PriceRiskFactorAudit audit = PriceRiskFactorAudit.findRecentHistory(factor);
-        assertNotNull(audit);
-        assertEquals(factor.getDetail().getMarketDate(), audit.getDetail().getMarketDate());
+        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreatedDateTime());
     }
 
 
@@ -122,7 +118,7 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
                     List.of(snapshot));
             flush();
             fail("Should have thrown ob exception");
-        } catch (OBValidationException e) {
+        } catch (OBRuntimeException e) {
             assertEquals(RiskFactorErrorCode.MISSING_RISK_FACTOR_DATE.getCode(), e.getErrorCode());
             return;
         }
@@ -146,6 +142,8 @@ public class PriceRiskFactorServiceTest extends DealCaptureSpringTestCase {
     @Test
     public void valueRiskFactors() {
         priceRiskFactorService.valueRiskFactors(aceeDailyPriceIndex.generateEntityId());
+        flush();
+        clearCache();
         List<PriceRiskFactorSnapshot> snapshots = priceRiskFactorService.findByMarketDate(
                 aceeDailyPriceIndex.generateEntityId(),
                 LocalDate.of(2023, 2, 4));

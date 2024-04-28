@@ -17,6 +17,25 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
 
     private List<PowerProfileIndexMappingSnapshot> indexMappings = new ArrayList<>();
 
+    public PowerProfileSnapshot() {
+    }
+
+    public PowerProfileSnapshot(EntityId entityId) {
+        super(entityId);
+    }
+
+    public PowerProfileSnapshot(String errorCode) {
+        super(errorCode);
+    }
+
+    public PowerProfileSnapshot(String errorCode, boolean isPermissionException) {
+        super(errorCode, isPermissionException);
+    }
+
+    public PowerProfileSnapshot(String errorCode, List<String> parameters) {
+        super(errorCode, parameters);
+    }
+
     public PowerProfileDetail getDetail() {
         return detail;
     }

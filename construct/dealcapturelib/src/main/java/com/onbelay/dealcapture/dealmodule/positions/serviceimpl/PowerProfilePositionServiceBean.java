@@ -11,7 +11,6 @@ import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionVi
 import com.onbelay.dealcapture.dealmodule.positions.repository.PowerProfilePositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.PowerProfilePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
-import com.onbelay.shared.enums.CurrencyCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +50,10 @@ public class PowerProfilePositionServiceBean implements PowerProfilePositionsSer
     @Override
     public List<PowerProfilePositionView> fetchPowerProfilePositionViews(
             List<Integer> dealIds,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime) {
 
         return powerProfilePositionRepository.findPowerProfilePositionViews(
                     dealIds,
-                    currencyCode,
                     createdDateTime);
 
     }
@@ -65,10 +62,12 @@ public class PowerProfilePositionServiceBean implements PowerProfilePositionsSer
     public List<PowerProfilePositionView> fetchPowerProfilePositionViews(
             LocalDate startPositionDate,
             LocalDate endPositionDate,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime) {
 
-        return List.of();
+        return powerProfilePositionRepository.findPowerProfilePositionViewsByDate(
+                startPositionDate,
+                endPositionDate,
+                createdDateTime);
     }
 
     @Override

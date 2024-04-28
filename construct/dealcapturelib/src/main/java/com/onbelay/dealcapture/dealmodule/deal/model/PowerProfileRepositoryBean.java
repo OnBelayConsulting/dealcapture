@@ -24,6 +24,7 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,8 @@ import java.util.List;
 public class PowerProfileRepositoryBean extends BaseRepository<PowerProfile> implements PowerProfileRepository {
 	public static final String BEAN_NAME = "powerProfileRepository";
 	public static final String FETCH_ASSIGNED_POWER_PROFILES = "PowerProfileRepositoryBean.FETCH_ASSIGNED_POWER_PROFILES" ;
+	public static final String FIND_BY_NAME = "PowerProfileRepositoryBean.FIND_BY_NAME" ;
+	;
 	private static final String UPDATE_POSITION_GENERATION_STATUS
 			= "UPDATE PowerProfile  " +
 			"     SET detail.positionGenerationStatusValue = 'Pending', " +
@@ -56,6 +59,8 @@ public class PowerProfileRepositoryBean extends BaseRepository<PowerProfile> imp
 			"   WHERE id in (:powerProfileIds) " +
 			"     AND detail.positionGenerationStatusValue = 'Pending'";
 
+	@Autowired
+	private PowerProfileColumnDefinitions powerProfileColumnDefinitions;
 
 	@Override
 	public void executeUpdateAssignForPositionGeneration(
@@ -146,7 +151,15 @@ public class PowerProfileRepositoryBean extends BaseRepository<PowerProfile> imp
 		if (entityId.isSet())
 			return find(PowerProfile.class, entityId.getId());
 		else
-			return null;
+			return findByName(entityId.getCode());
+	}
+
+	@Override
+	public PowerProfile findByName(String name) {
+		return executeSingleResultQuery(
+				FIND_BY_NAME,
+				"name",
+				name);
 	}
 
 	@Override
@@ -159,16 +172,23 @@ public class PowerProfileRepositoryBean extends BaseRepository<PowerProfile> imp
 
 	@Override
 	public List<PowerProfile> fetchByIds(QuerySelectedPage querySelectedPage) {
-		return List.of();
+		return fetchEntitiesById(
+				powerProfileColumnDefinitions,
+				"PowerProfile",
+				querySelectedPage);
 	}
 
 	@Override
 	public List<Integer> findProfileIds(DefinedQuery definedQuery) {
-		return List.of();
+		return executeDefinedQueryForIds(
+				powerProfileColumnDefinitions,
+				definedQuery);
 	}
 
 	@Override
-	public List<PowerProfile> findByQuery(DefinedQuery query) {
-		return List.of();
+	public List<PowerProfile> findByQuery(DefinedQuery definedQuery) {
+		return  executeDefinedQuery(
+				powerProfileColumnDefinitions,
+				definedQuery);
 	}
 }

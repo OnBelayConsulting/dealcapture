@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.busmath.model.Amount;
 import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.Price;
@@ -8,10 +9,12 @@ import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourFixedValueDayDetail;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 import com.onbelay.dealcapture.unitofmeasure.UnitOfMeasureConverter;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -22,20 +25,25 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseDealPositionGenerator implements DealPositionGenerator {
     private static final Logger logger = LogManager.getLogger();
 
     protected DealSummary dealSummary;
 
+    protected DealPositionsEvaluationContext context;
+
     protected RiskFactorManager riskFactorManager;
 
     protected List<DealCostSummary> costSummaries = new ArrayList<>();
 
-    protected List<PowerProfilePositionView> powerProfilePositionViews = new ArrayList<>();
+    protected Map<LocalDate, List<PowerProfilePositionView>> powerProfilePositionMap = new HashMap<>();
+    
+    protected HourFixedValueDayDetail hourSlotsForPowerProfile;
 
     protected DealDaysContainer dealDaysContainer;
 
@@ -43,33 +51,36 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
     protected List<BasePositionHolder> positionHolders = new ArrayList<>();
 
-    protected List<DealPositionSnapshot> dealPositionSnapshots = new ArrayList<>();
-
-    protected List<CostPositionSnapshot> costPositionSnapshots = new ArrayList<>();
-
-    protected List<DealHourlyPositionSnapshot> dealHourlyPositionSnapshots = new ArrayList<>();
-
-    public BaseDealPositionGenerator(DealSummary dealSummary, RiskFactorManager riskFactorManager) {
+    public BaseDealPositionGenerator(
+            DealSummary dealSummary,
+            RiskFactorManager riskFactorManager) {
+        
         this.dealSummary = dealSummary;
         this.riskFactorManager = riskFactorManager;
     }
 
-    protected EvaluationContext modifyEvaluationContextForDeal(EvaluationContext context) {
+    public void setEvaluationContext(DealPositionsEvaluationContext context) {
+        this.context = modifyEvaluationContextForDeal(context);
+    }
+
+    protected DealPositionsEvaluationContext modifyEvaluationContextForDeal(DealPositionsEvaluationContext context) {
         final LocalDate startDate;
         final LocalDate endDate;
+
         if (context.getStartPositionDate() != null) {
-            if (context.getStartPositionDate().isAfter(dealSummary.getStartDate()))
-                startDate = context.getStartPositionDate();
-            else
+            if (dealSummary.getStartDate().isAfter(context.getStartPositionDate()))
                 startDate = dealSummary.getStartDate();
+            else
+                startDate = context.getStartPositionDate();
         } else {
             startDate = dealSummary.getStartDate();
         }
+
         if (context.getEndPositionDate() != null) {
-            if (context.getEndPositionDate().isBefore(dealSummary.getEndDate()))
-                endDate = context.getEndPositionDate();
-            else
+            if (dealSummary.getEndDate().isBefore(context.getEndPositionDate()))
                 endDate = dealSummary.getEndDate();
+            else
+                endDate = context.getEndPositionDate();
         } else {
             endDate = dealSummary.getEndDate();
         }
@@ -86,41 +97,237 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
         else
             targetUnitOfMeasureCode = dealSummary.getVolumeUnitOfMeasureCode();
 
-        return EvaluationContext
-                .build()
-                .withCreatedDateTime(context.getCreatedDateTime())
-                .withCurrency(targetCurrencyCode)
-                .withUnitOfMeasure(targetUnitOfMeasureCode)
-                .withStartPositionDate(startDate)
-                .withEndPositionDate(endDate);
+        return new DealPositionsEvaluationContext(
+                    targetCurrencyCode,
+                    context.getCreatedDateTime(),
+                    startDate,
+                    endDate)
+                .withUnitOfMeasureCode(targetUnitOfMeasureCode);
     }
 
     protected void setBasePositionHolderAttributes(
-            EvaluationContext context,
             BasePositionHolder basePositionHolder,
             LocalDate currentDate) {
 
-        DealPositionSnapshot positionSnapshot = basePositionHolder.getDealPositionSnapshot();
-        positionSnapshot.getDealPositionDetail().setCreatedDateTime(context.getCreatedDateTime());
-        positionSnapshot.getDealPositionDetail().setFrequencyCode(FrequencyCode.DAILY);
-        positionSnapshot.getDealPositionDetail().setStartDate(currentDate);
-        positionSnapshot.getDealPositionDetail().setEndDate(currentDate);
+        basePositionHolder.getDealPositionDetail().setCreatedDateTime(context.getCreatedDateTime());
 
-        positionSnapshot.getDealPositionDetail().setVolumeUnitOfMeasure(context.getUnitOfMeasureCode());
-        positionSnapshot.getDealPositionDetail().setCurrencyCode(context.getCurrencyCode());
+        basePositionHolder.getDealPositionDetail().setFrequencyCode(FrequencyCode.DAILY);
 
-        positionSnapshot.setDealId(dealSummary.getDealId());
+        basePositionHolder.getDealPositionDetail().setStartDate(currentDate);
+        basePositionHolder.getDealPositionDetail().setEndDate(currentDate);
+
+        basePositionHolder.getDealPositionDetail().setVolumeUnitOfMeasure(context.getUnitOfMeasureCode());
+        basePositionHolder.getDealPositionDetail().setCurrencyCode(context.getCurrencyCode());
+
 
 
         if (context.getCurrencyCode() == dealSummary.getSettlementCurrencyCode()) {
-            positionSnapshot.getSettlementDetail().setIsSettlementPosition(true);
-            positionSnapshot.getSettlementDetail().setSettlementCurrencyCode(context.getCurrencyCode());
+            basePositionHolder.getSettlementDetail().setIsSettlementPosition(true);
+            basePositionHolder.getSettlementDetail().setSettlementCurrencyCode(context.getCurrencyCode());
         } else {
-            positionSnapshot.getSettlementDetail().setIsSettlementPosition(false);
+            basePositionHolder.getSettlementDetail().setIsSettlementPosition(false);
         }
 
 
     }
+
+
+    protected void determinePositionQuantity(BasePositionHolder positionHolder) {
+
+        LocalDate currentDate = positionHolder.getDealPositionDetail().getStartDate();
+
+        Quantity defaultDailyQuantity;
+        Quantity defaultHourlyQuantity;
+
+        if (dealSummary.getVolumeFrequencyCode() == FrequencyCode.HOURLY) {
+            defaultHourlyQuantity = new Quantity(
+                    dealSummary.getVolumeQuantity(),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+            defaultDailyQuantity = defaultHourlyQuantity.multiply(24);
+        } else {
+            defaultDailyQuantity = new Quantity(
+                    dealSummary.getVolumeQuantity(),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+            defaultHourlyQuantity = defaultDailyQuantity.divide(24);
+        }
+
+        Quantity dailyQuantity = null;
+        if (hasDealDayByMonthQuantities(currentDate))
+            dailyQuantity = new Quantity(
+                    getDayQuantity(currentDate),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+
+        if (dailyQuantity == null)
+            dailyQuantity = defaultDailyQuantity;
+
+
+        Quantity totalQuantity = new Quantity(
+                BigDecimal.ZERO,
+                context.getUnitOfMeasureCode());
+
+        Conversion conversion = null;
+        if (context.getUnitOfMeasureCode() != dealSummary.getVolumeUnitOfMeasureCode()) {
+            conversion = UnitOfMeasureConverter.findConversion(
+                    context.getUnitOfMeasureCode(),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+            defaultDailyQuantity = defaultDailyQuantity.apply(conversion);
+            defaultHourlyQuantity = defaultHourlyQuantity.apply(conversion);
+        }
+
+
+       boolean calculateDailyQuantity = false;
+        if (hasDealHourByDayQuantities(currentDate)) {
+            calculateDailyQuantity = true;
+            for (int i=1; i < 25; i++) {
+                BigDecimal quantityValue = getHourQuantity(currentDate, i);
+
+                Quantity hourQuantity;
+                if (quantityValue != null) {
+                    hourQuantity = new Quantity(
+                            quantityValue,
+                            dealSummary.getVolumeUnitOfMeasureCode());
+                    if (conversion != null)
+                        hourQuantity = hourQuantity.apply(conversion);
+
+                } else {
+                    hourQuantity = defaultHourlyQuantity;
+                }
+
+                positionHolder.getDealHourByDayQuantity().setHourValue(
+                        i,
+                        hourQuantity.getValue());
+
+                totalQuantity = totalQuantity.add(hourQuantity);
+            }
+        }
+
+
+        Quantity calculatedDailyQuantity;
+        if (calculateDailyQuantity)
+            calculatedDailyQuantity = totalQuantity;
+        else
+            calculatedDailyQuantity = dailyQuantity;
+
+
+        positionHolder.getDealPositionDetail().setVolumeQuantityValue(calculatedDailyQuantity.round().getValue());
+    }
+
+
+    protected void determinePositionQuantityFromPowerProfile(PhysicalPositionHolder physicalPositionHolder) {
+
+        LocalDate currentDate = physicalPositionHolder.getDealPositionDetail().getStartDate();
+
+        Quantity defaultDailyQuantity;
+        Quantity defaultHourlyQuantity;
+
+        if (dealSummary.getVolumeFrequencyCode() == FrequencyCode.HOURLY) {
+            defaultHourlyQuantity = new Quantity(
+                    dealSummary.getVolumeQuantity(),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+            defaultDailyQuantity = defaultHourlyQuantity.multiply(24);
+        } else {
+            defaultDailyQuantity = new Quantity(
+                    dealSummary.getVolumeQuantity(),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+            defaultHourlyQuantity = defaultDailyQuantity.divide(24);
+        }
+
+        Quantity dailyQuantity = null;
+        if (hasDealDayByMonthQuantities(currentDate))
+            dailyQuantity = new Quantity(
+                    getDayQuantity(currentDate),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+
+        if (dailyQuantity == null)
+            dailyQuantity = defaultDailyQuantity;
+
+
+        Quantity totalQuantity = new Quantity(
+                BigDecimal.ZERO,
+                dealSummary.getVolumeUnitOfMeasureCode());
+
+        boolean calculateDailyQuantity = false;
+        HourFixedValueDayDetail hourSlots = this.hourSlotsForPowerProfile;
+
+        if (hasDealHourByDayQuantities(currentDate)) {
+            calculateDailyQuantity = true;
+            for (int i=1; i < 25; i++) {
+                if (hourSlots.getHourFixedValue(i) != null) {
+                    BigDecimal quantityValue = getHourQuantity(currentDate, i);
+                    if (quantityValue != null) {
+
+                        physicalPositionHolder.getDealHourByDayQuantity().setHourValue(
+                                i,
+                                quantityValue);
+                    } else {
+                        physicalPositionHolder.getDealHourByDayQuantity().setHourValue(
+                                i,
+                                defaultHourlyQuantity.getValue());
+                    }
+                    Quantity hourlyQuantity = new Quantity(
+                            physicalPositionHolder.getDealHourByDayQuantity().getHourValue(i),
+                            dealSummary.getVolumeUnitOfMeasureCode());
+
+                    totalQuantity = totalQuantity.add(hourlyQuantity);
+                }
+            }
+        }
+
+
+        Quantity unconvertedDailyQuantity;
+        if (calculateDailyQuantity)
+            unconvertedDailyQuantity = totalQuantity;
+        else
+            unconvertedDailyQuantity = dailyQuantity;
+
+        if (context.getUnitOfMeasureCode() != dealSummary.getVolumeUnitOfMeasureCode()) {
+            Conversion conversion = UnitOfMeasureConverter.findConversion(
+                    context.getUnitOfMeasureCode(),
+                    dealSummary.getVolumeUnitOfMeasureCode());
+
+            unconvertedDailyQuantity = unconvertedDailyQuantity.apply(conversion);
+        }
+
+        physicalPositionHolder.getDealPositionDetail().setVolumeQuantityValue(unconvertedDailyQuantity.round().getValue());
+    }
+
+
+
+    protected void generateDealHourlyPositionHoldersFromPowerProfile(
+            BasePositionHolder basePositionHolder,
+            PriceTypeCode priceTypeCode) {
+        List<PowerProfilePositionView> views = powerProfilePositionMap.get(basePositionHolder.getDealPositionDetail().getStartDate());
+        if (views == null)
+            throw new OBRuntimeException(PositionErrorCode.MISSING_POWER_PROFILE_POSITIONS.getCode());
+
+        for (PowerProfilePositionView view : views) {
+            PriceIndexSnapshot priceIndexSnapshot = this.riskFactorManager.findPriceIndex(view.getPriceIndexId());
+
+            DealHourlyPositionHolder holder = new DealHourlyPositionHolder();
+            holder.setPowerProfilePositionId(new EntityId(view.getId()));
+            holder.setDealId(new EntityId(dealSummary.getDealId()));
+            holder.getDetail().setPriceTypeCode(priceTypeCode);
+            holder.setPriceIndexId(new EntityId(view.getPriceIndexId()));
+
+            holder.getDetail().setCreatedDateTime(context.getCreatedDateTime());
+            holder.getDetail().setCurrencyCode(context.getCurrencyCode());
+            holder.getDetail().setPowerFlowCode(view.getDetail().getPowerFlowCode());
+            holder.getDetail().setStartDate(basePositionHolder.getDealPositionDetail().getStartDate());
+            holder.getDetail().setEndDate(basePositionHolder.getDealPositionDetail().getEndDate());
+            holder.getDetail().setIsSettlementPosition(basePositionHolder.getSettlementDetail().getIsSettlementPosition());
+            holder.getDetail().setUnitOfMeasure(context.getUnitOfMeasureCode());
+
+            if (context.getCurrencyCode() != priceIndexSnapshot.getDetail().getCurrencyCode()) {
+                holder.setFxRiskFactorHolder(
+                        riskFactorManager.determineFxRiskFactor(
+                                priceIndexSnapshot.getDetail().getCurrencyCode(),
+                                context.getCurrencyCode(),
+                                holder.getDetail().getStartDate()));
+            }
+            basePositionHolder.getHourlyPositionHolders().add(holder);
+        }
+    }
+
 
     public boolean hasDealDayByMonthCosts(LocalDate positionDate) {
         if (dealDaysContainer == null)
@@ -186,24 +393,22 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
         }
     }
 
-    protected void generateCostPositionHolders(
-            EvaluationContext context,
-            BigDecimal volumeQuantityValue,
-            boolean isSettlementPosition,
-            LocalDate currentDate) {
+    protected void generateCostPositionHolders(BasePositionHolder basePositionHolder) {
 
         for (DealCostSummary summary : costSummaries) {
             CostPositionHolder holder = new CostPositionHolder();
             holder.setDealCostSummary(summary);
-            holder.getSnapshot().getDetail().setStartDate(currentDate);
-            holder.getSnapshot().getDetail().setEndDate(currentDate);
+            holder.getSnapshot().getDetail().setStartDate(basePositionHolder.getDealPositionDetail().getStartDate());
+            holder.getSnapshot().getDetail().setEndDate(basePositionHolder.getDealPositionDetail().getEndDate());
             holder.getSnapshot().getDetail().setFrequencyCode(FrequencyCode.DAILY);
             holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
 
-            holder.getSnapshot().getDetail().setVolumeQuantityValue(volumeQuantityValue);
+            holder.getSnapshot().getDetail().setVolumeQuantityValue(basePositionHolder.getDealPositionDetail().getVolumeQuantityValue());
 
             holder.getSnapshot().getDetail().setCurrencyCodeValue(context.getCurrencyCode().getCode());
             holder.getSnapshot().getDetail().setUnitOfMeasureValue(context.getUnitOfMeasureCode().getCode());
+
+            LocalDate currentDate = basePositionHolder.getDealPositionDetail().getStartDate();
 
             BigDecimal cost = null;
             if (hasDealDayByMonthCosts(currentDate))
@@ -215,7 +420,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
                 holder.getSnapshot().getDetail().setCostValue(summary.getCostValue());
 
             holder.getSnapshot().getDetail().setCostNameCodeValue(summary.getCostNameCode().getCode());
-            holder.getSnapshot().getDetail().setIsSettlementPosition(isSettlementPosition);
+            holder.getSnapshot().getDetail().setIsSettlementPosition(basePositionHolder.getSettlementDetail().getIsSettlementPosition());
 
             if (holder.getDealCostSummary().getCurrencyCode() != context.getCurrencyCode()) {
                 holder.getSnapshot().getDetail().setIsFixedValued(false);
@@ -233,14 +438,15 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     }
 
 
-    public void generateCostPositionSnapshots(LocalDateTime createdDateTime) {
+    public List<CostPositionSnapshot> generateCostPositionSnapshots() {
 
+        List<CostPositionSnapshot> costPositionSnapshots = new ArrayList<>();
 
         for (CostPositionHolder holder : costPositionHolders) {
             CostPositionSnapshot costPositionSnapshot = holder.getSnapshot();
-            costPositionSnapshot.getDetail().setCreatedDateTime(createdDateTime);
+            costPositionSnapshot.getDetail().setCreatedDateTime(context.getCreatedDateTime());
 
-            costPositionSnapshot.setDealId(dealSummary.getDealId());
+            costPositionSnapshot.setDealId(new EntityId(dealSummary.getDealId()));
             costPositionSnapshot.setDealCostId(new EntityId(holder.getDealCostSummary().getId()));
 
             costPositionSnapshot.getDetail().setErrorCode("0");
@@ -250,7 +456,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
             }
 
             if (holder.getSnapshot().getDetail().getIsFixedValued()) {
-                holder.getSnapshot().getDetail().setValuedDateTime(createdDateTime);
+                holder.getSnapshot().getDetail().setValuedDateTime(context.getCreatedDateTime());
 
                 if (costPositionSnapshot.getDetail().getCostNameCode().getCostTypeCode() == CostTypeCode.FIXED) {
                     costPositionSnapshot.getDetail().setCostAmount(
@@ -272,36 +478,27 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
             costPositionSnapshots.add(costPositionSnapshot);
         }
-    }
-
-
-    @Override
-    public List<DealPositionSnapshot> getDealPositionSnapshots() {
-        return dealPositionSnapshots;
-    }
-
-    @Override
-    public List<CostPositionSnapshot> getCostPositionSnapshots() {
         return costPositionSnapshots;
     }
 
-    @Override
-    public List<DealHourlyPositionSnapshot> getDealHourlyPositionSnapshots() {
-        return dealHourlyPositionSnapshots;
+    private HourFixedValueDayDetail calculateHourlyQuantitySlots() {
+        HourFixedValueDayDetail detail = new HourFixedValueDayDetail();
+        List<PowerProfilePositionView> views = powerProfilePositionMap.get(dealSummary.getStartDate());
+        if (views != null) {
+            for (PowerProfilePositionView view : views) {
+                for (int i = 1; i < 25; i++) {
+                    if (view.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i) != null)
+                        detail.setHourFixedValue(i, BigDecimal.ONE);
+                }
+            }
+        }
+        return detail;
     }
+
 
     @Override
     public DealSummary getDealSummary() {
         return dealSummary;
-    }
-
-    public RiskFactorManager getRiskFactorManager() {
-        return riskFactorManager;
-    }
-
-    @Override
-    public List<BasePositionHolder> getPositionHolders() {
-        return positionHolders;
     }
 
     @Override
@@ -315,17 +512,9 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     }
 
     @Override
-    public void withPowerProfilePositionViews(List<PowerProfilePositionView> views) {
-        this.powerProfilePositionViews = views;
+    public void withPowerProfilePositionViews(Map<LocalDate, List<PowerProfilePositionView>> positionMap) {
+        this.powerProfilePositionMap = positionMap;
+        this.hourSlotsForPowerProfile = calculateHourlyQuantitySlots();
     }
 
-    @Override
-    public List<DealCostSummary> getCostSummaries() {
-        return costSummaries;
-    }
-
-    @Override
-    public DealDaysContainer getDealDayContainer() {
-        return dealDaysContainer;
-    }
 }

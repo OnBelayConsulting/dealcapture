@@ -23,12 +23,14 @@ public class GeneratePositionsServiceWithFXTest extends PositionsServiceWithFxTe
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -82,12 +84,14 @@ public class GeneratePositionsServiceWithFXTest extends PositionsServiceWithFxTe
     @Test
     public void generatePhysicalPositionsWithIndexDealPrice() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexBuyDeal.getId()));
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -122,12 +126,14 @@ public class GeneratePositionsServiceWithFXTest extends PositionsServiceWithFxTe
     @Test
     public void generatePhysicalPositionsWithIndexPlus() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexPlusBuyDeal.getId()));
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.USD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.USD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",

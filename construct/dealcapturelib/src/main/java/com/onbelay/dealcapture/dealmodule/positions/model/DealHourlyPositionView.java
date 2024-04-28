@@ -3,10 +3,12 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourPriceRiskFactorIdMap;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourFixedValueDayDetail;
+import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
@@ -33,6 +35,10 @@ public class DealHourlyPositionView extends AbstractEntity {
 
     private Integer powerProfilePositionId;
 
+    private Integer priceIndexId;
+
+    private Integer fxRiskFactorId;
+
     private HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap = new HourPriceRiskFactorIdMap();
 
     private DealHourlyPositionDetail detail = new DealHourlyPositionDetail();
@@ -57,6 +63,38 @@ public class DealHourlyPositionView extends AbstractEntity {
     public void setDealId(Integer dealId) {
         this.dealId = dealId;
     }
+
+    @Column(name = "PRICE_INDEX_ID")
+    public Integer getPriceIndexId() {
+        return priceIndexId;
+    }
+
+    public void setPriceIndexId(Integer priceIndexId) {
+        this.priceIndexId = priceIndexId;
+    }
+
+    @Column(name = "FX_RISK_FACTOR_ID")
+    public Integer getFxRiskFactorId() {
+        return fxRiskFactorId;
+    }
+
+    public void setFxRiskFactorId(Integer fxRiskFactorId) {
+        this.fxRiskFactorId = fxRiskFactorId;
+    }
+
+    @Transient
+    @JsonIgnore
+    public FxRate getFxRate(ValuationIndexManager valuationIndexManager) {
+        if (fxRiskFactorId == null)
+            return null;
+
+        FxRiskFactorSnapshot snapshot = valuationIndexManager.getFxRiskFactor(fxRiskFactorId);
+        return valuationIndexManager.generateFxRate(
+                snapshot.getFxIndexId().getId(),
+                snapshot.getDetail().getValue());
+    }
+
+
 
     @Column(name = "POWER_PROFILE_POSITION_ID")
     public Integer getPowerProfilePositionId() {

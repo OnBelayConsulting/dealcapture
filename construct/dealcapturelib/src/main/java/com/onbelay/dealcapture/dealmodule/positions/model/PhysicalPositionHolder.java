@@ -1,6 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionDetail;
 import com.onbelay.dealcapture.riskfactor.components.FxRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 
@@ -10,6 +12,8 @@ import java.util.List;
 public class PhysicalPositionHolder extends BasePositionHolder {
 
     private FxRiskFactorHolder fixedPriceFxHolder;
+
+    private PhysicalPositionDetail detail = new PhysicalPositionDetail();
 
     private PriceRiskFactorHolder marketRiskFactorHolder;
     private FxRiskFactorHolder marketFxHolder;
@@ -21,8 +25,8 @@ public class PhysicalPositionHolder extends BasePositionHolder {
 
     private List<PriceRiskFactorHolder> basisDealPriceHolders = new ArrayList<>();
 
-    public PhysicalPositionHolder(DealPositionSnapshot snapshot) {
-        super(snapshot);
+    public PhysicalPositionHolder(PhysicalDealSummary summary) {
+        super(summary);
     }
 
     public PriceRiskFactorHolder getMarketRiskFactorHolder() {
@@ -80,4 +84,7 @@ public class PhysicalPositionHolder extends BasePositionHolder {
         this.basisMarketHolders = basisMarketHolders;
     }
 
+    public PhysicalPositionDetail getDetail() {
+        return detail;
+    }
 }

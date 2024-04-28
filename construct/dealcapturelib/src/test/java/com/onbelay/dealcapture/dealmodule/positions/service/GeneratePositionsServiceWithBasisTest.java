@@ -21,12 +21,14 @@ public class GeneratePositionsServiceWithBasisTest extends PositionsServiceWithB
 
     @Test
     public void generateWithFixedDealPrice() {
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
         flush();
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceSellDeal.getId()));
 
@@ -76,12 +78,14 @@ public class GeneratePositionsServiceWithBasisTest extends PositionsServiceWithB
 
     @Test
     public void generateWithBasisIndexDealPrice() {
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexSellDeal.getId()));
 

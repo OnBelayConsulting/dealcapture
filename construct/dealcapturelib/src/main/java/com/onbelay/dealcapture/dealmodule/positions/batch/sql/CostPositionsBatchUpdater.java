@@ -107,7 +107,7 @@ public class CostPositionsBatchUpdater {
 							preparedStatement.setNull(4, Types.DECIMAL);
 
 
-						preparedStatement.setInt(5, valuation.getPositionId());
+						preparedStatement.setInt(5, valuation.getDomainId());
 						preparedStatement.addBatch();
 					}
 

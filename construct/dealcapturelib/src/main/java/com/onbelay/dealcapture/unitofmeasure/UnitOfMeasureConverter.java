@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.unitofmeasure;
 
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
@@ -61,6 +62,9 @@ public class UnitOfMeasureConverter {
     public static Conversion findConversion(
             UnitOfMeasureCode to,
             UnitOfMeasureCode from) {
+        if (to == null || from == null) {
+            throw new OBRuntimeException("missing to or from UoM for conversion");
+        }
         Conversion conversion = conversions.get(
                 createKey(
                         to,

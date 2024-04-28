@@ -4,6 +4,7 @@ import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.repository.EntityRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.batch.BatchSqlServerInsertWorker;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +50,7 @@ public class PowerProfilePositionsSqlServerBatchInserter implements PowerProfile
 
         try {
             session.doWork(
-                    new BatchPowerProfilePositionSqlServerInsertWorker(
+                    new BatchSqlServerInsertWorker(
                             sqlMapper,
                             positions,
                             batchSize));
@@ -58,57 +59,6 @@ public class PowerProfilePositionsSqlServerBatchInserter implements PowerProfile
             throw t;
         }
 
-
-    }
-
-
-    protected static class BatchPowerProfilePositionSqlServerInsertWorker implements Work {
-
-        private PowerProfilePositionSqlMapper sqlMapper;
-        private List<PowerProfilePositionSnapshot> positions;
-        private int batchSize;
-
-        public BatchPowerProfilePositionSqlServerInsertWorker(
-                PowerProfilePositionSqlMapper sqlMapper,
-                List<PowerProfilePositionSnapshot> positions,
-                int batchSize) {
-
-            super();
-            this.sqlMapper = sqlMapper;
-            this.positions = positions;
-            this.batchSize = batchSize;
-        }
-
-        @Override
-        public void execute(Connection connection) throws SQLException {
-
-            String sqlInsert = "INSERT into " +
-                    sqlMapper.getTableName() +
-                    " (" + String.join(",", sqlMapper.getColumnNames()) + ")" +
-                    " VALUES " + sqlMapper.createPlaceHolders();
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
-
-                SubLister<PowerProfilePositionSnapshot> subLister = new SubLister<>(positions, batchSize);
-                while (subLister.moreElements()) {
-                    List<PowerProfilePositionSnapshot> myList = subLister.nextList();
-                    for (PowerProfilePositionSnapshot position : myList) {
-                        sqlMapper.setValuesOnPreparedStatement(
-                                position,
-                                preparedStatement);
-                        preparedStatement.addBatch();
-                    }
-
-                    preparedStatement.executeBatch();
-                }
-
-            } catch (RuntimeException e) {
-                logger.error(e.getMessage());
-                throw e;
-            }
-
-
-        }
 
     }
 

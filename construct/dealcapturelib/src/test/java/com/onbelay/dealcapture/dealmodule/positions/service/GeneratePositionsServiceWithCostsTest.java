@@ -63,12 +63,14 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withCreatedDateTime(createdDateTime)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -136,12 +138,14 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -272,12 +276,14 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",

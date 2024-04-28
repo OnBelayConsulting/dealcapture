@@ -4,7 +4,6 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.pricing.model.FxIndexFixture;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorAudit;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
 import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
@@ -61,7 +60,7 @@ public class FxRiskFactorServiceTest extends DealCaptureSpringTestCase {
         FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
         snapshot.getDetail().setDefaults();
         snapshot.getDetail().setMarketDate(LocalDate.of(2023, 6, 23));
-        snapshot.getDetail().setCreateUpdateDateTime(LocalDateTime.of(2023, 7, 1, 11, 6));
+        snapshot.getDetail().setCreatedDateTime(LocalDateTime.of(2023, 7, 1, 11, 6));
         snapshot.getDetail().setValue(BigDecimal.ONE);
         fxRiskFactorService.save(
                 fxDailyIndex.generateEntityId(),
@@ -76,9 +75,7 @@ public class FxRiskFactorServiceTest extends DealCaptureSpringTestCase {
                 LocalDate.of(2023, 6, 23));
         assertNotNull(factor);
         assertEquals(0, BigDecimal.ONE.compareTo(factor.getDetail().getValue()));
-        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreateUpdateDateTime());
-        FxRiskFactorAudit audit = FxRiskFactorAudit.findRecentHistory(factor);
-        assertNotNull(audit);
+        assertEquals(LocalDateTime.of(2023, 7, 1, 11, 6), factor.getDetail().getCreatedDateTime());
     }
 
     @Test

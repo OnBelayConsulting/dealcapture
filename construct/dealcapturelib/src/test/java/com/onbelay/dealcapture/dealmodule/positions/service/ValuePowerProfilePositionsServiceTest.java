@@ -81,13 +81,10 @@ public class ValuePowerProfilePositionsServiceTest extends PowerProfilePositions
 
         powerProfileService.updatePositionGenerationStatusToPending(List.of(powerProfile.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate)
-                .withEndPositionDate(toMarketDate);
+        EvaluationContext context = new EvaluationContext(
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate);
 
         generatePowerProfilePositionsService.generatePowerProfilePositions(
                 "test",
@@ -99,6 +96,8 @@ public class ValuePowerProfilePositionsServiceTest extends PowerProfilePositions
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
@@ -136,13 +135,10 @@ public class ValuePowerProfilePositionsServiceTest extends PowerProfilePositions
 
         powerProfileService.updatePositionGenerationStatusToPending(List.of(mixedPowerProfile.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate)
-                .withEndPositionDate(toMarketDate);
+        EvaluationContext context = new EvaluationContext(
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate);
 
         generatePowerProfilePositionsService.generatePowerProfilePositions(
                 "test",

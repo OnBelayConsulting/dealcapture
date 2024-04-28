@@ -45,6 +45,8 @@ public interface PowerProfileRepository {
 
 	public PowerProfile load(EntityId entityId);
 
+	public PowerProfile findByName(String name);
+
 	/**
 	 * Update power profiles by assigning deals to a position generation identifier.
 	 * @param powerProfileIds - list of  ids

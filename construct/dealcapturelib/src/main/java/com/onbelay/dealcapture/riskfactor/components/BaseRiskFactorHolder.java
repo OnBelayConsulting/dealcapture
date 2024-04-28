@@ -16,6 +16,7 @@ public class BaseRiskFactorHolder {
     public BaseRiskFactorHolder(final RiskFactorType type, final LocalDate marketDate) {
         this.type = type;
         this.marketDate = marketDate;
+        this.hourEnding = 0;
     }
 
     public BaseRiskFactorHolder(
@@ -38,5 +39,9 @@ public class BaseRiskFactorHolder {
 
     public int getHourEnding() {
         return hourEnding;
+    }
+
+    public String generateUniqueKey() {
+        return type.getType() + ":" + marketDate.toString() + ":" + hourEnding;
     }
 }

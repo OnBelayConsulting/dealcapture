@@ -1,16 +1,17 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.busmath.model.Amount;
 import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
@@ -23,7 +24,6 @@ import com.onbelay.shared.enums.FrequencyCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,173 +43,75 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             DealSummary dealSummary,
             RiskFactorManager riskFactorManager) {
         super(
-                dealSummary, 
+                dealSummary,
                 riskFactorManager);
     }
 
     @Override
-    public void generatePositionHolders(EvaluationContext contextIn) {
-        EvaluationContext context = modifyEvaluationContextForDeal(contextIn);
+    public void generatePositionHolders() {
 
         PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) dealSummary;
 
+        if (context.getEndPositionDate().isBefore(context.getStartPositionDate()))
+            return;
+
         LocalDate currentDate = context.getStartPositionDate();
         while (currentDate.isAfter(context.getEndPositionDate()) == false) {
-            PhysicalPositionHolder physicalPositionHolder = new PhysicalPositionHolder(new PhysicalPositionSnapshot());
-            PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) physicalPositionHolder.getDealPositionSnapshot();
-
-            positionSnapshot.setDealTypeValue(DealTypeCode.PHYSICAL_DEAL.getCode());
-            positionSnapshot.getDealPositionDetail().setErrorCode("0");
+            PhysicalPositionHolder physicalPositionHolder = new PhysicalPositionHolder(physicalDealSummary);
 
             setBasePositionHolderAttributes(
-                    context,
                     physicalPositionHolder,
                     currentDate);
 
+            physicalPositionHolder.getDetail().setDealMarketValuationCode(physicalDealSummary.getMarketValuationCode());
+            physicalPositionHolder.getDetail().setDealPriceValuationCode(physicalDealSummary.getDealPriceValuationCode());
 
-            // Deal Price
-            positionSnapshot.getDetail().setDealPriceValuationCode(physicalDealSummary.getDealPriceValuationCode());
 
-            determinePositionQuantity(
-                    context,
-                    physicalPositionHolder,
-                    physicalDealSummary);
+            if (dealSummary.hasPowerProfile()) {
+                if (powerProfilePositionMap.isEmpty())
+                    throw new OBRuntimeException(PositionErrorCode.MISSING_POWER_PROFILE_POSITIONS.getCode());
 
-            generateCostPositionHolders(
-                    context,
-                    physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getVolumeQuantityValue(),
-                    physicalPositionHolder.getDealPositionSnapshot().getSettlementDetail().getIsSettlementPosition(),
-                    physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate());
-
-            // if deal price valuation is fixed or INDEX Plus
-            if (positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.FIXED ||
-                    positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
-
-                determineFixedPrice(
-                        context,
-                        physicalPositionHolder,
-                        physicalDealSummary);
-
-                determineFixedPriceRiskFactors(
-                        context,
-                        physicalPositionHolder,
-                        physicalDealSummary);
+                determinePositionQuantityFromPowerProfile(physicalPositionHolder);
+            } else {
+                determinePositionQuantity(physicalPositionHolder);
             }
 
-            if (positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX ||
-                    positionSnapshot.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
-                determineDealPriceRiskFactors(
-                        context,
-                        physicalPositionHolder,
-                        physicalDealSummary);
+            generateCostPositionHolders(physicalPositionHolder);
+
+            // if deal price valuation is fixed or INDEX Plus
+            if (physicalPositionHolder.getDetail().getDealPriceValuationCode() == ValuationCode.FIXED ||
+                    physicalPositionHolder.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
+
+                determineFixedPrice(physicalPositionHolder);
+
+                determineFixedPriceRiskFactors(physicalPositionHolder);
+            }
+
+            if (physicalPositionHolder.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX ||
+                    physicalPositionHolder.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
+                determineDealPriceRiskFactors(physicalPositionHolder);
             }
 
             // Market
-            positionSnapshot.getDetail().setDealMarketValuationCode(physicalDealSummary.getMarketValuationCode());
-            determineMarketPriceRiskFactors(
-                    context,
-                    physicalPositionHolder,
-                    physicalDealSummary);
+            physicalPositionHolder.getDetail().setDealMarketValuationCode(physicalDealSummary.getMarketValuationCode());
+            if (dealSummary.hasPowerProfile())
+                generateDealHourlyPositionHoldersFromPowerProfile(
+                        physicalPositionHolder,
+                        PriceTypeCode.MARKET_PRICE);
+            else
+                determineMarketPriceRiskFactors(physicalPositionHolder);
 
 
-                positionHolders.add(physicalPositionHolder);
-                currentDate = currentDate.plusDays(1);
+            positionHolders.add(physicalPositionHolder);
+            currentDate = currentDate.plusDays(1);
         }
     }
 
-    private void determinePositionQuantity(
-            EvaluationContext context,
-            PhysicalPositionHolder physicalPositionHolder,
-            PhysicalDealSummary physicalDealSummary) {
+    private void
+    determineFixedPrice(PhysicalPositionHolder physicalPositionHolder) {
+        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) physicalPositionHolder.getDealSummary();
 
-        PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) physicalPositionHolder.getDealPositionSnapshot();
-        LocalDate currentDate = positionSnapshot.getDealPositionDetail().getStartDate();
-
-        Quantity defaultDailyQuantity;
-        Quantity defaultHourlyQuantity;
-
-        if (dealSummary.getVolumeFrequencyCode() == FrequencyCode.HOURLY) {
-            defaultHourlyQuantity = new Quantity(
-                    dealSummary.getVolumeQuantity(),
-                    dealSummary.getVolumeUnitOfMeasureCode());
-            defaultDailyQuantity = defaultHourlyQuantity.multiply(24);
-        } else {
-            defaultDailyQuantity = new Quantity(
-                    dealSummary.getVolumeQuantity(),
-                    dealSummary.getVolumeUnitOfMeasureCode());
-            defaultHourlyQuantity = defaultDailyQuantity.divide(24);
-        }
-
-        Quantity dailyQuantity = null;
-        if (hasDealDayByMonthQuantities(currentDate))
-            dailyQuantity = new Quantity(
-                    getDayQuantity(currentDate),
-                    dealSummary.getVolumeUnitOfMeasureCode());
-
-        if (dailyQuantity == null)
-            dailyQuantity = defaultDailyQuantity;
-
-
-        Quantity totalQuantity = new Quantity(
-                BigDecimal.ZERO,
-                dealSummary.getVolumeUnitOfMeasureCode());
-
-        boolean calculateDailyQuantity = false;
-        if (hasDealHourByDayQuantities(currentDate)) {
-            calculateDailyQuantity = true;
-            for (int i=1; i < 25; i++) {
-                BigDecimal quantityValue = getHourQuantity(currentDate, i);
-                if (quantityValue != null) {
-
-                    physicalPositionHolder.getDealHourByDayQuantity().setHourValue(
-                            i,
-                            quantityValue);
-                } else {
-                    physicalPositionHolder.getDealHourByDayQuantity().setHourValue(
-                            i,
-                            defaultHourlyQuantity.getValue());
-                }
-                Quantity hourlyQuantity = new Quantity(
-                        physicalPositionHolder.getDealHourByDayQuantity().getHourValue(i),
-                        dealSummary.getVolumeUnitOfMeasureCode());
-
-                if (physicalDealSummary.getFixedPriceUnitOfMeasureCode() != physicalDealSummary.getVolumeUnitOfMeasureCode()) {
-                    Conversion conversion = UnitOfMeasureConverter.findConversion(
-                            physicalDealSummary.getFixedPriceUnitOfMeasureCode(),
-                            physicalDealSummary.getVolumeUnitOfMeasureCode());
-                    hourlyQuantity = hourlyQuantity.apply(conversion) ;
-                }
-                totalQuantity = totalQuantity.add(hourlyQuantity);
-            }
-        }
-
-
-        Quantity unconvertedDailyQuantity;
-        if (calculateDailyQuantity)
-            unconvertedDailyQuantity = totalQuantity;
-        else
-            unconvertedDailyQuantity = dailyQuantity;
-
-        if (context.getUnitOfMeasureCode() != dealSummary.getVolumeUnitOfMeasureCode()) {
-            Conversion conversion = UnitOfMeasureConverter.findConversion(
-                    context.getUnitOfMeasureCode(),
-                    dealSummary.getVolumeUnitOfMeasureCode());
-
-            unconvertedDailyQuantity = unconvertedDailyQuantity.apply(conversion);
-        }
-
-        positionSnapshot.getDealPositionDetail().setVolumeQuantityValue(unconvertedDailyQuantity.round().getValue());
-    }
-
-
-
-    private void determineFixedPrice(
-            EvaluationContext context,
-            PhysicalPositionHolder physicalPositionHolder,
-            PhysicalDealSummary physicalDealSummary) {
-
-        PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) physicalPositionHolder.getDealPositionSnapshot();
-        LocalDate currentDate = positionSnapshot.getDealPositionDetail().getStartDate();
+        LocalDate currentDate = physicalPositionHolder.getDealPositionDetail().getStartDate();
 
         BigDecimal fixedPriceValue;
         if (hasDealDayByMonthPrices(currentDate))
@@ -219,7 +121,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
 
         Quantity totalQuantity = new Quantity(
                 BigDecimal.ZERO,
-                dealSummary.getVolumeUnitOfMeasureCode());
+                context.getUnitOfMeasureCode());
 
         Amount totalAmount = new Amount(
                 BigDecimal.ZERO,
@@ -228,7 +130,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         Price totalPrice = new Price(
                 BigDecimal.ZERO,
                 physicalDealSummary.getFixedPriceCurrencyCode(),
-                physicalDealSummary.getFixedPriceUnitOfMeasureCode());
+                context.getUnitOfMeasureCode());
 
         boolean needWeightedPrice = physicalPositionHolder.getDealHourByDayQuantity().isNotEmpty();
 
@@ -254,13 +156,13 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 if (needWeightedPrice) {
                     Quantity hourlyQuantity = new Quantity(
                             physicalPositionHolder.getDealHourByDayQuantity().getHourValue(i),
-                            dealSummary.getVolumeUnitOfMeasureCode());
+                            context.getUnitOfMeasureCode());
 
-                    if (physicalDealSummary.getFixedPriceUnitOfMeasureCode() != physicalDealSummary.getVolumeUnitOfMeasureCode()) {
+                    if (physicalDealSummary.getFixedPriceUnitOfMeasureCode() != context.getUnitOfMeasureCode()) {
                         Conversion conversion = UnitOfMeasureConverter.findConversion(
-                                physicalDealSummary.getFixedPriceUnitOfMeasureCode(),
-                                physicalDealSummary.getVolumeUnitOfMeasureCode());
-                        hourlyQuantity = hourlyQuantity.apply(conversion);
+                                context.getUnitOfMeasureCode(),
+                                physicalDealSummary.getFixedPriceUnitOfMeasureCode());
+                        hourlyPrice = hourlyPrice.apply(conversion);
                     }
                     totalQuantity = totalQuantity.add(hourlyQuantity);
 
@@ -277,56 +179,51 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         if (calculateFixedPrice) {
 
             if (needWeightedPrice) {
-                Price wieghtedAvgPrice = totalAmount.divide(totalQuantity);
-                positionSnapshot.getDetail().setFixedPriceValue(wieghtedAvgPrice.roundPrice().getValue());
+                Price weightedAvgPrice = totalAmount.divide(totalQuantity);
+                physicalPositionHolder.getDetail().setFixedPriceValue(weightedAvgPrice.roundPrice().getValue());
             } else {
                 Price avgPrice = totalPrice.divide(BigDecimal.valueOf(24));
-                positionSnapshot.getDetail().setFixedPriceValue(avgPrice.roundPrice().getValue());
+                physicalPositionHolder.getDetail().setFixedPriceValue(avgPrice.roundPrice().getValue());
             }
 
         } else {
-            positionSnapshot.getDetail().setFixedPriceValue(fixedPriceValue);
+            physicalPositionHolder.getDetail().setFixedPriceValue(fixedPriceValue);
         }
 
-        positionSnapshot.getDetail().setFixedPriceUnitOfMeasure(
-                physicalDealSummary.getFixedPriceUnitOfMeasureCode());
-        positionSnapshot.getDetail().setFixedPriceCurrencyCode(
-                physicalDealSummary.getFixedPriceCurrencyCode());
+        physicalPositionHolder.getDetail().setFixedPriceUnitOfMeasure(context.getUnitOfMeasureCode());
+        physicalPositionHolder.getDetail().setFixedPriceCurrencyCode(physicalDealSummary.getFixedPriceCurrencyCode());
     }
 
-    private void determineFixedPriceRiskFactors(
-            EvaluationContext context,
-            PhysicalPositionHolder physicalPositionHolder,
-            PhysicalDealSummary physicalDealSummary) {
+    private void determineFixedPriceRiskFactors(PhysicalPositionHolder physicalPositionHolder) {
 
+        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) physicalPositionHolder.getDealSummary();
 
         if (physicalDealSummary.getFixedPriceCurrencyCode() != context.getCurrencyCode()) {
             physicalPositionHolder.setFixedPriceFxHolder(
                     riskFactorManager.determineFxRiskFactor(
                             physicalDealSummary.getFixedPriceCurrencyCode(),
                             context.getCurrencyCode(),
-                            physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate()));
+                            physicalPositionHolder.getDealPositionDetail().getStartDate()));
         }
     }
 
 
-    private void determineDealPriceRiskFactors(
-            EvaluationContext context,
-            PhysicalPositionHolder physicalPositionHolder,
-            PhysicalDealSummary physicalDealSummary) {
+    private void determineDealPriceRiskFactors(PhysicalPositionHolder physicalPositionHolder) {
+
+        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) physicalPositionHolder.getDealSummary();
 
         PriceIndexSnapshot priceIndexSnapshot = riskFactorManager.findPriceIndex(physicalDealSummary.getDealPriceIndexId());
 
         if (priceIndexSnapshot.getDetail().getFrequencyCode() == FrequencyCode.HOURLY) {
-            determineHourlyPriceRiskFactors(
-                    physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate(),
-                    physicalPositionHolder.getDealPriceHourHolderMap(),
+            generateHourlyPositionHolder(
+                    physicalPositionHolder,
+                    PriceTypeCode.DEAL_PRICE,
                     physicalDealSummary.getDealPriceIndexId());
         } else {
             physicalPositionHolder.setDealPriceRiskFactorHolder(
                     riskFactorManager.determinePriceRiskFactor(
                             physicalDealSummary.getDealPriceIndexId(),
-                            physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate()));
+                            physicalPositionHolder.getDealPositionDetail().getStartDate()));
         }
 
         if (priceIndexSnapshot.getDetail().getCurrencyCode() != context.getCurrencyCode()) {
@@ -334,7 +231,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                     riskFactorManager.determineFxRiskFactor(
                             priceIndexSnapshot.getDetail().getCurrencyCode(),
                             context.getCurrencyCode(),
-                            physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate()));
+                            physicalPositionHolder.getDealPositionDetail().getStartDate()));
         }
 
         PriceIndexPositionDateContainer priceIndexContainer = riskFactorManager
@@ -344,32 +241,42 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         if (priceIndexContainer.isBasis()) {
             physicalPositionHolder.setBasisDealPriceHolders(
                     determineBasisPriceRiskFactors(
-                            context,
-                            physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate(),
+                            physicalPositionHolder.getDealPositionDetail().getStartDate(),
                             physicalDealSummary.getDealPriceIndexId()));
         }
     }
 
-    private void determineHourlyPriceRiskFactors(
-            LocalDate  factorDate,
-            ProfilePriceHourHolderMap profilePriceHourHolderMap,
+    private void generateHourlyPositionHolder(
+            BasePositionHolder basePositionHolder,
+            PriceTypeCode priceTypeCode,
             Integer priceIndexId) {
+
+        DealHourlyPositionHolder dealHourlyPositionHolder = new DealHourlyPositionHolder();
+        dealHourlyPositionHolder.setDealId(new EntityId(dealSummary.getDealId()));
+        dealHourlyPositionHolder.setPriceIndexId(new EntityId(priceIndexId));
+        dealHourlyPositionHolder.getDetail().setStartDate(basePositionHolder.getDealPositionDetail().getStartDate());
+        dealHourlyPositionHolder.getDetail().setEndDate(basePositionHolder.getDealPositionDetail().getEndDate());
+        dealHourlyPositionHolder.getDetail().setCreatedDateTime(basePositionHolder.getDealPositionDetail().getCreatedDateTime());
+        dealHourlyPositionHolder.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
+        dealHourlyPositionHolder.getDetail().setPriceTypeCode(priceTypeCode);
+        dealHourlyPositionHolder.getDetail().setCurrencyCode(context.getCurrencyCode());
+        dealHourlyPositionHolder.getDetail().setUnitOfMeasure(context.getUnitOfMeasureCode());
+        dealHourlyPositionHolder.getDetail().setIsSettlementPosition(basePositionHolder.getSettlementDetail().getIsSettlementPosition());
 
         for (int i=1; i < 25; i++) {
             PriceRiskFactorHolder holder = riskFactorManager.determinePriceRiskFactor(
                     priceIndexId,
-                    factorDate,
+                    basePositionHolder.getDealPositionDetail().getStartDate(),
                     i);
-            profilePriceHourHolderMap.setHourPriceHolder(
+            dealHourlyPositionHolder.getPriceHourHolderMap().setHourPriceHolder(
                     i,
                     holder);
         }
-
+        basePositionHolder.getHourlyPositionHolders().add(dealHourlyPositionHolder);
     }
 
 
     private List<PriceRiskFactorHolder> determineBasisPriceRiskFactors(
-            EvaluationContext context,
             LocalDate  factorDate,
             Integer priceIndexId) {
 
@@ -405,24 +312,22 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         return priceRiskFactorHolders;
     }
 
-    private void determineMarketPriceRiskFactors(
-            EvaluationContext context,
-            PhysicalPositionHolder physicalPositionHolder,
-            PhysicalDealSummary physicalDealSummary) {
+    private void determineMarketPriceRiskFactors(PhysicalPositionHolder physicalPositionHolder) {
 
+        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) physicalPositionHolder.getDealSummary();
 
         PriceIndexSnapshot priceIndexSnapshot = riskFactorManager.findPriceIndex(physicalDealSummary.getMarketIndexId());
 
         if (priceIndexSnapshot.getDetail().getFrequencyCode() == FrequencyCode.HOURLY) {
-            determineHourlyPriceRiskFactors(
-                    physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate(),
-                    physicalPositionHolder.getMarketPriceHourHolderMap(),
+            generateHourlyPositionHolder(
+                    physicalPositionHolder,
+                    PriceTypeCode.MARKET_PRICE,
                     physicalDealSummary.getMarketIndexId());
         } else {
 
             PriceRiskFactorHolder marketRiskFactorHolder = riskFactorManager.determinePriceRiskFactor(
                     physicalDealSummary.getMarketIndexId(),
-                    physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate());
+                    physicalPositionHolder.getDealPositionDetail().getStartDate());
 
             physicalPositionHolder.setMarketRiskFactorHolder(marketRiskFactorHolder);
         }
@@ -433,7 +338,7 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                     riskFactorManager.determineFxRiskFactor(
                             priceIndexSnapshot.getDetail().getCurrencyCode(),
                             context.getCurrencyCode(),
-                            physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate()));
+                            physicalPositionHolder.getDealPositionDetail().getStartDate()));
 
         }
 
@@ -445,22 +350,56 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         if (priceIndexContainer.isBasis()) {
             physicalPositionHolder.setBasisMarketHolders(
                     determineBasisPriceRiskFactors(
-                        context,
-                        physicalPositionHolder.getDealPositionSnapshot().getDealPositionDetail().getStartDate(),
+                        physicalPositionHolder.getDealPositionDetail().getStartDate(),
                         physicalDealSummary.getMarketIndexId()));
         }
     }
 
-    public void generateDealPositionSnapshots(LocalDateTime createdDateTime) {
+    @Override
+    public PositionGenerationResult generatePositionSnapshots() {
 
         PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) dealSummary;
+        PositionGenerationResult generationResult = new PositionGenerationResult();
 
-        for (BasePositionHolder holder : positionHolders) {
-            PhysicalPositionHolder physicalPositionHolder = (PhysicalPositionHolder) holder;
-            PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) holder.getDealPositionSnapshot();
+        for (BasePositionHolder positionHolder : positionHolders) {
+            PhysicalPositionHolder physicalPositionHolder = (PhysicalPositionHolder) positionHolder;
+            PhysicalPositionSnapshot positionSnapshot = new PhysicalPositionSnapshot();
 
-            if (holder.getDealHourByDayQuantity().isNotEmpty()) {
-                positionSnapshot.getDealPositionDetail().setFrequencyCode(FrequencyCode.HOURLY);
+            positionSnapshot.setDealId(new EntityId(positionHolder.getDealSummary().getDealId()));
+            positionSnapshot.getDealPositionDetail().copyFrom(positionHolder.getDealPositionDetail());
+            positionSnapshot.getSettlementDetail().copyFrom(positionHolder.getSettlementDetail());
+            positionSnapshot.getDetail().copyFrom(physicalPositionHolder.getDetail());
+            positionSnapshot.getDealPositionDetail().setErrorCode("0");
+
+
+            for (DealHourlyPositionHolder hourlyPositionHolder : positionHolder.getHourlyPositionHolders()) {
+                DealHourlyPositionSnapshot hourlyPositionSnapshot = new DealHourlyPositionSnapshot();
+                hourlyPositionSnapshot.getDetail().copyFrom(hourlyPositionHolder.getDetail());
+                hourlyPositionSnapshot.setPowerProfilePositionId(hourlyPositionHolder.getPowerProfilePositionId());
+                hourlyPositionSnapshot.setDealId(hourlyPositionHolder.getDealId());
+                hourlyPositionSnapshot.setPriceIndexId(hourlyPositionHolder.getPriceIndexId());
+
+                if (hourlyPositionHolder.getFxRiskFactorHolder() != null)
+                    hourlyPositionSnapshot.setFxRiskFactorId(hourlyPositionHolder.getFxRiskFactorHolder().getRiskFactor().getEntityId());
+
+                hourlyPositionSnapshot.getDetail().setErrorCode("0");
+
+                if (hourlyPositionHolder.getPriceHourHolderMap().isNotEmpty()) {
+                    for (int i = 1; i < 25; i++) {
+                        if (hourlyPositionHolder.getPriceHourHolderMap().getHourPriceHolder(i) != null) {
+                            PriceRiskFactorHolder riskFactorHolder = hourlyPositionHolder.getPriceHourHolderMap().getHourPriceHolder(i);
+                            hourlyPositionSnapshot.getDetail().setCurrencyCode(riskFactorHolder.getPriceIndex().getDetail().getCurrencyCode());
+                            hourlyPositionSnapshot.getDetail().setUnitOfMeasure(riskFactorHolder.getPriceIndex().getDetail().getUnitOfMeasureCode());
+                            hourlyPositionSnapshot.getHourPriceRiskFactorIdMap().setHourPriceRiskFactorId(
+                                    i,
+                                    riskFactorHolder.getRiskFactor().getEntityId().getId());
+                        }
+                    }
+                }
+                generationResult.addDealHourlyPositionSnapshot(hourlyPositionSnapshot);
+            }
+
+            if (positionHolder.getDealHourByDayQuantity().isNotEmpty()) {
                 DealHourlyPositionSnapshot hourlyPositionSnapshot = new DealHourlyPositionSnapshot();
                 hourlyPositionSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
                 hourlyPositionSnapshot.getDetail().setPriceTypeCode(PriceTypeCode.FIXED_QUANTITY);
@@ -469,22 +408,21 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 hourlyPositionSnapshot.getDetail().setCurrencyCode(positionSnapshot.getDealPositionDetail().getCurrencyCode());
                 hourlyPositionSnapshot.getDetail().setIsSettlementPosition(positionSnapshot.getSettlementDetail().getIsSettlementPosition());
                 hourlyPositionSnapshot.getDetail().setUnitOfMeasure(positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
-                hourlyPositionSnapshot.getDetail().setCreatedDateTime(createdDateTime);
-                hourlyPositionSnapshot.setDealId(dealSummary.getDealId());
+                hourlyPositionSnapshot.getDetail().setCreatedDateTime(context.getCreatedDateTime());
+                hourlyPositionSnapshot.setDealId(new EntityId(dealSummary.getDealId()));
                 hourlyPositionSnapshot.getDetail().setErrorCode("0");
-                dealHourlyPositionSnapshots.add(hourlyPositionSnapshot);
+                generationResult.addDealHourlyPositionSnapshot(hourlyPositionSnapshot);
 
                 for (int i=1; i < 25; i++) {
-                    if (holder.getDealHourByDayQuantity().getHourValue(i) != null) {
+                    if (positionHolder.getDealHourByDayQuantity().getHourValue(i) != null) {
                         hourlyPositionSnapshot.getHourFixedValueDetail().setHourFixedValue(
                                 i,
-                                holder.getDealHourByDayQuantity().getHourValue(i));
+                                positionHolder.getDealHourByDayQuantity().getHourValue(i));
                     }
                 }
             }
 
-            if (holder.getDealHourByDayPrice().isNotEmpty()) {
-                positionSnapshot.getDealPositionDetail().setFrequencyCode(FrequencyCode.HOURLY);
+            if (positionHolder.getDealHourByDayPrice().isNotEmpty()) {
                 DealHourlyPositionSnapshot hourlyPositionSnapshot = new DealHourlyPositionSnapshot();
                 hourlyPositionSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
                 hourlyPositionSnapshot.getDetail().setPriceTypeCode(PriceTypeCode.FIXED_PRICE);
@@ -493,74 +431,19 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 hourlyPositionSnapshot.getDetail().setCurrencyCode(physicalDealSummary.getFixedPriceCurrencyCode());
                 hourlyPositionSnapshot.getDetail().setIsSettlementPosition(positionSnapshot.getSettlementDetail().getIsSettlementPosition());
                 hourlyPositionSnapshot.getDetail().setUnitOfMeasure(physicalDealSummary.getFixedPriceUnitOfMeasureCode());
-                hourlyPositionSnapshot.getDetail().setCreatedDateTime(createdDateTime);
-                hourlyPositionSnapshot.setDealId(dealSummary.getDealId());
+                hourlyPositionSnapshot.getDetail().setCreatedDateTime(context.getCreatedDateTime());
+                hourlyPositionSnapshot.setDealId(new EntityId(dealSummary.getDealId()));
                 hourlyPositionSnapshot.getDetail().setErrorCode("0");
-                dealHourlyPositionSnapshots.add(hourlyPositionSnapshot);
+                generationResult.addDealHourlyPositionSnapshot(hourlyPositionSnapshot);
 
                 for (int i=1; i < 25; i++) {
-                    if (holder.getDealHourByDayPrice().getHourValue(i) != null) {
+                    if (positionHolder.getDealHourByDayPrice().getHourValue(i) != null) {
                         hourlyPositionSnapshot.getHourFixedValueDetail().setHourFixedValue(
                                 i,
-                                holder.getDealHourByDayQuantity().getHourValue(i));
+                                positionHolder.getDealHourByDayPrice().getHourValue(i));
                     }
                 }
             }
-
-            // if Hourly then create an hourly position for deal price
-            if (holder.getDealPriceHourHolderMap().isNotEmpty()) {
-                positionSnapshot.getDealPositionDetail().setFrequencyCode(FrequencyCode.HOURLY);
-                DealHourlyPositionSnapshot hourlyPositionSnapshot = new DealHourlyPositionSnapshot();
-                hourlyPositionSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
-                hourlyPositionSnapshot.getDetail().setPriceTypeCode(PriceTypeCode.DEAL_PRICE);
-                hourlyPositionSnapshot.getDetail().setStartDate(positionSnapshot.getDealPositionDetail().getStartDate());
-                hourlyPositionSnapshot.getDetail().setEndDate(positionSnapshot.getDealPositionDetail().getEndDate());
-                hourlyPositionSnapshot.getDetail().setIsSettlementPosition(positionSnapshot.getSettlementDetail().getIsSettlementPosition());
-                hourlyPositionSnapshot.getDetail().setCreatedDateTime(createdDateTime);
-                hourlyPositionSnapshot.setDealId(dealSummary.getDealId());
-                hourlyPositionSnapshot.getDetail().setErrorCode("0");
-                dealHourlyPositionSnapshots.add(hourlyPositionSnapshot);
-
-                for (int i=1; i < 25; i++) {
-                    if (holder.getDealPriceHourHolderMap().getHourPriceHolder(i) != null) {
-                        PriceRiskFactorHolder riskFactorHolder = holder.getDealPriceHourHolderMap().getHourPriceHolder(i);
-                        hourlyPositionSnapshot.getDetail().setCurrencyCode(riskFactorHolder.getPriceIndex().getDetail().getCurrencyCode());
-                        hourlyPositionSnapshot.getDetail().setUnitOfMeasure(riskFactorHolder.getPriceIndex().getDetail().getUnitOfMeasureCode());
-                        hourlyPositionSnapshot.getHourPriceRiskFactorIdMap().setHourPriceRiskFactorId(
-                                i,
-                                riskFactorHolder.getRiskFactor().getEntityId().getId());
-                    }
-                }
-
-            }
-
-            // if Hourly then create an hourly position for market price
-            if (holder.getMarketPriceHourHolderMap().isNotEmpty()) {
-                positionSnapshot.getDealPositionDetail().setFrequencyCode(FrequencyCode.HOURLY);
-                DealHourlyPositionSnapshot hourlyPositionSnapshot = new DealHourlyPositionSnapshot();
-                hourlyPositionSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
-                hourlyPositionSnapshot.getDetail().setPriceTypeCode(PriceTypeCode.MARKET_PRICE);
-                hourlyPositionSnapshot.getDetail().setStartDate(positionSnapshot.getDealPositionDetail().getStartDate());
-                hourlyPositionSnapshot.getDetail().setEndDate(positionSnapshot.getDealPositionDetail().getEndDate());
-                hourlyPositionSnapshot.getDetail().setIsSettlementPosition(positionSnapshot.getSettlementDetail().getIsSettlementPosition());
-                hourlyPositionSnapshot.getDetail().setCreatedDateTime(createdDateTime);
-                hourlyPositionSnapshot.setDealId(dealSummary.getDealId());
-                hourlyPositionSnapshot.getDetail().setErrorCode("0");
-                dealHourlyPositionSnapshots.add(hourlyPositionSnapshot);
-
-                for (int i=1; i < 25; i++) {
-                    if (holder.getMarketPriceHourHolderMap().getHourPriceHolder(i) != null) {
-                        PriceRiskFactorHolder riskFactorHolder = holder.getMarketPriceHourHolderMap().getHourPriceHolder(i);
-                        hourlyPositionSnapshot.getDetail().setCurrencyCode(riskFactorHolder.getPriceIndex().getDetail().getCurrencyCode());
-                        hourlyPositionSnapshot.getDetail().setUnitOfMeasure(riskFactorHolder.getPriceIndex().getDetail().getUnitOfMeasureCode());
-                        hourlyPositionSnapshot.getHourPriceRiskFactorIdMap().setHourPriceRiskFactorId(
-                                i,
-                                riskFactorHolder.getRiskFactor().getEntityId().getId());
-                    }
-                }
-
-            }
-
 
             // Market Price
             if (physicalPositionHolder.getMarketRiskFactorHolder() != null)
@@ -606,7 +489,11 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 positionSnapshot.addRiskFactorMappingSnapshot(mapping);
             }
 
-            dealPositionSnapshots.add(positionSnapshot);
+            generationResult.addDealPositionSnapshot(positionSnapshot);
         }
+
+        generationResult.setCostPositionSnapshots(generateCostPositionSnapshots());
+
+        return generationResult;
     }
 }

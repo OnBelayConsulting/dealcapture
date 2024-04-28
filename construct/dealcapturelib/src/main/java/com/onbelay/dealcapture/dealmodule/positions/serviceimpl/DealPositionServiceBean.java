@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
+import com.onbelay.core.entity.enums.AssemblerDirectiveCopyType;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
@@ -22,7 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -105,6 +108,40 @@ public class DealPositionServiceBean implements DealPositionService {
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();
         PositionAssembler assembler = factory.newAssembler(DealTypeCode.PHYSICAL_DEAL);
         return assembler.assemble(positions);
+    }
+
+    @Override
+    public List<DealPositionSnapshot> findPositionsByDeal(
+            EntityId dealId,
+            AssemblerDirectiveCopyType copyType) {
+
+        return switch (copyType) {
+            case SHALLOW_COPY -> findPositionsByDeal(dealId);
+
+            case  DEEP_COPY -> findPositionsByDealWithDeepCopy(dealId);
+
+            default -> findPositionsByDeal(dealId);
+        };
+    }
+
+    private List<DealPositionSnapshot> findPositionsByDealWithDeepCopy(EntityId dealId) {
+        List<DealHourlyPositionSnapshot> hourlyPositionSnapshots = findHourlyPositionsByDeal(dealId);
+        HashMap<LocalDate, List<DealHourlyPositionSnapshot>> positionMap = new HashMap<>();
+        hourlyPositionSnapshots.forEach( c ->{
+            List<DealHourlyPositionSnapshot> list = positionMap.computeIfAbsent(
+                    c.getDetail().getStartDate(),
+                    l -> new ArrayList<>());
+            list.add(c);
+        });
+
+        List<DealPositionSnapshot> dealPositionSnapshots = findPositionsByDeal(dealId);
+        for (DealPositionSnapshot snapshot : dealPositionSnapshots) {
+            List<DealHourlyPositionSnapshot> list = positionMap.get(snapshot.getDealPositionDetail().getStartDate());
+            if (list != null) {
+                snapshot.setHourlyPositionSnapshots(list);
+            }
+        }
+        return dealPositionSnapshots;
     }
 
     @Override

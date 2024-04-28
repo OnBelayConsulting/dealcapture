@@ -23,8 +23,6 @@
             pp.CREATE_UPDATE_DATETIME,
             pp.VALUED_DATETIME,
             pp.POWER_FLOW_CODE,
-            pp.CURRENCY_CODE,
-            pp.UNIT_OF_MEASURE_CODE,
             pp.NUMBER_OF_HOURS,
             pp.ERROR_CODE,
             pp.ERROR_MSG,

@@ -8,13 +8,13 @@ public interface GeneratePositionsService {
 
     TransactionResult generatePositions(
             String positionGenerationIdentifier,
-            EvaluationContext context,
+            DealPositionsEvaluationContext context,
             Integer dealId);
 
 
     TransactionResult generatePositions(
             String positionGenerationIdentifier,
-            EvaluationContext context,
+            DealPositionsEvaluationContext context,
             List<Integer> dealIds);
 
 }

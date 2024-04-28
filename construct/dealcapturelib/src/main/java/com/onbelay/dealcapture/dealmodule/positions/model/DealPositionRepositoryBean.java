@@ -40,6 +40,8 @@ import java.util.List;
 
 public class DealPositionRepositoryBean extends BaseRepository<DealPosition> implements DealPositionRepository {
 	private static final Logger logger = LogManager.getLogger();
+	public static final String FIND_MIN_START_DATE = "DealPositionsRepository.FIND_MIN_START_DATE";
+	public static final String FIND_MAX_START_DATE = "DealPositionsRepository.FIND_MAX_START_DATE";
 	public static final String FIND_BY_DEAL = "DealPositionsRepository.FIND_BY_DEAL";
 	public static final String FIND_IDS_BY_DEAL = "DealPositionsRepository.FIND_IDS_BY_DEAL";
     public static final String FIND_DEAL_POSITION_VIEWS_BY_DEAL ="DealPositionsRepository.FIND_DEAL_POSITION_VIEWS_BY_DEAL" ;
@@ -83,7 +85,7 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 
 		String[] names = {"dealIds", "currencyCode", "createdDateTime"};
 
-		if (dealIds.size() < 2000) {
+		if (dealIds.size() < 1000) {
 			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
 
 			return (List<DealPositionView>) executeReportQuery(
@@ -92,7 +94,7 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 					parms);
 		} else {
 			ArrayList<DealPositionView> views = new ArrayList<>();
-			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
 			while (subLister.moreElements()) {
 				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), createdDateTime};
 				views.addAll (

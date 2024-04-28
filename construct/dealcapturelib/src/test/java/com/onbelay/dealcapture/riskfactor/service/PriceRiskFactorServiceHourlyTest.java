@@ -68,6 +68,9 @@ public class PriceRiskFactorServiceHourlyTest extends DealCaptureSpringTestCase 
     @Test
     public void valueRiskFactors() {
         priceRiskFactorService.valueRiskFactors(hourlyPriceIndex.generateEntityId());
+        flush();
+        clearCache();
+
         List<PriceRiskFactorSnapshot> snapshots = priceRiskFactorService.findByMarketDate(
                 hourlyPriceIndex.generateEntityId(),
                 LocalDate.of(2023, 1, 1));

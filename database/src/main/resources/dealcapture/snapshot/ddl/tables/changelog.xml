@@ -27,7 +27,6 @@
     <include file="FX_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="FX_INDEX_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_RISK_FACTOR.xml" relativeToChangelogFile="true"/>
-    <include file="FX_RISK_FACTOR_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="ORGANIZATION.xml" relativeToChangelogFile="true"/>
     <include file="ORGANIZATION_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="ORGANIZATION_ROLE.xml" relativeToChangelogFile="true"/>
@@ -50,7 +49,6 @@
     <include file="PRICE_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_CURVE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_RISK_FACTOR.xml" relativeToChangelogFile="true"/>
-    <include file="PRICE_RISK_FACTOR_AUDIT.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

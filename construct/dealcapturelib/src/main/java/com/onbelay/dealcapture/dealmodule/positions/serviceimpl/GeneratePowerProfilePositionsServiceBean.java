@@ -76,9 +76,12 @@ public class GeneratePowerProfilePositionsServiceBean extends BasePositionsServi
         processPriceRiskFactors(
                 riskFactorManager,
                 context.getStartPositionDate(),
-                context.getEndPositionDate());
+                context.getEndPositionDate(),
+                context.getCreatedDateTime());
 
-        processFxRiskFactors(riskFactorManager);
+        processFxRiskFactors(
+                riskFactorManager,
+                context.getCreatedDateTime());
 
         ArrayList<PowerProfilePositionSnapshot> snapshots = new ArrayList<>();
         ArrayList<Integer> powerProfileIds = new ArrayList<>();

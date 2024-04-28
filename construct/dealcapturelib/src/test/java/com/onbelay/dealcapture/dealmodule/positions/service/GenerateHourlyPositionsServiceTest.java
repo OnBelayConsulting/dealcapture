@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
+import com.onbelay.core.entity.enums.AssemblerDirectiveCopyType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
@@ -38,12 +39,12 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceSellDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
 
         generatePositionsService.generatePositions(
                 "test",
@@ -60,13 +61,13 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceSellDeal.generateEntityId());
 
-        assertEquals(2, positionSnapshots.size());
+        assertEquals(1, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
         assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
         assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.HOURLY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
@@ -86,7 +87,7 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
         List<DealHourlyPositionSnapshot>  hourlyPositionSnapshots = dealPositionService.findHourlyPositionsByDeal(fixedPriceSellDeal.generateEntityId());
-        assertEquals(2, hourlyPositionSnapshots.size());
+        assertEquals(1, hourlyPositionSnapshots.size()); // Market hourly leg
 
         DealHourlyPositionSnapshot hourlyPositionSnapshot = (DealHourlyPositionSnapshot) hourlyPositionSnapshots.get(0);
 
@@ -117,13 +118,14 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
 
         flush();
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate)
-                .withEndPositionDate(toMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -140,13 +142,13 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceSellDeal.generateEntityId());
 
-        assertEquals(2, positionSnapshots.size());
+        assertEquals(1, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
         assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
         assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.HOURLY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.valueOf(177.917).compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
@@ -166,12 +168,19 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
         List<DealHourlyPositionSnapshot>  hourlyPositionSnapshots = dealPositionService.findHourlyPositionsByDeal(fixedPriceSellDeal.generateEntityId());
-        assertEquals(3, hourlyPositionSnapshots.size());
+        assertEquals(2, hourlyPositionSnapshots.size());
 
         DealHourlyPositionSnapshot hourlyPositionSnapshot = hourlyPositionSnapshots.stream().filter(c -> c.getDetail().getPriceTypeCode() == PriceTypeCode.FIXED_QUANTITY).findFirst().get();
         assertEquals(PowerFlowCode.HOURLY, hourlyPositionSnapshot.getDetail().getPowerFlowCode());
         assertEquals(CurrencyCode.CAD, hourlyPositionSnapshot.getDetail().getCurrencyCode());
-        assertEquals(PriceTypeCode.FIXED_QUANTITY, hourlyPositionSnapshot.getDetail().getPriceTypeCode());
+        for (int i=1; i < 25;i++) {
+            assertNotNull(hourlyPositionSnapshot.getHourFixedValueDetail().getHourFixedValue(i));
+        }
+
+        hourlyPositionSnapshot = hourlyPositionSnapshots.stream().filter(c -> c.getDetail().getPriceTypeCode() == PriceTypeCode.MARKET_PRICE).findFirst().get();
+        assertEquals(PowerFlowCode.HOURLY, hourlyPositionSnapshot.getDetail().getPowerFlowCode());
+        assertEquals(CurrencyCode.CAD, hourlyPositionSnapshot.getDetail().getCurrencyCode());
+
     }
 
     @Test
@@ -189,13 +198,14 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
 
         flush();
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate)
-                .withEndPositionDate(toMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -210,15 +220,16 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
-                fixedPriceHourlySellDeal.generateEntityId());
+                fixedPriceHourlySellDeal.generateEntityId(),
+                AssemblerDirectiveCopyType.DEEP_COPY);
 
-        assertEquals(2, positionSnapshots.size());
+        assertEquals(1, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
         assertEquals(fixedPriceHourlySellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
         assertEquals(fixedPriceHourlySellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.HOURLY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.valueOf(48).compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
@@ -236,9 +247,13 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
         List<DealHourlyPositionSnapshot>  hourlyPositionSnapshots = dealPositionService.findHourlyPositionsByDeal(fixedPriceHourlySellDeal.generateEntityId());
-        assertEquals(3, hourlyPositionSnapshots.size());
+        assertEquals(2, hourlyPositionSnapshots.size());
 
         DealHourlyPositionSnapshot hourlyPositionSnapshot = hourlyPositionSnapshots.stream().filter(c -> c.getDetail().getPriceTypeCode() == PriceTypeCode.FIXED_PRICE).findFirst().get();
+        assertEquals(PowerFlowCode.HOURLY, hourlyPositionSnapshot.getDetail().getPowerFlowCode());
+        assertEquals(CurrencyCode.CAD, hourlyPositionSnapshot.getDetail().getCurrencyCode());
+
+        hourlyPositionSnapshot = hourlyPositionSnapshots.stream().filter(c -> c.getDetail().getPriceTypeCode() == PriceTypeCode.MARKET_PRICE).findFirst().get();
         assertEquals(PowerFlowCode.HOURLY, hourlyPositionSnapshot.getDetail().getPowerFlowCode());
         assertEquals(CurrencyCode.CAD, hourlyPositionSnapshot.getDetail().getCurrencyCode());
     }
@@ -247,12 +262,14 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
     @Test
     public void generatePhysicalPositionsWithIndexDealPrice() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(indexSellDeal.getId()));
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                fromMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -264,7 +281,7 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 indexSellDeal.generateEntityId());
 
-        assertTrue(positionSnapshots.size() > 0);
+        assertEquals(1, positionSnapshots.size());
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
         assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
         assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
@@ -273,7 +290,7 @@ public class GenerateHourlyPositionsServiceTest extends PositionsServiceWithHour
 
 
         List<DealHourlyPositionSnapshot>  hourlyPositionSnapshots = dealPositionService.findHourlyPositionsByDeal(indexSellDeal.generateEntityId());
-        assertEquals(4, hourlyPositionSnapshots.size());
+        assertEquals(2, hourlyPositionSnapshots.size());
 
         DealHourlyPositionSnapshot dealPriceHourlyPositionSnapshot =  hourlyPositionSnapshots
                 .stream()

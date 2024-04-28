@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ProfilePriceHourHolderMap {
+public class PriceHourHolderMap {
 
     private HashMap<Integer, Consumer<PriceRiskFactorHolder>> hourSetterMap = new HashMap<>();
     private  HashMap<Integer, Supplier<PriceRiskFactorHolder>> hourGetterMap = new HashMap<>();
@@ -36,7 +36,7 @@ public class ProfilePriceHourHolderMap {
     private PriceRiskFactorHolder hour23PriceHolder;
     private PriceRiskFactorHolder hour24PriceHolder;
 
-    public ProfilePriceHourHolderMap() {
+    public PriceHourHolderMap() {
         initializeGetterMap();
         initializeSetterMap();
     }

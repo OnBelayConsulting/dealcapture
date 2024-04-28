@@ -4,6 +4,7 @@ import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.repository.EntityRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.batch.BatchSqlServerInsertWorker;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +50,7 @@ public class DealHourlyPositionsSqlServerBatchInserter implements DealHourlyPosi
 
         try {
             session.doWork(
-                    new BatchDealHourlyPositionSqlServerInsertWorker(
+                    new BatchSqlServerInsertWorker(
                             sqlMapper,
                             positions,
                             batchSize));
@@ -61,55 +62,5 @@ public class DealHourlyPositionsSqlServerBatchInserter implements DealHourlyPosi
 
     }
 
-
-    protected static class BatchDealHourlyPositionSqlServerInsertWorker implements Work {
-
-        private DealHourlyPositionSqlMapper sqlMapper;
-        private List<DealHourlyPositionSnapshot> positions;
-        private int batchSize;
-
-        public BatchDealHourlyPositionSqlServerInsertWorker(
-                DealHourlyPositionSqlMapper sqlMapper,
-                List<DealHourlyPositionSnapshot> positions,
-                int batchSize) {
-
-            super();
-            this.sqlMapper = sqlMapper;
-            this.positions = positions;
-            this.batchSize = batchSize;
-        }
-
-        @Override
-        public void execute(Connection connection) throws SQLException {
-
-            String sqlInsert = "INSERT into " +
-                    sqlMapper.getTableName() +
-                    " (" + String.join(",", sqlMapper.getColumnNames()) + ")" +
-                    " VALUES " + sqlMapper.createPlaceHolders();
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
-
-                SubLister<DealHourlyPositionSnapshot> subLister = new SubLister<>(positions, batchSize);
-                while (subLister.moreElements()) {
-                    List<DealHourlyPositionSnapshot> myList = subLister.nextList();
-                    for (DealHourlyPositionSnapshot position : myList) {
-                        sqlMapper.setValuesOnPreparedStatement(
-                                position,
-                                preparedStatement);
-                        preparedStatement.addBatch();
-                    }
-
-                    preparedStatement.executeBatch();
-                }
-
-            } catch (RuntimeException e) {
-                logger.error(e.getMessage());
-                throw e;
-            }
-
-
-        }
-
-    }
 
 }

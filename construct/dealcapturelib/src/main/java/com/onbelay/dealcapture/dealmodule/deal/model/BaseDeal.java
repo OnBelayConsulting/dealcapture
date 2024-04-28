@@ -25,9 +25,9 @@ import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealDayByMonthRepository;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealHourByDayRepository;
+import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
@@ -36,7 +36,6 @@ import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepositor
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,9 +135,8 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		
 	}
 
-
 	
-	protected void setAssociationsFromSnapshot(BaseDealSnapshot snapshot) {
+	protected void updateRelationships(BaseDealSnapshot snapshot) {
 		
 		if (snapshot.getCompanyRoleId() != null) {
 			this.companyRole = (CompanyRole) getOrganizationRoleRepository().load(snapshot.getCompanyRoleId());
@@ -156,6 +154,9 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 						snapshot.getCounterpartyRoleId().getCode(),
 						OrganizationRoleType.COUNTERPARTY_ROLE);
 			}
+		}
+		if (snapshot.getPowerProfileId() != null) {
+			this.powerProfile = getPowerProfileRepository().load(snapshot.getPowerProfileId());
 		}
 	}
 	
@@ -318,14 +319,6 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return getDealCostRepository().fetchDealCosts(id);
 	}
 
-	public void updateDealWithPositionGenerationStatus(String positionGeneratorIdentifier) {
-
-		dealDetail.setPositionGenerationStatusCode(PositionGenerationStatusCode.COMPLETE);
-		dealDetail.setPositionGenerationIdentifier(positionGeneratorIdentifier);
-		LocalDateTime currentDateTime = LocalDateTime.now();
-		dealDetail.setPositionGenerationDateTime(currentDateTime);
-	}
-
 
 	@ManyToOne
 	@JoinColumn(name ="COUNTERPARTY_ROLE_ID")
@@ -389,6 +382,12 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	protected static OrganizationRoleRepository getOrganizationRoleRepository() {
 		return (OrganizationRoleRepository) ApplicationContextFactory.getBean(OrganizationRoleRepository.BEAN_NAME);
 	}
+
+	@Transient
+	protected static PowerProfileRepository getPowerProfileRepository() {
+		return (PowerProfileRepository) ApplicationContextFactory.getBean(PowerProfileRepository.BEAN_NAME);
+	}
+
 
 	public void addDealHourByDay(DealHourByDay dealHourByDay) {
 		dealHourByDay.setDeal(this);

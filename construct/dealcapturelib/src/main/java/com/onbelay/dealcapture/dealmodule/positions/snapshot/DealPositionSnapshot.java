@@ -34,6 +34,8 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     private List<PositionRiskFactorMappingSnapshot> riskFactorMappingSnapshots = new ArrayList<>();
 
+    private List<DealHourlyPositionSnapshot> hourlyPositionSnapshots = new ArrayList<>();
+
     private String dealTypeValue;
 
     public DealPositionSnapshot() {
@@ -114,6 +116,14 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     public void setRiskFactorMappingSnapshots(List<PositionRiskFactorMappingSnapshot> riskFactorMappingSnapshots) {
         this.riskFactorMappingSnapshots = riskFactorMappingSnapshots;
+    }
+
+    public List<DealHourlyPositionSnapshot> getHourlyPositionSnapshots() {
+        return hourlyPositionSnapshots;
+    }
+
+    public void setHourlyPositionSnapshots(List<DealHourlyPositionSnapshot> hourlyPositionSnapshots) {
+        this.hourlyPositionSnapshots = hourlyPositionSnapshots;
     }
 
     @Transient

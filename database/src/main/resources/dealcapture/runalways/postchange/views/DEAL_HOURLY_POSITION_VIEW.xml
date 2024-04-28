@@ -18,6 +18,8 @@
             pp.ENTITY_ID,
             pp.DEAL_ID,
             pp.POWER_PROFILE_POSITION_ID,
+            pp.FX_RISK_FACTOR_ID,
+            pp.PRICE_INDEX_ID,
             pp.START_DATE,
             pp.END_DATE,
             pp.POWER_FLOW_CODE,

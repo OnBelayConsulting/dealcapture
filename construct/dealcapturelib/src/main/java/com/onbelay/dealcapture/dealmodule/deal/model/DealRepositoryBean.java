@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Repository (value="dealRepository")
@@ -100,14 +102,14 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 			LocalDateTime positionGenerationDateTime) {
 
 		String[] names = {"dealIds", "updateDateTime"};
-		if (dealIds.size() < 1000) {
+		if (dealIds.size() < 2000) {
 			Object[] parms = {dealIds, positionGenerationDateTime};
 			executeUpdate(
 					UPDATE_DEAL_POSITION_GENERATION_STATUS_TO_COMPLETE,
 					names,
 					parms);
 		} else {
-			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
 			while (subLister.moreElements()) {
 				Object[] parms2 = {subLister.nextList(), positionGenerationDateTime};
 				executeUpdate(
@@ -123,13 +125,13 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 	@Override
 	public void executeDealUpdateSetPositionGenerationToPending(List<Integer> dealIds) {
 
-		if (dealIds.size() < 1000) {
+		if (dealIds.size() < 2000) {
 			executeUpdate(
 					UPDATE_DEAL_POSITION_GENERATION_STATUS,
 					"dealIds",
 					dealIds);
 		} else {
-			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
 			while (subLister.moreElements()) {
 				executeUpdate(
 						UPDATE_DEAL_POSITION_GENERATION_STATUS,
@@ -150,10 +152,24 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 
 	@Override
 	public List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds) {
-		return (List<PhysicalDealSummary>) executeReportQuery(
-				FETCH_PHYSICAL_DEAL_SUMMARIES,
-				"dealIds",
-				physicalDealIds);
+
+		if (physicalDealIds.size() < 2000) {
+			return (List<PhysicalDealSummary>) executeReportQuery(
+					FETCH_PHYSICAL_DEAL_SUMMARIES,
+					"dealIds",
+					physicalDealIds);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(physicalDealIds, 2000);
+			ArrayList<PhysicalDealSummary> summaries = new ArrayList<>();
+			while (subLister.moreElements()) {
+				summaries.addAll(
+                        (Collection<? extends PhysicalDealSummary>) executeReportQuery(
+                            FETCH_PHYSICAL_DEAL_SUMMARIES,
+                            "dealIds",
+                            subLister.nextList()));
+			}
+			return summaries;
+		}
 	}
 
 	/*

@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 
@@ -46,12 +47,11 @@ public class PhysicalPositionSqlMapper extends DealPositionSqlMapper {
 	}
 
 	public void setValuesOnPreparedStatement(
-			DealPositionSnapshot position,
+			AbstractSnapshot snapshot,
 			PreparedStatement preparedStatement) throws SQLException {
+		super.setValuesOnPreparedStatement(snapshot, preparedStatement);
 
-		super.setValuesOnPreparedStatement(position, preparedStatement);
-
-		PhysicalPositionSnapshot physicalPosition = (PhysicalPositionSnapshot) position;
+		PhysicalPositionSnapshot physicalPosition = (PhysicalPositionSnapshot) snapshot;
 		int n = getStartingPoint();
 
 		// 12

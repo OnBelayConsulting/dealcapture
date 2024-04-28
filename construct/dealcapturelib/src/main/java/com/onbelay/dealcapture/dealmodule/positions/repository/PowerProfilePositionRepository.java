@@ -20,15 +20,13 @@ public interface PowerProfilePositionRepository {
 
 
     List<PowerProfilePositionView> findPowerProfilePositionViews(
-            List<Integer> dealIds,
-            CurrencyCode currencyCode,
+            List<Integer> powerProfileIds,
             LocalDateTime createdDateTime);
 
 
     List<PowerProfilePositionView> findPowerProfilePositionViewsByDate(
             LocalDate startDate,
             LocalDate endDate,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
 
 

@@ -10,6 +10,10 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionD
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourPriceRiskFactorIdMap;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourFixedValueDayDetail;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
+import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
+import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import jakarta.persistence.*;
 
 @Entity
@@ -35,6 +39,10 @@ public class DealHourlyPosition extends AbstractEntity {
     private BaseDeal deal;
 
     private PowerProfilePosition powerProfilePosition;
+
+    private PriceIndex priceIndex;
+
+    private FxRiskFactor fxRiskFactor;
 
     private HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap = new HourPriceRiskFactorIdMap();
 
@@ -74,6 +82,25 @@ public class DealHourlyPosition extends AbstractEntity {
         this.powerProfilePosition = powerProfilePosition;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "PRICE_INDEX_ID")
+    public PriceIndex getPriceIndex() {
+        return priceIndex;
+    }
+
+    public void setPriceIndex(PriceIndex priceIndex) {
+        this.priceIndex = priceIndex;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "FX_RISK_FACTOR_ID")
+    public FxRiskFactor getFxRiskFactor() {
+        return fxRiskFactor;
+    }
+
+    public void setFxRiskFactor(FxRiskFactor fxRiskFactor) {
+        this.fxRiskFactor = fxRiskFactor;
+    }
 
     @Embedded
     public DealHourlyPositionDetail getDetail() {
@@ -149,11 +176,27 @@ public class DealHourlyPosition extends AbstractEntity {
 
         if (snapshot.getPowerProfilePositionId() != null)
             this.powerProfilePosition = getPowerProfilePositionRepository().load(snapshot.getPowerProfilePositionId());
+
+        if (snapshot.getFxRiskFactorId() != null)
+            this.fxRiskFactor = getFxRiskFactorRepository().load(snapshot.getFxRiskFactorId());
+
+        if (snapshot.getPriceIndexId() != null)
+            this.priceIndex = getPriceIndexRepository().load(snapshot.getPriceIndexId());
     }
 
     @Transient
     protected static DealRepository getDealRepository() {
         return (DealRepository) ApplicationContextFactory.getBean(DealRepository.BEAN_NAME);
+    }
+
+    @Transient
+    protected static PriceIndexRepository getPriceIndexRepository() {
+        return (PriceIndexRepository) ApplicationContextFactory.getBean(PriceIndexRepository.BEAN_NAME);
+    }
+
+    @Transient
+    protected static FxRiskFactorRepository getFxRiskFactorRepository() {
+        return (FxRiskFactorRepository) ApplicationContextFactory.getBean(FxRiskFactorRepository.BEAN_NAME);
     }
 
 

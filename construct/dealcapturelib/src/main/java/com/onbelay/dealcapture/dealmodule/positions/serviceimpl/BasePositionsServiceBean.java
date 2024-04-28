@@ -4,13 +4,18 @@ import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.serviceimpl.BaseDomainService;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
+import com.onbelay.dealcapture.riskfactor.batch.sql.FxRiskFactorBatchInserter;
+import com.onbelay.dealcapture.riskfactor.batch.sql.PriceRiskFactorBatchInserter;
 import com.onbelay.dealcapture.riskfactor.components.ConcurrentRiskFactorManager;
 import com.onbelay.dealcapture.riskfactor.components.FxRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
@@ -32,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class BasePositionsServiceBean  extends BaseDomainService  {
+public abstract class BasePositionsServiceBean  extends BaseDomainService {
     private static final Logger logger = LogManager.getLogger();
 
     @Autowired
@@ -43,6 +48,12 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService  {
 
     @Autowired
     protected PriceRiskFactorService priceRiskFactorService;
+
+    @Autowired
+    private PriceRiskFactorBatchInserter priceRiskFactorBatchInserter;
+
+    @Autowired
+    private FxRiskFactorBatchInserter fxRiskFactorBatchInserter;
 
     @Autowired
     protected FxRiskFactorService fxRiskFactorService;
@@ -83,7 +94,8 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService  {
     protected void processPriceRiskFactors(
             RiskFactorManager riskFactorManager,
             LocalDate startPositionDate,
-            LocalDate endPositionDate) {
+            LocalDate endPositionDate,
+            LocalDateTime createdDateTime) {
 
         logger.info("fetch basis price risk factors start: " + LocalDateTime.now().toString());
         if (riskFactorManager.getPriceRiskFactorsSearch().keySet().size() > 0) {
@@ -117,177 +129,99 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService  {
         }
         logger.info("fetch basis price risk factors end: " + LocalDateTime.now().toString());
 
-        HashMap<Integer, Map<LocalDate, PriceRiskFactorSnapshot>> newPriceRiskFactors = new HashMap<>();
+        List<PriceRiskFactorSnapshot> priceRiskFactorsToSave = new ArrayList<>();
 
-        HashMap<Integer, Map<LocalDate, Map<Integer,PriceRiskFactorSnapshot>>> newHourlyPriceRiskFactors = new HashMap<>();
-        HashMap<Integer, List<PriceRiskFactorSnapshot>> priceRiskFactorsToSave = new HashMap<>();
-
+        HashMap<String, PriceRiskFactorSnapshot> distinctPriceRiskFactors = new HashMap<>();
 
         logger.info("Save price risk factors start: " + LocalDateTime.now().toString());
         for (PriceRiskFactorHolder holder : riskFactorManager.getPriceRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
-                if (holder.getPriceIndex().getDetail().getFrequencyCode() == FrequencyCode.HOURLY) {
-                    Map<LocalDate, Map<Integer, PriceRiskFactorSnapshot>> snapshotMap = newHourlyPriceRiskFactors.computeIfAbsent(
-                            holder.getPriceIndex().getEntityId().getId(),
-                            k -> new HashMap<>());
-
-                    Map<Integer, PriceRiskFactorSnapshot> hourMap = snapshotMap.computeIfAbsent(
-                            holder.getMarketDate(),
-                            k -> new HashMap<>());
-
-                    PriceRiskFactorSnapshot snapshot = hourMap.get(holder.getHourEnding());
-                    if (snapshot == null) {
-                        snapshot = new PriceRiskFactorSnapshot();
-                        snapshot.setPriceIndexId(holder.getPriceIndex().getEntityId());
-                        snapshot.getDetail().setMarketDate(holder.getMarketDate());
-                        snapshot.getDetail().setHourEnding(holder.getHourEnding());
-                        hourMap.putIfAbsent(holder.getHourEnding(), snapshot);
-                        List<PriceRiskFactorSnapshot> saveList = priceRiskFactorsToSave.computeIfAbsent(
-                                holder.getPriceIndex().getEntityId().getId(),
-                                k -> new ArrayList<>());
-                        saveList.add(snapshot);
-                    }
+                PriceRiskFactorSnapshot snapshot = distinctPriceRiskFactors.get(holder.generateUniqueKey());
+                if (snapshot != null) {
+                    holder.setRiskFactor(snapshot);
                 } else {
-                    Map<LocalDate, PriceRiskFactorSnapshot> snapshotMap = newPriceRiskFactors.computeIfAbsent(
-                            holder.getPriceIndex().getEntityId().getId(),
-                            k -> new HashMap<>());
+                    snapshot = new PriceRiskFactorSnapshot();
+                    holder.setRiskFactor(snapshot);
+                    snapshot.getDetail().setDefaults();
+                    snapshot.setFrequencyCode(holder.getPriceIndex().getDetail().getFrequencyCode());
+                    snapshot.setPriceIndexId(holder.getPriceIndex().getEntityId());
+                    snapshot.getDetail().setCreatedDateTime(createdDateTime);
+                    snapshot.getDetail().setMarketDate(holder.getMarketDate());
+                    snapshot.getDetail().setHourEnding(holder.getHourEnding());
 
-                    PriceRiskFactorSnapshot snapshot = snapshotMap.get(holder.getMarketDate());
-                    if (snapshot == null) {
-                        snapshot = new PriceRiskFactorSnapshot();
-                        snapshot.setPriceIndexId(holder.getPriceIndex().getEntityId());
-                        snapshot.getDetail().setMarketDate(holder.getMarketDate());
-                        snapshotMap.putIfAbsent(holder.getMarketDate(), snapshot);
-                        List<PriceRiskFactorSnapshot> saveList = priceRiskFactorsToSave.computeIfAbsent(
-                                holder.getPriceIndex().getEntityId().getId(),
-                                k -> new ArrayList<>());
-                        saveList.add(snapshot);
-                    }
+                    distinctPriceRiskFactors.put(holder.generateUniqueKey(), snapshot);
+                    priceRiskFactorsToSave.add(snapshot);
                 }
             }
         }
 
-        for (Integer priceIndexId : priceRiskFactorsToSave.keySet()) {
-            SubLister<PriceRiskFactorSnapshot> subLister = new SubLister<>(
-                    priceRiskFactorsToSave.get(priceIndexId),
-                    100);
-
-            ArrayList<Integer> ids = new ArrayList<>();
-
-            while (subLister.moreElements()) {
-                TransactionResult result = priceRiskFactorService.save(
-                        new EntityId(priceIndexId),
-                        subLister.nextList());
-
-                ids.addAll(result.getIds());
-            }
-
-            List<PriceRiskFactorSnapshot> saved = priceRiskFactorService.findByIds(
-                    new QuerySelectedPage(ids));
-
-            for (PriceRiskFactorSnapshot snapshot : saved) {
-                PriceRiskFactorSnapshot existing;
-                if (snapshot.getFrequencyCode() == FrequencyCode.HOURLY) {
-                    existing = newHourlyPriceRiskFactors
-                            .get(priceIndexId)
-                            .get(snapshot.getDetail().getMarketDate())
-                            .get(snapshot.getDetail().getHourEnding());
-                } else {
-                    existing = newPriceRiskFactors
-                            .get(priceIndexId)
-                            .get(snapshot.getDetail().getMarketDate());
-                }
-                existing.setEntityId(snapshot.getEntityId());
-                existing.setEntityState(EntityState.UNMODIFIED);
-            }
+        SubLister<PriceRiskFactorSnapshot> subLister = new SubLister<>(priceRiskFactorsToSave, 1000);
+        while (subLister.moreElements()) {
+            priceRiskFactorBatchInserter.saveRiskFactors(subLister.nextList());
         }
-        logger.info("Save price risk factors end: " + LocalDateTime.now().toString());
 
+
+        for (PriceRiskFactorSnapshot snapshot : priceRiskFactorsToSave) {
+            snapshot.setEntityState(EntityState.UNMODIFIED);
+        }
         logger.info("assign new price risk factors to holders start: " + LocalDateTime.now().toString());
         for (PriceRiskFactorHolder holder : riskFactorManager.getPriceRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
-                if (holder.getPriceIndex().getDetail().getFrequencyCode() == FrequencyCode.HOURLY) {
-                    holder.setRiskFactor(
-                            newHourlyPriceRiskFactors
-                                    .get(holder.getPriceIndex().getEntityId().getId())
-                                    .get(holder.getMarketDate())
-                                    .get(holder.getHourEnding()));
-                } else {
-                    holder.setRiskFactor(
-                            newPriceRiskFactors
-                                    .get(holder.getPriceIndex().getEntityId().getId())
-                                    .get(holder.getMarketDate()));
-                }
+                throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
             }
+            if (holder.getRiskFactor().getEntityId() == null)
+                throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
         }
         logger.info("assign new price risk factors to holders end: " + LocalDateTime.now().toString());
 
     }
 
-    protected void processFxRiskFactors(RiskFactorManager riskFactorManager) {
+    protected void processFxRiskFactors(
+            RiskFactorManager riskFactorManager,
+            LocalDateTime createdDateTime) {
 
-        HashMap<Integer, Map<LocalDate, FxRiskFactorSnapshot>> newFxRiskFactors = new HashMap<>();
+        HashMap<String, FxRiskFactorSnapshot> distinctFxRiskFactors = new HashMap<>();
+        List<FxRiskFactorSnapshot> fxRiskFactorsToSave = new ArrayList<>();
 
         logger.info("save new fx risk factors start: " + LocalDateTime.now().toString());
         for (FxRiskFactorHolder holder : riskFactorManager.getFxRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
-                Map<LocalDate, FxRiskFactorSnapshot> snapshotMap = newFxRiskFactors
-                        .computeIfAbsent(
-                                holder.getFxIndex().getEntityId().getId(),
-                                k -> new HashMap<>());
-
-                FxRiskFactorSnapshot snapshot = snapshotMap.get(holder.getMarketDate());
-                if (snapshot == null) {
+                FxRiskFactorSnapshot snapshot = distinctFxRiskFactors.get(holder.generateUniqueKey());
+                if (snapshot != null) {
+                    holder.setRiskFactor(snapshot);
+                } else {
                     snapshot = new FxRiskFactorSnapshot();
+                    holder.setRiskFactor(snapshot);
+                    snapshot.getDetail().setDefaults();
                     snapshot.setFxIndexId(holder.getFxIndex().getEntityId());
                     snapshot.getDetail().setMarketDate(holder.getMarketDate());
-                    snapshotMap.putIfAbsent(holder.getMarketDate(), snapshot);
+                    snapshot.getDetail().setCreatedDateTime(createdDateTime);
+                    distinctFxRiskFactors.put(holder.generateUniqueKey(), snapshot);
+                    fxRiskFactorsToSave.add(snapshot);
                 }
             }
-        }
-
-        for (Integer fxIndexId : newFxRiskFactors.keySet()) {
-            SubLister<FxRiskFactorSnapshot> subLister = new SubLister<>(
-                    newFxRiskFactors.get(fxIndexId)
-                            .values()
-                            .stream()
-                            .collect(Collectors.toList()),
-                    1000);
-
-            ArrayList<Integer> ids = new ArrayList<>();
-            while (subLister.moreElements()) {
-                TransactionResult result = fxRiskFactorService.save(
-                        new EntityId(fxIndexId),
-                        subLister.nextList());
-
-                ids.addAll(result.getIds());
-            }
-
-            List<FxRiskFactorSnapshot> saved = fxRiskFactorService.findByIds(
-                    new QuerySelectedPage(ids));
-
-            for (FxRiskFactorSnapshot snapshot : saved) {
-                FxRiskFactorSnapshot existing = newFxRiskFactors
-                        .get(fxIndexId)
-                        .get(snapshot.getDetail().getMarketDate());
-                existing.setEntityId(snapshot.getEntityId());
-                existing.setEntityState(EntityState.UNMODIFIED);
-            }
+            logger.info("assign new fx risk factors to holders end: " + LocalDateTime.now().toString());
 
         }
-        logger.info("save new fx risk factors start: " + LocalDateTime.now().toString());
+        SubLister<FxRiskFactorSnapshot> subLister = new SubLister<>(fxRiskFactorsToSave, 1000);
+        while (subLister.moreElements()) {
+            fxRiskFactorBatchInserter.saveRiskFactors(subLister.nextList());
+        }
 
+
+        for (FxRiskFactorSnapshot snapshot : fxRiskFactorsToSave) {
+            snapshot.setEntityState(EntityState.UNMODIFIED);
+        }
         logger.info("assign new fx risk factors to holders start: " + LocalDateTime.now().toString());
         for (FxRiskFactorHolder holder : riskFactorManager.getFxRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
-                holder.setRiskFactor(
-                        newFxRiskFactors
-                                .get(holder.getFxIndex().getEntityId().getId())
-                                .get(holder.getMarketDate()));
+                throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
             }
+            if (holder.getRiskFactor().getEntityId() == null)
+                throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
         }
         logger.info("assign new fx risk factors to holders end: " + LocalDateTime.now().toString());
 
-    }
 
+    }
 }

@@ -83,7 +83,6 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
 
         List<PowerProfilePositionView> views = powerProfilePositionsService.fetchPowerProfilePositionViews(
                 powerProfileIds,
-                currencyCode,
                 createdDateTime);
 
         LocalDate startDate = views.stream().map(c -> c.getDetail().getStartDate()).min(LocalDate::compareTo).get();

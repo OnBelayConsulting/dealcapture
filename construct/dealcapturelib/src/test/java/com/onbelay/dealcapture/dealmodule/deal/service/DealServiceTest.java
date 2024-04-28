@@ -187,6 +187,7 @@ public class DealServiceTest extends DealServiceTestCase {
 
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+		dealSnapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
 		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
 		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);

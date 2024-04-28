@@ -17,6 +17,12 @@ public class DealHourlyPositionAssembler extends EntityAssembler  {
         if (position.getPowerProfilePosition() != null)
             snapshot.setPowerProfilePositionId(position.getPowerProfilePosition().generateEntityId());
 
+        if (position.getFxRiskFactor() != null)
+            snapshot.setFxRiskFactorId(position.getFxRiskFactor().generateEntityId());
+
+        if (position.getPriceIndex() != null)
+            snapshot.setPriceIndexId(position.getPriceIndex().generateEntityId());
+
         snapshot.getDetail().copyFrom(position.getDetail());
         snapshot.getHourPriceRiskFactorIdMap().copyFrom(position.getHourPriceRiskFactorIdMap());
         snapshot.getHourFixedValueDetail().copyFrom(position.getHourQuantityDayDetail());

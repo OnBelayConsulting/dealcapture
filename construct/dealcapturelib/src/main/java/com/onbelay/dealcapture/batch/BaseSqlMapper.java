@@ -13,17 +13,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
+package com.onbelay.dealcapture.batch;
 
-import java.util.List;
+public abstract class BaseSqlMapper implements OBSqlMapper {
 
-public abstract class AbstractBaseSqlMapper {
+	protected final  boolean isAddPrimaryKey;
 
-
-	public abstract String getTableName();
-	
-	public abstract List<String> getColumnNames();
-	
+	public BaseSqlMapper(boolean isAddPrimaryKey) {
+		this.isAddPrimaryKey = isAddPrimaryKey;
+	}
 
 	public String createPlaceHolders() {
 		if (getColumnNames().size() < 1)
@@ -38,4 +36,8 @@ public abstract class AbstractBaseSqlMapper {
 		return buffer.toString();
 	}
 
+	@Override
+	public boolean isAddPrimaryKey() {
+		return isAddPrimaryKey;
+	}
 }

@@ -6,11 +6,13 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
+import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.CostPositionsBatchUpdater;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealHourlyPositionsBatchUpdater;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchUpdater;
 import com.onbelay.dealcapture.dealmodule.positions.model.*;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
+import com.onbelay.dealcapture.dealmodule.positions.service.PowerProfilePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -35,6 +37,12 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
 
     @Autowired
     private DealService dealService;
+
+    @Autowired
+    private PowerProfileService powerProfileService;
+
+    @Autowired
+    private PowerProfilePositionsService powerProfilePositionsService;
 
     @Autowired
     private DealPositionsBatchUpdater dealPositionsBatchUpdater;
@@ -86,17 +94,26 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
 
         logger.info("value positions start: " + LocalDateTime.now().toString());
 
+        logger.info("fetch deal position views start: " + LocalDateTime.now().toString());
         List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                 dealIds,
                 currencyCode,
                 createdDateTime);
+        logger.info("fetch deal position views end: " + LocalDateTime.now().toString());
 
+        if (views.isEmpty()) {
+            logger.info("No positions to value.");
+            return;
+
+        }
         LocalDate startDate = views.stream().map(c -> c.getDetail().getStartDate()).min(LocalDate::compareTo).get();
         LocalDate endDate = views.stream().map(c -> c.getDetail().getStartDate()).max(LocalDate::compareTo).get();
 
+        logger.info("create valuationIndexManager start: " + LocalDateTime.now().toString());
         ValuationIndexManager valuationIndexManager = createValuationIndexManager(
                 startDate,
                 endDate);
+        logger.info("create valuationIndexManager end: " + LocalDateTime.now().toString());
 
 
         valueCostPositions(
@@ -106,10 +123,12 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
                 valuationIndexManager,
                 currentDateTime);
 
+        logger.info("fetch cost summaries start: " + LocalDateTime.now().toString());
         List<TotalCostPositionSummary> costPositionSummaries = dealPositionService.calculateTotalCostPositionSummaries(
                 dealIds,
                 currencyCode,
                 createdDateTime);
+        logger.info("fetch cost summaries end: " + LocalDateTime.now().toString());
 
         HashMap<Integer, Map<LocalDate, TotalCostPositionSummary>> totalCostMap = new HashMap<>();
         for (TotalCostPositionSummary summary : costPositionSummaries) {
@@ -139,6 +158,22 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             viewList.add(view);
         }
 
+        QuerySelectedPage selectedPage = powerProfileService.findPowerProfileIds(new DefinedQuery("PowerProfile"));
+        List<PowerProfilePositionView> powerProfilePositionViews = powerProfilePositionsService.fetchPowerProfilePositionViews(
+                selectedPage.getIds(),
+                createdDateTime);
+        Map<Integer, Map<LocalDate, List<PowerProfilePositionView>>> powerProfilePositionViewMap = new HashMap<>();
+        for (PowerProfilePositionView view : powerProfilePositionViews) {
+            Map<LocalDate, List<PowerProfilePositionView>> powerPositionByDateMap = powerProfilePositionViewMap.computeIfAbsent(
+                    view.getPowerProfileId(),
+                    k -> new HashMap<>());
+
+            List<PowerProfilePositionView> positionViewList = powerPositionByDateMap.computeIfAbsent(
+                    view.getDetail().getStartDate(),
+                    k -> new ArrayList<>());
+            positionViewList.add(view);
+        }
+
 
         ArrayList<PositionValuationResult> results = new ArrayList<>();
         ArrayList<HourlyPositionValuationResult> hourlyPositionValuationResults = new ArrayList<>();
@@ -160,6 +195,13 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
                 if (viewList != null) {
                     evaluator.withHourlyPositions(viewList);
                 }
+            }
+
+            if (view.getPowerProfileId() != null) {
+                Map<LocalDate, List<PowerProfilePositionView>> powerPositionByDateMap = powerProfilePositionViewMap.get(
+                        view.getPowerProfileId());
+                List<PowerProfilePositionView> viewList = powerPositionByDateMap.get(view.getDetail().getStartDate());
+                evaluator.withPowerProfilePositions(viewList);
             }
 
             PositionValuationResult valuationResult = evaluator.valuePosition();

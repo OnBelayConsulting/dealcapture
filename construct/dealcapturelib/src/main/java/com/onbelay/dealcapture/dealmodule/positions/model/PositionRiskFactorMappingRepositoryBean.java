@@ -19,12 +19,15 @@ import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository (value="positionRiskFactorMappingRepository")
@@ -78,10 +81,23 @@ public class PositionRiskFactorMappingRepositoryBean extends BaseRepository<Posi
 
 	@Override
 	public List<PositionRiskFactorMappingSummary> findAllMappingSummaries(List<Integer> positionIds) {
-		return (List<PositionRiskFactorMappingSummary>) executeReportQuery(
-				FIND_ALL_MAPPING_SUMMARIES,
-				"positionIds",
-				positionIds);
+		if (positionIds.size() < 2000) {
+			return (List<PositionRiskFactorMappingSummary>) executeReportQuery(
+					FIND_ALL_MAPPING_SUMMARIES,
+					"positionIds",
+					positionIds);
+		} else {
+			ArrayList<PositionRiskFactorMappingSummary> summaries = new ArrayList<>(positionIds.size());
+			SubLister<Integer> subLister = new SubLister<>(positionIds, 2000);
+			while (subLister.moreElements()) {
+				summaries.addAll(
+						(List<PositionRiskFactorMappingSummary>) executeReportQuery(
+								FIND_ALL_MAPPING_SUMMARIES,
+								"positionIds",
+								subLister.nextList()));
+			}
+			return summaries;
+		}
 	}
 
 

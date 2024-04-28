@@ -25,9 +25,10 @@ import java.util.Map;
  *
  */
 public enum ValuationCode {
-	FIXED 		 ("F"),
-    INDEX    	 ("I"),
-    INDEX_PLUS   ("IP");
+	FIXED 		  ("FIXED"),
+    INDEX    	  ("INDEX"),
+    INDEX_PLUS    ("INDEX_PLUS"),
+	POWER_PROFILE ("POWER_PROFILE");
 
 	private final String code;
 

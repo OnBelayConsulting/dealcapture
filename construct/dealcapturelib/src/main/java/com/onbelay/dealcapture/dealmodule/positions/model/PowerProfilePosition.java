@@ -11,6 +11,8 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositio
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
+import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
+import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import jakarta.persistence.*;
 
 @Entity
@@ -157,5 +159,6 @@ public class PowerProfilePosition extends AbstractEntity {
     protected static PriceIndexRepository getPriceIndexRepository() {
         return (PriceIndexRepository) ApplicationContextFactory.getBean(PriceIndexRepository.BEAN_NAME);
     }
+
 
 }

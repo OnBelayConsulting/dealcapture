@@ -23,7 +23,7 @@ import org.hibernate.annotations.Immutable;
                         "   WHERE view.dealId = :dealId " +
                         "     AND view.detail.dayTypeCodeValue = :dayTypeCode " +
                         "     AND view.detail.dealDayDate >= :fromDate " +
-                        "     AND view.detail.dealDayDate < :toDate" +
+                        "     AND view.detail.dealDayDate <= :toDate" +
                       "  ORDER BY view.detail.dealDayDate"),
         @NamedQuery(
                 name = DealHourByDayRepositoryBean.FETCH_ALL_DEAL_HOUR_VIEWS_BY_DATE,
@@ -31,7 +31,7 @@ import org.hibernate.annotations.Immutable;
                         "    FROM DealHourByDayView view " +
                         "   WHERE view.dealId in (:dealIds) " +
                         "     AND view.detail.dealDayDate >= :fromDate " +
-                        "     AND view.detail.dealDayDate < :toDate" +
+                        "     AND view.detail.dealDayDate <= :toDate" +
                       "  ORDER BY view.dealId, view.detail.dealDayDate")
 })
 public class DealHourByDayView extends AbstractEntity {

@@ -27,13 +27,14 @@ import java.util.stream.Collectors;
                         "  FROM DealPositionView position " +
                         " WHERE position.dealId in (:dealIds) " +
                         "   AND detail.currencyCodeValue = :currencyCode " +
-                        "   AND detail.createdDateTime = :createdDateTime " +
-                        "ORDER BY position.detail.startDate ")
+                        "   AND detail.createdDateTime = :createdDateTime ")
 })
 public class DealPositionView extends AbstractEntity {
     private Integer id;
 
     private Integer dealId;
+
+    private Integer powerProfileId;
 
     private Integer fixedPriceFXRiskFactorId;
 
@@ -64,6 +65,15 @@ public class DealPositionView extends AbstractEntity {
 
     public void setDealId(Integer dealId) {
         this.dealId = dealId;
+    }
+
+    @Column(name = "POWER_PROFILE_ID")
+    public Integer getPowerProfileId() {
+        return powerProfileId;
+    }
+
+    public void setPowerProfileId(Integer powerProfileId) {
+        this.powerProfileId = powerProfileId;
     }
 
     @Column(name = "FIXED_PRICE_FX_RISK_FACTOR_ID")

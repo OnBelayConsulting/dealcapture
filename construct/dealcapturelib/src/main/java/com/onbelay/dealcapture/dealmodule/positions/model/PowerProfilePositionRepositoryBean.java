@@ -74,14 +74,13 @@ public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProf
 
 	@Override
 	public List<PowerProfilePositionView> findPowerProfilePositionViews(
-			List<Integer> dealIds,
-			CurrencyCode currencyCode,
+			List<Integer> powerProfileIds,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"powerProfileIds", "currencyCode", "createdDateTime"};
+		String[] names = {"powerProfileIds", "createdDateTime"};
 
-		if (dealIds.size() < 2000) {
-			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
+		if (powerProfileIds.size() < 2000) {
+			Object[] parms = {powerProfileIds, createdDateTime};
 
 			return (List<PowerProfilePositionView>) executeReportQuery(
 					FIND_PROFILE_POSITION_VIEWS,
@@ -89,9 +88,9 @@ public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProf
 					parms);
 		} else {
 			ArrayList<PowerProfilePositionView> views = new ArrayList<>();
-			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+			SubLister<Integer> subLister = new SubLister<>(powerProfileIds, 2000);
 			while (subLister.moreElements()) {
-				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), createdDateTime};
+				Object[] parmsTwo = {subLister.nextList(), createdDateTime};
 				views.addAll (
 						(Collection<? extends PowerProfilePositionView>) executeReportQuery(
 								FIND_PROFILE_POSITION_VIEWS,
@@ -107,11 +106,10 @@ public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProf
 	public List<PowerProfilePositionView> findPowerProfilePositionViewsByDate(
 			LocalDate startDate,
 			LocalDate endDate,
-			CurrencyCode currencyCode,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"startDate", "endDate", "currencyCode", "createdDateTime"};
-		Object[] parms = {startDate, endDate, currencyCode.getCode(), createdDateTime};
+		String[] names = {"startDate", "endDate", "createdDateTime"};
+		Object[] parms = {startDate, endDate,  createdDateTime};
 		return (List<PowerProfilePositionView>) executeReportQuery(
 				FIND_PROFILE_POSITION_VIEWS_BY_CONTEXT,
 				names,

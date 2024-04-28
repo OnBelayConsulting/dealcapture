@@ -123,7 +123,7 @@ public class DealPositionsBatchUpdater {
 						else
 							preparedStatement.setNull(7, Types.DECIMAL);
 
-						preparedStatement.setInt(8, valuation.getPositionId());
+						preparedStatement.setInt(8, valuation.getDomainId());
 						preparedStatement.addBatch();
 					}
 

@@ -15,20 +15,19 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DealPositionSqlMapper extends AbstractBaseSqlMapper {
+public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 
-	private final  boolean isAddPrimaryKey;
-
-	public DealPositionSqlMapper(Boolean isAddPrimaryKey) {
-		this.isAddPrimaryKey = isAddPrimaryKey;
+	public DealPositionSqlMapper(boolean isAddPrimaryKey) {
+		super(isAddPrimaryKey);
 	}
-
 
 	protected int getStartingPoint() {
 		if (isAddPrimaryKey == false)
@@ -69,8 +68,9 @@ public abstract class DealPositionSqlMapper extends AbstractBaseSqlMapper {
 	
 	
 	public void setValuesOnPreparedStatement(
-			DealPositionSnapshot position,
+			AbstractSnapshot snapshot,
 			PreparedStatement preparedStatement) throws SQLException {
+		DealPositionSnapshot position = (DealPositionSnapshot) snapshot;
 		int n;
 		if (isAddPrimaryKey) {
 			n= 1;

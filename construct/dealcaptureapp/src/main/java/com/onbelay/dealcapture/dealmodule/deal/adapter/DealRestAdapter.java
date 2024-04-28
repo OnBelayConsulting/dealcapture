@@ -4,7 +4,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
-import org.hibernate.sql.exec.spi.ExecutionContext;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 
 import java.util.List;
 
@@ -24,5 +24,6 @@ public interface DealRestAdapter {
 
     TransactionResult generatePositions(
             Integer dealId,
-            ExecutionContext context);
+            EvaluationContextRequest request);
+
 }

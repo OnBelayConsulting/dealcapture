@@ -44,5 +44,13 @@ public class DealPositionsBatchInserterConfig {
             return new PowerProfilePositionsDefaultBatchInserter();
     }
 
+    @Bean
+    public PositionRiskFactorMappingBatchInserter positionRiskFactorMappingBatchInserter() {
+        if (isSqlServer)
+            return new PositionRiskFactorMappingSqlServerBatchInserter();
+        else
+            return new PositionRiskFactorMappingDefaultBatchInserter();
+    }
+
 
 }

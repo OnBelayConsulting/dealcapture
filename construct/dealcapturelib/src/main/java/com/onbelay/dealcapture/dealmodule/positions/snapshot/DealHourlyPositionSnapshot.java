@@ -9,6 +9,10 @@ public class DealHourlyPositionSnapshot extends AbstractSnapshot {
 
     private EntityId powerProfilePositionId;
 
+    private EntityId priceIndexId;
+
+    private EntityId fxRiskFactorId;
+
     private DealHourlyPositionDetail detail = new DealHourlyPositionDetail();
 
     private HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap = new HourPriceRiskFactorIdMap();
@@ -29,6 +33,22 @@ public class DealHourlyPositionSnapshot extends AbstractSnapshot {
 
     public void setDetail(DealHourlyPositionDetail detail) {
         this.detail = detail;
+    }
+
+    public EntityId getFxRiskFactorId() {
+        return fxRiskFactorId;
+    }
+
+    public void setFxRiskFactorId(EntityId fxRiskFactorId) {
+        this.fxRiskFactorId = fxRiskFactorId;
+    }
+
+    public EntityId getPriceIndexId() {
+        return priceIndexId;
+    }
+
+    public void setPriceIndexId(EntityId priceIndexId) {
+        this.priceIndexId = priceIndexId;
     }
 
     public HourPriceRiskFactorIdMap getHourPriceRiskFactorIdMap() {

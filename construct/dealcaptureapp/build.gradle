@@ -98,6 +98,7 @@ test {
 
 bootRun {
 	systemProperties = System.properties
+	jvmArgs(["-Xms4096m", "-Xmx32g" ])
 }
 
 
