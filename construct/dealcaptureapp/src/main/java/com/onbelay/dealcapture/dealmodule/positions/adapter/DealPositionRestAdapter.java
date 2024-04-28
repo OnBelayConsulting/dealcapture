@@ -10,9 +10,7 @@ import java.util.List;
 
 public interface DealPositionRestAdapter {
 
-    TransactionResult generatePositions(
-            String queryText,
-            EvaluationContextRequest evaluationContext);
+    TransactionResult generatePositions(EvaluationContextRequest evaluationContext);
 
     TransactionResult save(
             EntityId dealId,
@@ -27,5 +25,5 @@ public interface DealPositionRestAdapter {
             Integer start,
             Integer limit);
 
-    public TransactionResult valuePositions(String queryText);
+    public TransactionResult valuePositions( EvaluationContextRequest evaluationContext);
 }

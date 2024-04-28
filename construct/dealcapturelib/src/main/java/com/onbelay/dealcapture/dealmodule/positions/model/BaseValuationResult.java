@@ -13,21 +13,21 @@ public abstract class BaseValuationResult {
     private static Logger logger = LogManager.getLogger();
     private static String SUCCESS = "SUCCESS";
 
-    private Integer positionId;
+    private Integer domainId;
     private LocalDateTime currentDateTime;
     private PositionErrorCode errorCode = PositionErrorCode.SUCCESS;
 
     private List<String> errorMessages = new ArrayList<>();
 
     public BaseValuationResult(
-            Integer positionId,
+            Integer domainId,
             LocalDateTime currentDateTime) {
-        this.positionId = positionId;
+        this.domainId = domainId;
         this.currentDateTime = currentDateTime;
     }
 
-    public Integer getPositionId() {
-        return positionId;
+    public Integer getDomainId() {
+        return domainId;
     }
 
     public LocalDateTime getCurrentDateTime() {

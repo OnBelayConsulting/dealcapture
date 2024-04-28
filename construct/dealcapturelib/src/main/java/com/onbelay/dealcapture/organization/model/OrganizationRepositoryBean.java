@@ -15,7 +15,6 @@
  */
 package com.onbelay.dealcapture.organization.model;
 
-import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
@@ -23,11 +22,10 @@ import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.organization.repository.OrganizationRepository;
-import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Repository (value="organizationRepository")

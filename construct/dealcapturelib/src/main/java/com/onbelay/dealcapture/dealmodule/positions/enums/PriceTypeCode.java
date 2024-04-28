@@ -20,14 +20,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Defines the type of PRICE .
+ * Defines the type of position
  * 
  * @author lefeuvrem
  *
  */
 public enum PriceTypeCode {
-	DEAL_PRICE 			("D"),
-	MARKET_PRICE 		("M");
+	FIXED_PRICE 		("FIXED_PRICE"),
+	FIXED_QUANTITY 		("FIXED_QUANTITY"),
+	DEAL_PRICE 			("DEAL_PRICE"),
+	MARKET_PRICE 		("MARKET_PRICE");
 
 	private final String code;
 

@@ -1,0 +1,157 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/POWER_PROFILE_DAY_AUDIT.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="POWER_PROFILE_DAY_AUDIT_SEQ"
+                startValue="1"
+        />
+
+        <createTable tableName="POWER_PROFILE_DAY_AUDIT" tablespace="${tblspace_data}">
+            <column name="AUDIT_ID"
+                    defaultValueSequenceNext="POWER_PROFILE_DAY_AUDIT_SEQ"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="POWER_PROFILE_DAY_AUDIT_PK" nullable="false"/>
+            </column>
+            <column name="ENTITY_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DAY_OF_WEEK"
+                    type="java.sql.Types.NUMERIC(2, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POWER_PROFILE_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HOUR_1_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_2_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_3_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_4_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_5_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_6_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_7_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_8_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_9_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_10_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_11_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_12_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_13_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_14_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_15_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_16_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_17_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_18_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_19_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_20_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_21_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_22_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_23_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="HOUR_24_FLOW_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="AUDIT_LOCK_NO"
+                    defaultValueNumeric="0"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPTIMISTIC_LOCK_NO"
+                    defaultValueNumeric="0"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPIRED_FLG"
+                    type="java.sql.Types.CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_FROM_DTTM"
+                    type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_TO_DTTM"
+                    type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_USER"
+                    type="java.sql.Types.VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

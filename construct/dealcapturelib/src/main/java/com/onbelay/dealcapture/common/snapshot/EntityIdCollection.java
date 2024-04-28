@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.common.snapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EntityIdCollection {

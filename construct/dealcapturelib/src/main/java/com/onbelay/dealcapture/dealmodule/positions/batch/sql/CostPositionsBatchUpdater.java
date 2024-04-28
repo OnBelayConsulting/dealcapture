@@ -18,7 +18,6 @@ package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.positions.model.CostPositionValuationResult;
-import com.onbelay.dealcapture.dealmodule.positions.model.PositionValuationResult;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,7 +107,7 @@ public class CostPositionsBatchUpdater {
 							preparedStatement.setNull(4, Types.DECIMAL);
 
 
-						preparedStatement.setInt(5, valuation.getPositionId());
+						preparedStatement.setInt(5, valuation.getDomainId());
 						preparedStatement.addBatch();
 					}
 

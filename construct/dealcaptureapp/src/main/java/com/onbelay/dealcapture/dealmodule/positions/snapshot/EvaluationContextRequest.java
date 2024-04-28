@@ -9,12 +9,30 @@ import java.time.LocalDateTime;
 
 public class EvaluationContextRequest {
 
+    private String queryText;
+    private Integer dealId;
     private String currencyCodeValue;
-    private String unitofMeasureCodeValue;
-    private LocalDateTime observedDateTime;
+    private String unitOfMeasureCodeValue;
+    private LocalDateTime createdDateTime;
     private LocalDate fromDate;
     private LocalDate toDate;
+    private String positionGenerationIdentifier;
 
+    public String getQueryText() {
+        return queryText;
+    }
+
+    public void setQueryText(String queryText) {
+        this.queryText = queryText;
+    }
+
+    public Integer getDealId() {
+        return dealId;
+    }
+
+    public void setDealId(Integer dealId) {
+        this.dealId = dealId;
+    }
 
     @JsonIgnore
     public CurrencyCode getCurrencyCode() {
@@ -31,23 +49,23 @@ public class EvaluationContextRequest {
 
     @JsonIgnore
     public UnitOfMeasureCode getUnitOfMeasureCode() {
-        return UnitOfMeasureCode.lookUp(unitofMeasureCodeValue);
+        return UnitOfMeasureCode.lookUp(unitOfMeasureCodeValue);
     }
 
-    public String getUnitofMeasureCodeValue() {
-        return unitofMeasureCodeValue;
+    public String getUnitOfMeasureCodeValue() {
+        return unitOfMeasureCodeValue;
     }
 
-    public void setUnitofMeasureCodeValue(String unitofMeasureCodeValue) {
-        this.unitofMeasureCodeValue = unitofMeasureCodeValue;
+    public void setUnitOfMeasureCodeValue(String unitOfMeasureCodeValue) {
+        this.unitOfMeasureCodeValue = unitOfMeasureCodeValue;
     }
 
-    public LocalDateTime getObservedDateTime() {
-        return observedDateTime;
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
     }
 
-    public void setObservedDateTime(LocalDateTime observedDateTime) {
-        this.observedDateTime = observedDateTime;
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 
     public LocalDate getFromDate() {
@@ -64,5 +82,13 @@ public class EvaluationContextRequest {
 
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
+    }
+
+    public String getPositionGenerationIdentifier() {
+        return positionGenerationIdentifier;
+    }
+
+    public void setPositionGenerationIdentifier(String positionGenerationIdentifier) {
+        this.positionGenerationIdentifier = positionGenerationIdentifier;
     }
 }

@@ -9,6 +9,7 @@ import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PriceIndexCurveContainer {
@@ -20,6 +21,8 @@ public class PriceIndexCurveContainer {
     private UnitOfMeasureCode unitOfMeasureCode;
 
     private PriceIndexCurveContainer benchmarkContainer;
+
+    private ConcurrentHashMap<LocalDate, Map<Integer, Price>> hourlyByDayPriceMap = new ConcurrentHashMap<>();
 
     private ConcurrentHashMap<LocalDate, Price> dailyPriceMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<LocalDate, Price> monthlyPriceMap = new ConcurrentHashMap<>();
@@ -72,29 +75,82 @@ public class PriceIndexCurveContainer {
         return this;
     }
 
+    public Price calculatePrice(
+            LocalDate curveDate,
+            int hourEnding) {
+
+        return calculatePriceByFrequency(
+                curveDate,
+                hourEnding,
+                curveDate,
+                frequencyCode);
+
+    }
+
+
     public Price calculatePrice(LocalDate curveDate) {
-        if (this.frequencyCode == FrequencyCode.DAILY) {
-            Price found = dailyPriceMap.get(curveDate);
-            if (found != null)
-                return found;
-            LocalDate monthDate = curveDate.withDayOfMonth(1);
-            Price monthly = monthlyPriceMap.get(monthDate);
-            if (monthly != null)
-                return monthly;
+        return calculatePriceByFrequency(
+                curveDate,
+                0,
+                curveDate,
+                frequencyCode);
+    }
 
-            if (benchmarkContainer != null)
-                return benchmarkContainer.calculatePrice(curveDate);
+    private Price calculatePriceByFrequency(
+            LocalDate curveDate,
+            int hourEnding,
+            LocalDate searchDate,
+            FrequencyCode frequencyCodeIn) {
 
-            return new Price(CalculatedErrorType.ERROR);
-        } else {
-            LocalDate monthDate = curveDate.withDayOfMonth(1);
-            Price monthly = monthlyPriceMap.get(monthDate);
-            if (monthly != null)
-                return monthly;
-            if (benchmarkContainer != null)
-                return benchmarkContainer.calculatePrice(curveDate);
-            return new Price(CalculatedErrorType.ERROR);
+        switch (frequencyCodeIn) {
+
+            case HOURLY -> {
+                Map<Integer, Price> priceMap = hourlyByDayPriceMap.get(searchDate);
+                if (priceMap == null) {
+                    return calculatePriceByFrequency(
+                            curveDate,
+                            hourEnding,
+                            searchDate,
+                            FrequencyCode.DAILY);
+                } else {
+                    Price price = priceMap.get(hourEnding);
+                    if (price != null)
+                        return price;
+                    else
+                        return calculatePriceByFrequency(
+                                curveDate,
+                                hourEnding,
+                                searchDate,
+                                FrequencyCode.DAILY);
+                }
+
+            }
+
+            case DAILY -> {
+                Price found = dailyPriceMap.get(searchDate);
+                if (found != null)
+                    return found;
+                LocalDate monthDate = curveDate.withDayOfMonth(1);
+                return calculatePriceByFrequency(
+                        curveDate,
+                        hourEnding,
+                        monthDate,
+                        FrequencyCode.MONTHLY);
+            }
+            case MONTHLY -> {
+                LocalDate monthDate = searchDate.withDayOfMonth(1);
+                Price monthly = monthlyPriceMap.get(monthDate);
+                if (monthly != null)
+                    return monthly;
+                if (benchmarkContainer != null)
+                    return benchmarkContainer.calculatePrice(
+                            curveDate,
+                            hourEnding);
+
+                return new Price(CalculatedErrorType.ERROR);
+            }
         }
+        return new Price(CalculatedErrorType.ERROR);
     }
 
     public void addPrice(CurveReport report) {
@@ -107,18 +163,38 @@ public class PriceIndexCurveContainer {
     }
 
     private void putPrice(CurveReport report) {
-        if (report.getFrequencyCode() == FrequencyCode.DAILY)
-            dailyPriceMap.put(
-                    report.getCurveDate(),
-                    new Price(report.getValue(),
+
+        switch (report.getFrequencyCode()) {
+
+            case HOURLY -> {
+                Map<Integer, Price> priceMap = hourlyByDayPriceMap.computeIfAbsent(
+                        report.getCurveDate(),
+                        k -> new ConcurrentHashMap<>());
+                priceMap.put(
+                        report.getHourEnding(),
+                        new Price(report.getValue(),
                             currencyCode,
                             unitOfMeasureCode));
-        else
-            monthlyPriceMap.put(
-                    report.getCurveDate(),
-                    new Price(report.getValue(),
-                            currencyCode,
-                            unitOfMeasureCode));
+
+            }
+
+            case DAILY -> {
+                dailyPriceMap.put(
+                        report.getCurveDate(),
+                        new Price(report.getValue(),
+                                currencyCode,
+                                unitOfMeasureCode));
+            }
+
+            case MONTHLY -> {
+                monthlyPriceMap.put(
+                        report.getCurveDate(),
+                        new Price(report.getValue(),
+                                currencyCode,
+                                unitOfMeasureCode));
+            }
+
+        }
 
     }
 

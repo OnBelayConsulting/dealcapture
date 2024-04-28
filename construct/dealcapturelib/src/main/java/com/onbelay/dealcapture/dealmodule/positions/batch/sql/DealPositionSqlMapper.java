@@ -15,20 +15,19 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DealPositionSqlMapper extends AbstractBaseSqlMapper {
+public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 
-	private final  boolean isAddPrimaryKey;
-
-	public DealPositionSqlMapper(Boolean isAddPrimaryKey) {
-		this.isAddPrimaryKey = isAddPrimaryKey;
+	public DealPositionSqlMapper(boolean isAddPrimaryKey) {
+		super(isAddPrimaryKey);
 	}
-
 
 	protected int getStartingPoint() {
 		if (isAddPrimaryKey == false)
@@ -69,8 +68,9 @@ public abstract class DealPositionSqlMapper extends AbstractBaseSqlMapper {
 	
 	
 	public void setValuesOnPreparedStatement(
-			DealPositionSnapshot position,
+			AbstractSnapshot snapshot,
 			PreparedStatement preparedStatement) throws SQLException {
+		DealPositionSnapshot position = (DealPositionSnapshot) snapshot;
 		int n;
 		if (isAddPrimaryKey) {
 			n= 1;
@@ -83,7 +83,7 @@ public abstract class DealPositionSqlMapper extends AbstractBaseSqlMapper {
 
 		preparedStatement.setDate(n + 3, Date.valueOf(position.getDealPositionDetail().getStartDate()));
 		preparedStatement.setDate(n + 4, Date.valueOf(position.getDealPositionDetail().getEndDate()));
-		preparedStatement.setTimestamp(n + 5, Timestamp.valueOf(position.getDealPositionDetail().getCreateUpdateDateTime()));
+		preparedStatement.setTimestamp(n + 5, Timestamp.valueOf(position.getDealPositionDetail().getCreatedDateTime()));
 
 		preparedStatement.setBigDecimal(n + 6, position.getDealPositionDetail().getVolumeQuantityValue());
 		preparedStatement.setString(n + 7, position.getDealPositionDetail().getCurrencyCodeValue());

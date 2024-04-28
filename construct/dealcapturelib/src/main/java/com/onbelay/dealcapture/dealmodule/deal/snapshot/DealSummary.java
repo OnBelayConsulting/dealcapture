@@ -15,21 +15,21 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 
 public class DealSummary {
 
-	private EntityId dealId;
+	private Integer dealId;
+	private Integer powerProfileId;
 	private String ticketNo;
 	private LocalDate startDate;
 	private LocalDate endDate;
@@ -38,10 +38,12 @@ public class DealSummary {
 	private CurrencyCode reportingCurrencyCode;
 	private BigDecimal volumeQuantity;
 	private UnitOfMeasureCode volumeUnitOfMeasureCode;
+	private FrequencyCode volumeFrequencyCode;
 	private CurrencyCode settlementCurrencyCode;
 
 	public DealSummary(
 			Integer dealId,
+			Integer powerProfileId,
 			String ticketNo,
 			LocalDate startDate,
 			LocalDate endDate,
@@ -50,10 +52,12 @@ public class DealSummary {
 			String reportingCurrencyCodeValue,
 			BigDecimal volumeQuantity,
 			String volumeUnitOfMeasureCodeValue,
+			String volumeFrequencyCodeValue,
 			String settlementCurrencyCodeValue) {
 		
 		super();
-		this.dealId = new EntityId(dealId, ticketNo, ticketNo, false);
+		this.powerProfileId = powerProfileId;
+		this.dealId = dealId;
 		this.ticketNo = ticketNo;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -62,12 +66,22 @@ public class DealSummary {
 		this.reportingCurrencyCode = CurrencyCode.lookUp(reportingCurrencyCodeValue);
 		this.volumeQuantity = volumeQuantity;
 		this.volumeUnitOfMeasureCode = UnitOfMeasureCode.lookUp(volumeUnitOfMeasureCodeValue);
+		this.volumeFrequencyCode = FrequencyCode.lookUp(volumeFrequencyCodeValue);
 		this.settlementCurrencyCode = CurrencyCode.lookUp(settlementCurrencyCodeValue);
 	}
-	
-	public EntityId getDealId() {
+
+	public Integer getDealId() {
 		return dealId;
 	}
+
+	public Integer getPowerProfileId() {
+		return powerProfileId;
+	}
+
+	public boolean hasPowerProfile() {
+		return powerProfileId != null;
+	}
+
 	public String getTicketNo() {
 		return ticketNo;
 	}
@@ -101,5 +115,9 @@ public class DealSummary {
 
 	public CurrencyCode getSettlementCurrencyCode() {
 		return settlementCurrencyCode;
+	}
+
+	public FrequencyCode getVolumeFrequencyCode() {
+		return volumeFrequencyCode;
 	}
 }

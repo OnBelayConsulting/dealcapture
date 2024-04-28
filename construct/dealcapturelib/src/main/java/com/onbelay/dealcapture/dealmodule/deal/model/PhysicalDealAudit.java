@@ -15,21 +15,17 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import jakarta.persistence.*;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL_AUDIT")
 public class PhysicalDealAudit extends BaseDealAudit {
 
 	private PriceIndex marketPriceIndex;
+	private PriceIndex dealPriceIndex;
 	private PhysicalDealDetail detail = new PhysicalDealDetail();
 	
 	protected PhysicalDealAudit() {
@@ -57,6 +53,16 @@ public class PhysicalDealAudit extends BaseDealAudit {
 		this.marketPriceIndex = priceIndex;
 	}
 
+	@ManyToOne
+	@JoinColumn(name ="DEAL_PRICE_INDEX_ID")
+	public PriceIndex getDealPriceIndex() {
+		return dealPriceIndex;
+	}
+
+	public void setDealPriceIndex(PriceIndex dealPriceIndex) {
+		this.dealPriceIndex = dealPriceIndex;
+	}
+
 	@Embedded
 	public PhysicalDealDetail getDetail() {
 		return detail;
@@ -72,6 +78,7 @@ public class PhysicalDealAudit extends BaseDealAudit {
 		super.copyFrom(entity);
 		PhysicalDeal physicalDeal = (PhysicalDeal) entity;
 		marketPriceIndex = physicalDeal.getMarketPriceIndex();
+		dealPriceIndex = physicalDeal.getDealPriceIndex();
 		detail.copyFrom(physicalDeal.getDetail());
 	}
 

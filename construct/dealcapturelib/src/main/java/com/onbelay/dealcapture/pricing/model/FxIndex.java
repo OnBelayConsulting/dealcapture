@@ -22,7 +22,6 @@ import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.FxRate;
-import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.pricing.repository.FxCurveRepository;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
@@ -201,7 +200,7 @@ public class FxIndex extends TemporalAbstractEntity {
 		ArrayList<Integer> ids = new ArrayList<>();
 		for (FxCurveSnapshot snapshot : snapshots) {
 			if (snapshot.getEntityState() == EntityState.NEW) {
-				FxCurve curve = new FxCurve(this, snapshot);
+				FxCurve curve = FxCurve.newFxCurve(this, snapshot);
 				ids.add(curve.getId());
 			} else if (snapshot.getEntityState() == EntityState.MODIFIED) {
 				FxCurve curve = getFxCurveRepository().load(snapshot.getEntityId());

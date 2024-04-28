@@ -11,6 +11,7 @@ import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import org.hibernate.sql.exec.spi.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,7 +87,9 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
-    public TransactionResult generatePositions(Integer dealId, ExecutionContext context) {
+    public TransactionResult generatePositions(
+            Integer dealId,
+            EvaluationContextRequest context) {
         return null;
     }
 

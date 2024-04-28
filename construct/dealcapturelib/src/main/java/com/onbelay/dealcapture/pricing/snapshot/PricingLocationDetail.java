@@ -15,12 +15,11 @@
  */
 package com.onbelay.dealcapture.pricing.snapshot;
 
-import jakarta.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
+import jakarta.persistence.Column;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PricingLocationDetail extends AbstractDetail {

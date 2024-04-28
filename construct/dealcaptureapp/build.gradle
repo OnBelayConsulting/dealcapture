@@ -48,10 +48,10 @@ repositories {
 dependencies {
 	implementation project(path: ':construct:dealcapturelib')
 	testImplementation project(path: ':construct:dealcapturelib', configuration: 'tests')
-	implementation group: "com.onbelay.core", name: "obcore", version: "2.2.1"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "2.2.1", classifier: 'tests'
-	implementation group: "com.onbelay.shared", name: "obshared", version: "2.0.5"
-	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.0.5", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "2.2.2"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "2.2.2", classifier: 'tests'
+	implementation group: "com.onbelay.shared", name: "obshared", version: "2.0.7"
+	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.0.7", classifier: 'tests'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
@@ -98,6 +98,7 @@ test {
 
 bootRun {
 	systemProperties = System.properties
+	jvmArgs(["-Xms4096m", "-Xmx32g" ])
 }
 
 

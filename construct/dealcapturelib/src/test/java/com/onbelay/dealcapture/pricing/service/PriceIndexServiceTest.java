@@ -245,7 +245,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         CurveReport report = reports.get(0);
         assertEquals(0, firstBigDecimal.compareTo(report.getValue()));
 
-        CurveReport monthlyReport = reports.get(1);
+        CurveReport monthlyReport = reports.get(31);
         assertEquals(FrequencyCode.MONTHLY, monthlyReport.getFrequencyCode());
 
     }
@@ -267,7 +267,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         CurveReport report = reports.get(0);
         assertEquals(0, secondBigDecimal.compareTo(report.getValue()));
 
-        CurveReport monthlyReport = reports.get(1);
+        CurveReport monthlyReport = reports.get(31);
         assertEquals(FrequencyCode.MONTHLY, monthlyReport.getFrequencyCode());
 
     }

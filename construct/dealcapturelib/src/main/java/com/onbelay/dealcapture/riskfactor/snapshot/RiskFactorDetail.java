@@ -13,11 +13,16 @@ public class RiskFactorDetail {
 
     private BigDecimal value;
     private LocalDate marketDate;
-    private LocalDateTime createUpdateDateTime;
+    private Integer hourEnding;
+    private LocalDateTime createdDateTime;
+    private String errorCode;
+    private String errorMessage;
 
     @Transient
     public  void setDefaults() {
-        createUpdateDateTime = LocalDateTime.now();
+        createdDateTime = LocalDateTime.now();
+        hourEnding = 0;
+        errorCode ="0";
     }
 
     @Column(name = "MARKET_VALUE")
@@ -38,26 +43,56 @@ public class RiskFactorDetail {
         this.marketDate = marketDate;
     }
 
+    @Column(name = "HOUR_ENDING")
+    public Integer getHourEnding() {
+        return hourEnding;
+    }
+
+    public void setHourEnding(Integer hourEnding) {
+        this.hourEnding = hourEnding;
+    }
+
     public void validate() throws OBValidationException {
         if (marketDate == null)
             throw new OBValidationException(RiskFactorErrorCode.MISSING_RISK_FACTOR_DATE.getCode());
     }
 
     @Column(name = "CREATE_UPDATE_DATETIME")
-    public LocalDateTime getCreateUpdateDateTime() {
-        return createUpdateDateTime;
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
     }
 
-    public void setCreateUpdateDateTime(LocalDateTime createUpdateDateTime) {
-        this.createUpdateDateTime = createUpdateDateTime;
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    @Column(name = "ERROR_CODE")
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    @Column(name = "ERROR_MSG")
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public void copyFrom(RiskFactorDetail copy) {
         if (copy.marketDate != null)
             this.marketDate = copy.marketDate;
 
-        if (copy.createUpdateDateTime != null)
-            this.createUpdateDateTime = copy.createUpdateDateTime;
+        if (copy.hourEnding != null)
+            this.hourEnding = copy.hourEnding;
+
+        if (copy.createdDateTime != null)
+            this.createdDateTime = copy.createdDateTime;
 
         if (copy.value != null)
             this.value = copy.value;

@@ -18,12 +18,8 @@ package com.onbelay.dealcapture.organization.repository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.Organization;
-import com.onbelay.dealcapture.organization.model.OrganizationRole;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 public interface OrganizationRepository {

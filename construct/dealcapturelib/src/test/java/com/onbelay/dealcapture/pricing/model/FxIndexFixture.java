@@ -1,6 +1,5 @@
 package com.onbelay.dealcapture.pricing.model;
 
-import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;

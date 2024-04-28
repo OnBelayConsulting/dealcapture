@@ -15,18 +15,18 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CostPositionSqlMapper extends AbstractBaseSqlMapper {
-
-	private final  boolean isAddPrimaryKey;
+public class CostPositionSqlMapper extends BaseSqlMapper {
 
 	public CostPositionSqlMapper(Boolean isAddPrimaryKey) {
-		this.isAddPrimaryKey = isAddPrimaryKey;
+		super(isAddPrimaryKey);
 	}
 
 	public String getTableName() {
@@ -60,8 +60,9 @@ public class CostPositionSqlMapper extends AbstractBaseSqlMapper {
 	
 	
 	public void setValuesOnPreparedStatement(
-			CostPositionSnapshot position,
+			AbstractSnapshot snapshot,
 			PreparedStatement preparedStatement) throws SQLException {
+		CostPositionSnapshot position = (CostPositionSnapshot) snapshot;
 		int n;
 		if (isAddPrimaryKey) {
 			n= 1;

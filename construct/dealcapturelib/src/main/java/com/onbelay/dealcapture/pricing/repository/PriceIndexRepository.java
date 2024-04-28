@@ -15,13 +15,13 @@
  */
 package com.onbelay.dealcapture.pricing.repository;
 
-import java.util.List;
-
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
+
+import java.util.List;
 
 public interface PriceIndexRepository {
 	public static final String BEAN_NAME = "priceIndexRepository";

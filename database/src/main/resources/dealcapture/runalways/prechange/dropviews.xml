@@ -26,7 +26,7 @@
 	</changeSet>
 	<changeSet
 			author='lefeuvrem'
-			id='drop DEAL_DAY_VIEW'
+			id='drop DEAL_DAY_BY_MTH_VIEW'
 			runAlways='true'
 			runOnChange='true'
 	>
@@ -34,11 +34,28 @@
 				onFail='MARK_RAN'
 		>
 			<viewExists
-					viewName='DEAL_DAY_VIEW'
+					viewName='DEAL_DAY_BY_MTH_VIEW'
 			/>
 		</preConditions>
 		<dropView
-				viewName='DEAL_DAY_VIEW'
+				viewName='DEAL_DAY_BY_MTH_VIEW'
+		/>
+	</changeSet>
+	<changeSet
+			author='lefeuvrem'
+			id='drop DEAL_HOUR_BY_DAY_VIEW'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='DEAL_HOUR_BY_DAY_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='DEAL_HOUR_BY_DAY_VIEW'
 		/>
 	</changeSet>
 	<changeSet
@@ -73,6 +90,40 @@
 		</preConditions>
 		<dropView
 				viewName='COST_POSITION_VIEW'
+		/>
+	</changeSet>
+	<changeSet
+			author='lefeuvrem'
+			id='drop POWER_PROFILE_POSITION_VIEW'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='POWER_PROFILE_POSITION_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='POWER_PROFILE_POSITION_VIEW'
+		/>
+	</changeSet>
+	<changeSet
+			author='lefeuvrem'
+			id='drop DEAL_HOURLY_POSITION_VIEW'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='DEAL_HOURLY_POSITION_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='DEAL_HOURLY_POSITION_VIEW'
 		/>
 	</changeSet>
 

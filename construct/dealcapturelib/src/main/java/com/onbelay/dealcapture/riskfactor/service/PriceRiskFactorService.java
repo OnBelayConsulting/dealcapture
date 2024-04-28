@@ -25,7 +25,7 @@ public interface PriceRiskFactorService {
             DefinedQuery definedQuery,
             LocalDateTime currentDateTime);
 
-    PriceRiskFactorSnapshot findByMarketDate(
+    List<PriceRiskFactorSnapshot> findByMarketDate(
             EntityId priceIndexId,
             LocalDate marketDate);
 

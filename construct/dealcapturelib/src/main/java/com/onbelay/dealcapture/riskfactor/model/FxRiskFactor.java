@@ -1,8 +1,7 @@
 package com.onbelay.dealcapture.riskfactor.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.onbelay.core.entity.model.AuditAbstractEntity;
-import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
@@ -46,7 +45,7 @@ import java.time.LocalDateTime;
                         "     AND riskFactor.detail.marketDate <= :fromMarketDate " +
                         "ORDER BY riskFactor.detail.marketDate")
 })
-public class FxRiskFactor extends TemporalAbstractEntity {
+public class FxRiskFactor extends AbstractEntity {
 
     private Integer id;
 
@@ -78,7 +77,6 @@ public class FxRiskFactor extends TemporalAbstractEntity {
 
     @Override
     protected void validate() throws OBValidationException {
-        super.validate();
         detail.validate();
     }
 
@@ -130,10 +128,19 @@ public class FxRiskFactor extends TemporalAbstractEntity {
         index.add(this);
     }
 
+    public void updateWith(FxRiskFactorSnapshot snapshot) {
+        if (snapshot.getDetail().getValue() != null)
+            detail.setValue(snapshot.getDetail().getValue());
+        update();
+    }
+
+    public void delete() {
+        getEntityRepository().delete(this);
+    }
 
     public void updateRate(FxRate fxRate) {
         detail.setValue(fxRate.getValue());
-        detail.setCreateUpdateDateTime(LocalDateTime.now());
+        detail.setCreatedDateTime(LocalDateTime.now());
         update();
     }
 
@@ -144,16 +151,5 @@ public class FxRiskFactor extends TemporalAbstractEntity {
                 detail.getValue(),
                 index.getDetail().getToCurrencyCode(),
                 index.getDetail().getFromCurrencyCode());
-    }
-
-    @Override
-    protected AuditAbstractEntity createHistory() {
-        return FxRiskFactorAudit.create(this);
-    }
-
-
-    @Override
-    public AuditAbstractEntity fetchRecentHistory() {
-        return FxRiskFactorAudit.findRecentHistory(this);
     }
 }

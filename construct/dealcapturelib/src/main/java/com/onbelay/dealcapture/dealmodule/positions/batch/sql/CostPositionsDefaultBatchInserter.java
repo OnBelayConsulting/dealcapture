@@ -18,9 +18,8 @@ package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.batch.BatchDefaultInsertWorker;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,7 +57,7 @@ public class CostPositionsDefaultBatchInserter implements CostPositionsBatchInse
 		
 		try {
 			session.doWork(
-					new BatchCostPositionDefaultInsertWorker(
+					new BatchDefaultInsertWorker(
 							sqlMapper,
 							positions,
 							batchSize));
@@ -69,62 +68,5 @@ public class CostPositionsDefaultBatchInserter implements CostPositionsBatchInse
 		
 	}
 
-
-	protected static class BatchCostPositionDefaultInsertWorker implements Work {
-
-		private CostPositionSqlMapper sqlMapper;
-		private List<CostPositionSnapshot> positions;
-		private int batchSize;
-
-		public BatchCostPositionDefaultInsertWorker(
-				CostPositionSqlMapper sqlMapper,
-				List<CostPositionSnapshot> positions,
-				int batchSize) {
-
-			super();
-			this.sqlMapper = sqlMapper;
-			this.positions = positions;
-			this.batchSize = batchSize;
-		}
-
-		@Override
-		public void execute(Connection connection) throws SQLException {
-
-			String sqlInsert = "INSERT into " +
-					sqlMapper.getTableName() +
-					" (" + String.join(",", sqlMapper.getColumnNames()) + ")" +
-					" VALUES " + sqlMapper.createPlaceHolders();
-
-			try (PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
-
-				SubLister<CostPositionSnapshot> subLister = new SubLister<>(positions, batchSize);
-				while (subLister.moreElements()) {
-					List<CostPositionSnapshot> myList = subLister.nextList();
-					for (CostPositionSnapshot position : myList) {
-						sqlMapper.setValuesOnPreparedStatement(
-								position,
-								preparedStatement);
-						preparedStatement.addBatch();
-					}
-
-					preparedStatement.executeBatch();
-					ResultSet resultSet = preparedStatement.getGeneratedKeys();
-					int j = 0;
-					while (resultSet.next()) {
-						BigDecimal id = resultSet.getBigDecimal(1);
-						myList.get(j).setEntityId(new EntityId(id.intValue()));
-						j++;
-					}
-				}
-
-			} catch (RuntimeException e) {
-				logger.error(e.getMessage());
-				throw e;
-			}
-
-
-		}
-
-	}
 
 }

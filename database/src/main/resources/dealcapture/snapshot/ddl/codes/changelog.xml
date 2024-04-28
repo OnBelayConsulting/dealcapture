@@ -15,6 +15,7 @@
     <include file="DEAL_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="INDEX_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="POSITION_GENERATION_STATUS_CODE.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_FLOW_CODE.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="RISK_FACTOR_CODE.xml" relativeToChangelogFile="true"/>
     <include file="VALUATION_CODE.xml" relativeToChangelogFile="true"/>

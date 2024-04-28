@@ -9,12 +9,22 @@
 >
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
         <insert tableName='PRICE_TYPE_CODE'>
-            <column name='CODE_ID' value='D'/>
+            <column name='CODE_ID' value='FIXED_PRICE'/>
+            <column name='CODE_LABEL' value='Fixed Price'/>
+            <column name='DISPLAY_ORDER_NO' value='10'/>
+        </insert>
+        <insert tableName='PRICE_TYPE_CODE'>
+            <column name='CODE_ID' value='FIXED_QUANTITY'/>
+            <column name='CODE_LABEL' value='Fixed Quantity'/>
+            <column name='DISPLAY_ORDER_NO' value='10'/>
+        </insert>
+        <insert tableName='PRICE_TYPE_CODE'>
+            <column name='CODE_ID' value='DEAL_PRICE'/>
             <column name='CODE_LABEL' value='Deal Price'/>
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
         <insert tableName='PRICE_TYPE_CODE'>
-            <column name='CODE_ID' value='M'/>
+            <column name='CODE_ID' value='MARKET_PRICE'/>
             <column name='CODE_LABEL' value='Market Price'/>
             <column name='DISPLAY_ORDER_NO' value='20'/>
         </insert>

@@ -3,8 +3,6 @@ package com.onbelay.dealcapture.organization.snapshot;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleStatus;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

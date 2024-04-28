@@ -1,6 +1,5 @@
 package com.onbelay.dealcapture.riskfactor.components;
 
-import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.enums.RiskFactorType;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
@@ -8,15 +7,15 @@ import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import java.time.LocalDate;
 
 public class PriceRiskFactorHolder extends BaseRiskFactorHolder {
+    private final PriceIndexSnapshot priceIndex;
+
     private PriceRiskFactorSnapshot riskFactor;
     private FxRiskFactorHolder fxRiskFactorHolder;
-    private PriceIndexSnapshot priceIndex;
-    private Conversion conversion;
 
     public PriceRiskFactorHolder(
             PriceRiskFactorSnapshot riskFactor,
             PriceIndexSnapshot priceIndex) {
-        super(RiskFactorType.PRICE, riskFactor.getDetail().getMarketDate());
+        super(RiskFactorType.PRICE, riskFactor.getDetail().getMarketDate(), riskFactor.getDetail().getHourEnding());
         this.riskFactor = riskFactor;
         this.priceIndex = priceIndex;
     }
@@ -25,6 +24,15 @@ public class PriceRiskFactorHolder extends BaseRiskFactorHolder {
         super(RiskFactorType.PRICE, positionDate);
         this.priceIndex = priceIndex;
     }
+
+    public PriceRiskFactorHolder(
+            PriceIndexSnapshot priceIndex,
+            LocalDate positionDate,
+            int hourEnding) {
+        super(RiskFactorType.PRICE, positionDate, hourEnding);
+        this.priceIndex = priceIndex;
+    }
+
 
     public PriceRiskFactorSnapshot getRiskFactor() {
         return riskFactor;
@@ -50,15 +58,8 @@ public class PriceRiskFactorHolder extends BaseRiskFactorHolder {
         this.fxRiskFactorHolder = fxRiskFactorHolder;
     }
 
-    public Conversion getConversion() {
-        return conversion;
-    }
-
-    public void setConversion(Conversion conversion) {
-        this.conversion = conversion;
-    }
-
-    public boolean hasUnitOfMeasureConversion() {
-        return conversion != null;
+    @Override
+    public String generateUniqueKey() {
+        return  "PI:" + priceIndex.getEntityId().getId() + ":" + super.generateUniqueKey();
     }
 }

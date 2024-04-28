@@ -15,13 +15,12 @@
  */
 package com.onbelay.dealcapture.organization.snapshot;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationRoleDetail {

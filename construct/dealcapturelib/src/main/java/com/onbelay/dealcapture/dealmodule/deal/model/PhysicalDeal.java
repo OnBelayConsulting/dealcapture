@@ -15,20 +15,17 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
-import jakarta.persistence.*;
-
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
+import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
+import jakarta.persistence.*;
 
 @Entity
 @Table (name = "PHYSICAL_DEAL")
@@ -37,6 +34,7 @@ import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
        name = DealRepositoryBean.FETCH_PHYSICAL_DEAL_SUMMARIES,
        query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary( "
        		+ "          deal.id, "
+	        + "          powerProfile.id, "
        		+ "          deal.dealDetail.ticketNo, "
        		+ "          deal.dealDetail.startDate,"
 	  	    + "          deal.dealDetail.endDate,"
@@ -45,6 +43,7 @@ import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
 		    +  "         deal.dealDetail.reportingCurrencyCodeValue,"
 			+  "		 deal.dealDetail.volumeQuantity,"
 			+  "         deal.dealDetail.volumeUnitOfMeasureCodeValue,"
+		    +  "         deal.dealDetail.volumeFrequencyCodeValue,"
 			+  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"
 			+  "         deal.detail.dealPriceValuationCodeValue,"
 			+  "         deal.dealPriceIndex.id,"
@@ -54,7 +53,8 @@ import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
 			+  "         deal.detail.marketValuationCodeValue,"
 			+  "         deal.marketPriceIndex.id"
 			+  "         ) "
-       		+ "   FROM PhysicalDeal deal " +
+       		+ "   FROM PhysicalDeal deal "
+ + "   LEFT OUTER JOIN deal.powerProfile as powerProfile " +
 			   " WHERE deal.id in (:dealIds) " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),
 		@NamedQuery(
@@ -110,7 +110,7 @@ public class PhysicalDeal extends BaseDeal {
 	
 	public void updateWith(BaseDealSnapshot snapshot) {
 		super.updateWith(snapshot);
-		setAssociationsFromSnapshot(snapshot);
+		updateRelationships(snapshot);
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
 		this.detail.copyFrom(physicalDealSnapshot.getDetail());
 		update();
@@ -119,7 +119,7 @@ public class PhysicalDeal extends BaseDeal {
 	public void createWith(BaseDealSnapshot snapshot) {
 		detail.setDefaults();
 		super.createWith(snapshot);
-		setAssociationsFromSnapshot(snapshot);
+		updateRelationships(snapshot);
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
 		this.detail.copyFrom(physicalDealSnapshot.getDetail());
 		save();
@@ -132,6 +132,8 @@ public class PhysicalDeal extends BaseDeal {
 		super.validate();
 		detail.validate();
 
+		if (getDealDetail().getSettlementCurrencyCode() == null)
+			throw new OBValidationException(DealErrorCode.MISSING_SETTLEMENT_CURRENCY.getCode());
 
 		if (getDealDetail().getDealStatus() == DealStatusCode.VERIFIED) {
 
@@ -154,6 +156,10 @@ public class PhysicalDeal extends BaseDeal {
 					if (getDetail().getFixedPrice() == null)
 						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
 				}
+
+				case POWER_PROFILE -> {
+					throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_VALUATION.getCode());
+				}
 			}
 
 			switch (getDetail().getMarketValuationCode()) {
@@ -161,18 +167,20 @@ public class PhysicalDeal extends BaseDeal {
 					if (marketPriceIndex == null)
 						throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
 				}
+				case POWER_PROFILE -> {
+					if (getPowerProfile() == null)
+						throw new OBValidationException(DealErrorCode.MISSING_MARKET_POWER_PROFILE.getCode());
+				}
 				default -> {throw new OBValidationException(DealErrorCode.INVALID_MARKET_PRICE_VALUATION.getCode());}
 			}
 		}
 	}
 
-	@Override
-	protected void setAssociationsFromSnapshot(BaseDealSnapshot baseSnapshot) {
-		
+	protected void updateRelationships(BaseDealSnapshot baseSnapshot) {
+		super.updateRelationships(baseSnapshot);
+
 		PhysicalDealSnapshot snapshot = (PhysicalDealSnapshot) baseSnapshot;
-		
-		super.setAssociationsFromSnapshot(snapshot);
-		
+
 		if (snapshot.getMarketPriceIndexId() != null)
 			this.marketPriceIndex = getPriceIndexRepository().load(snapshot.getMarketPriceIndexId());
 

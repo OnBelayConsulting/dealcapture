@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
-import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleDetail;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationRoleSummary extends AbstractSnapshot {

@@ -12,7 +12,6 @@ import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.*;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -24,6 +23,18 @@ import java.util.List;
 @DiscriminatorColumn(name = "DEAL_TYPE_CODE")
 @NamedQueries({
         @NamedQuery(
+                name = DealPositionRepositoryBean.FIND_MIN_START_DATE,
+                query = "SELECT min(position.dealPositionDetail.startDate) " +
+                        "  FROM DealPosition position " +
+                        " WHERE position.dealPositionDetail.createdDateTime = :createdDateTime " +
+                      "     AND position.dealPositionDetail.currencyCodeValue = :currencyCode "),
+         @NamedQuery(
+                name = DealPositionRepositoryBean.FIND_MAX_START_DATE,
+                query = "SELECT max(position.dealPositionDetail.startDate) " +
+                        "  FROM DealPosition position " +
+                        " WHERE position.dealPositionDetail.createdDateTime = :createdDateTime " +
+                      "     AND position.dealPositionDetail.currencyCodeValue = :currencyCode "),
+       @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_IDS_BY_DEAL,
                 query = "SELECT position.id " +
                         "  FROM DealPosition position " +

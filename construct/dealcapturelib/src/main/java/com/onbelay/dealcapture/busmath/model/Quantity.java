@@ -20,6 +20,7 @@ import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Quantity extends CalculatedEntity{
@@ -129,6 +130,38 @@ public class Quantity extends CalculatedEntity{
 							price.getValue(),
 							mathContext),
 					price.getCurrency());
+	}
+
+	public boolean isZero() {
+		if (isInError())
+			return false;
+
+		return BigDecimal.ZERO.compareTo(value) == 0;
+	}
+
+	public Quantity round() {
+		if (this.isInError())
+			return new Quantity(CalculatedErrorType.ERROR);
+		return new Quantity(
+				value.setScale(roundingScale, RoundingMode.HALF_UP),
+				this.unitOfMeasureCode);
+	}
+
+	public Quantity multiply(int multipler) {
+		if (this.isInError())
+			return new Quantity(CalculatedErrorType.ERROR);
+		return new Quantity(
+				value.multiply(BigDecimal.valueOf(multipler), mathContext),
+				this.unitOfMeasureCode);
+	}
+
+
+	public Quantity divide(int divisor) {
+		if (this.isInError() || divisor == 0)
+			return new Quantity(CalculatedErrorType.ERROR);
+		return new Quantity(
+				value.divide(BigDecimal.valueOf(divisor), mathContext),
+				this.unitOfMeasureCode);
 	}
 
 

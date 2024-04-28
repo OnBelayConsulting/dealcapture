@@ -13,18 +13,20 @@
     <include file="PHYSICAL_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="PHYSICAL_DEAL_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_POSITION.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_HOURLY_POSITION.xml" relativeToChangelogFile="true"/>
     <include file="COST_POSITION.xml" relativeToChangelogFile="true"/>
     <include file="POSITION_RISK_FACTOR_MAP.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_COST.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_COST_AUDIT.xml" relativeToChangelogFile="true"/>
-    <include file="DEAL_DAY.xml" relativeToChangelogFile="true"/>
-    <include file="DEAL_DAY_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_DAY_BY_MTH.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_DAY_BY_MTH_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_HOUR_BY_DAY.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_HOUR_BY_DAY_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="FX_CURVE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="FX_INDEX_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_RISK_FACTOR.xml" relativeToChangelogFile="true"/>
-    <include file="FX_RISK_FACTOR_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="ORGANIZATION.xml" relativeToChangelogFile="true"/>
     <include file="ORGANIZATION_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="ORGANIZATION_ROLE.xml" relativeToChangelogFile="true"/>
@@ -33,6 +35,13 @@
     <include file="COMPANY_ROLE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="COUNTERPARTY_ROLE.xml" relativeToChangelogFile="true"/>
     <include file="COUNTERPARTY_ROLE_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_DAY.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_DAY_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_POSITION.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_IDX_MAP.xml" relativeToChangelogFile="true"/>
+    <include file="POWER_PROFILE_IDX_MAP_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_INDEX_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICING_LOCATION.xml" relativeToChangelogFile="true"/>
@@ -40,7 +49,6 @@
     <include file="PRICE_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_CURVE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_RISK_FACTOR.xml" relativeToChangelogFile="true"/>
-    <include file="PRICE_RISK_FACTOR_AUDIT.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

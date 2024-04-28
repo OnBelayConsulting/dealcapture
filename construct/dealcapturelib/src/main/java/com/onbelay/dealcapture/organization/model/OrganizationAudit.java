@@ -19,7 +19,6 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationDetail;
-
 import jakarta.persistence.*;
 
 @Entity

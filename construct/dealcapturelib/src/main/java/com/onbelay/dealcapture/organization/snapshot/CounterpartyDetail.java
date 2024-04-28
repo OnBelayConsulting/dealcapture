@@ -15,15 +15,14 @@
  */
 package com.onbelay.dealcapture.organization.snapshot;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationErrorCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CounterpartyDetail extends AbstractDetail {

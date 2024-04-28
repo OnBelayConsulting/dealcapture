@@ -24,14 +24,12 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.pricing.repository.FxIndexRepository;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexReport;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.shared.enums.CurrencyCode;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Repository (value="fxIndexRepository")

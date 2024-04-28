@@ -15,15 +15,15 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.assembler;
 
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 
 public class DealSnapshotAssemblerFactory {
 	

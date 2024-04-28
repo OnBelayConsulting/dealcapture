@@ -11,7 +11,7 @@ import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
@@ -73,6 +73,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
 
     private FxRiskFactor fxRiskFactor;
 
+    private LocalDateTime createdDateTime = LocalDateTime.of(2023, 1, 1, 1, 0);
     private LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
     private LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
 
@@ -92,7 +93,7 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                 fxIndex,
                 fromMarketDate,
                 toMarketDate,
-                LocalDateTime.of(10, 1, 1, 1, 1));
+                LocalDateTime.of(2023, 11, 1, 1, 1));
 
         fxRiskFactor = FxRiskFactorFixture.createFxRiskFactor(fxIndex, fromMarketDate);
 
@@ -137,6 +138,8 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
     public void savePositions() {
         List<DealPositionSnapshot> snapshots = PhysicalPositionsFixture.createPositions(
                 physicalDeal,
+                CurrencyCode.CAD,
+                createdDateTime,
                 priceRiskFactor,
                 fxRiskFactor);
 
@@ -154,27 +157,30 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
     public void generatePositions() {
         EvaluationContextRequest request = new EvaluationContextRequest();
         request.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
+        request.setCreatedDateTime(createdDateTime);
         request.setFromDate(fromMarketDate);
         request.setToDate(toMarketDate);
+        request.setQueryText( "WHERE dealId eq " + physicalDeal.getId());
 
-        dealPositionRestAdapter.generatePositions(
-                "WHERE dealId eq " + physicalDeal.getId(),
-                request);
+        dealPositionRestAdapter.generatePositions(request);
 
-        List<DealPositionSnapshot> snapshots = dealPositionService.findByDeal(physicalDeal.generateEntityId());
+        List<DealPositionSnapshot> snapshots = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
         assertTrue(snapshots.size() > 0);
     }
 
     @Test
     public void valuePositions() {
         dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDeal.getId()));
+        DealPositionsEvaluationContext dealPositionsEvaluationContext = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate);
+
+
         generatePositionsService.generatePositions(
                 "Test",
-                EvaluationContext
-                        .build()
-                        .withCurrency(CurrencyCode.CAD)
-                        .withStartPositionDate(fromMarketDate)
-                        .withEndPositionDate(toMarketDate),
+                dealPositionsEvaluationContext,
                 List.of(physicalDeal.getId()));
         flush();
 
@@ -185,9 +191,18 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
                 LocalDateTime.now());
+        flush();
+        clearCache();
 
         String query = "WHERE ticketNo eq '" + physicalDeal.getDealDetail().getTicketNo() + "'";
-        dealPositionRestAdapter.valuePositions(query);
+        EvaluationContextRequest request = new EvaluationContextRequest();
+        request.setQueryText(query);
+        request.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
+        request.setCreatedDateTime(createdDateTime);
+        request.setFromDate(fromMarketDate);
+        request.setToDate(toMarketDate);
+
+        dealPositionRestAdapter.valuePositions(request);
         flush();
         clearCache();
 

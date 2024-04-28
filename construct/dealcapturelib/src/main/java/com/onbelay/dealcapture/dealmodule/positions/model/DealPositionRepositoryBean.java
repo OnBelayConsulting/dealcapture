@@ -28,32 +28,24 @@ import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @Repository (value="dealPositionsRepository")
 @Transactional
 
 public class DealPositionRepositoryBean extends BaseRepository<DealPosition> implements DealPositionRepository {
 	private static final Logger logger = LogManager.getLogger();
+	public static final String FIND_MIN_START_DATE = "DealPositionsRepository.FIND_MIN_START_DATE";
+	public static final String FIND_MAX_START_DATE = "DealPositionsRepository.FIND_MAX_START_DATE";
 	public static final String FIND_BY_DEAL = "DealPositionsRepository.FIND_BY_DEAL";
 	public static final String FIND_IDS_BY_DEAL = "DealPositionsRepository.FIND_IDS_BY_DEAL";
     public static final String FIND_DEAL_POSITION_VIEWS_BY_DEAL ="DealPositionsRepository.FIND_DEAL_POSITION_VIEWS_BY_DEAL" ;
 	public static final String FIND_DEAL_POSITION_VIEWS ="DealPositionsRepository.FIND_DEAL_POSITION_VIEWS" ;
-
-	@Autowired
-	JdbcTemplate jdbcTemplate;
 
     @Autowired
 	private DealPositionColumnDefinitions dealPositionColumnDefinitions;
@@ -77,27 +69,6 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 	}
 
 	@Override
-	public long reserveSequenceRange(String sequenceName, int rangeSize) {
-		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("sp_sequence_get_range")
-				.declareParameters(new SqlParameter("sequence_name", Types.VARCHAR),
-									new SqlParameter("range_size", Types.INTEGER),
-									new SqlOutParameter("range_first_value", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("range_last_value", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("range_cycle_count", Types.INTEGER),
-						new SqlOutParameter("sequence_increment", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("sequence_min_value", microsoft.sql.Types.SQL_VARIANT),
-						new SqlOutParameter("sequence_max_value", microsoft.sql.Types.SQL_VARIANT)
-						);
-
-		MapSqlParameterSource parmSource = new MapSqlParameterSource();
-		parmSource.addValue("sequence_name", sequenceName);
-		parmSource.addValue("range_size", rangeSize);
-		Map<String, Object> results = simpleJdbcCall.execute(parmSource);
-		return (long) results.get("range_first_value");
-	}
-
-	@Override
 	public List<DealPosition> findByDeal(EntityId dealEntityId) {
 
 		return executeQuery(
@@ -114,7 +85,7 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 
 		String[] names = {"dealIds", "currencyCode", "createdDateTime"};
 
-		if (dealIds.size() < 2000) {
+		if (dealIds.size() < 1000) {
 			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
 
 			return (List<DealPositionView>) executeReportQuery(
@@ -123,7 +94,7 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 					parms);
 		} else {
 			ArrayList<DealPositionView> views = new ArrayList<>();
-			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
 			while (subLister.moreElements()) {
 				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), createdDateTime};
 				views.addAll (

@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -169,18 +168,6 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 				fromCurveDate,
 				toCurveDate,
 				observedDateTime);
-	}
-
-	@Override
-	public BigDecimal fetchPrice(
-			EntityId priceIndexId,
-			LocalDate currentDate) {
-
-		PriceCurve priceCurve = priceCurveRepository.fetchCurrentPrice(new EntityId(priceIndexId), currentDate);
-		if (priceCurve != null)
-			return priceCurve.getDetail().getCurveValue();
-		else
-			return null;
 	}
 
 	@Override

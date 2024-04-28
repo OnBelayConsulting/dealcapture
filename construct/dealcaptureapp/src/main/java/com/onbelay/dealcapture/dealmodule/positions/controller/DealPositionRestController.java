@@ -57,7 +57,6 @@ public class DealPositionRestController extends BaseRestController {
 	@PostMapping(value="/generated" )
 	public ResponseEntity<TransactionResult> generatePositions(
 			@RequestHeader Map<String, String> headers,
-			@RequestParam(value = "query", defaultValue="default") String queryText,
 			@RequestBody EvaluationContextRequest evaluationContext,
 			BindingResult bindingResult) {
 
@@ -71,9 +70,7 @@ public class DealPositionRestController extends BaseRestController {
 
 		TransactionResult result;
 		try {
-			result = dealPositionRestAdapter.generatePositions(
-					queryText,
-					evaluationContext);
+			result = dealPositionRestAdapter.generatePositions(evaluationContext);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
 			result = new TransactionResult(r.getErrorCode(), r.getParms());
@@ -129,7 +126,6 @@ public class DealPositionRestController extends BaseRestController {
 			@RequestBody List<DealPositionSnapshot> snapshots,
 			BindingResult bindingResult) {
 
-
 		if (bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach( e -> {
 				logger.error(userMarker, "Error on ", e.toString());
@@ -183,10 +179,19 @@ public class DealPositionRestController extends BaseRestController {
 	@PostMapping(value="/valued" )
 	public ResponseEntity<TransactionResult> valuePositions(
 			@RequestHeader Map<String, String> headers,
-			@RequestParam(value = "query", defaultValue="default") String queryText) {
+			@RequestBody EvaluationContextRequest evaluationContext,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
 		TransactionResult result;
 		try {
-			result = dealPositionRestAdapter.valuePositions(queryText);
+			result = dealPositionRestAdapter.valuePositions(evaluationContext);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Value positions failed ", r.getErrorCode(), r);
 			result = new TransactionResult(r.getErrorCode(), r.getParms());

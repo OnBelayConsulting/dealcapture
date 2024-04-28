@@ -10,20 +10,19 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
-import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
-import com.onbelay.dealcapture.enums.DealCaptureErrorCode;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,20 +42,18 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     private DealService dealService;
 
     @Override
-    public TransactionResult generatePositions(
-            String queryText,
-            EvaluationContextRequest evaluationContextRequest) {
+    public TransactionResult generatePositions(EvaluationContextRequest evaluationContextRequest) {
 
         initializeSession();
         logger.error("Generate Positions Start: " + LocalDateTime.now().toString());
 
         DefinedQuery definedQuery;
 
-        if (queryText != null) {
-            if (queryText.equalsIgnoreCase("default")) {
+        if (evaluationContextRequest.getQueryText() != null) {
+            if (evaluationContextRequest.getQueryText().equalsIgnoreCase("default")) {
                 definedQuery = new DefinedQuery("BaseDeal");
             } else {
-                DefinedQueryBuilder builder = new DefinedQueryBuilder("BaseDeal", queryText);
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("BaseDeal", evaluationContextRequest.getQueryText());
                 definedQuery = builder.build();
             }
         } else {
@@ -67,37 +64,30 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
 
         dealService.updateDealPositionGenerationStatusToPending(selection.getIds());
 
-        String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
+        String positionGenerationIdentifier;
+        if (evaluationContextRequest.getPositionGenerationIdentifier() != null)
+            positionGenerationIdentifier = evaluationContextRequest.getPositionGenerationIdentifier();
+        else
+            positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
 
         if (evaluationContextRequest.getCurrencyCode() == null)
-            throw new OBRuntimeException(DealCaptureErrorCode.SYSTEM_FAILURE.getCode());
+            throw new OBRuntimeException(PositionErrorCode.MISSING_BASIS_CONTAINER.getCode());
 
-        EvaluationContext evaluationContext = EvaluationContext
-                .build()
-                .withCurrency(evaluationContextRequest.getCurrencyCode());
+        DealPositionsEvaluationContext dealPositionsEvaluationContext = new DealPositionsEvaluationContext(
+                evaluationContextRequest.getCurrencyCode(),
+                evaluationContextRequest.getCreatedDateTime(),
+                evaluationContextRequest.getFromDate(),
+                evaluationContextRequest.getToDate());
 
-        if (evaluationContextRequest.getObservedDateTime() != null)
-            evaluationContext.withCreatedDateTime(evaluationContextRequest.getObservedDateTime());
-        else
-            evaluationContext.withCreatedDateTime(LocalDateTime.now());
 
-        if (evaluationContextRequest.getUnitOfMeasureCode() != null)
-            evaluationContext.withUnitOfMeasure(evaluationContextRequest.getUnitOfMeasureCode());
 
-        if (evaluationContextRequest.getFromDate() != null)
-            evaluationContext.withStartPositionDate(evaluationContextRequest.getFromDate());
-        else
-            evaluationContext.withStartPositionDate(LocalDate.of(2023, 1, 1));
-
-        if (evaluationContextRequest.getToDate() != null)
-            evaluationContext.withEndPositionDate(evaluationContextRequest.getToDate());
-        else
-            evaluationContext.withEndPositionDate(LocalDate.of(2023, 12, 31));
-
+        if (dealPositionsEvaluationContext.validate() == false) {
+            throw new OBRuntimeException(PositionErrorCode.MISSING_REQUIRED_EVAL_CONTEXT_FIELDS.getCode());
+        }
 
         TransactionResult result =  generatePositionsService.generatePositions(
                 positionGenerationIdentifier,
-                evaluationContext,
+                dealPositionsEvaluationContext,
                 selection.getIds());
 
         logger.error("Generate Positions End: " + LocalDateTime.now().toString());
@@ -105,22 +95,23 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
-    public TransactionResult valuePositions(String queryText) {
+    public TransactionResult valuePositions(EvaluationContextRequest evaluationContextRequest) {
         initializeSession();
+
         DefinedQuery definedQuery;
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         logger.error("Value positions start: " + LocalDateTime.now().toString());
 
-        if (queryText != null) {
-            if (queryText.equalsIgnoreCase("default")) {
-                definedQuery = new DefinedQuery("DealPosition");
+        if (evaluationContextRequest.getQueryText() != null) {
+            if (evaluationContextRequest.getQueryText().equalsIgnoreCase("default")) {
+                definedQuery = new DefinedQuery("BaseDeal");
             } else {
-                DefinedQueryBuilder builder = new DefinedQueryBuilder("DealPosition", queryText);
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("BaseDeal", evaluationContextRequest.getQueryText());
                 definedQuery = builder.build();
             }
         } else {
-            definedQuery = new DefinedQuery("DealPosition");
+            definedQuery = new DefinedQuery("BaseDeal");
         }
 
         if (definedQuery.getOrderByClause().hasExpressions() == false) {
@@ -131,7 +122,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
 
         TransactionResult result = valuePositionsService.valuePositions(
                 definedQuery,
-                currentDateTime);
+                evaluationContextRequest.getCurrencyCode(),
+                evaluationContextRequest.getCreatedDateTime(),
+                LocalDateTime.now());
 
         logger.error("Value positions end: " + LocalDateTime.now().toString());
         return result;

@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
+import com.onbelay.core.entity.enums.AssemblerDirectiveCopyType;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
@@ -7,23 +8,24 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.CostPositionAssembler;
+import com.onbelay.dealcapture.dealmodule.positions.assembler.DealHourlyPositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.DealPositionAssemblerFactory;
 import com.onbelay.dealcapture.dealmodule.positions.assembler.PositionAssembler;
 import com.onbelay.dealcapture.dealmodule.positions.model.*;
 import com.onbelay.dealcapture.dealmodule.positions.repository.CostPositionRepository;
+import com.onbelay.dealcapture.dealmodule.positions.repository.DealHourlyPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.*;
 import com.onbelay.shared.enums.CurrencyCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,6 +35,9 @@ public class DealPositionServiceBean implements DealPositionService {
 
     @Autowired
     private DealPositionRepository dealPositionRepository;
+
+    @Autowired
+    private DealHourlyPositionRepository dealHourlyPositionRepository;
 
     @Autowired
     private CostPositionRepository costPositionRepository;
@@ -86,10 +91,63 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
-    public List<DealPositionSnapshot> findByDeal(EntityId entityId) {
+    public List<DealHourlyPositionView> fetchDealHourlyPositionViews(
+            List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        return dealHourlyPositionRepository.findDealHourlyPositionViews(
+                dealIds,
+                currencyCode,
+                createdDateTime);
+    }
+
+    @Override
+    public List<DealPositionSnapshot> findPositionsByDeal(EntityId entityId) {
         List<DealPosition> positions =  dealPositionRepository.findByDeal(entityId);
         DealPositionAssemblerFactory factory = new DealPositionAssemblerFactory();
         PositionAssembler assembler = factory.newAssembler(DealTypeCode.PHYSICAL_DEAL);
+        return assembler.assemble(positions);
+    }
+
+    @Override
+    public List<DealPositionSnapshot> findPositionsByDeal(
+            EntityId dealId,
+            AssemblerDirectiveCopyType copyType) {
+
+        return switch (copyType) {
+            case SHALLOW_COPY -> findPositionsByDeal(dealId);
+
+            case  DEEP_COPY -> findPositionsByDealWithDeepCopy(dealId);
+
+            default -> findPositionsByDeal(dealId);
+        };
+    }
+
+    private List<DealPositionSnapshot> findPositionsByDealWithDeepCopy(EntityId dealId) {
+        List<DealHourlyPositionSnapshot> hourlyPositionSnapshots = findHourlyPositionsByDeal(dealId);
+        HashMap<LocalDate, List<DealHourlyPositionSnapshot>> positionMap = new HashMap<>();
+        hourlyPositionSnapshots.forEach( c ->{
+            List<DealHourlyPositionSnapshot> list = positionMap.computeIfAbsent(
+                    c.getDetail().getStartDate(),
+                    l -> new ArrayList<>());
+            list.add(c);
+        });
+
+        List<DealPositionSnapshot> dealPositionSnapshots = findPositionsByDeal(dealId);
+        for (DealPositionSnapshot snapshot : dealPositionSnapshots) {
+            List<DealHourlyPositionSnapshot> list = positionMap.get(snapshot.getDealPositionDetail().getStartDate());
+            if (list != null) {
+                snapshot.setHourlyPositionSnapshots(list);
+            }
+        }
+        return dealPositionSnapshots;
+    }
+
+    @Override
+    public List<DealHourlyPositionSnapshot> findHourlyPositionsByDeal(EntityId dealId) {
+        List<DealHourlyPosition> positions =  dealHourlyPositionRepository.findByDeal(dealId);
+        DealHourlyPositionAssembler assembler = new DealHourlyPositionAssembler();
         return assembler.assemble(positions);
     }
 

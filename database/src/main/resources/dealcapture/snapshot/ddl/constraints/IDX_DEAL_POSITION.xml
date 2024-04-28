@@ -1,0 +1,29 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/IDX_DEAL_POSITION.xml">
+
+    <changeSet author="lefeuvrem" id="2.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createIndex tableName="DEAL_POSITION" indexName="DEAL_POSITION_IDX">
+            <column name="DEAL_ID"/>
+        </createIndex>
+        <createIndex tableName="DEAL_POSITION" indexName="DEAL_POSITION_CUR_DATE_IDX">
+            <column name="DEAL_ID"/>
+            <column name="CURRENCY_CODE"/>
+            <column name="CREATE_UPDATE_DATETIME"/>
+        </createIndex>
+
+        <createIndex tableName="DEAL_HOURLY_POSITION" indexName="DEAL_HOURLY_POSITION_IDX">
+            <column name="DEAL_ID"/>
+        </createIndex>
+        <createIndex tableName="DEAL_HOURLY_POSITION" indexName="DEAL_HLY_POS_CUR_DATE_IDX">
+            <column name="DEAL_ID"/>
+            <column name="CURRENCY_CODE"/>
+            <column name="CREATE_UPDATE_DATETIME"/>
+        </createIndex>
+
+
+    </changeSet>
+</databaseChangeLog>

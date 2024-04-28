@@ -7,7 +7,7 @@
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
         <addUniqueConstraint
-                columnNames='PRICE_INDEX_ID, MARKET_DATE'
+                columnNames='PRICE_INDEX_ID, MARKET_DATE, HOUR_ENDING'
                 tableName='PRICE_RISK_FACTOR'
                 constraintName='PRICE_RISK_FACTOR_UC'/>
     </changeSet>

@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
@@ -62,12 +63,14 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withCreatedDateTime(createdDateTime)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -81,7 +84,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertEquals(31, positionSnapshots.size());
@@ -94,7 +97,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime());
+        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
         assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
 
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
@@ -135,12 +138,14 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -154,7 +159,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertEquals(31, positionSnapshots.size());
@@ -167,7 +172,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime());
+        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
         assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
 
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
@@ -198,7 +203,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
                 .findFirst()
                 .get();
         assertEquals(0, BigDecimal.TEN.compareTo(facilityPerUnitFee.getDetail().getCostAmount()));
-        assertEquals(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
+        assertEquals(positionSnapshot.getDealPositionDetail().getCreatedDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
 
         List<TotalCostPositionSummary> summaries = dealPositionService.calculateTotalCostPositionSummaries(
                 fixedPriceBuyDeal.getId(),
@@ -271,12 +276,14 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceBuyDeal.getId()));
 
-        EvaluationContext context = EvaluationContext
-                .build()
-                .withCurrency(CurrencyCode.CAD)
-                .withCreatedDateTime(createdDateTime)
-                .withUnitOfMeasure(UnitOfMeasureCode.GJ)
-                .withStartPositionDate(fromMarketDate);
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.CAD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
 
         generatePositionsService.generatePositions(
                 "test",
@@ -290,7 +297,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
 
         assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
         assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
-        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findByDeal(
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceBuyDeal.generateEntityId());
 
         assertEquals(31, positionSnapshots.size());
@@ -303,7 +310,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
         assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
         assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime());
+        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
         assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
 
         assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
@@ -343,7 +350,7 @@ public class GeneratePositionsServiceWithCostsTest extends DealServiceTestCase {
         Amount amount = costPrice.multiply(facilityPerUnitFee.getQuantity());
         amount = amount.round();
         assertEquals(0, amount.getValue().compareTo(facilityPerUnitFee.getDetail().getCostAmount()));
-        assertEquals(positionSnapshot.getDealPositionDetail().getCreateUpdateDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
+        assertEquals(positionSnapshot.getDealPositionDetail().getCreatedDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
     }
 
 

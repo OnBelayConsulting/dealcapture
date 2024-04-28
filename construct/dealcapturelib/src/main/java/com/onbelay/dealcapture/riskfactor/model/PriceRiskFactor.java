@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.riskfactor.model;
 
-import com.onbelay.core.entity.model.AuditAbstractEntity;
-import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
@@ -43,7 +42,7 @@ import java.time.LocalDateTime;
                         "     AND riskFactor.detail.marketDate >= :toMarketDate " +
                         "     AND riskFactor.detail.marketDate <= :fromMarketDate")
 })
-public class PriceRiskFactor extends TemporalAbstractEntity {
+public class PriceRiskFactor extends AbstractEntity {
 
     private Integer id;
     private PriceIndex index;
@@ -101,26 +100,23 @@ public class PriceRiskFactor extends TemporalAbstractEntity {
         index.addPriceRiskFactor(this);
     }
 
+    public void updateWith(PriceRiskFactorSnapshot snapshot) {
+        this.detail.setValue(snapshot.getDetail().getValue());
+        update();
+    }
+
     @Override
     protected void validate() throws OBValidationException {
-        super.validate();
         detail.validate();
     }
 
-    @Override
-    protected AuditAbstractEntity createHistory() {
-        return PriceRiskFactorAudit.create(this);
-    }
-
-
-    @Override
-    public AuditAbstractEntity fetchRecentHistory() {
-        return PriceRiskFactorAudit.findRecentHistory(this);
+    public void delete() {
+        getEntityRepository().delete(this);
     }
 
     @Transient
     public void updatePrice(Price price) {
-        detail.setCreateUpdateDateTime(LocalDateTime.now());
+        detail.setCreatedDateTime(LocalDateTime.now());
         if (price.isInError() == false)
             detail.setValue(price.getValue());
         update();

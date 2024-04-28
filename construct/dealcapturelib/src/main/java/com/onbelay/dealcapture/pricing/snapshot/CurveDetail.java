@@ -32,16 +32,23 @@ import java.time.LocalDateTime;
 public class CurveDetail extends AbstractDetail {
 	
 	private LocalDate curveDate;
+	private Integer hourEnding;
 	private LocalDateTime observedDateTime;
 	private BigDecimal curveValue;
 	private String frequencyCodeValue;
-	
+
+	public void setDefaults() {
+		hourEnding = 0;
+	}
 	
 	public void copyFrom(CurveDetail copy) {
 		
 		if (copy.curveDate != null)
 			this.curveDate = copy.curveDate;
-		
+
+		if (copy.hourEnding != null)
+			this.hourEnding = copy.hourEnding;
+
 		if (copy.observedDateTime != null)
 			this.observedDateTime = copy.observedDateTime;
 		
@@ -74,7 +81,16 @@ public class CurveDetail extends AbstractDetail {
 	public void setCurveDate(LocalDate curveDate) {
 		this.curveDate = curveDate;
 	}
-	
+
+	@Column (name = "HOUR_ENDING")
+	public Integer getHourEnding() {
+		return hourEnding;
+	}
+
+	public void setHourEnding(Integer hourEnding) {
+		this.hourEnding = hourEnding;
+	}
+
 	@Column (name = "OBSERVED_DATE_TIME")
 	public LocalDateTime getObservedDateTime() {
 		return observedDateTime;

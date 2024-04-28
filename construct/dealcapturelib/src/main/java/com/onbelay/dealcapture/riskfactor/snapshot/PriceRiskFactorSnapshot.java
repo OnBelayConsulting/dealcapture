@@ -1,8 +1,9 @@
 package com.onbelay.dealcapture.riskfactor.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.shared.enums.FrequencyCode;
 
 import java.util.List;
 
@@ -11,6 +12,8 @@ public class PriceRiskFactorSnapshot extends AbstractSnapshot {
     private EntityId priceIndexId;
 
     private RiskFactorDetail detail = new RiskFactorDetail();
+
+    private FrequencyCode frequencyCode;
 
     public PriceRiskFactorSnapshot() {
     }
@@ -45,5 +48,14 @@ public class PriceRiskFactorSnapshot extends AbstractSnapshot {
 
     public void setDetail(RiskFactorDetail detail) {
         this.detail = detail;
+    }
+
+    @JsonIgnore
+    public FrequencyCode getFrequencyCode() {
+        return frequencyCode;
+    }
+
+    public void setFrequencyCode(FrequencyCode frequencyCode) {
+        this.frequencyCode = frequencyCode;
     }
 }

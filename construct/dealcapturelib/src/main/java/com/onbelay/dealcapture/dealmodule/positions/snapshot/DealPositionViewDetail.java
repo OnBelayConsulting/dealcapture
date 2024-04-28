@@ -33,29 +33,17 @@ public class DealPositionViewDetail {
     private String dealPriceValuationValue;
 
     private BigDecimal fixedPriceValue;
-    private String fixedPriceCurrencyCodeValue;
-    private String fixedPriceUnitOfMeasureCodeValue;
-
-    private BigDecimal fixedFxRateValue;
-    private Integer    fixedFxIndexId;
+    private String  fixedPriceCurrencyCodeValue;
+    private String  fixedPriceUnitOfMeasureCodeValue;
 
     private String marketPriceValuationValue;
+
     private String ticketNo;
     private String buySellCodeValue;
 
     private Boolean isSettlementPosition;
     private String settlementCurrencyCodeValue;
     private String dealUnitOfMeasureCodeValue;
-
-    private BigDecimal dealPriceRfValue;
-    private Integer dealPriceIndexId;
-    private BigDecimal dealPriceFxRateValue;
-    private Integer dealPriceFxIndexId;
-
-    private BigDecimal marketPriceRfValue;
-    private Integer marketPriceIndexId;
-    private BigDecimal marketPriceFxValue;
-    private Integer marketPriceFxIndexId;
 
     @Transient
     @JsonIgnore
@@ -275,24 +263,6 @@ public class DealPositionViewDetail {
         this.buySellCodeValue = buySellCodeValue;
     }
 
-    @Column(name = "FIXED_FX_VALUE")
-    public BigDecimal getFixedFxRateValue() {
-        return fixedFxRateValue;
-    }
-
-    public void setFixedFxRateValue(BigDecimal fixedFxRateValue) {
-        this.fixedFxRateValue = fixedFxRateValue;
-    }
-
-    @Column(name = "FIXED_FX_INDEX_ID")
-    public Integer getFixedFxIndexId() {
-        return fixedFxIndexId;
-    }
-
-    public void setFixedFxIndexId(Integer fixedFxIndexId) {
-        this.fixedFxIndexId = fixedFxIndexId;
-    }
-
     @Transient
     @JsonIgnore
     public CurrencyCode getSettlementCurrencyCode() {
@@ -320,77 +290,5 @@ public class DealPositionViewDetail {
         isSettlementPosition = settlementPosition;
     }
 
-    @Column(name = "DEAL_PRICE_RF_VALUE")
-    public BigDecimal getDealPriceRfValue() {
-        return dealPriceRfValue;
-    }
 
-    public void setDealPriceRfValue(BigDecimal dealPriceRfValue) {
-        this.dealPriceRfValue = dealPriceRfValue;
-    }
-
-    @Column(name = "DEAL_PRICE_INDEX_ID")
-    public Integer getDealPriceIndexId() {
-        return dealPriceIndexId;
-    }
-
-    public void setDealPriceIndexId(Integer dealPriceIndexId) {
-        this.dealPriceIndexId = dealPriceIndexId;
-    }
-
-    @Column(name = "DEAL_PRICE_FX_VALUE")
-    public BigDecimal getDealPriceFxRateValue() {
-        return dealPriceFxRateValue;
-    }
-
-
-    public void setDealPriceFxRateValue(BigDecimal dealPriceFxRateValue) {
-        this.dealPriceFxRateValue = dealPriceFxRateValue;
-    }
-
-    @Column(name = "DEAL_PRICE_FX_INDEX_ID")
-    public Integer getDealPriceFxIndexId() {
-        return dealPriceFxIndexId;
-    }
-
-    public void setDealPriceFxIndexId(Integer dealPriceFxIndexId) {
-        this.dealPriceFxIndexId = dealPriceFxIndexId;
-    }
-
-    @Column(name = "MARKET_PRICE_RF_VALUE")
-    public BigDecimal getMarketPriceRfValue() {
-        return marketPriceRfValue;
-    }
-
-    public void setMarketPriceRfValue(BigDecimal marketPriceRfValue) {
-        this.marketPriceRfValue = marketPriceRfValue;
-    }
-
-    @Column(name = "MARKET_INDEX_ID")
-    public Integer getMarketPriceIndexId() {
-        return marketPriceIndexId;
-    }
-
-    public void setMarketPriceIndexId(Integer marketPriceIndexId) {
-        this.marketPriceIndexId = marketPriceIndexId;
-    }
-
-    @Column(name = "MARKET_FX_INDEX_ID")
-    public Integer getMarketPriceFxIndexId() {
-        return marketPriceFxIndexId;
-    }
-
-    public void setMarketPriceFxIndexId(Integer marketPriceFxIndexId) {
-        this.marketPriceFxIndexId = marketPriceFxIndexId;
-    }
-
-
-    @Column(name = "MARKET_FX_VALUE")
-    public BigDecimal getMarketPriceFxValue() {
-        return marketPriceFxValue;
-    }
-
-    public void setMarketPriceFxValue(BigDecimal marketPriceFxValue) {
-        this.marketPriceFxValue = marketPriceFxValue;
-    }
 }

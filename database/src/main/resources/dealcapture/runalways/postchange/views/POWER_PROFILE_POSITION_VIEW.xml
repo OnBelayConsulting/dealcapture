@@ -1,0 +1,59 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/runalways/postchange/views/POWER_PROFILE_POSITION_VIEW.xml'
+>
+    <changeSet
+            author='lefeuvrem'
+            id='1'
+            runAlways='true'
+            runOnChange='true'
+    >
+    <createView viewName="POWER_PROFILE_POSITION_VIEW">
+    SELECT
+            pp.ENTITY_ID,
+            pp.POWER_PROFILE_ID,
+            pp.PRICE_INDEX_ID,
+            pp.START_DATE,
+            pp.END_DATE,
+            pp.CREATE_UPDATE_DATETIME,
+            pp.VALUED_DATETIME,
+            pp.POWER_FLOW_CODE,
+            pp.NUMBER_OF_HOURS,
+            pp.ERROR_CODE,
+            pp.ERROR_MSG,
+            pp.HOUR_1_RF_ID,
+            pp.HOUR_2_RF_ID,
+            pp.HOUR_3_RF_ID,
+            pp.HOUR_4_RF_ID,
+            pp.HOUR_5_RF_ID,
+            pp.HOUR_6_RF_ID,
+            pp.HOUR_7_RF_ID,
+            pp.HOUR_8_RF_ID,
+            pp.HOUR_9_RF_ID,
+            pp.HOUR_10_RF_ID,
+            pp.HOUR_11_RF_ID,
+            pp.HOUR_12_RF_ID,
+            pp.HOUR_13_RF_ID,
+            pp.HOUR_14_RF_ID,
+            pp.HOUR_15_RF_ID,
+            pp.HOUR_16_RF_ID,
+            pp.HOUR_17_RF_ID,
+            pp.HOUR_18_RF_ID,
+            pp.HOUR_19_RF_ID,
+            pp.HOUR_20_RF_ID,
+            pp.HOUR_21_RF_ID,
+            pp.HOUR_22_RF_ID,
+            pp.HOUR_23_RF_ID,
+            pp.HOUR_24_RF_ID
+            FROM
+            POWER_PROFILE_POSITION pp
+        </createView>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -75,12 +75,12 @@ public class FxCurve extends TemporalAbstractEntity {
 	protected FxCurve() {
 	}
 	
-	public FxCurve(
+	public static FxCurve newFxCurve(
 			FxIndex fxIndex,
 			FxCurveSnapshot snapshot) {
-		this.detail.copyFrom(snapshot.getDetail());
-		this.fxIndex = fxIndex;
-		save();
+		FxCurve fxCurve = new FxCurve();
+		fxCurve.createWith(fxIndex, snapshot);
+		return fxCurve;
 	}
 	
 	@Override
@@ -134,6 +134,8 @@ public class FxCurve extends TemporalAbstractEntity {
 	private void createWith(
 			FxIndex fxIndex,
 			FxCurveSnapshot snapshot) {
+
+		detail.setDefaults();
 		this.detail.copyFrom(snapshot.getDetail());
 		fxIndex.addFxCurve(this);
 	}

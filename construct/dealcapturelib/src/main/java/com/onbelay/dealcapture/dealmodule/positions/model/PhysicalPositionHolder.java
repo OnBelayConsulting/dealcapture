@@ -1,24 +1,32 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionDetail;
 import com.onbelay.dealcapture.riskfactor.components.FxRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhysicalPositionHolder extends PositionHolder {
+public class PhysicalPositionHolder extends BasePositionHolder {
+
+    private FxRiskFactorHolder fixedPriceFxHolder;
+
+    private PhysicalPositionDetail detail = new PhysicalPositionDetail();
 
     private PriceRiskFactorHolder marketRiskFactorHolder;
-    private List<PriceRiskFactorHolder> basisToHubMarketHolders = new ArrayList<>();
+    private FxRiskFactorHolder marketFxHolder;
 
-    private FxRiskFactorHolder fixedDealPriceFxHolder;
+    private List<PriceRiskFactorHolder> basisMarketHolders = new ArrayList<>();
 
     private PriceRiskFactorHolder dealPriceRiskFactorHolder;
-    private List<PriceRiskFactorHolder> basisToHubDealPriceHolders = new ArrayList<>();
+    private FxRiskFactorHolder dealPriceFxHolder;
 
-    public PhysicalPositionHolder(DealPositionSnapshot snapshot) {
-        super(snapshot);
+    private List<PriceRiskFactorHolder> basisDealPriceHolders = new ArrayList<>();
+
+    public PhysicalPositionHolder(PhysicalDealSummary summary) {
+        super(summary);
     }
 
     public PriceRiskFactorHolder getMarketRiskFactorHolder() {
@@ -30,15 +38,11 @@ public class PhysicalPositionHolder extends PositionHolder {
     }
 
     public FxRiskFactorHolder getMarketFxHolder() {
-        return marketRiskFactorHolder.getFxRiskFactorHolder();
+        return marketFxHolder;
     }
 
-    public void addBasisToHubMarketRiskFactorHolder(PriceRiskFactorHolder holder) {
-        basisToHubMarketHolders.add(holder);
-    }
-
-    public List<PriceRiskFactorHolder> getBasisToHubMarketHolders() {
-        return basisToHubMarketHolders;
+    public void setMarketFxHolder(FxRiskFactorHolder marketFxHolder) {
+        this.marketFxHolder = marketFxHolder;
     }
 
     public PriceRiskFactorHolder getDealPriceRiskFactorHolder() {
@@ -50,22 +54,37 @@ public class PhysicalPositionHolder extends PositionHolder {
     }
 
     public FxRiskFactorHolder getDealPriceFxHolder() {
-        return dealPriceRiskFactorHolder.getFxRiskFactorHolder();
+        return dealPriceFxHolder;
     }
 
-    public void setFixedDealPriceFxHolder(FxRiskFactorHolder fixedDealPriceFxHolder) {
-        this.fixedDealPriceFxHolder = fixedDealPriceFxHolder;
+    public void setDealPriceFxHolder(FxRiskFactorHolder dealPriceFxHolder) {
+        this.dealPriceFxHolder = dealPriceFxHolder;
     }
 
-    public FxRiskFactorHolder getFixedDealPriceFxHolder() {
-        return fixedDealPriceFxHolder;
+    public void setFixedPriceFxHolder(FxRiskFactorHolder fixedDealPriceFxHolder) {
+        this.fixedPriceFxHolder = fixedDealPriceFxHolder;
     }
 
-    public void addBasisToHubDealPriceRiskFactorHolder(PriceRiskFactorHolder holder) {
-        basisToHubDealPriceHolders.add(holder);
+    public FxRiskFactorHolder getFixedPriceFxHolder() {
+        return fixedPriceFxHolder;
     }
 
-    public List<PriceRiskFactorHolder> getBasisToHubDealPriceHolders() {
-        return basisToHubDealPriceHolders;
+    public List<PriceRiskFactorHolder> getBasisDealPriceHolders() {
+        return basisDealPriceHolders;
+    }
+    public void setBasisDealPriceHolders(List<PriceRiskFactorHolder> basisDealPriceHolders) {
+        this.basisDealPriceHolders = basisDealPriceHolders;
+    }
+
+    public List<PriceRiskFactorHolder> getBasisMarketHolders() {
+        return basisMarketHolders;
+    }
+
+    public void setBasisMarketHolders(List<PriceRiskFactorHolder> basisMarketHolders) {
+        this.basisMarketHolders = basisMarketHolders;
+    }
+
+    public PhysicalPositionDetail getDetail() {
+        return detail;
     }
 }

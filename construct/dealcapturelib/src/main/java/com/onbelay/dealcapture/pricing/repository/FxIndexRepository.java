@@ -20,7 +20,6 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexReport;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import com.onbelay.shared.enums.CurrencyCode;
 
 import java.util.List;

@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.unitofmeasure;
 
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
@@ -19,6 +20,22 @@ public class UnitOfMeasureConverter {
                 new Conversion(
                         BigDecimal.valueOf(0.947817),
                         UnitOfMeasureCode.MMBTU,
+                        UnitOfMeasureCode.GJ));
+        conversions.put(
+                createKey(
+                        UnitOfMeasureCode.MWH,
+                        UnitOfMeasureCode.MMBTU),
+                new Conversion(
+                        BigDecimal.valueOf(0.293071),
+                        UnitOfMeasureCode.MWH,
+                        UnitOfMeasureCode.MMBTU));
+        conversions.put(
+                createKey(
+                        UnitOfMeasureCode.MWH,
+                        UnitOfMeasureCode.GJ),
+                new Conversion(
+                        BigDecimal.valueOf(0.2777777777777778),
+                        UnitOfMeasureCode.MWH,
                         UnitOfMeasureCode.GJ));
 
     }
@@ -45,6 +62,9 @@ public class UnitOfMeasureConverter {
     public static Conversion findConversion(
             UnitOfMeasureCode to,
             UnitOfMeasureCode from) {
+        if (to == null || from == null) {
+            throw new OBRuntimeException("missing to or from UoM for conversion");
+        }
         Conversion conversion = conversions.get(
                 createKey(
                         to,

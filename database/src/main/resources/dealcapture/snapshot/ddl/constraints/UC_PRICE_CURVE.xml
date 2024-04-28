@@ -7,7 +7,7 @@
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
         <addUniqueConstraint
-                columnNames='PRICE_INDEX_ID, FREQUENCY_CODE, CURVE_DATE, OBSERVED_DATE_TIME'
+                columnNames='PRICE_INDEX_ID, FREQUENCY_CODE, CURVE_DATE, HOUR_ENDING, OBSERVED_DATE_TIME'
                 tableName='PRICE_CURVE'
                 constraintName='PRICE_CURVE_DATES_UC'/>
 

@@ -21,6 +21,7 @@ public class PhysicalDealSummary extends DealSummary {
 
     public PhysicalDealSummary(
             Integer dealId,
+            Integer powerProfileId,
             String ticketNo,
             LocalDate startDate,
             LocalDate endDate,
@@ -29,6 +30,7 @@ public class PhysicalDealSummary extends DealSummary {
             String reportingCurrencyCodeValue,
             BigDecimal volumeQuantity,
             String volumeUnitOfMeasureCodeValue,
+            String volumeFrequencyCodeValue,
             String settlementCurrencyCodeValue,
             String dealPriceValuationCodeValue,
             Integer dealPriceIndexId,
@@ -40,6 +42,7 @@ public class PhysicalDealSummary extends DealSummary {
 
         super(
                 dealId,
+                powerProfileId,
                 ticketNo,
                 startDate,
                 endDate,
@@ -48,6 +51,7 @@ public class PhysicalDealSummary extends DealSummary {
                 reportingCurrencyCodeValue,
                 volumeQuantity,
                 volumeUnitOfMeasureCodeValue,
+                volumeFrequencyCodeValue,
                 settlementCurrencyCodeValue);
 
         this.DealPriceValuationCode = ValuationCode.lookUp(dealPriceValuationCodeValue);
