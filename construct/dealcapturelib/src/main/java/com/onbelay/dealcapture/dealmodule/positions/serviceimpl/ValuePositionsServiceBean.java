@@ -57,12 +57,16 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
     public TransactionResult valuePositions(
             EntityId dealId,
             CurrencyCode currencyCode,
+            LocalDate fromPositionDate,
+            LocalDate toPositionDate,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
         valueCostsAndPositions(
                 List.of(dealId.getId()),
                 currencyCode,
+                fromPositionDate,
+                toPositionDate,
                 createdDateTime,
                 currentDateTime);
 
@@ -73,13 +77,18 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
     public TransactionResult valuePositions(
             DefinedQuery definedQuery,
             CurrencyCode currencyCode,
+            LocalDate fromPositionDate,
+            LocalDate toPositionDate,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
+
 
         QuerySelectedPage selectedPage  = dealService.findDealIds(definedQuery);
         valueCostsAndPositions(
                 selectedPage.getIds(),
                 currencyCode,
+                fromPositionDate,
+                toPositionDate,
                 createdDateTime,
                 currentDateTime);
 
@@ -89,46 +98,72 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
     private void valueCostsAndPositions(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromPositionDate,
+            LocalDate toPositionDate,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
         logger.info("value positions start: " + LocalDateTime.now().toString());
 
-        logger.info("fetch deal position views start: " + LocalDateTime.now().toString());
-        List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
-                dealIds,
-                currencyCode,
-                createdDateTime);
-        logger.info("fetch deal position views end: " + LocalDateTime.now().toString());
-
-        if (views.isEmpty()) {
-            logger.info("No positions to value.");
-            return;
-
-        }
-        LocalDate startDate = views.stream().map(c -> c.getDetail().getStartDate()).min(LocalDate::compareTo).get();
-        LocalDate endDate = views.stream().map(c -> c.getDetail().getStartDate()).max(LocalDate::compareTo).get();
-
         logger.info("create valuationIndexManager start: " + LocalDateTime.now().toString());
         ValuationIndexManager valuationIndexManager = createValuationIndexManager(
-                startDate,
-                endDate);
+                fromPositionDate,
+                toPositionDate);
         logger.info("create valuationIndexManager end: " + LocalDateTime.now().toString());
 
 
+        for (Integer dealId : dealIds) {
+            List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
+                    dealId,
+                    currencyCode,
+                    createdDateTime);
+            logger.debug("fetch deal position views end: " + LocalDateTime.now().toString());
+
+            if (views.isEmpty()) {
+                logger.debug("No positions to value.");
+                continue;
+            }
+
+            List<DealHourlyPositionView> hourlyPositionViews = dealPositionService.fetchDealHourlyPositionViews(
+                    dealId,
+                    currencyCode,
+                    createdDateTime);
+
+            valueCostsAndPositionsByDeal(
+                    valuationIndexManager,
+                    dealId,
+                    views,
+                    hourlyPositionViews,
+                    currencyCode,
+                    createdDateTime,
+                    currentDateTime);
+        }
+
+        logger.info("value positions end: " + LocalDateTime.now().toString());
+    }
+
+private void valueCostsAndPositionsByDeal(
+        ValuationIndexManager valuationIndexManager,
+        Integer dealId,
+        List<DealPositionView> dealPositionViews,
+        List<DealHourlyPositionView> hourlyPositionViews,
+        CurrencyCode currencyCode,
+        LocalDateTime createdDateTime,
+        LocalDateTime currentDateTime) {
+
         valueCostPositions(
-                dealIds,
+                dealId,
                 currencyCode,
                 createdDateTime,
                 valuationIndexManager,
                 currentDateTime);
 
-        logger.info("fetch cost summaries start: " + LocalDateTime.now().toString());
+        logger.debug("fetch cost summaries start: " + LocalDateTime.now().toString());
         List<TotalCostPositionSummary> costPositionSummaries = dealPositionService.calculateTotalCostPositionSummaries(
-                dealIds,
+                dealId,
                 currencyCode,
                 createdDateTime);
-        logger.info("fetch cost summaries end: " + LocalDateTime.now().toString());
+        logger.debug("fetch cost summaries end: " + LocalDateTime.now().toString());
 
         HashMap<Integer, Map<LocalDate, TotalCostPositionSummary>> totalCostMap = new HashMap<>();
         for (TotalCostPositionSummary summary : costPositionSummaries) {
@@ -139,11 +174,6 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             }
             map.put(summary.getStartDate(), summary);
         }
-
-        List<DealHourlyPositionView> hourlyPositionViews = dealPositionService.fetchDealHourlyPositionViews(
-                dealIds,
-                currencyCode,
-                createdDateTime);
 
         HashMap<Integer, Map<LocalDate, List<DealHourlyPositionView>>> hourlyPositionViewMap = new HashMap<>();
         for (DealHourlyPositionView view : hourlyPositionViews) {
@@ -178,7 +208,7 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
         ArrayList<PositionValuationResult> results = new ArrayList<>();
         ArrayList<HourlyPositionValuationResult> hourlyPositionValuationResults = new ArrayList<>();
 
-        for (DealPositionView view : views) {
+        for (DealPositionView view : dealPositionViews) {
 
             PhysicalPositionEvaluator evaluator = PhysicalPositionEvaluator.build(
                     currentDateTime,
@@ -221,27 +251,25 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             }
         }
 
-
-        logger.info("value positions end: " + LocalDateTime.now().toString());
     }
 
 
     private void valueCostPositions(
-            List<Integer> ids,
+            Integer dealId,
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             ValuationIndexManager valuationIndexManager,
             LocalDateTime currentDateTime) {
-        logger.info("value cost positions start: " + LocalDateTime.now().toString());
+        logger.debug("value cost positions start: " + LocalDateTime.now().toString());
 
         ArrayList<CostPositionValuationResult> results = new ArrayList<>();
         List<CostPositionView> views = dealPositionService.fetchCostPositionViewsWithFX(
-                ids,
+                dealId,
                 currencyCode,
                 createdDateTime);
 
         if (views.isEmpty()) {
-            logger.info("value cost positions end: " + LocalDateTime.now().toString());
+            logger.debug("value cost positions end: " + LocalDateTime.now().toString());
             return;
         }
 
@@ -258,7 +286,7 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
         while (subLister.moreElements()) {
             costPositionsBatchUpdater.updatePositions(subLister.nextList());
         }
-        logger.info("value cost positions end: " + LocalDateTime.now().toString());
+        logger.debug("value cost positions end: " + LocalDateTime.now().toString());
 
     }
 

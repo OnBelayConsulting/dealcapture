@@ -17,9 +17,13 @@ public interface DealHourlyPositionRepository {
 
     List<DealHourlyPosition> findByDeal(EntityId dealId);
 
-
     List<DealHourlyPositionView> findDealHourlyPositionViews(
             List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
+    List<DealHourlyPositionView> findDealHourlyPositionViews(
+            Integer dealId,
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
 

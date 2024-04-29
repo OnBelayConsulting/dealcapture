@@ -123,6 +123,8 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
         TransactionResult result = valuePositionsService.valuePositions(
                 definedQuery,
                 evaluationContextRequest.getCurrencyCode(),
+                evaluationContextRequest.getFromDate(),
+                evaluationContextRequest.getToDate(),
                 evaluationContextRequest.getCreatedDateTime(),
                 LocalDateTime.now());
 

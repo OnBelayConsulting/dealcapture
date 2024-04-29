@@ -91,6 +91,29 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
+    public List<DealPositionView> fetchDealPositionViews(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        List<DealPositionView> views = dealPositionRepository.findDealPositionViews(
+                dealId,
+                currencyCode,
+                createdDateTime);
+        HashMap<Integer, DealPositionView> viewMap = new HashMap<>();
+        views.forEach(c-> viewMap.put(c.getId(), c));
+
+        List<Integer> positionIds = viewMap.keySet().stream().toList();
+        for (PositionRiskFactorMappingSummary summary : positionRiskFactorMappingRepository.findAllMappingSummaries(positionIds)) {
+            DealPositionView view = viewMap.get(summary.getDealPositionId());
+            view.addMappingSummary(summary);
+        }
+
+        return views;
+
+    }
+
+    @Override
     public List<DealHourlyPositionView> fetchDealHourlyPositionViews(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
@@ -98,6 +121,18 @@ public class DealPositionServiceBean implements DealPositionService {
 
         return dealHourlyPositionRepository.findDealHourlyPositionViews(
                 dealIds,
+                currencyCode,
+                createdDateTime);
+    }
+
+    @Override
+    public List<DealHourlyPositionView> fetchDealHourlyPositionViews(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        return dealHourlyPositionRepository.findDealHourlyPositionViews(
+                dealId,
                 currencyCode,
                 createdDateTime);
     }
@@ -163,6 +198,17 @@ public class DealPositionServiceBean implements DealPositionService {
                 createdDateTime);
     }
 
+    @Override
+    public List<CostPositionView> fetchCostPositionViewsWithFX(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime) {
+
+        return costPositionRepository.findCostPositionViewsWithFX(
+                dealId,
+                currencyCode,
+                createdDateTime);
+    }
 
     @Override
     public List<Integer> findIdsByDeal(EntityId entityId) {

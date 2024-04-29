@@ -45,6 +45,7 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
     private static final Logger logger = LogManager.getLogger();
 	public static final String FIND_BY_DEAL = "CostPositionsRepository.FIND_BY_DEAL";
 	public static final String FIND_COST_POSITION_VIEWS_FX = "CostPositionsRepository.FIND_COST_POSITION_VIEWS_FX";
+	public static final String FIND_COST_POSITION_VIEWS_FX_BY_DEAL = "CostPositionsRepository.FIND_COST_POSITION_VIEWS_FX_BY_DEAL";
 	public static final String FIND_IDS_BY_DEAL = "CostPositionsRepository.FIND_IDS_BY_DEAL";
 
     @Autowired
@@ -143,6 +144,23 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 				definedQuery);
 
 	}
+
+
+	@Override
+	public List<CostPositionView> findCostPositionViewsWithFX(
+			Integer dealId,
+			CurrencyCode currencyCode,
+			LocalDateTime createdDateTime) {
+
+		String[] names = {"dealId", "currencyCode", "createdDateTime"};
+		Object[] parms = {dealId, currencyCode.getCode(), createdDateTime};
+
+		return (List<CostPositionView>) executeReportQuery(
+				FIND_COST_POSITION_VIEWS_FX_BY_DEAL,
+				names,
+				parms);
+	}
+
 	@Override
 	public List<CostPositionView> findCostPositionViewsWithFX(
 			List<Integer> dealIds,

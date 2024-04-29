@@ -289,57 +289,57 @@ public class HourPriceDayDetail {
 
 
     private void initializeSetterMap() {
-        hourSetterMap.put(1, (BigDecimal c) -> setHour1PriceValue(c));
-        hourSetterMap.put(2, (BigDecimal c) -> setHour2PriceValue(c));
-        hourSetterMap.put(3, (BigDecimal c) -> setHour3PriceValue(c));
-        hourSetterMap.put(4, (BigDecimal c) -> setHour4PriceValue(c));
-        hourSetterMap.put(5, (BigDecimal c) -> setHour5PriceValue(c));
-        hourSetterMap.put(6, (BigDecimal c) -> setHour6PriceValue(c));
-        hourSetterMap.put(7, (BigDecimal c) -> setHour7PriceValue(c));
-        hourSetterMap.put(8, (BigDecimal c) -> setHour8PriceValue(c));
-        hourSetterMap.put(9, (BigDecimal c) -> setHour9PriceValue(c));
-        hourSetterMap.put(10, (BigDecimal c) -> setHour10PriceValue(c));
-        hourSetterMap.put(11, (BigDecimal c) -> setHour11PriceValue(c));
-        hourSetterMap.put(12, (BigDecimal c) -> setHour12PriceValue(c));
-        hourSetterMap.put(13, (BigDecimal c) -> setHour13PriceValue(c));
-        hourSetterMap.put(14, (BigDecimal c) -> setHour14PriceValue(c));
-        hourSetterMap.put(15, (BigDecimal c) -> setHour15PriceValue(c));
-        hourSetterMap.put(16, (BigDecimal c) -> setHour16PriceValue(c));
-        hourSetterMap.put(17, (BigDecimal c) -> setHour17PriceValue(c));
-        hourSetterMap.put(18, (BigDecimal c) -> setHour18PriceValue(c));
-        hourSetterMap.put(19, (BigDecimal c) -> setHour19PriceValue(c));
-        hourSetterMap.put(20, (BigDecimal c) -> setHour20PriceValue(c));
-        hourSetterMap.put(21, (BigDecimal c) -> setHour21PriceValue(c));
-        hourSetterMap.put(22, (BigDecimal c) -> setHour22PriceValue(c));
-        hourSetterMap.put(23, (BigDecimal c) -> setHour23PriceValue(c));
-        hourSetterMap.put(24, (BigDecimal c) -> setHour24PriceValue(c));
+        hourSetterMap.put(1, this::setHour1PriceValue);
+        hourSetterMap.put(2, this::setHour2PriceValue);
+        hourSetterMap.put(3, this::setHour3PriceValue);
+        hourSetterMap.put(4, this::setHour4PriceValue);
+        hourSetterMap.put(5, this::setHour5PriceValue);
+        hourSetterMap.put(6, this::setHour6PriceValue);
+        hourSetterMap.put(7, this::setHour7PriceValue);
+        hourSetterMap.put(8, this::setHour8PriceValue);
+        hourSetterMap.put(9, this::setHour9PriceValue);
+        hourSetterMap.put(10, this::setHour10PriceValue);
+        hourSetterMap.put(11, this::setHour11PriceValue);
+        hourSetterMap.put(12, this::setHour12PriceValue);
+        hourSetterMap.put(13, this::setHour13PriceValue);
+        hourSetterMap.put(14, this::setHour14PriceValue);
+        hourSetterMap.put(15, this::setHour15PriceValue);
+        hourSetterMap.put(16, this::setHour16PriceValue);
+        hourSetterMap.put(17, this::setHour17PriceValue);
+        hourSetterMap.put(18, this::setHour18PriceValue);
+        hourSetterMap.put(19, this::setHour19PriceValue);
+        hourSetterMap.put(20, this::setHour20PriceValue);
+        hourSetterMap.put(21, this::setHour21PriceValue);
+        hourSetterMap.put(22, this::setHour22PriceValue);
+        hourSetterMap.put(23, this::setHour23PriceValue);
+        hourSetterMap.put(24, this::setHour24PriceValue);
     }
 
     private void initializeGetterMap() {
-        hourGetterMap.put(1, () -> getHour1PriceValue());
-        hourGetterMap.put(2, () -> getHour2PriceValue());
-        hourGetterMap.put(3, () -> getHour3PriceValue());
-        hourGetterMap.put(4, () -> getHour4PriceValue());
-        hourGetterMap.put(5, () -> getHour5PriceValue());
-        hourGetterMap.put(6, () -> getHour6PriceValue());
-        hourGetterMap.put(7, () -> getHour7PriceValue());
-        hourGetterMap.put(8, () -> getHour8PriceValue());
-        hourGetterMap.put(9, () -> getHour9PriceValue());
-        hourGetterMap.put(10, () -> getHour10PriceValue());
-        hourGetterMap.put(11, () -> getHour11PriceValue());
-        hourGetterMap.put(12, () -> getHour12PriceValue());
-        hourGetterMap.put(13, () -> getHour13PriceValue());
-        hourGetterMap.put(14, () -> getHour14PriceValue());
-        hourGetterMap.put(15, () -> getHour15PriceValue());
-        hourGetterMap.put(16, () -> getHour16PriceValue());
-        hourGetterMap.put(17, () -> getHour17PriceValue());
-        hourGetterMap.put(18, () -> getHour18PriceValue());
-        hourGetterMap.put(19, () -> getHour19PriceValue());
-        hourGetterMap.put(20, () -> getHour20PriceValue());
-        hourGetterMap.put(21, () -> getHour21PriceValue());
-        hourGetterMap.put(22, () -> getHour22PriceValue());
-        hourGetterMap.put(23, () -> getHour23PriceValue());
-        hourGetterMap.put(24, () -> getHour24PriceValue());
+        hourGetterMap.put(1, this::getHour1PriceValue);
+        hourGetterMap.put(2, this::getHour2PriceValue);
+        hourGetterMap.put(3, this::getHour3PriceValue);
+        hourGetterMap.put(4, this::getHour4PriceValue);
+        hourGetterMap.put(5, this::getHour5PriceValue);
+        hourGetterMap.put(6, this::getHour6PriceValue);
+        hourGetterMap.put(7, this::getHour7PriceValue);
+        hourGetterMap.put(8, this::getHour8PriceValue);
+        hourGetterMap.put(9, this::getHour9PriceValue);
+        hourGetterMap.put(10, this::getHour10PriceValue);
+        hourGetterMap.put(11, this::getHour11PriceValue);
+        hourGetterMap.put(12, this::getHour12PriceValue);
+        hourGetterMap.put(13, this::getHour13PriceValue);
+        hourGetterMap.put(14, this::getHour14PriceValue);
+        hourGetterMap.put(15, this::getHour15PriceValue);
+        hourGetterMap.put(16, this::getHour16PriceValue);
+        hourGetterMap.put(17, this::getHour17PriceValue);
+        hourGetterMap.put(18, this::getHour18PriceValue);
+        hourGetterMap.put(19, this::getHour19PriceValue);
+        hourGetterMap.put(20, this::getHour20PriceValue);
+        hourGetterMap.put(21, this::getHour21PriceValue);
+        hourGetterMap.put(22, this::getHour22PriceValue);
+        hourGetterMap.put(23, this::getHour23PriceValue);
+        hourGetterMap.put(24, this::getHour24PriceValue);
     }
     
 }

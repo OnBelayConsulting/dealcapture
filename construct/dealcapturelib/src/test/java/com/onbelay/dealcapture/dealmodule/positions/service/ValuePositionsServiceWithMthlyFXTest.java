@@ -96,6 +96,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         valuePositionsService.valuePositions(
                 fixedPriceBuyDeal.generateEntityId(),
                 CurrencyCode.USD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();
@@ -153,6 +155,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         valuePositionsService.valuePositions(
                 fixedPriceSellDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();
@@ -204,6 +208,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         valuePositionsService.valuePositions(
                 indexBuyDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();
@@ -252,6 +258,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         valuePositionsService.valuePositions(
                 indexSellDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();
@@ -305,6 +313,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         valuePositionsService.valuePositions(
                 indexPlusBuyDeal.generateEntityId(),
                 CurrencyCode.USD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();
@@ -353,6 +363,8 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         valuePositionsService.valuePositions(
                 indexPlusSellDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();

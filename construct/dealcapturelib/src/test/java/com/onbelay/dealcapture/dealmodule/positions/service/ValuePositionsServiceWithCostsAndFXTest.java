@@ -126,6 +126,8 @@ public class ValuePositionsServiceWithCostsAndFXTest extends DealServiceTestCase
         valuePositionsService.valuePositions(
                 fixedPriceBuyDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 currentValuationDateTime);
         flush();
@@ -217,6 +219,8 @@ public class ValuePositionsServiceWithCostsAndFXTest extends DealServiceTestCase
         valuePositionsService.valuePositions(
                 fixedPriceBuyDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 currentValuationDateTime);
         flush();

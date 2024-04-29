@@ -289,57 +289,57 @@ public class HourFixedValueDayDetail {
 
 
     private void initializeSetterMap() {
-        hourSetterMap.put(1, (BigDecimal c) -> setHour1FixedValue(c));
-        hourSetterMap.put(2, (BigDecimal c) -> setHour2FixedValue(c));
-        hourSetterMap.put(3, (BigDecimal c) -> setHour3FixedValue(c));
-        hourSetterMap.put(4, (BigDecimal c) -> setHour4FixedValue(c));
-        hourSetterMap.put(5, (BigDecimal c) -> setHour5FixedValue(c));
-        hourSetterMap.put(6, (BigDecimal c) -> setHour6FixedValue(c));
-        hourSetterMap.put(7, (BigDecimal c) -> setHour7FixedValue(c));
-        hourSetterMap.put(8, (BigDecimal c) -> setHour8FixedValue(c));
-        hourSetterMap.put(9, (BigDecimal c) -> setHour9FixedValue(c));
-        hourSetterMap.put(10, (BigDecimal c) -> setHour10FixedValue(c));
-        hourSetterMap.put(11, (BigDecimal c) -> setHour11FixedValue(c));
-        hourSetterMap.put(12, (BigDecimal c) -> setHour12FixedValue(c));
-        hourSetterMap.put(13, (BigDecimal c) -> setHour13FixedValue(c));
-        hourSetterMap.put(14, (BigDecimal c) -> setHour14FixedValue(c));
-        hourSetterMap.put(15, (BigDecimal c) -> setHour15FixedValue(c));
-        hourSetterMap.put(16, (BigDecimal c) -> setHour16FixedValue(c));
-        hourSetterMap.put(17, (BigDecimal c) -> setHour17FixedValue(c));
-        hourSetterMap.put(18, (BigDecimal c) -> setHour18FixedValue(c));
-        hourSetterMap.put(19, (BigDecimal c) -> setHour19FixedValue(c));
-        hourSetterMap.put(20, (BigDecimal c) -> setHour20FixedValue(c));
-        hourSetterMap.put(21, (BigDecimal c) -> setHour21FixedValue(c));
-        hourSetterMap.put(22, (BigDecimal c) -> setHour22FixedValue(c));
-        hourSetterMap.put(23, (BigDecimal c) -> setHour23FixedValue(c));
-        hourSetterMap.put(24, (BigDecimal c) -> setHour24FixedValue(c));
+        hourSetterMap.put(1, this::setHour1FixedValue);
+        hourSetterMap.put(2, this::setHour2FixedValue);
+        hourSetterMap.put(3, this::setHour3FixedValue);
+        hourSetterMap.put(4, this::setHour4FixedValue);
+        hourSetterMap.put(5, this::setHour5FixedValue);
+        hourSetterMap.put(6, this::setHour6FixedValue);
+        hourSetterMap.put(7, this::setHour7FixedValue);
+        hourSetterMap.put(8, this::setHour8FixedValue);
+        hourSetterMap.put(9, this::setHour9FixedValue);
+        hourSetterMap.put(10, this::setHour10FixedValue);
+        hourSetterMap.put(11, this::setHour11FixedValue);
+        hourSetterMap.put(12, this::setHour12FixedValue);
+        hourSetterMap.put(13, this::setHour13FixedValue);
+        hourSetterMap.put(14, this::setHour14FixedValue);
+        hourSetterMap.put(15, this::setHour15FixedValue);
+        hourSetterMap.put(16, this::setHour16FixedValue);
+        hourSetterMap.put(17, this::setHour17FixedValue);
+        hourSetterMap.put(18, this::setHour18FixedValue);
+        hourSetterMap.put(19, this::setHour19FixedValue);
+        hourSetterMap.put(20, this::setHour20FixedValue);
+        hourSetterMap.put(21, this::setHour21FixedValue);
+        hourSetterMap.put(22, this::setHour22FixedValue);
+        hourSetterMap.put(23, this::setHour23FixedValue);
+        hourSetterMap.put(24, this::setHour24FixedValue);
     }
 
     private void initializeGetterMap() {
-        hourGetterMap.put(1, () -> getHour1FixedValue());
-        hourGetterMap.put(2, () -> getHour2FixedValue());
-        hourGetterMap.put(3, () -> getHour3FixedValue());
-        hourGetterMap.put(4, () -> getHour4FixedValue());
-        hourGetterMap.put(5, () -> getHour5FixedValue());
-        hourGetterMap.put(6, () -> getHour6FixedValue());
-        hourGetterMap.put(7, () -> getHour7FixedValue());
-        hourGetterMap.put(8, () -> getHour8FixedValue());
-        hourGetterMap.put(9, () -> getHour9FixedValue());
-        hourGetterMap.put(10, () -> getHour10FixedValue());
-        hourGetterMap.put(11, () -> getHour11FixedValue());
-        hourGetterMap.put(12, () -> getHour12FixedValue());
-        hourGetterMap.put(13, () -> getHour13FixedValue());
-        hourGetterMap.put(14, () -> getHour14FixedValue());
-        hourGetterMap.put(15, () -> getHour15FixedValue());
-        hourGetterMap.put(16, () -> getHour16FixedValue());
-        hourGetterMap.put(17, () -> getHour17FixedValue());
-        hourGetterMap.put(18, () -> getHour18FixedValue());
-        hourGetterMap.put(19, () -> getHour19FixedValue());
-        hourGetterMap.put(20, () -> getHour20FixedValue());
-        hourGetterMap.put(21, () -> getHour21FixedValue());
-        hourGetterMap.put(22, () -> getHour22FixedValue());
-        hourGetterMap.put(23, () -> getHour23FixedValue());
-        hourGetterMap.put(24, () -> getHour24FixedValue());
+        hourGetterMap.put(1, this::getHour1FixedValue);
+        hourGetterMap.put(2, this::getHour2FixedValue);
+        hourGetterMap.put(3, this::getHour3FixedValue);
+        hourGetterMap.put(4, this::getHour4FixedValue);
+        hourGetterMap.put(5, this::getHour5FixedValue);
+        hourGetterMap.put(6, this::getHour6FixedValue);
+        hourGetterMap.put(7, this::getHour7FixedValue);
+        hourGetterMap.put(8, this::getHour8FixedValue);
+        hourGetterMap.put(9, this::getHour9FixedValue);
+        hourGetterMap.put(10, this::getHour10FixedValue);
+        hourGetterMap.put(11, this::getHour11FixedValue);
+        hourGetterMap.put(12, this::getHour12FixedValue);
+        hourGetterMap.put(13, this::getHour13FixedValue);
+        hourGetterMap.put(14, this::getHour14FixedValue);
+        hourGetterMap.put(15, this::getHour15FixedValue);
+        hourGetterMap.put(16, this::getHour16FixedValue);
+        hourGetterMap.put(17, this::getHour17FixedValue);
+        hourGetterMap.put(18, this::getHour18FixedValue);
+        hourGetterMap.put(19, this::getHour19FixedValue);
+        hourGetterMap.put(20, this::getHour20FixedValue);
+        hourGetterMap.put(21, this::getHour21FixedValue);
+        hourGetterMap.put(22, this::getHour22FixedValue);
+        hourGetterMap.put(23, this::getHour23FixedValue);
+        hourGetterMap.put(24, this::getHour24FixedValue);
     }
     
 }

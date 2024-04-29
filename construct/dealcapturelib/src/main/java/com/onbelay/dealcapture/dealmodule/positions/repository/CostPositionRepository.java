@@ -23,6 +23,13 @@ public interface CostPositionRepository {
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
 
+
+    List<CostPositionView> findCostPositionViewsWithFX(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
+
     List<TotalCostPositionSummary> calculateTotalCostSummaries(
             Integer dealId,
             CurrencyCode currencyCode,

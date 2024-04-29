@@ -72,48 +72,60 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
                    List.of(dealId));
 
     }
+
     @Override
     public TransactionResult generatePositions(
             String positionGenerationIdentifier,
             DealPositionsEvaluationContext context,
-            List<Integer> dealIds) {
+            List<Integer> dealIdsIn) {
 
         if (context.validate() == false)
             throw new RuntimeException("Missing at least one EvaluationContext required fields:createdDateTime, currencyCode, startPositionDate");
 
-        logger.info("assign pg identifiers start: " + LocalDateTime.now().toString());
-        dealService.assignPositionIdentifierToDeals(
-                positionGenerationIdentifier,
-                dealIds);
-        logger.info("assign pg identifiers end: " + LocalDateTime.now().toString());
+        RiskFactorManager riskFactorManager = createRiskFactorManager(context);
 
-        logger.info("get assigned deal summaries start: " + LocalDateTime.now().toString());
-        List<DealSummary> summaries = dealService.getAssignedDealSummaries(positionGenerationIdentifier);
-        logger.info("get assigned deal summaries end: " + LocalDateTime.now().toString());
 
-        List<DealCostSummary> dealCostSummaries = dealService.fetchDealCostSummaries(dealIds);
+        SubLister<Integer> subLister = new SubLister<>(dealIdsIn, 100);
+        while (subLister.moreElements()) {
+            List<Integer> dealIds = subLister.nextList();
+            logger.info("assign pg identifiers start: " + LocalDateTime.now().toString());
+            dealService.assignPositionIdentifierToDeals(
+                    positionGenerationIdentifier,
+                    dealIds);
 
-        List<DealHourByDayView> dealHourByDayViews = dealService.fetchDealHourByDayViewsByDates(
-                dealIds,
-                context.getStartPositionDate(),
-                context.getEndPositionDate());
+            logger.info("assign pg identifiers end: " + LocalDateTime.now().toString());
 
-        List<DealDayByMonthView> dealDayByMonthViews = dealService.fetchDealDayByMonthViewsByDates(
-                dealIds,
-                context.getStartPositionDate(),
-                context.getEndPositionDate());
+            logger.info("get assigned deal summaries start: " + LocalDateTime.now().toString());
+            List<DealSummary> summaries = dealService.getAssignedDealSummaries(positionGenerationIdentifier);
+            logger.info("get assigned deal summaries end: " + LocalDateTime.now().toString());
 
-        return createAndSavePositions(
-                context,
-                summaries,
-                dealCostSummaries,
-                dealDayByMonthViews,
-                dealHourByDayViews);
+            List<DealCostSummary> dealCostSummaries = dealService.fetchDealCostSummaries(dealIds);
 
+            List<DealHourByDayView> dealHourByDayViews = dealService.fetchDealHourByDayViewsByDates(
+                    dealIds,
+                    context.getStartPositionDate(),
+                    context.getEndPositionDate());
+
+            List<DealDayByMonthView> dealDayByMonthViews = dealService.fetchDealDayByMonthViewsByDates(
+                    dealIds,
+                    context.getStartPositionDate(),
+                    context.getEndPositionDate());
+
+            createAndSavePositions(
+                    context,
+                    riskFactorManager,
+                    summaries,
+                    dealCostSummaries,
+                    dealDayByMonthViews,
+                    dealHourByDayViews);
+
+        }
+        return new TransactionResult();
     }
 
-    private TransactionResult createAndSavePositions(
+    private void createAndSavePositions(
             DealPositionsEvaluationContext context,
+            RiskFactorManager riskFactorManager,
             List<DealSummary> dealSummaries,
             List<DealCostSummary> dealCostSummaries,
             List<DealDayByMonthView> dealDayByMonthViews,
@@ -129,17 +141,6 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         List<PhysicalDealSummary> physicalDealSummaries = dealService.findPhysicalDealSummariesByIds(physicalDealIds);
         logger.info("get physical deal summaries end: " + LocalDateTime.now().toString());
 
-        HashSet<Integer> uniquePriceIndexIds = new HashSet<>();
-        physicalDealSummaries.forEach( c-> {
-               if (c.getDealPriceIndexId() != null)
-                   uniquePriceIndexIds.add(c.getDealPriceIndexId());
-               if (c.getMarketIndexId() != null)
-                   uniquePriceIndexIds.add(c.getMarketIndexId());
-        });
-
-        RiskFactorManager riskFactorManager = createRiskFactorManager(
-                new ArrayList<>(uniquePriceIndexIds),
-                context);
 
         DealPositionGeneratorFactory factory = DealPositionGeneratorFactory.newFactory();
         if (dealCostSummaries.size() > 0)
@@ -190,8 +191,6 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         batchSavePositions(
                 context.getCreatedDateTime(),
                 dealPositionGenerators);
-
-        return  new TransactionResult();
     }
 
 

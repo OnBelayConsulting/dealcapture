@@ -42,6 +42,7 @@ public class DealHourlyPositionRepositoryBean extends BaseRepository<DealHourlyP
     private static final Logger logger = LogManager.getLogger();
 	public static final String FIND_BY_DEAL = "DealHourlyPositionsRepository.FIND_BY_DEAL";
 	public static final String FIND_DEAL_HOURLY_POSITION_VIEWS = "DealHourlyPositionsRepository.FIND_DEAL_HOURLY_POSITION_VIEWS";
+	public static final String FIND_DEAL_HOURLY_POSITION_VIEWS_BY_DEAL = "DealHourlyPositionsRepository.FIND_DEAL_HOURLY_POSITION_VIEWS_BY_DEAL";
 	public static final String FIND_IDS_BY_DEAL = "DealHourlyPositionsRepository.FIND_IDS_BY_DEAL";
 
 
@@ -100,6 +101,21 @@ public class DealHourlyPositionRepositoryBean extends BaseRepository<DealHourlyP
 				definedQuery);
 
 	}
+
+	@Override
+	public List<DealHourlyPositionView> findDealHourlyPositionViews(
+			Integer dealId,
+			CurrencyCode currencyCode,
+			LocalDateTime createdDateTime) {
+		String[] names = {"dealId", "currencyCode", "createdDateTime"};
+		Object[] parms = {dealId, currencyCode.getCode(), createdDateTime};
+
+		return (List<DealHourlyPositionView>) executeReportQuery(
+				FIND_DEAL_HOURLY_POSITION_VIEWS_BY_DEAL,
+				names,
+				parms);
+	}
+
 	@Override
 	public List<DealHourlyPositionView> findDealHourlyPositionViews(
 			List<Integer> dealIds,
