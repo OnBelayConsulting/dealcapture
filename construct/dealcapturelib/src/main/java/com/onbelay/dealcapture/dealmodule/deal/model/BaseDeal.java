@@ -66,6 +66,7 @@ import java.util.List;
 	   + "      FROM BaseDeal deal "
 + "  LEFT OUTER JOIN deal.powerProfile as powerProfile "
  	   +   "   WHERE deal.dealDetail.positionGenerationIdentifier = :identifier " +
+			   " AND deal.dealDetail.positionGenerationStatusValue = 'Generating'" +
           " ORDER BY deal.dealDetail.ticketNo DESC"),
     @NamedQuery(
        name = DealRepositoryBean.GET_DEAL_SUMMARY,

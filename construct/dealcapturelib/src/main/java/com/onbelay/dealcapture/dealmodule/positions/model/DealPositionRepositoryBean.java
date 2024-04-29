@@ -79,6 +79,21 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 
 	@Override
 	public List<DealPositionView> findDealPositionViews(
+			Integer dealId,
+			CurrencyCode currencyCode,
+			LocalDateTime createdDateTime) {
+
+		String[] names = {"dealId", "currencyCode", "createdDateTime"};
+		Object[] parms = {dealId, currencyCode.getCode(), createdDateTime};
+
+		return (List<DealPositionView>) executeReportQuery(
+				FIND_DEAL_POSITION_VIEWS_BY_DEAL,
+				names,
+				parms);
+	}
+
+	@Override
+	public List<DealPositionView> findDealPositionViews(
 			List<Integer> dealIds,
 			CurrencyCode currencyCode,
 			LocalDateTime createdDateTime) {

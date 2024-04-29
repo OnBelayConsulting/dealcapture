@@ -121,6 +121,8 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         valuePositionsService.valuePositions(
                 fixedPriceSellDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
 
@@ -222,6 +224,8 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         valuePositionsService.valuePositions(
                 fixedPriceSellDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();
@@ -329,6 +333,8 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         valuePositionsService.valuePositions(
                 fixedPriceHourlySellDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();
@@ -416,6 +422,8 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         valuePositionsService.valuePositions(
                 indexSellDeal.generateEntityId(),
                 CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
                 createdDateTime,
                 LocalDateTime.now());
         flush();

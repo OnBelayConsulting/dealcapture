@@ -42,12 +42,7 @@ public class GeneratePowerProfilePositionsServiceBean extends BasePositionsServi
 
         List<PowerProfileSnapshot> profiles = powerProfileService.getAssignedPowerProfiles(positionGenerationIdentifier);
 
-        List<PriceIndexSnapshot> activePriceIndices = priceIndexService.findActivePriceIndices();
-        List<Integer> uniquePriceIndexIds = activePriceIndices.stream().map( c-> c.getEntityId().getId()).toList();
-
-        RiskFactorManager riskFactorManager = createRiskFactorManager(
-                uniquePriceIndexIds,
-                context);
+        RiskFactorManager riskFactorManager = createRiskFactorManager(context);
 
         createAndSavePowerProfilePositions(
                 context,

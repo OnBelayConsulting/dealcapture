@@ -25,8 +25,14 @@ import java.math.BigDecimal;
                         "  FROM DealHourlyPositionView position " +
                         " WHERE position.dealId in (:dealIds) " +
                         "   AND position.detail.currencyCodeValue = :currencyCode  " +
-                        "   AND position.detail.createdDateTime = :createdDateTime " +
-                      "ORDER BY position.detail.startDate ")
+                        "   AND position.detail.createdDateTime = :createdDateTime "),
+        @NamedQuery(
+                name = DealHourlyPositionRepositoryBean.FIND_DEAL_HOURLY_POSITION_VIEWS_BY_DEAL,
+                query = "SELECT position " +
+                        "  FROM DealHourlyPositionView position " +
+                        " WHERE position.dealId = :dealId " +
+                        "   AND position.detail.currencyCodeValue = :currencyCode  " +
+                        "   AND position.detail.createdDateTime = :createdDateTime " )
 })
 public class DealHourlyPositionView extends AbstractEntity {
     private Integer id;

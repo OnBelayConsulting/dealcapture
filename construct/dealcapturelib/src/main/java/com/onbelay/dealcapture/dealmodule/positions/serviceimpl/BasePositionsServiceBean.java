@@ -58,9 +58,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
     @Autowired
     protected FxRiskFactorService fxRiskFactorService;
 
-    protected RiskFactorManager createRiskFactorManager(
-            List<Integer> uniquePriceIndexIds,
-            EvaluationContext context) {
+    protected RiskFactorManager createRiskFactorManager(EvaluationContext context) {
 
 
         List<PriceIndexSnapshot> activePriceIndices = priceIndexService.findActivePriceIndices();
@@ -69,7 +67,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
 
         logger.info("fetch active price risk factors start: " + LocalDateTime.now().toString());
         List<PriceRiskFactorSnapshot> activePriceRiskFactors = priceRiskFactorService.findByPriceIndexIds(
-                new ArrayList<>(uniquePriceIndexIds),
+                activePriceIndices.stream().map(c-> c.getEntityId().getId()).toList(),
                 context.getStartPositionDate(),
                 context.getEndPositionDate());
         logger.info("fetch active price risk factors end: " + LocalDateTime.now().toString());

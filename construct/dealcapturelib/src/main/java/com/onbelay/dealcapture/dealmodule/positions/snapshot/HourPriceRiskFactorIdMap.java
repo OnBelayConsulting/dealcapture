@@ -288,57 +288,57 @@ public class HourPriceRiskFactorIdMap {
 
 
     private void initializeSetterMap() {
-        hourSetterMap.put(1, (Integer c) -> setHour1PriceRiskFactorId(c));
-        hourSetterMap.put(2, (Integer c) -> setHour2PriceRiskFactorId(c));
-        hourSetterMap.put(3, (Integer c) -> setHour3PriceRiskFactorId(c));
-        hourSetterMap.put(4, (Integer c) -> setHour4PriceRiskFactorId(c));
-        hourSetterMap.put(5, (Integer c) -> setHour5PriceRiskFactorId(c));
-        hourSetterMap.put(6, (Integer c) -> setHour6PriceRiskFactorId(c));
-        hourSetterMap.put(7, (Integer c) -> setHour7PriceRiskFactorId(c));
-        hourSetterMap.put(8, (Integer c) -> setHour8PriceRiskFactorId(c));
-        hourSetterMap.put(9, (Integer c) -> setHour9PriceRiskFactorId(c));
-        hourSetterMap.put(10, (Integer c) -> setHour10PriceRiskFactorId(c));
-        hourSetterMap.put(11, (Integer c) -> setHour11PriceRiskFactorId(c));
-        hourSetterMap.put(12, (Integer c) -> setHour12PriceRiskFactorId(c));
-        hourSetterMap.put(13, (Integer c) -> setHour13PriceRiskFactorId(c));
-        hourSetterMap.put(14, (Integer c) -> setHour14PriceRiskFactorId(c));
-        hourSetterMap.put(15, (Integer c) -> setHour15PriceRiskFactorId(c));
-        hourSetterMap.put(16, (Integer c) -> setHour16PriceRiskFactorId(c));
-        hourSetterMap.put(17, (Integer c) -> setHour17PriceRiskFactorId(c));
-        hourSetterMap.put(18, (Integer c) -> setHour18PriceRiskFactorId(c));
-        hourSetterMap.put(19, (Integer c) -> setHour19PriceRiskFactorId(c));
-        hourSetterMap.put(20, (Integer c) -> setHour20PriceRiskFactorId(c));
-        hourSetterMap.put(21, (Integer c) -> setHour21PriceRiskFactorId(c));
-        hourSetterMap.put(22, (Integer c) -> setHour22PriceRiskFactorId(c));
-        hourSetterMap.put(23, (Integer c) -> setHour23PriceRiskFactorId(c));
-        hourSetterMap.put(24, (Integer c) -> setHour24PriceRiskFactorId(c));
+        hourSetterMap.put(1, this::setHour1PriceRiskFactorId);
+        hourSetterMap.put(2, this::setHour2PriceRiskFactorId);
+        hourSetterMap.put(3, this::setHour3PriceRiskFactorId);
+        hourSetterMap.put(4, this::setHour4PriceRiskFactorId);
+        hourSetterMap.put(5, this::setHour5PriceRiskFactorId);
+        hourSetterMap.put(6, this::setHour6PriceRiskFactorId);
+        hourSetterMap.put(7, this::setHour7PriceRiskFactorId);
+        hourSetterMap.put(8, this::setHour8PriceRiskFactorId);
+        hourSetterMap.put(9, this::setHour9PriceRiskFactorId);
+        hourSetterMap.put(10, this::setHour10PriceRiskFactorId);
+        hourSetterMap.put(11, this::setHour11PriceRiskFactorId);
+        hourSetterMap.put(12, this::setHour12PriceRiskFactorId);
+        hourSetterMap.put(13, this::setHour13PriceRiskFactorId);
+        hourSetterMap.put(14, this::setHour14PriceRiskFactorId);
+        hourSetterMap.put(15, this::setHour15PriceRiskFactorId);
+        hourSetterMap.put(16, this::setHour16PriceRiskFactorId);
+        hourSetterMap.put(17, this::setHour17PriceRiskFactorId);
+        hourSetterMap.put(18, this::setHour18PriceRiskFactorId);
+        hourSetterMap.put(19, this::setHour19PriceRiskFactorId);
+        hourSetterMap.put(20, this::setHour20PriceRiskFactorId);
+        hourSetterMap.put(21, this::setHour21PriceRiskFactorId);
+        hourSetterMap.put(22, this::setHour22PriceRiskFactorId);
+        hourSetterMap.put(23, this::setHour23PriceRiskFactorId);
+        hourSetterMap.put(24, this::setHour24PriceRiskFactorId);
     }
 
     private void initializeGetterMap() {
-        hourGetterMap.put(1, () -> getHour1PriceRiskFactorId());
-        hourGetterMap.put(2, () -> getHour2PriceRiskFactorId());
-        hourGetterMap.put(3, () -> getHour3PriceRiskFactorId());
-        hourGetterMap.put(4, () -> getHour4PriceRiskFactorId());
-        hourGetterMap.put(5, () -> getHour5PriceRiskFactorId());
-        hourGetterMap.put(6, () -> getHour6PriceRiskFactorId());
-        hourGetterMap.put(7, () -> getHour7PriceRiskFactorId());
-        hourGetterMap.put(8, () -> getHour8PriceRiskFactorId());
-        hourGetterMap.put(9, () -> getHour9PriceRiskFactorId());
-        hourGetterMap.put(10, () -> getHour10PriceRiskFactorId());
-        hourGetterMap.put(11, () -> getHour11PriceRiskFactorId());
-        hourGetterMap.put(12, () -> getHour12PriceRiskFactorId());
-        hourGetterMap.put(13, () -> getHour13PriceRiskFactorId());
-        hourGetterMap.put(14, () -> getHour14PriceRiskFactorId());
-        hourGetterMap.put(15, () -> getHour15PriceRiskFactorId());
-        hourGetterMap.put(16, () -> getHour16PriceRiskFactorId());
-        hourGetterMap.put(17, () -> getHour17PriceRiskFactorId());
-        hourGetterMap.put(18, () -> getHour18PriceRiskFactorId());
-        hourGetterMap.put(19, () -> getHour19PriceRiskFactorId());
-        hourGetterMap.put(20, () -> getHour20PriceRiskFactorId());
-        hourGetterMap.put(21, () -> getHour21PriceRiskFactorId());
-        hourGetterMap.put(22, () -> getHour22PriceRiskFactorId());
-        hourGetterMap.put(23, () -> getHour23PriceRiskFactorId());
-        hourGetterMap.put(24, () -> getHour24PriceRiskFactorId());
+        hourGetterMap.put(1, this::getHour1PriceRiskFactorId);
+        hourGetterMap.put(2, this::getHour2PriceRiskFactorId);
+        hourGetterMap.put(3, this::getHour3PriceRiskFactorId);
+        hourGetterMap.put(4, this::getHour4PriceRiskFactorId);
+        hourGetterMap.put(5, this::getHour5PriceRiskFactorId);
+        hourGetterMap.put(6, this::getHour6PriceRiskFactorId);
+        hourGetterMap.put(7, this::getHour7PriceRiskFactorId);
+        hourGetterMap.put(8, this::getHour8PriceRiskFactorId);
+        hourGetterMap.put(9, this::getHour9PriceRiskFactorId);
+        hourGetterMap.put(10, this::getHour10PriceRiskFactorId);
+        hourGetterMap.put(11, this::getHour11PriceRiskFactorId);
+        hourGetterMap.put(12, this::getHour12PriceRiskFactorId);
+        hourGetterMap.put(13, this::getHour13PriceRiskFactorId);
+        hourGetterMap.put(14, this::getHour14PriceRiskFactorId);
+        hourGetterMap.put(15, this::getHour15PriceRiskFactorId);
+        hourGetterMap.put(16, this::getHour16PriceRiskFactorId);
+        hourGetterMap.put(17, this::getHour17PriceRiskFactorId);
+        hourGetterMap.put(18, this::getHour18PriceRiskFactorId);
+        hourGetterMap.put(19, this::getHour19PriceRiskFactorId);
+        hourGetterMap.put(20, this::getHour20PriceRiskFactorId);
+        hourGetterMap.put(21, this::getHour21PriceRiskFactorId);
+        hourGetterMap.put(22, this::getHour22PriceRiskFactorId);
+        hourGetterMap.put(23, this::getHour23PriceRiskFactorId);
+        hourGetterMap.put(24, this::getHour24PriceRiskFactorId);
     }
     
 }

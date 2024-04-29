@@ -28,8 +28,20 @@ public interface DealPositionService {
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
 
+    List<DealPositionView> fetchDealPositionViews(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
+
     List<DealHourlyPositionView> fetchDealHourlyPositionViews(
             List<Integer> dealIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
+
+    List<DealHourlyPositionView> fetchDealHourlyPositionViews(
+            Integer dealId,
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
 
@@ -38,6 +50,13 @@ public interface DealPositionService {
             List<Integer> dealIds,
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
+
+
+    List<CostPositionView> fetchCostPositionViewsWithFX(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
 
     List<DealPositionSnapshot> findPositionsByDeal(EntityId dealId);
 

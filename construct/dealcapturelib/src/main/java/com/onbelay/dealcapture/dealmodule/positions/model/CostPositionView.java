@@ -24,6 +24,15 @@ import org.hibernate.annotations.Immutable;
                         "   AND position.detail.isFixedValued = false " +
                         "   AND position.detail.currencyCodeValue = :currencyCode  " +
                         "   AND position.detail.createdDateTime = :createdDateTime " +
+                      "ORDER BY position.detail.startDate "),
+        @NamedQuery(
+                name = CostPositionRepositoryBean.FIND_COST_POSITION_VIEWS_FX_BY_DEAL,
+                query = "SELECT position " +
+                        "  FROM CostPositionView position " +
+                        " WHERE position.dealId = :dealId " +
+                        "   AND position.detail.isFixedValued = false " +
+                        "   AND position.detail.currencyCodeValue = :currencyCode  " +
+                        "   AND position.detail.createdDateTime = :createdDateTime " +
                       "ORDER BY position.detail.startDate ")
 })
 public class CostPositionView extends AbstractEntity {

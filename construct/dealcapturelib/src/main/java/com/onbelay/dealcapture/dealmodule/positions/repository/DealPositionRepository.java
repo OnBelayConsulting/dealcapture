@@ -26,5 +26,12 @@ public interface DealPositionRepository {
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime);
 
+
+    List<DealPositionView> findDealPositionViews(
+            Integer dealId,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime);
+
+
     List<DealPosition> fetchByIds(QuerySelectedPage page);
 }

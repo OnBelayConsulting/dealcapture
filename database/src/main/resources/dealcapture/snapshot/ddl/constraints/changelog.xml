@@ -51,6 +51,9 @@
     <include file="UC_PRICING_LOCATION.xml" relativeToChangelogFile="true"/>
     <include file="UC_PRICE_RISK_FACTOR.xml" relativeToChangelogFile="true"/>
     <include file="IDX_DEAL_POSITION.xml" relativeToChangelogFile="true"/>
+    <include file="IDX_POSITION_RISK_FACTOR_MAPPING.xml" relativeToChangelogFile="true"/>
+    <include file="IDX_DEAL_COST_POSITION.xml" relativeToChangelogFile="true"/>
+    <include file="IDX_POWER_PROFILE_POSITION.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

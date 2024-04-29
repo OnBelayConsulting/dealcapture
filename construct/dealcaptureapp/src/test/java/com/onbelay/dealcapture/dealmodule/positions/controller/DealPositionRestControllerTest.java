@@ -303,7 +303,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		context.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
 		context.setCreatedDateTime(createdDateTime);
 		context.setFromDate(fromMarketDate);
-		context.setToDate(fromMarketDate);
+		context.setToDate(toMarketDate);
 
 		String jsonPayload = objectMapper.writeValueAsString(context);
 
