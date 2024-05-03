@@ -10,6 +10,7 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
+import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
@@ -34,6 +35,8 @@ public class DealHourlyPositionDetail extends AbstractDetail {
 
     private String currencyCodeValue;
     private String unitOfMeasureValue;
+    private Integer basisNo;
+    private String indexTypeCodeValue;
 
     private Boolean isSettlementPosition;
 
@@ -77,6 +80,12 @@ public class DealHourlyPositionDetail extends AbstractDetail {
 
         if (copy.isSettlementPosition != null)
             this.isSettlementPosition = copy.isSettlementPosition;
+
+        if (copy.basisNo != null)
+            this.basisNo = copy.basisNo;
+
+        if (copy.indexTypeCodeValue != null)
+            this.indexTypeCodeValue = copy.indexTypeCodeValue;
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
@@ -136,6 +145,37 @@ public class DealHourlyPositionDetail extends AbstractDetail {
     public void setPriceTypeCodeValue(String priceTypeCodeValue) {
         this.priceTypeCodeValue = priceTypeCodeValue;
     }
+
+
+    @Column(name = "BASIS_NO")
+    public Integer getBasisNo() {
+        return basisNo;
+    }
+
+    public void setBasisNo(Integer basisNo) {
+        this.basisNo = basisNo;
+    }
+
+    @Transient
+    @JsonIgnore
+    public IndexType getIndexTypeCode() {
+        return IndexType.lookUp(indexTypeCodeValue);
+    }
+
+    public void setIndexTypeCode(IndexType indexTypeCode) {
+        this.indexTypeCodeValue = indexTypeCode.getCode();
+    }
+
+    @Column(name = "INDEX_TYPE_CODE")
+    public String getIndexTypeCodeValue() {
+        return indexTypeCodeValue;
+    }
+
+    public void setIndexTypeCodeValue(String indexTypeCodeValue) {
+        this.indexTypeCodeValue = indexTypeCodeValue;
+    }
+
+
 
     @Column(name = "CREATE_UPDATE_DATETIME")
     public LocalDateTime getCreatedDateTime() {

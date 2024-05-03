@@ -50,6 +50,8 @@ public class DealHourlyPositionSqlMapper extends BaseSqlMapper {
 		list.add("CREATE_UPDATE_DATETIME");
 		list.add("CURRENCY_CODE");
 		list.add("UNIT_OF_MEASURE_CODE");
+		list.add("BASIS_NO");
+		list.add("INDEX_TYPE_CODE");
 		list.add("IS_SETTLEMENT_POSITION");
 		list.add("ERROR_CODE");
 		list.add("ERROR_MSG");
@@ -106,29 +108,40 @@ public class DealHourlyPositionSqlMapper extends BaseSqlMapper {
 		preparedStatement.setString(n + 11, position.getDetail().getUnitOfMeasureValue());
 
 
+		if (position.getDetail().getBasisNo() != null)
+			preparedStatement.setInt(n + 12, position.getDetail().getBasisNo());
+		else
+			preparedStatement.setNull(n + 12, Types.INTEGER);
+
+		if (position.getDetail().getIndexTypeCodeValue() != null)
+			preparedStatement.setString(n + 13, position.getDetail().getIndexTypeCodeValue());
+		else
+			preparedStatement.setNull(n + 13, Types.VARCHAR);
+
+
 		if (position.getDetail().getIsSettlementPosition() != null) {
 			String value;
 			if (position.getDetail().getIsSettlementPosition())
 				value = "Y";
 			else
 				value = "N";
-			preparedStatement.setString(n + 12, value);
+			preparedStatement.setString(n + 14, value);
 		} else {
-			preparedStatement.setNull(n + 12, Types.CHAR);
+			preparedStatement.setNull(n + 14, Types.CHAR);
 		}
 
 		// Error Code
 		if (position.getDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 13, position.getDetail().getErrorCode());
+			preparedStatement.setString(n + 15, position.getDetail().getErrorCode());
 		else
-			preparedStatement.setNull(n + 13, Types.VARCHAR);
+			preparedStatement.setNull(n + 15, Types.VARCHAR);
 
 		if (position.getDetail().getErrorMessage() != null)
-			preparedStatement.setString(n + 14, position.getDetail().getErrorMessage());
+			preparedStatement.setString(n + 16, position.getDetail().getErrorMessage());
 		else
-			preparedStatement.setNull(n + 14, Types.VARCHAR);
+			preparedStatement.setNull(n + 16, Types.VARCHAR);
 
-		int offset = 15;
+		int offset = 17;
 		for (int i=1;i < 25; i++) {
 			if (position.getHourFixedValueDetail().getHourFixedValue(i) != null)
 				preparedStatement.setBigDecimal(n + offset, position.getHourFixedValueDetail().getHourFixedValue(i));

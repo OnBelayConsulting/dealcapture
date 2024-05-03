@@ -37,11 +37,20 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public abstract class PowerProfilePositionsWithFxTestCase extends DealCaptureSpringTestCase {
+public abstract class PositionsServiceWithPowerProfileWithBasisTestCase extends DealCaptureSpringTestCase {
+	
+	protected CompanyRole companyRole;
+	protected CounterpartyRole counterpartyRole;
+
+	protected PriceIndex dealPriceIndex;
+	protected PriceIndex dealPriceHourlyIndex;
 
 	protected PricingLocation pricingLocation;
-
 	protected PriceIndex settledHourlyIndex;
+	protected PriceIndex hubIndex;
+	protected PriceIndex forwardHourlyIndex;
+
+
 	protected PriceIndex onPeakDailyIndex;
 	protected PriceIndex offPeakDailyIndex;
 
@@ -49,31 +58,38 @@ public abstract class PowerProfilePositionsWithFxTestCase extends DealCaptureSpr
 	protected PowerProfile mixedPowerProfile;
 	protected PowerProfile powerProfileWithBasis;
 
-
-	protected PriceIndex hubIndex;
-	protected PriceIndex basisOnPeakPriceIndex;
-	protected PriceIndex basisOffPeakPriceIndex;
-	protected PriceIndex forwardHourlyIndex;
-
-
 	protected FxIndex fxIndex;
 
-	protected LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
+
+	protected PhysicalDeal fixedPriceMarketPowerProfileDeal;
+
+	protected PhysicalDeal indexSellMarketPowerProfileDeal;
 
 	protected LocalDate startDate = LocalDate.of(2024, 1, 1);
-	protected LocalDate endDate = LocalDate.of(2024, 1, 31);
+	protected LocalDate endDate = LocalDate.of(2024, 3, 31);
 
 
+	@Autowired
+	protected DealRepository dealRepository;
+	
+	@Autowired
+	protected DealService dealService;
+	@Autowired
+	protected DealPositionService dealPositionService;
+
+	@Autowired
+	protected GeneratePositionsService generatePositionsService;
 
 	@Autowired
 	protected PriceRiskFactorService priceRiskFactorService;
 
-	protected LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
-	protected LocalDate toMarketDate = LocalDate.of(2024, 3, 31);
+	protected LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
 
 	@Override
 	public void setUp() {
 		super.setUp();
+		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
+		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 
 		pricingLocation = PricingLocationFixture.createPricingLocation("west");
 
@@ -81,14 +97,6 @@ public abstract class PowerProfilePositionsWithFxTestCase extends DealCaptureSpr
 		hubIndex = PriceIndexFixture.createPriceIndex(
 				"HubIndex",
 				FrequencyCode.DAILY,
-				CurrencyCode.CAD,
-				UnitOfMeasureCode.GJ,
-				pricingLocation);
-
-
-		settledHourlyIndex = PriceIndexFixture.createPriceIndex(
-				"SETTLE",
-				FrequencyCode.HOURLY,
 				CurrencyCode.CAD,
 				UnitOfMeasureCode.GJ,
 				pricingLocation);
@@ -101,6 +109,13 @@ public abstract class PowerProfilePositionsWithFxTestCase extends DealCaptureSpr
 				UnitOfMeasureCode.GJ,
 				pricingLocation);
 
+
+		settledHourlyIndex = PriceIndexFixture.createPriceIndex(
+				"SETTLE",
+				FrequencyCode.HOURLY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
+				pricingLocation);
 
 		onPeakDailyIndex = PriceIndexFixture.createPriceIndex(
 				"ON PEAK",
@@ -115,25 +130,6 @@ public abstract class PowerProfilePositionsWithFxTestCase extends DealCaptureSpr
 				CurrencyCode.CAD,
 				UnitOfMeasureCode.GJ,
 				pricingLocation);
-
-
-		basisOnPeakPriceIndex = PriceIndexFixture.createBasisPriceIndex(
-				hubIndex,
-				"B_ONP",
-				FrequencyCode.DAILY,
-				CurrencyCode.CAD,
-				UnitOfMeasureCode.GJ,
-				pricingLocation);
-
-
-		basisOffPeakPriceIndex = PriceIndexFixture.createBasisPriceIndex(
-				hubIndex,
-				"B_OffP",
-				FrequencyCode.DAILY,
-				CurrencyCode.CAD,
-				UnitOfMeasureCode.GJ,
-				pricingLocation);
-
 
 
 		powerProfile = PowerProfileFixture.createPowerProfileAllDaysAllHours(
@@ -156,6 +152,21 @@ public abstract class PowerProfilePositionsWithFxTestCase extends DealCaptureSpr
 				offPeakDailyIndex,
 				onPeakDailyIndex);
 
+		dealPriceIndex = PriceIndexFixture.createPriceIndex(
+				"DDFF",
+				FrequencyCode.DAILY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
+				pricingLocation);
+
+
+		dealPriceHourlyIndex = PriceIndexFixture.createPriceIndex(
+				"DDFF_HH",
+				FrequencyCode.HOURLY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
+				pricingLocation);
+
 
 		fxIndex = FxIndexFixture.createFxIndex(
 				FrequencyCode.DAILY,
@@ -163,6 +174,47 @@ public abstract class PowerProfilePositionsWithFxTestCase extends DealCaptureSpr
 				CurrencyCode.USD);
 
 		flush();
+
+		PhysicalDealSnapshot snapshot = DealFixture.createIndexWithPowerProfilePhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.SELL,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.USD,
+				"indexSellDeal",
+				companyRole,
+				counterpartyRole,
+				powerProfile,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				dealPriceHourlyIndex);
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		indexSellMarketPowerProfileDeal = PhysicalDeal.create(snapshot);
+
+		snapshot = DealFixture.createWithPowerProfilePhysicalDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.SELL,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"fixedSellDeal",
+				companyRole,
+				counterpartyRole,
+				powerProfileWithBasis,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				new Price(
+						BigDecimal.ONE,
+						CurrencyCode.CAD,
+						UnitOfMeasureCode.GJ));
+
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		fixedPriceMarketPowerProfileDeal = PhysicalDeal.create(snapshot);
+
+		flush();
+		clearCache();
 
 
 	}

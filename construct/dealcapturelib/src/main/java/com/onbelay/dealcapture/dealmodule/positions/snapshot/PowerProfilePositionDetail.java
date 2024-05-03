@@ -2,14 +2,10 @@ package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.onbelay.core.codes.annotations.CodeLabelSerializer;
-import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
+import com.onbelay.dealcapture.pricing.enums.IndexType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
@@ -25,6 +21,8 @@ public class PowerProfilePositionDetail extends AbstractDetail {
     private LocalDateTime valuedDateTime;
     private String powerFlowCodeValue;
     private Integer numberOfHours;
+    private Integer basisNo;
+    private String indexTypeCodeValue;
 
     private String errorCode;
     private String errorMessage;
@@ -32,6 +30,8 @@ public class PowerProfilePositionDetail extends AbstractDetail {
 
     public void setDefaults() {
         errorCode = "0";
+        basisNo = 0;
+        indexTypeCodeValue = IndexType.HUB.getCode();
     }
 
     public void validate() throws OBValidationException {
@@ -57,6 +57,12 @@ public class PowerProfilePositionDetail extends AbstractDetail {
 
         if (copy.numberOfHours != null)
             this.numberOfHours = copy.numberOfHours;
+
+        if (copy.basisNo != null)
+            this.basisNo = copy.basisNo;
+
+        if (copy.indexTypeCodeValue != null)
+            this.indexTypeCodeValue = copy.indexTypeCodeValue;
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
@@ -129,6 +135,34 @@ public class PowerProfilePositionDetail extends AbstractDetail {
 
     public void setNumberOfHours(Integer numberOfHours) {
         this.numberOfHours = numberOfHours;
+    }
+
+    @Column(name = "BASIS_NO")
+    public Integer getBasisNo() {
+        return basisNo;
+    }
+
+    public void setBasisNo(Integer basisNo) {
+        this.basisNo = basisNo;
+    }
+
+    @Transient
+    @JsonIgnore
+    public IndexType getIndexTypeCode() {
+        return IndexType.lookUp(indexTypeCodeValue);
+    }
+
+    public void setIndexTypeCode(IndexType indexTypeCode) {
+        this.indexTypeCodeValue = indexTypeCode.getCode();
+    }
+
+    @Column(name = "INDEX_TYPE_CODE")
+    public String getIndexTypeCodeValue() {
+        return indexTypeCodeValue;
+    }
+
+    public void setIndexTypeCodeValue(String indexTypeCodeValue) {
+        this.indexTypeCodeValue = indexTypeCodeValue;
     }
 
     @Column(name = "ERROR_CODE")

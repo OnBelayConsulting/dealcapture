@@ -25,7 +25,7 @@ public class DealHourlyPositionAssembler extends EntityAssembler  {
 
         snapshot.getDetail().copyFrom(position.getDetail());
         snapshot.getHourPriceRiskFactorIdMap().copyFrom(position.getHourPriceRiskFactorIdMap());
-        snapshot.getHourFixedValueDetail().copyFrom(position.getHourQuantityDayDetail());
+        snapshot.getHourFixedValueDetail().copyFrom(position.getHourFixedValueDayDetail());
 
         return snapshot;
     }

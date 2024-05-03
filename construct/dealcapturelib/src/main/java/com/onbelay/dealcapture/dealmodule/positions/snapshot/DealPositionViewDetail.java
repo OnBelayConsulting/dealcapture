@@ -6,6 +6,7 @@ import com.onbelay.core.codes.annotations.CodeLabelSerializer;
 import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -29,6 +30,7 @@ public class DealPositionViewDetail {
     private LocalDateTime createdDateTime;
     private String volumeUnitOfMeasureValue;
     private BigDecimal volumeQuantityValue;
+    private String powerFlowCodeValue;
 
     private String dealPriceValuationValue;
 
@@ -76,6 +78,26 @@ public class DealPositionViewDetail {
     @Column(name = "END_DATE")
     public LocalDate getEndDate() {
         return endDate;
+    }
+
+
+    @Transient
+    @JsonIgnore
+    public PowerFlowCode getPowerFlowCode() {
+        return PowerFlowCode.lookUp(powerFlowCodeValue);
+    }
+
+    public void setPowerFlowCode(PowerFlowCode powerFlowCode) {
+        this.powerFlowCodeValue = powerFlowCode.getCode();
+    }
+
+    @Column(name = "POWER_FLOW_CODE")
+    public String getPowerFlowCodeValue() {
+        return powerFlowCodeValue;
+    }
+
+    public void setPowerFlowCodeValue(String powerFlowCodeValue) {
+        this.powerFlowCodeValue = powerFlowCodeValue;
     }
 
 

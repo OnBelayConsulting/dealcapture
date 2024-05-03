@@ -63,6 +63,7 @@ public class DealHourlyPositionsDefaultBatchInserter implements DealHourlyPositi
 							batchSize));
 		} catch (RuntimeException t) {
 			logger.error("batch insert failed", t);
+			throw t;
 		}
 		
 		

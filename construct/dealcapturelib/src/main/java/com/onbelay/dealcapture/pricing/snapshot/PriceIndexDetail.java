@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.pricing.snapshot;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.pricing.enums.BenchSettlementRuleCode;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -31,19 +32,19 @@ public class PriceIndexDetail {
 
 	private String name;
 	private String description;
-	private Integer daysOffsetForExpiry;
 	private String indexTypeValue;
 	private String currencyCodeValue;
 	private String unitOfMeasureCodeValue;
 	private String frequencyCodeValue;
-	
+	private String benchSettlementRuleCodeValue;
+
 	public PriceIndexDetail() {
 		
 	}
 	
 	@JsonIgnore
 	public void setDefaults() {
-		daysOffsetForExpiry = 0;
+		benchSettlementRuleCodeValue = BenchSettlementRuleCode.NEVER.getCode();
 
 	}
 	
@@ -55,9 +56,10 @@ public class PriceIndexDetail {
 		if (indexTypeValue == null)
 			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_INDEX_TYPE.getCode());
 		
-		if (daysOffsetForExpiry == null)
-			throw new OBValidationException(PricingErrorCode.MISSING_PRICE_INDEX_DAYS_EXPIRY.getCode());
-		
+		if (benchSettlementRuleCodeValue == null)
+			throw new OBValidationException(PricingErrorCode.MISSING_BENCH_SETTLE_RULE.getCode());
+
+
 	}
 	
 	public PriceIndexDetail(String name, String description) {
@@ -177,17 +179,24 @@ public class PriceIndexDetail {
 		this.description = description;
 	}
 
-
-	@Column(name = "OFFSET_EXPIRY_DAYS")
-	public Integer getDaysOffsetForExpiry() {
-		return daysOffsetForExpiry;
+	@Transient
+	@JsonIgnore
+	public BenchSettlementRuleCode getBenchSettlementRuleCode() {
+		return BenchSettlementRuleCode.lookUp(benchSettlementRuleCodeValue);
 	}
 
-
-	public void setDaysOffsetForExpiry(Integer daysOffsetForExpiry) {
-		this.daysOffsetForExpiry = daysOffsetForExpiry;
+	public void setBenchSettlementRuleCode(BenchSettlementRuleCode code) {
+		this.benchSettlementRuleCodeValue = code.getCode();
 	}
 
+	@Column(name = "BENCH_SETTLE_RULE_CODE")
+	public String getBenchSettlementRuleCodeValue() {
+		return benchSettlementRuleCodeValue;
+	}
+
+	public void setBenchSettlementRuleCodeValue(String benchSettlementRuleCodeValue) {
+		this.benchSettlementRuleCodeValue = benchSettlementRuleCodeValue;
+	}
 
 	public void copyFrom(PriceIndexDetail copy) {
 		
@@ -206,8 +215,8 @@ public class PriceIndexDetail {
 		if (copy.description != null)
 			this.description = copy.description;
 		
-		if (copy.daysOffsetForExpiry != null)
-			this.daysOffsetForExpiry = copy.daysOffsetForExpiry;
+		if (copy.benchSettlementRuleCodeValue != null)
+			this.benchSettlementRuleCodeValue = copy.benchSettlementRuleCodeValue;
 		
 		if (copy.indexTypeValue != null)
 			this.indexTypeValue = copy.getIndexTypeValue();

@@ -26,6 +26,7 @@
             pp.END_DATE,
             pp.DEAL_TYPE_CODE,
             pp.CURRENCY_CODE,
+            pp.POWER_FLOW_CODE,
             pp.CREATE_UPDATE_DATETIME,
             pp.VOLUME_UOM_CODE,
             pp.VOLUME_QUANTITY,

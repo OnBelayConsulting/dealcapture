@@ -65,6 +65,7 @@ public class PositionRiskFactorMappingSqlServerBatchInserter implements  Positio
 							10));
 		} catch (RuntimeException t) {
 			logger.error("batch insert failed", t);
+			throw t;
 		}
 
 

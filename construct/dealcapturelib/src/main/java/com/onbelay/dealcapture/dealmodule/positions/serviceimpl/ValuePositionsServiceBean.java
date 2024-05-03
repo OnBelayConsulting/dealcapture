@@ -5,6 +5,7 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.CostPositionsBatchUpdater;
@@ -222,8 +223,12 @@ private void valueCostsAndPositionsByDeal(
             Map<LocalDate, List<DealHourlyPositionView>> viewMap = hourlyPositionViewMap.get(view.getDealId());
             if (viewMap != null) {
                 List<DealHourlyPositionView> viewList = viewMap.get(view.getDetail().getStartDate());
-                if (viewList != null) {
-                    evaluator.withHourlyPositions(viewList);
+                if (viewList != null && view.getDetail().getPowerFlowCode() != null) {
+                    List<DealHourlyPositionView> viewListByFlowCode = viewList
+                            .stream()
+                            .filter( c-> c.getDetail().getPowerFlowCode() == view.getDetail().getPowerFlowCode())
+                            .toList();
+                    evaluator.withHourlyPositions(viewListByFlowCode);
                 }
             }
 

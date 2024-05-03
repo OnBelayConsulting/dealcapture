@@ -55,9 +55,9 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="OFFSET_EXPIRY_DAYS"
-                    type="java.sql.Types.NUMERIC(2, 0)">
-                <constraints nullable="true"/>
+            <column name="BENCH_SETTLE_RULE_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
             </column>
             <column name="INDEX_DESCRIPTION"
                     type="java.sql.Types.VARCHAR(100)">

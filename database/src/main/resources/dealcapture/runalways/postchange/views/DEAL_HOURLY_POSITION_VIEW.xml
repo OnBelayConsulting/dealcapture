@@ -23,6 +23,8 @@
             pp.START_DATE,
             pp.END_DATE,
             pp.POWER_FLOW_CODE,
+            pp.BASIS_NO,
+            pp.INDEX_TYPE_CODE,
             pp.PRICE_TYPE_CODE,
             pp.CREATE_UPDATE_DATETIME,
             pp.VALUED_DATETIME,

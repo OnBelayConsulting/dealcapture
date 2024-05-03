@@ -63,6 +63,7 @@ public class PowerProfilePositionsDefaultBatchInserter implements PowerProfilePo
 							batchSize));
 		} catch (RuntimeException t) {
 			logger.error("batch insert failed", t);
+			throw t;
 		}
 		
 		

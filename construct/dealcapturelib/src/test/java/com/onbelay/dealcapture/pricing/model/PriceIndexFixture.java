@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
+import com.onbelay.dealcapture.pricing.enums.BenchSettlementRuleCode;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
@@ -39,7 +40,7 @@ public class PriceIndexFixture {
 
         PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
         snapshot.getDetail().setDefaults();
-        snapshot.getDetail().setDaysOffsetForExpiry(4);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc");
         snapshot.getDetail().setIndexType(IndexType.HUB);
@@ -166,7 +167,7 @@ public class PriceIndexFixture {
         snapshot.setBaseIndexId(hubIndex.generateEntityId());
 
         snapshot.getDetail().setDefaults();
-        snapshot.getDetail().setDaysOffsetForExpiry(4);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc Basis");
         snapshot.getDetail().setIndexType(IndexType.BASIS);
@@ -193,7 +194,7 @@ public class PriceIndexFixture {
 
         PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
         snapshot.getDetail().setDefaults();
-        snapshot.getDetail().setDaysOffsetForExpiry(4);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc");
         snapshot.getDetail().setIndexType(IndexType.HUB);
@@ -219,7 +220,7 @@ public class PriceIndexFixture {
 
         PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
         snapshot.getDetail().setDefaults();
-        snapshot.getDetail().setDaysOffsetForExpiry(4);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc");
         snapshot.getDetail().setIndexType(IndexType.HUB);
@@ -241,7 +242,7 @@ public class PriceIndexFixture {
 
         PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
         snapshot.getDetail().setDefaults();
-        snapshot.getDetail().setDaysOffsetForExpiry(4);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
         snapshot.getDetail().setName(name);
         snapshot.getDetail().setDescription(name + "-Desc");
         snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);

@@ -50,6 +50,7 @@ public class PositionRiskFactorMappingDefaultBatchInserter implements  PositionR
 							10));
 		} catch (RuntimeException t) {
 			logger.error("batch insert failed", t);
+			throw t;
 		}
 		
 		
