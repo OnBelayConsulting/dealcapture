@@ -61,7 +61,7 @@ public abstract class PositionsServiceWithPowerProfileTestCase extends DealCaptu
 	protected PhysicalDeal indexSellMarketPowerProfileDeal;
 
 	protected LocalDate startDate = LocalDate.of(2024, 1, 1);
-	protected LocalDate endDate = LocalDate.of(2024, 1, 2);
+	protected LocalDate endDate = LocalDate.of(2024, 3, 31);
 
 
 	@Autowired

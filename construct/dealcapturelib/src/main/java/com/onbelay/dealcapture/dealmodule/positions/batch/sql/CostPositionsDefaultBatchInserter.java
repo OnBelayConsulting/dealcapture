@@ -63,6 +63,7 @@ public class CostPositionsDefaultBatchInserter implements CostPositionsBatchInse
 							batchSize));
 		} catch (RuntimeException t) {
 			logger.error("batch insert failed", t);
+			throw t;
 		}
 		
 		

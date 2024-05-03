@@ -122,10 +122,9 @@ public class DealHourlyPosition extends AbstractEntity {
 
     @Transient
     public HourPriceRiskFactorIdMap getHourPriceRiskFactorIdMap() {
-        if (hourPriceRiskFactorIdMap != null)
-            return hourPriceRiskFactorIdMap;
-        else
-            return new HourPriceRiskFactorIdMap();
+        if (hourPriceRiskFactorIdMap == null)
+            hourPriceRiskFactorIdMap =  new HourPriceRiskFactorIdMap();
+        return hourPriceRiskFactorIdMap;
     }
 
     public void setHourPriceRiskFactorIdMap(HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap) {
@@ -134,24 +133,23 @@ public class DealHourlyPosition extends AbstractEntity {
 
 
     @Embedded
-    protected HourFixedValueDayDetail getInternalHourQuantityDayDetail() {
+    protected HourFixedValueDayDetail getInternalHourFixedValueDayDetail() {
         return hourFixedValueDayDetail;
     }
 
-    protected void setInternalHourQuantityDayDetail(HourFixedValueDayDetail hourFixedValueDayDetail) {
+    protected void setInternalHourFixedValueDayDetail(HourFixedValueDayDetail hourFixedValueDayDetail) {
         this.hourFixedValueDayDetail = hourFixedValueDayDetail;
     }
 
 
     @Transient
-    public HourFixedValueDayDetail getHourQuantityDayDetail() {
-        if (hourFixedValueDayDetail != null)
-            return hourFixedValueDayDetail;
-        else
-            return new HourFixedValueDayDetail();
+    public HourFixedValueDayDetail getHourFixedValueDayDetail() {
+        if (hourFixedValueDayDetail == null)
+            hourFixedValueDayDetail =  new HourFixedValueDayDetail();
+        return hourFixedValueDayDetail;
     }
 
-    public void setHourQuantityDayDetail(HourFixedValueDayDetail hourFixedValueDayDetail) {
+    public void setHourFixedValueDayDetail(HourFixedValueDayDetail hourFixedValueDayDetail) {
         this.hourFixedValueDayDetail = hourFixedValueDayDetail;
     }
 

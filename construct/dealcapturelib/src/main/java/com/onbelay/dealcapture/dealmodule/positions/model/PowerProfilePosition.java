@@ -23,7 +23,7 @@ import jakarta.persistence.*;
                 query = "SELECT position " +
                         "  FROM PowerProfilePosition position " +
                         " WHERE position.powerProfile.id = :powerProfileId " +
-                      "ORDER BY position.detail.startDate, position.detail.powerFlowCodeValue ")
+                      "ORDER BY position.detail.startDate, position.detail.powerFlowCodeValue, position.detail.basisNo ")
 })
 public class PowerProfilePosition extends AbstractEntity {
 
@@ -95,10 +95,9 @@ public class PowerProfilePosition extends AbstractEntity {
 
     @Transient
     public HourPriceRiskFactorIdMap getHourPriceRiskFactorIdMap() {
-        if (hourPriceRiskFactorIdMap != null)
-            return hourPriceRiskFactorIdMap;
-        else
-            return new HourPriceRiskFactorIdMap();
+        if (hourPriceRiskFactorIdMap == null)
+            hourPriceRiskFactorIdMap =  new HourPriceRiskFactorIdMap();
+        return hourPriceRiskFactorIdMap;
     }
 
     public void setHourPriceRiskFactorIdMap(HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap) {

@@ -24,6 +24,8 @@
             pp.VALUED_DATETIME,
             pp.POWER_FLOW_CODE,
             pp.NUMBER_OF_HOURS,
+            pp.BASIS_NO,
+            pp.INDEX_TYPE_CODE,
             pp.ERROR_CODE,
             pp.ERROR_MSG,
             pp.HOUR_1_RF_ID,

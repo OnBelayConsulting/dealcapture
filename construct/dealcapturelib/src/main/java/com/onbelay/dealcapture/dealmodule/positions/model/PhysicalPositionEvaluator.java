@@ -35,9 +35,10 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
 
     private LocalDateTime currentDateTime;
 
-    public static PhysicalPositionEvaluator build(LocalDateTime currentDateTime,
-                                                  ValuationIndexManager valuationIndexManager,
-                                                  DealPositionView positionView) {
+    public static PhysicalPositionEvaluator build(
+            LocalDateTime currentDateTime,
+            ValuationIndexManager valuationIndexManager,
+            DealPositionView positionView) {
 
         return new PhysicalPositionEvaluator(
                 currentDateTime,
@@ -336,6 +337,9 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
 
     private Price calculateMarketIndexPriceWithPowerProfile(PositionValuationResult valuationResult) {
 
+        if (powerProfilePositionViews.isEmpty())
+            throw new OBRuntimeException(PositionErrorCode.MISSING_POWER_PROFILE_POSITIONS.getCode());
+
         Price totalPrice = new Price(
                 BigDecimal.ZERO,
                 dealPositionView.getDetail().getCurrencyCode(),
@@ -361,8 +365,6 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
 
             // Fetch current prices for this hourly position via the associated powerProfilePosition.
         for (DealHourlyPositionView hourlyPositionView : hourlyPositionViews) {
-            if (hourlyPositionView.getDetail().getPriceTypeCode() != PriceTypeCode.MARKET_PRICE)
-                continue;
 
             PowerProfilePositionView powerProfilePositionView = findPowerProfilePositionViewById(hourlyPositionView.getPowerProfilePositionId());
             PriceIndexSnapshot indexSnapshot = valuationIndexManager.getPriceIndex(powerProfilePositionView.getPriceIndexId());
@@ -419,6 +421,11 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
         }
 
         Price marketPrice;
+        if (totalPrice.isInError())
+            logger.error("market price is in error.");
+
+        if (totalPriceCount == 0)
+            logger.error("count is 0.");
 
         if (hasVariableQuantity) {
             marketPrice = totalAmount.divide(totalQuantiy);

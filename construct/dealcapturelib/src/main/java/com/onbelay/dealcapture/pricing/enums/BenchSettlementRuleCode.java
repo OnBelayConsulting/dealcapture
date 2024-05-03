@@ -20,35 +20,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * index type
+ * Determines what rule to use the bench for risk factors.
  * 
  * @author lefeuvrem
  *
  */
-public enum IndexType {
-	HUB 	("H"),
-    BASIS	("B");
+public enum BenchSettlementRuleCode {
+	NEVER    ("NEVER"),
+	NEXT_MTH ("NEXT_MTH"),
+    NEXT_DAY ("NEXT_DAY");
 
 	private final String code;
 
-    private static final Map<String,IndexType> lookup 
-    	= new HashMap<String,IndexType>();
+    private static final Map<String, BenchSettlementRuleCode> lookup
+    	= new HashMap<String, BenchSettlementRuleCode>();
 
     static {
-    	for(IndexType c : EnumSet.allOf(IndexType.class))
+    	for(BenchSettlementRuleCode c : EnumSet.allOf(BenchSettlementRuleCode.class))
          lookup.put(c.code, c);
     }
-    
-	private IndexType(String code) {
+
+	private BenchSettlementRuleCode(String code) {
 		this.code = code;
 	}
 	
 	public String getCode() {
 		return code;
 	}
-	
 
-	public static IndexType lookUp(String code) {
+	public static BenchSettlementRuleCode lookUp(String code) {
 		return lookup.get(code);
 	}
 

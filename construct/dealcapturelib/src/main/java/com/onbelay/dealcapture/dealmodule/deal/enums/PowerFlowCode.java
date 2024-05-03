@@ -27,6 +27,8 @@ import java.util.Map;
  */
 public enum PowerFlowCode {
 	HOURLY		("HOURLY"),
+	DAILY		("DAILY"),
+	END_OF_MTH	("END_OF_MTH"),
 	SETTLED		("SETTLED"),
 	ON_PEAK		("ON_PEAK"),
 	OFF_PEAK	("OFF_PEAK"),

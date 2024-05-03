@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
@@ -42,8 +43,6 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     protected List<DealCostSummary> costSummaries = new ArrayList<>();
 
     protected Map<LocalDate, List<PowerProfilePositionView>> powerProfilePositionMap = new HashMap<>();
-    
-    protected HourFixedValueDayDetail hourSlotsForPowerProfile;
 
     protected DealDaysContainer dealDaysContainer;
 
@@ -61,6 +60,24 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
     public void setEvaluationContext(DealPositionsEvaluationContext context) {
         this.context = modifyEvaluationContextForDeal(context);
+    }
+
+    protected List<PowerFlowCode> findUniquePowerCodesByDate(LocalDate currentDate) {
+        List<PowerProfilePositionView> viewsByDate = powerProfilePositionMap.get(currentDate);
+        if (viewsByDate == null)
+            return null;
+
+        return viewsByDate.stream().map( c-> c.getDetail().getPowerFlowCode()).distinct().toList();
+    }
+
+    protected List<PowerProfilePositionView> getPowerProfilePositionViewsBy(
+            LocalDate currentDate,
+            PowerFlowCode powerFlowCode) {
+        List<PowerProfilePositionView> viewsByDate = powerProfilePositionMap.get(currentDate);
+        if (viewsByDate == null)
+            return null;
+
+        return viewsByDate.stream().filter( c-> c.getDetail().getPowerFlowCode() == powerFlowCode).toList();
     }
 
     protected DealPositionsEvaluationContext modifyEvaluationContextForDeal(DealPositionsEvaluationContext context) {
@@ -192,7 +209,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
                 } else {
                     hourQuantity = defaultHourlyQuantity;
                 }
-
+                positionHolder.getDealPositionDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
                 positionHolder.getDealHourByDayQuantity().setHourValue(
                         i,
                         hourQuantity.getValue());
@@ -247,7 +264,7 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
                 dealSummary.getVolumeUnitOfMeasureCode());
 
         boolean calculateDailyQuantity = false;
-        HourFixedValueDayDetail hourSlots = this.hourSlotsForPowerProfile;
+        HourFixedValueDayDetail hourSlots = physicalPositionHolder.getHourSlotsForPowerProfile();
 
         if (hasDealHourByDayQuantities(currentDate)) {
             calculateDailyQuantity = true;
@@ -295,10 +312,8 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
 
     protected void generateDealHourlyPositionHoldersFromPowerProfile(
             BasePositionHolder basePositionHolder,
+            List<PowerProfilePositionView> views,
             PriceTypeCode priceTypeCode) {
-        List<PowerProfilePositionView> views = powerProfilePositionMap.get(basePositionHolder.getDealPositionDetail().getStartDate());
-        if (views == null)
-            throw new OBRuntimeException(PositionErrorCode.MISSING_POWER_PROFILE_POSITIONS.getCode());
 
         for (PowerProfilePositionView view : views) {
             PriceIndexSnapshot priceIndexSnapshot = this.riskFactorManager.findPriceIndex(view.getPriceIndexId());
@@ -308,6 +323,8 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
             holder.setDealId(new EntityId(dealSummary.getDealId()));
             holder.getDetail().setPriceTypeCode(priceTypeCode);
             holder.setPriceIndexId(new EntityId(view.getPriceIndexId()));
+            holder.getDetail().setBasisNo(view.getDetail().getBasisNo());
+            holder.getDetail().setIndexTypeCodeValue(view.getDetail().getIndexTypeCodeValue());
 
             holder.getDetail().setCreatedDateTime(context.getCreatedDateTime());
             holder.getDetail().setCurrencyCode(context.getCurrencyCode());
@@ -481,20 +498,22 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
         return costPositionSnapshots;
     }
 
-    private HourFixedValueDayDetail calculateHourlyQuantitySlots() {
+    protected HourFixedValueDayDetail calculateHourlyQuantitySlots(PowerProfilePositionView powerProfilePositionView ) {
         HourFixedValueDayDetail detail = new HourFixedValueDayDetail();
-        List<PowerProfilePositionView> views = powerProfilePositionMap.get(dealSummary.getStartDate());
-        if (views != null) {
-            for (PowerProfilePositionView view : views) {
-                for (int i = 1; i < 25; i++) {
-                    if (view.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i) != null)
-                        detail.setHourFixedValue(i, BigDecimal.ONE);
-                }
-            }
+        for (int i = 1; i < 25; i++) {
+            if (powerProfilePositionView.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i) != null)
+                detail.setHourFixedValue(i, BigDecimal.ONE);
         }
         return detail;
     }
 
+    protected HourFixedValueDayDetail calculate24HourSlots() {
+        HourFixedValueDayDetail detail = new HourFixedValueDayDetail();
+        for (int i = 1; i < 25; i++) {
+            detail.setHourFixedValue(i, BigDecimal.ONE);
+        }
+        return detail;
+    }
 
     @Override
     public DealSummary getDealSummary() {
@@ -514,7 +533,6 @@ public abstract class BaseDealPositionGenerator implements DealPositionGenerator
     @Override
     public void withPowerProfilePositionViews(Map<LocalDate, List<PowerProfilePositionView>> positionMap) {
         this.powerProfilePositionMap = positionMap;
-        this.hourSlotsForPowerProfile = calculateHourlyQuantitySlots();
     }
 
 }

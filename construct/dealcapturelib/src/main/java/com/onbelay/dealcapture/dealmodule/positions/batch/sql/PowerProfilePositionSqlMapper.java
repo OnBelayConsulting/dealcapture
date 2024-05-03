@@ -45,6 +45,8 @@ public class PowerProfilePositionSqlMapper extends BaseSqlMapper {
 		list.add("CREATE_UPDATE_DATETIME");
 		list.add("POWER_FLOW_CODE");
 		list.add("NUMBER_OF_HOURS");
+		list.add("BASIS_NO");
+		list.add("INDEX_TYPE_CODE");
 		list.add("ERROR_CODE");
 		list.add("ERROR_MSG");
 		for (int i =1; i < 25; i++) {
@@ -77,18 +79,25 @@ public class PowerProfilePositionSqlMapper extends BaseSqlMapper {
 
 		preparedStatement.setInt(n + 7, position.getDetail().getNumberOfHours());
 
+		if (position.getDetail().getBasisNo() != null)
+			preparedStatement.setInt(n + 8, position.getDetail().getBasisNo());
+		else
+			preparedStatement.setNull(n + 8, Types.INTEGER);
+
+		preparedStatement.setString(n + 9, position.getDetail().getIndexTypeCodeValue());
+
 		// Error Code
 		if (position.getDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 8, position.getDetail().getErrorCode());
+			preparedStatement.setString(n + 10, position.getDetail().getErrorCode());
 		else
-			preparedStatement.setNull(n + 8, Types.VARCHAR);
+			preparedStatement.setNull(n + 10, Types.VARCHAR);
 
 		if (position.getDetail().getErrorMessage() != null)
-			preparedStatement.setString(n + 9, position.getDetail().getErrorMessage());
+			preparedStatement.setString(n + 11, position.getDetail().getErrorMessage());
 		else
-			preparedStatement.setNull(n + 9, Types.VARCHAR);
+			preparedStatement.setNull(n + 11, Types.VARCHAR);
 
-		int start = n + 10;
+		int start = n + 12;
 		for (int i = 1; i < 25; i++) {
 			if (position.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i) != null)
 				preparedStatement.setInt(start, position.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i));

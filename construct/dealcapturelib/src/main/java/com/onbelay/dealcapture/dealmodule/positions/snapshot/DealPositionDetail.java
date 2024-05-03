@@ -96,13 +96,14 @@ public class DealPositionDetail extends AbstractDetail {
     public LocalDate getEndDate() {
         return endDate;
     }
+
     @Transient
     @JsonIgnore
-    public PowerFlowCode getPowerFlowCode(int hourEnding) {
+    public PowerFlowCode getPowerFlowCode() {
         return PowerFlowCode.lookUp(powerFlowCodeValue);
     }
 
-    public void setPowerFlowCode(int hourEnding, PowerFlowCode powerFlowCode) {
+    public void setPowerFlowCode(PowerFlowCode powerFlowCode) {
         this.powerFlowCodeValue = powerFlowCode.getCode();
     }
 

@@ -20,7 +20,7 @@ public class PowerProfileFixture {
             PowerProfileIndexMappingSnapshot indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
 
             indexMappingSnapshot.setPriceIndexId(hourlyIndex.generateEntityId());
-            indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
+            indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.END_OF_MTH);
             powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
 
             return PowerProfile.create(powerProfileSnapshot);
@@ -69,6 +69,36 @@ public class PowerProfileFixture {
         indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
         indexMappingSnapshot.setPriceIndexId(onPeakIndex.generateEntityId());
         indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.ON_PEAK);
+        powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
+
+        return PowerProfile.create(powerProfileSnapshot);
+    }
+
+
+    public static PowerProfile createPowerProfileWeekDaysSomeHours(
+            String name,
+            PriceIndex settledIndex,
+            PriceIndex hourlyForwardIndex,
+            PriceIndex offPeakIndex,
+            PriceIndex onPeakIndex) {
+
+        PowerProfileSnapshot powerProfileSnapshot = createPowerProfileSnapshotWeekDaysSomeHours(name);
+        powerProfileSnapshot.setSettledPriceIndexId(settledIndex.generateEntityId());
+
+        // settled
+        PowerProfileIndexMappingSnapshot indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
+        indexMappingSnapshot.setPriceIndexId(offPeakIndex.generateEntityId());
+        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.OFF_PEAK);
+        powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
+
+        indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
+        indexMappingSnapshot.setPriceIndexId(onPeakIndex.generateEntityId());
+        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.ON_PEAK);
+        powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
+
+        indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
+        indexMappingSnapshot.setPriceIndexId(hourlyForwardIndex.generateEntityId());
+        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.END_OF_MTH);
         powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
 
         return PowerProfile.create(powerProfileSnapshot);

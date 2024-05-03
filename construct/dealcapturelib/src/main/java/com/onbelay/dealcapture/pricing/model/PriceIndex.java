@@ -21,6 +21,7 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.pricing.enums.BenchSettlementRuleCode;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
@@ -219,7 +220,13 @@ public class PriceIndex extends TemporalAbstractEntity {
 			if (this.basePriceIndex == null)
 				throw new OBValidationException(PricingErrorCode.MISSING_BASE_INDEX.getCode());
 		}
-		
+		if (detail.getBenchSettlementRuleCode() != BenchSettlementRuleCode.NEVER) {
+			if (benchmarkPriceIndex == null)
+				throw new OBValidationException(PricingErrorCode.MISSING_BASE_INDEX.getCode());
+		}
+
+
+
 	}
 	
 	private void setAssociations(PriceIndexSnapshot snapshot) {

@@ -24,8 +24,9 @@ public enum PricingErrorCode {
 
     MISSING_PRICE_INDEX_NAME        ("DC_PR-E0005", "Error: Missing pricing index name."),
     MISSING_PRICE_INDEX_TYPE        ("DC_PR-E0006", "Error: Missing pricing index type."),
-    MISSING_PRICE_INDEX_DAYS_EXPIRY ("DC_PR-E0007", "Error: Missing pricing index days offset for expiry."),
+    MISSING_BENCH_SETTLE_RULE       ("DC_PR-E0007", "Error: Missing Bench settlement rule."),
     MISSING_BASE_INDEX              ("DC_PR-E0010", "Error: Missing base index and Index type is BASIS"),
+    MISSING_BENCH_INDEX             ("DC_PR-E0011", "Error: Missing bench index and bench settlement rule is not NEVER."),
 
     MISSING_FX_INDEX                ("DC_FX-E0001", "Error: Missing FX index."),
     MISSING_FX_INDEX_NAME           ("DC_FX-E0002", "Error: Missing FX index name."),

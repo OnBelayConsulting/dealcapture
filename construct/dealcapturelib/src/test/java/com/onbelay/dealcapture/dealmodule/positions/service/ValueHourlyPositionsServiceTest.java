@@ -308,11 +308,6 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
 
         flush();
 
-        List<DealHourlyPositionView> viewList = dealPositionService.fetchDealHourlyPositionViews(
-                List.of(fixedPriceHourlySellDeal.getId()),
-                CurrencyCode.CAD,
-                createdDateTime);
-
         priceRiskFactorService.valueRiskFactors(
                 new DefinedQuery("PriceRiskFactor"),
                 LocalDateTime.now());

@@ -9,6 +9,7 @@ import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.DefinedWhereExpression;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.pricing.enums.BenchSettlementRuleCode;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.dealcapture.pricing.model.*;
@@ -135,14 +136,14 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
         snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
-        snapshot.getDetail().setDaysOffsetForExpiry(6);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
 
         TransactionResult result = priceIndexService.save(snapshot);
         flush();
 
         PriceIndex index = priceIndexRepository.load(result.getEntityId());
         assertNotNull(index);
-        assertEquals(6, index.getDetail().getDaysOffsetForExpiry().intValue());
+        assertEquals(BenchSettlementRuleCode.NEVER, index.getDetail().getBenchSettlementRuleCode());
     }
 
 
@@ -156,7 +157,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
         snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
-        snapshot.getDetail().setDaysOffsetForExpiry(6);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
 
         try {
             TransactionResult result = priceIndexService.save(snapshot);
@@ -179,7 +180,7 @@ public class PriceIndexServiceTest extends DealCaptureSpringTestCase {
         snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
         snapshot.getDetail().setCurrencyCode(CurrencyCode.USD);
         snapshot.getDetail().setUnitOfMeasureCode(UnitOfMeasureCode.GJ);
-        snapshot.getDetail().setDaysOffsetForExpiry(6);
+        snapshot.getDetail().setBenchSettlementRuleCode(BenchSettlementRuleCode.NEVER);
 
         try {
             TransactionResult result = priceIndexService.save(snapshot);

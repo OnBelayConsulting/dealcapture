@@ -131,10 +131,9 @@ public class DealHourlyPositionView extends AbstractEntity {
 
     @Transient
     public HourPriceRiskFactorIdMap getHourPriceRiskFactorIdMap() {
-        if (hourPriceRiskFactorIdMap != null)
-            return hourPriceRiskFactorIdMap;
-        else
-            return new HourPriceRiskFactorIdMap();
+        if (hourPriceRiskFactorIdMap == null)
+            hourPriceRiskFactorIdMap =  new HourPriceRiskFactorIdMap();
+        return hourPriceRiskFactorIdMap;
     }
 
     public void setHourPriceRiskFactorIdMap(HourPriceRiskFactorIdMap hourPriceRiskFactorIdMap) {
@@ -153,10 +152,10 @@ public class DealHourlyPositionView extends AbstractEntity {
 
     @Transient
     public HourFixedValueDayDetail getHourFixedValueDayDetail() {
-        if (hourFixedValueDayDetail != null)
-            return hourFixedValueDayDetail;
-        else
-            return new HourFixedValueDayDetail();
+        if (hourFixedValueDayDetail == null) {
+            hourFixedValueDayDetail = new HourFixedValueDayDetail();
+        }
+        return hourFixedValueDayDetail;
     }
 
     public void setHourFixedValueDayDetail(HourFixedValueDayDetail hourFixedValueDayDetail) {

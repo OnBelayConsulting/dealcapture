@@ -31,9 +31,9 @@ public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 
 	protected int getStartingPoint() {
 		if (isAddPrimaryKey == false)
-			return 17;
-		else
 			return 18;
+		else
+			return 19;
 	}
 
 	public String getTableName() {
@@ -54,6 +54,7 @@ public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 		list.add("CURRENCY_CODE");
 		list.add("VOLUME_UOM_CODE");
 		list.add("FREQUENCY_CODE");
+		list.add("POWER_FLOW_CODE");
 		list.add("MTM_VALUATION");
 		list.add("SETTLEMENT_AMOUNT");
 		list.add("COST_SETTLEMENT_AMOUNT");
@@ -90,36 +91,41 @@ public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 		preparedStatement.setString(n + 8, position.getDealPositionDetail().getVolumeUnitOfMeasureValue());
 		preparedStatement.setString(n + 9, position.getDealPositionDetail().getFrequencyCodeValue());
 
-		if (position.getSettlementDetail().getMarkToMarketValuation() != null)
-			preparedStatement.setBigDecimal(n + 10, position.getSettlementDetail().getMarkToMarketValuation());
+		if (position.getDealPositionDetail().getPowerFlowCodeValue() != null)
+			preparedStatement.setString(n + 10, position.getDealPositionDetail().getPowerFlowCodeValue());
 		else
-			preparedStatement.setNull(n + 10, Types.DECIMAL);
+			preparedStatement.setNull(n + 10, Types.VARCHAR);
 
-		// Settlement
-		if (position.getSettlementDetail().getSettlementAmount() != null)
-			preparedStatement.setBigDecimal(n + 11, position.getSettlementDetail().getSettlementAmount());
+		if (position.getSettlementDetail().getMarkToMarketValuation() != null)
+			preparedStatement.setBigDecimal(n + 11, position.getSettlementDetail().getMarkToMarketValuation());
 		else
 			preparedStatement.setNull(n + 11, Types.DECIMAL);
 
-		if (position.getSettlementDetail().getCostSettlementAmount() != null)
-			preparedStatement.setBigDecimal(n + 12, position.getSettlementDetail().getCostSettlementAmount());
+		// Settlement
+		if (position.getSettlementDetail().getSettlementAmount() != null)
+			preparedStatement.setBigDecimal(n + 12, position.getSettlementDetail().getSettlementAmount());
 		else
 			preparedStatement.setNull(n + 12, Types.DECIMAL);
 
-		if (position.getSettlementDetail().getTotalSettlementAmount() != null)
-			preparedStatement.setBigDecimal(n + 13, position.getSettlementDetail().getTotalSettlementAmount());
+		if (position.getSettlementDetail().getCostSettlementAmount() != null)
+			preparedStatement.setBigDecimal(n + 13, position.getSettlementDetail().getCostSettlementAmount());
 		else
 			preparedStatement.setNull(n + 13, Types.DECIMAL);
 
-		if (position.getSettlementDetail().getSettlementCurrencyCodeValue() != null)
-			preparedStatement.setString(n + 14, position.getSettlementDetail().getSettlementCurrencyCodeValue());
+		if (position.getSettlementDetail().getTotalSettlementAmount() != null)
+			preparedStatement.setBigDecimal(n + 14, position.getSettlementDetail().getTotalSettlementAmount());
 		else
-			preparedStatement.setNull(n + 14, Types.VARCHAR);
+			preparedStatement.setNull(n + 14, Types.DECIMAL);
 
-		if (position.getSettlementDetail().getSettlementReference() != null)
-			preparedStatement.setString(n + 15, position.getSettlementDetail().getSettlementReference());
+		if (position.getSettlementDetail().getSettlementCurrencyCodeValue() != null)
+			preparedStatement.setString(n + 15, position.getSettlementDetail().getSettlementCurrencyCodeValue());
 		else
 			preparedStatement.setNull(n + 15, Types.VARCHAR);
+
+		if (position.getSettlementDetail().getSettlementReference() != null)
+			preparedStatement.setString(n + 16, position.getSettlementDetail().getSettlementReference());
+		else
+			preparedStatement.setNull(n + 16, Types.VARCHAR);
 
 
 		if (position.getSettlementDetail().getIsSettlementPosition() != null) {
@@ -128,16 +134,16 @@ public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 				value = "Y";
 			else
 				value = "N";
-			preparedStatement.setString(n + 16, value);
+			preparedStatement.setString(n + 17, value);
 		} else {
-			preparedStatement.setNull(n + 16, Types.CHAR);
+			preparedStatement.setNull(n + 17, Types.CHAR);
 		}
 
 		// Error Code
 		if (position.getDealPositionDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 17, position.getDealPositionDetail().getErrorCode());
+			preparedStatement.setString(n + 18, position.getDealPositionDetail().getErrorCode());
 		else
-			preparedStatement.setNull(n + 17, Types.VARCHAR);
+			preparedStatement.setNull(n + 18, Types.VARCHAR);
 
 
 

@@ -37,7 +37,14 @@
                     type="java.sql.Types.NUMERIC(3, 0)">
                 <constraints nullable="false"/>
             </column>
-
+            <column name="BASIS_NO"
+                    type="java.sql.Types.NUMERIC(3, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="INDEX_TYPE_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
             <column name="POWER_FLOW_CODE"
                     type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>

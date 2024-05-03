@@ -14,6 +14,11 @@
             <column name='DISPLAY_ORDER_NO' value='3'/>
         </insert>
         <insert tableName='POWER_FLOW_CODE'>
+            <column name='CODE_ID' value='END_OF_MTH'/>
+            <column name='CODE_LABEL' value='End of Month Price'/>
+            <column name='DISPLAY_ORDER_NO' value='3'/>
+        </insert>
+        <insert tableName='POWER_FLOW_CODE'>
             <column name='CODE_ID' value='SETTLED'/>
             <column name='CODE_LABEL' value='Settled Price'/>
             <column name='DISPLAY_ORDER_NO' value='5'/>

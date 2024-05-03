@@ -60,6 +60,7 @@ public class DealPositionsDefaultBatchInserter extends DealPositionsBaseBatchIns
 							batchSize));
 		} catch (RuntimeException t) {
 			logger.error("batch insert failed", t);
+			throw t;
 		}
 		
 		
