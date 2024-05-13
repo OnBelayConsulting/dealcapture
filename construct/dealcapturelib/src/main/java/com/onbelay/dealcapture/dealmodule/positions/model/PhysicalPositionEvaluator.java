@@ -74,7 +74,7 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
         Price dealPrice = calculateDealPrice(valuationResult);
 
         Price marketPrice = calculateMarketPrice(valuationResult);
-
+        valuationResult.getSettlementDetail().setMarketPriceValue(marketPrice.roundPrice().getValue());
 
         if (dealPrice.isInError())
             valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MTM_DEAL_PRICE);
@@ -111,6 +111,7 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
         if (dealPositionView.getDetail().getDealPriceValuationCode() == ValuationCode.FIXED
                 || dealPositionView.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
             fixedPrice = getFixedPrice();
+            valuationResult.getSettlementDetail().setDealPriceValue(fixedPrice.roundPrice().getValue());
         }
 
         Price dealPrice = null;
@@ -150,6 +151,7 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
 
             } else {
                 dealPrice  = getDealIndexPrice();
+                valuationResult.getSettlementDetail().setDealIndexPriceValue(dealPrice.roundPrice().getValue());
             }
         }
 
@@ -163,7 +165,7 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
         }
 
 
-        return switch (dealPositionView.getDetail().getDealPriceValuationCode()) {
+        Price totalDealPrice = switch (dealPositionView.getDetail().getDealPriceValuationCode()) {
 
             case FIXED -> fixedPrice;
 
@@ -174,6 +176,8 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
             case POWER_PROFILE ->  throw new OBRuntimeException(PositionErrorCode.ERROR_INVALID_POSITION_VALUATION.getCode());
         };
 
+        valuationResult.getSettlementDetail().setTotalDealPriceValue(totalDealPrice.roundPrice().getValue());
+        return totalDealPrice;
     }
 
     private void setMarkToMarket(

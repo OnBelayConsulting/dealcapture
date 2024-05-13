@@ -3,24 +3,33 @@ package com.onbelay.dealcapture.dealmodule.deal.adapterimpl;
 import com.onbelay.core.controller.BaseRestAdapterBean;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
+import com.onbelay.dealcapture.dealmodule.deal.component.DealFileReader;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.sql.exec.spi.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 @Service
 public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRestAdapter {
-
+    private static final Logger logger = LogManager.getLogger();
     @Autowired
     private DealService dealService;
 
@@ -103,5 +112,15 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     public BaseDealSnapshot load(EntityId dealId) {
         initializeSession();
         return dealService.load(dealId);
+    }
+
+    @Override
+    public TransactionResult saveFile(String originalFileName, byte[] fileContents) {
+
+        ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
+        DealFileReader dealFileReader = new DealFileReader(fileStream);
+
+        dealFileReader.readContents();
+        return dealService.save(dealFileReader.getDealSnapshots());
     }
 }

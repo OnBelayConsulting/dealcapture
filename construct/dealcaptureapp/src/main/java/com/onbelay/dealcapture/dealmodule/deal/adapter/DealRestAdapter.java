@@ -15,6 +15,8 @@ public interface DealRestAdapter {
 
     TransactionResult save(List<BaseDealSnapshot> snapshots);
 
+    TransactionResult saveFile(String originalFileName, byte[] fileContent);
+
     BaseDealSnapshot load(EntityId dealId);
 
     DealSnapshotCollection find(

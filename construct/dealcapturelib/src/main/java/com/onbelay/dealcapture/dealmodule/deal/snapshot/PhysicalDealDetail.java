@@ -125,7 +125,7 @@ public class PhysicalDealDetail  {
 		this.dealPriceValuationCodeValue = dealPriceValuationCodeValue;
 	}
 
-	@Column(name="DEAL_PRICE")
+	@Column(name="FIXED_PRICE")
     public BigDecimal getFixedPriceValue() {
 		return fixedPriceValue;
 	}
@@ -145,7 +145,7 @@ public class PhysicalDealDetail  {
 		this.fixedPriceCurrencyCodeValue = code.getCode();
 	}
 
-    @Column(name="DEAL_PRICE_CURRENCY_CODE")
+    @Column(name="FIXED_PRICE_CURRENCY_CODE")
 	@InjectCodeLabel(codeFamily = "currencyCode", injectedPropertyName = "dealPriceCurrencyCodeItem")
 	@JsonSerialize(using = CodeLabelSerializer.class)
     public String getFixedPriceCurrencyCodeValue() {
@@ -167,7 +167,7 @@ public class PhysicalDealDetail  {
 		this.fixedPriceUnitOfMeasureCodeValue = code.getCode();
 	}
 
-    @Column(name="DEAL_PRICE_UOM_CODE")
+    @Column(name="FIXED_PRICE_UOM_CODE")
 	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "dealPriceUnitOfMeasureCodeItem")
 	@JsonSerialize(using = CodeLabelSerializer.class)
     public String getFixedPriceUnitOfMeasureCodeValue() {

@@ -36,10 +36,13 @@ import org.apache.logging.log4j.MarkerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +88,37 @@ public class DealRestController extends BaseRestController {
 
 		return processResponse(result);
 	}
-	
+
+	@RequestMapping(
+			consumes = {
+					MediaType.MULTIPART_FORM_DATA_VALUE
+			},
+			produces = "application/json",
+			method = RequestMethod.POST
+	)
+	public ResponseEntity<TransactionResult> uploadDealFile(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "file-data", defaultValue = "") String fileData,
+			@RequestParam("file") List<MultipartFile> submissions) {
+
+		TransactionResult result;
+		try {
+			result = dealRestAdapter.saveFile(
+					submissions.get(0).getOriginalFilename(),
+					submissions.get(0).getBytes());
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		} catch (IOException e) {
+			result = new TransactionResult(e.getMessage());
+        }
+
+        return processResponse(result);
+	}
+
 	
 	@Operation(summary="Save deals")
 	@PutMapping(

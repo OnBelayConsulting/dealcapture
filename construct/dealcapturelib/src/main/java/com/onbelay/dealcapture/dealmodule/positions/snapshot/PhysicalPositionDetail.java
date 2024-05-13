@@ -19,8 +19,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
     private String marketPriceValuationValue;
 
     private BigDecimal fixedPriceValue;
-    private String fixedPriceCurrencyCodeValue;
-    private String fixedPriceUnitOfMeasureCodeValue;
 
 
     public void copyFrom(PhysicalPositionDetail copy) {
@@ -33,11 +31,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
         if (copy.fixedPriceValue != null)
             this.fixedPriceValue = copy.fixedPriceValue;
 
-        if (copy.fixedPriceCurrencyCodeValue != null)
-            this.fixedPriceCurrencyCodeValue = copy.fixedPriceCurrencyCodeValue;
-
-        if (copy.fixedPriceUnitOfMeasureCodeValue != null)
-            this.fixedPriceUnitOfMeasureCodeValue = copy.fixedPriceUnitOfMeasureCodeValue;
     }
 
     @Transient
@@ -76,7 +69,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
         this.marketPriceValuationValue = marketPriceValuationValue;
     }
 
-
     @Column(name = "FIXED_PRICE")
     public BigDecimal getFixedPriceValue() {
         return fixedPriceValue;
@@ -86,50 +78,4 @@ public class PhysicalPositionDetail extends AbstractDetail {
         this.fixedPriceValue = fixedPriceValue;
     }
 
-    @Transient
-    @JsonIgnore
-    public CurrencyCode getFixedPriceCurrencyCode() {
-        return CurrencyCode.lookUp(fixedPriceCurrencyCodeValue);
-    }
-
-    public void setFixedPriceCurrencyCode(CurrencyCode code) {
-        this.fixedPriceCurrencyCodeValue = code.getCode();
-    }
-
-    @Column(name = "FIXED_PRICE_CURRENCY_CODE")
-    public String getFixedPriceCurrencyCodeValue() {
-        return fixedPriceCurrencyCodeValue;
-    }
-
-    public void setFixedPriceCurrencyCodeValue(String fixedPriceCurrencyCodeValue) {
-        this.fixedPriceCurrencyCodeValue = fixedPriceCurrencyCodeValue;
-    }
-
-    @Transient
-    @JsonIgnore
-    public UnitOfMeasureCode getFixedPriceUnitOfMeasure() {
-        return UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue);
-    }
-
-    public void setFixedPriceUnitOfMeasure(UnitOfMeasureCode code) {
-        this.fixedPriceUnitOfMeasureCodeValue = code.getCode();
-    }
-
-    @Column(name = "FIXED_PRICE_UOM_CODE")
-    public String getFixedPriceUnitOfMeasureCodeValue() {
-        return fixedPriceUnitOfMeasureCodeValue;
-    }
-
-    public void setFixedPriceUnitOfMeasureCodeValue(String fixedPriceUnitOfMeasureCodeValue) {
-        this.fixedPriceUnitOfMeasureCodeValue = fixedPriceUnitOfMeasureCodeValue;
-    }
-
-    @Transient
-    @JsonIgnore
-    public Price getFixedPrice() {
-        return new Price(
-                fixedPriceValue,
-                getFixedPriceCurrencyCode(),
-                getFixedPriceUnitOfMeasure());
-    }
 }

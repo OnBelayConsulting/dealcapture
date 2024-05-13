@@ -65,8 +65,6 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getFixedPriceCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getFixedPriceUnitOfMeasure());
 
         assertEquals(false, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
 

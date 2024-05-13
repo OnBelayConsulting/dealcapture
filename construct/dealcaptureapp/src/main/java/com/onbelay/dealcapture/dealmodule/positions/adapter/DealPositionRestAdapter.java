@@ -5,6 +5,7 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.FileReportResult;
 
 import java.util.List;
 
@@ -26,4 +27,10 @@ public interface DealPositionRestAdapter {
             Integer limit);
 
     public TransactionResult valuePositions( EvaluationContextRequest evaluationContext);
+
+    public FileReportResult findPositionsAsCSV(
+            String queryText,
+            Integer start,
+            Integer limit);
+
 }

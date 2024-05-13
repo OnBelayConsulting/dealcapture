@@ -262,8 +262,6 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             physicalPositionHolder.getDetail().setFixedPriceValue(fixedPriceValue);
         }
 
-        physicalPositionHolder.getDetail().setFixedPriceUnitOfMeasure(context.getUnitOfMeasureCode());
-        physicalPositionHolder.getDetail().setFixedPriceCurrencyCode(physicalDealSummary.getFixedPriceCurrencyCode());
     }
 
     private void determineFixedPriceRiskFactors(PhysicalPositionHolder physicalPositionHolder) {

@@ -19,6 +19,8 @@ public interface DealPositionRepository {
 
     List<Integer> findIdsByDeal(EntityId dealEntityId);
 
+    List<DealPositionView> fetchViewsByIds(QuerySelectedPage querySelectedPage);
+
     List<Integer> findPositionIds(DefinedQuery definedQuery);
 
     List<DealPositionView> findDealPositionViews(

@@ -21,10 +21,7 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.ErrorDealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -32,9 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -226,6 +221,39 @@ public class DealPositionRestController extends BaseRestController {
 		}
 
 		return (ResponseEntity<DealPositionSnapshot>) processResponse(snapshot);
+	}
+
+
+	@RequestMapping(value = "/positionsFile", method = RequestMethod.GET, produces ="application/text")
+	public HttpEntity<byte[]> getReportAsBytes(
+			@RequestHeader Map<String, String> headersIn,
+			@RequestParam(value = "query", defaultValue="default") String queryText,
+			@RequestParam(value = "start", defaultValue="0")Integer start,
+			@RequestParam(value = "limit", defaultValue="100")Integer limit) {
+
+
+		FileReportResult reportResult;
+
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+
+
+		try {
+			reportResult = dealPositionRestAdapter.findPositionsAsCSV(
+					queryText,
+					start,
+					limit);
+			if (reportResult.isSuccessful()) {
+				headers.set("Content-Disposition", "attachment; fileName=" + reportResult.getFileName());
+				return new HttpEntity<>(reportResult.getDocumentInBytes(), headers);
+			} else {
+				return new HttpEntity<>(null, headers);
+			}
+		} catch (RuntimeException e) {
+			return new HttpEntity<>(null, headers);
+		}
+
 	}
 
 
