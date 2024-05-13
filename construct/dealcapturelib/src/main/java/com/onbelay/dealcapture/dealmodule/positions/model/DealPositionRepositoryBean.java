@@ -50,6 +50,9 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
     @Autowired
 	private DealPositionColumnDefinitions dealPositionColumnDefinitions;
 
+	@Autowired
+	private DealPositionViewColumnDefinitions dealPositionViewColumnDefinitions;
+
 	@Override
 	public DealPosition load(EntityId entityId) {
 		if (entityId == null)
@@ -138,6 +141,15 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 				"DealPosition",
 				querySelectedPage);
 	}
+
+	@Override
+	public List<DealPositionView> fetchViewsByIds(QuerySelectedPage querySelectedPage) {
+		return fetchEntitiesById(
+				dealPositionViewColumnDefinitions,
+				"DealPositionView",
+				querySelectedPage);
+	}
+
 
 	@Override
 	public List<Integer> findPositionIds(DefinedQuery definedQuery) {

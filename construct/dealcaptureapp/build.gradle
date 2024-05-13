@@ -69,6 +69,7 @@ dependencies {
 	implementation group: "org.apache.commons", name: "commons-lang3", version: "3.12.0"
 	implementation group: "org.apache.commons", name: "commons-collections4", version: "4.4"
 	implementation group: "org.apache.commons", name: "commons-text", version: "1.+"
+	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
 
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.4'
 	implementation group: 'com.microsoft.sqlserver', name: 'mssql-jdbc', version: '11.2.3.jre17'

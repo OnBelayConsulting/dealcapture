@@ -84,6 +84,10 @@ public class DealPositionsBatchUpdater {
 					"     ERROR_CODE = ?," +
 					"     ERROR_MSG = ?, " +
 					"     MTM_VALUATION = ?, " +
+					"     DEAL_PRICE = ?, " +
+					"     DEAL_INDEX_PRICE = ?, " +
+					"     TOTAL_DEAL_PRICE = ?, " +
+					"     MARKET_PRICE = ?, " +
 					"     COST_SETTLEMENT_AMOUNT = ?, " +
 					"     SETTLEMENT_AMOUNT = ?, " +
 					"     TOTAL_SETTLEMENT_AMOUNT = ? " +
@@ -108,22 +112,42 @@ public class DealPositionsBatchUpdater {
 						else
 							preparedStatement.setNull(4, Types.DECIMAL);
 
-						if (valuation.getSettlementDetail().getCostSettlementAmount() != null)
-							preparedStatement.setBigDecimal(5, valuation.getSettlementDetail().getCostSettlementAmount());
+						if (valuation.getSettlementDetail().getDealPriceValue() != null)
+							preparedStatement.setBigDecimal(5, valuation.getSettlementDetail().getDealPriceValue());
 						else
 							preparedStatement.setNull(5, Types.DECIMAL);
 
-						if (valuation.getSettlementDetail().getSettlementAmount() != null)
-							preparedStatement.setBigDecimal(6, valuation.getSettlementDetail().getSettlementAmount());
+						if (valuation.getSettlementDetail().getDealIndexPriceValue() != null)
+							preparedStatement.setBigDecimal(6, valuation.getSettlementDetail().getDealIndexPriceValue());
 						else
 							preparedStatement.setNull(6, Types.DECIMAL);
 
-						if (valuation.getSettlementDetail().getTotalSettlementAmount() != null)
-							preparedStatement.setBigDecimal(7, valuation.getSettlementDetail().getTotalSettlementAmount());
+						if (valuation.getSettlementDetail().getTotalDealPriceValue() != null)
+							preparedStatement.setBigDecimal(7, valuation.getSettlementDetail().getTotalDealPriceValue());
 						else
 							preparedStatement.setNull(7, Types.DECIMAL);
 
-						preparedStatement.setInt(8, valuation.getDomainId());
+						if (valuation.getSettlementDetail().getMarketPriceValue() != null)
+							preparedStatement.setBigDecimal(8, valuation.getSettlementDetail().getMarketPriceValue());
+						else
+							preparedStatement.setNull(8, Types.DECIMAL);
+
+						if (valuation.getSettlementDetail().getCostSettlementAmount() != null)
+							preparedStatement.setBigDecimal(9, valuation.getSettlementDetail().getCostSettlementAmount());
+						else
+							preparedStatement.setNull(9, Types.DECIMAL);
+
+						if (valuation.getSettlementDetail().getSettlementAmount() != null)
+							preparedStatement.setBigDecimal(10, valuation.getSettlementDetail().getSettlementAmount());
+						else
+							preparedStatement.setNull(10, Types.DECIMAL);
+
+						if (valuation.getSettlementDetail().getTotalSettlementAmount() != null)
+							preparedStatement.setBigDecimal(11, valuation.getSettlementDetail().getTotalSettlementAmount());
+						else
+							preparedStatement.setNull(11, Types.DECIMAL);
+
+						preparedStatement.setInt(12, valuation.getDomainId());
 						preparedStatement.addBatch();
 					}
 

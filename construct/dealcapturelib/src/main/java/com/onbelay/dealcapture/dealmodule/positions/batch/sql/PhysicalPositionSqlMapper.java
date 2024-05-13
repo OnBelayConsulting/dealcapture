@@ -35,8 +35,6 @@ public class PhysicalPositionSqlMapper extends DealPositionSqlMapper {
 		List<String> columnNames = new ArrayList<>(super.getColumnNames());
 		columnNames.add("DEAL_PRICE_VALUATION_CODE");
 		columnNames.add("FIXED_PRICE");
-		columnNames.add("FIXED_PRICE_CURRENCY_CODE");
-		columnNames.add("FIXED_PRICE_UOM_CODE");
 		columnNames.add("FIXED_PRICE_FX_RISK_FACTOR_ID");
 		columnNames.add("DEAL_PRICE_RISK_FACTOR_ID");
 		columnNames.add("DEAL_PRICE_FX_RISK_FACTOR_ID");
@@ -58,46 +56,36 @@ public class PhysicalPositionSqlMapper extends DealPositionSqlMapper {
 		preparedStatement.setString(n + 1, physicalPosition.getDetail().getDealPriceValuationValue());
 
 		if (physicalPosition.getDetail().getFixedPriceValue() != null)
-			preparedStatement.setBigDecimal(n +2, physicalPosition.getDetail().getFixedPriceValue());
+			preparedStatement.setBigDecimal(n + 2, physicalPosition.getDetail().getFixedPriceValue());
 		else
-			preparedStatement.setNull(n + 2, Types.DECIMAL);
-
-		if (physicalPosition.getDetail().getFixedPriceCurrencyCodeValue() != null)
-			preparedStatement.setString(n + 3, physicalPosition.getDetail().getFixedPriceCurrencyCodeValue());
-		else
-			preparedStatement.setNull(n + 3, Types.VARCHAR);
-
-		if (physicalPosition.getDetail().getFixedPriceUnitOfMeasureCodeValue() != null)
-			preparedStatement.setString(n + 4, physicalPosition.getDetail().getFixedPriceUnitOfMeasureCodeValue());
-		else
-			preparedStatement.setNull(n + 4, Types.VARCHAR);
+			preparedStatement.setNull(n+ 2, Types.DECIMAL);
 
 		if (physicalPosition.getFixedPriceFxRiskFactorId() != null)
-			preparedStatement.setInt(n + 5, physicalPosition.getFixedPriceFxRiskFactorId().getId());
+			preparedStatement.setInt(n + 3, physicalPosition.getFixedPriceFxRiskFactorId().getId());
 		else
-			preparedStatement.setNull(n+ 5, Types.INTEGER);
+			preparedStatement.setNull(n+ 3, Types.INTEGER);
 
 		if (physicalPosition.getDealPriceRiskFactorId() != null)
-			preparedStatement.setInt(n+ 6, physicalPosition.getDealPriceRiskFactorId().getId());
+			preparedStatement.setInt(n+ 4, physicalPosition.getDealPriceRiskFactorId().getId());
 		else
-			preparedStatement.setNull(n+ 6, Types.INTEGER);
+			preparedStatement.setNull(n+ 4, Types.INTEGER);
 
 		if (physicalPosition.getDealPriceFxRiskFactorId() != null)
-			preparedStatement.setInt(n+7, physicalPosition.getDealPriceFxRiskFactorId().getId());
+			preparedStatement.setInt(n+5, physicalPosition.getDealPriceFxRiskFactorId().getId());
 		else
-			preparedStatement.setNull(n +7, Types.INTEGER);
+			preparedStatement.setNull(n +5, Types.INTEGER);
 
-		preparedStatement.setString(n+8, physicalPosition.getDetail().getMarketPriceValuationValue());
+		preparedStatement.setString(n+6, physicalPosition.getDetail().getMarketPriceValuationValue());
 
 		if (physicalPosition.getMarketPriceRiskFactorId() != null)
-			preparedStatement.setInt(n + 9, physicalPosition.getMarketPriceRiskFactorId().getId());
+			preparedStatement.setInt(n + 7, physicalPosition.getMarketPriceRiskFactorId().getId());
 		else
-			preparedStatement.setNull(n + 9, Types.INTEGER);
+			preparedStatement.setNull(n + 7, Types.INTEGER);
 
 		if (physicalPosition.getMarketPriceFxRiskFactorId() != null)
-			preparedStatement.setInt(n +10, physicalPosition.getMarketPriceFxRiskFactorId().getId());
+			preparedStatement.setInt(n +8, physicalPosition.getMarketPriceFxRiskFactorId().getId());
 		else
-			preparedStatement.setNull(n + 10, Types.INTEGER);
+			preparedStatement.setNull(n +8, Types.INTEGER);
 
 	}
 

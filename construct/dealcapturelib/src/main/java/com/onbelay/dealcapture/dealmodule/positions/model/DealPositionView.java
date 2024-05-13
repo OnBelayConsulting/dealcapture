@@ -137,9 +137,7 @@ public class DealPositionView extends AbstractEntity {
         this.detail = detail;
     }
 
-
     @Transient
-    @JsonIgnore
     public Price getFixedPrice() {
         return new Price(
                 detail.getFixedPriceValue(),

@@ -14,37 +14,55 @@
             runOnChange='true'
     >
     <createView viewName="DEAL_POSITION_VIEW">
-    SELECT
-        bd.BUY_SELL_CODE,
-        bd.TICKET_NO,
-        bd.SETTLEMENT_CURRENCY_CODE,
-        bd.POWER_PROFILE_ID,
-        bd.VOLUME_UOM_CODE AS DEAL_UNIT_OF_MEASURE,
-            pp.ENTITY_ID,
-            pp.DEAL_ID,
-            pp.START_DATE,
-            pp.END_DATE,
-            pp.DEAL_TYPE_CODE,
-            pp.CURRENCY_CODE,
-            pp.POWER_FLOW_CODE,
-            pp.CREATE_UPDATE_DATETIME,
-            pp.VOLUME_UOM_CODE,
-            pp.VOLUME_QUANTITY,
-            pp.DEAL_PRICE_VALUATION_CODE,
-            pp.FIXED_PRICE,
-            pp.FIXED_PRICE_CURRENCY_CODE as FIXED_PRICE_CURRENCY_CODE,
-            pp.FIXED_PRICE_UOM_CODE as FIXED_PRICE_UOM_CODE,
-            pp.MARKET_VALUATION_CODE,
-            pp.IS_SETTLEMENT_POSITION,
-            pp.FIXED_PRICE_FX_RISK_FACTOR_ID ,
-            pp.DEAL_PRICE_RISK_FACTOR_ID,
-            pp.DEAL_PRICE_FX_RISK_FACTOR_ID,
-            pp.MKT_PRICE_RISK_FACTOR_ID,
-            pp.MKT_PRICE_FX_RISK_FACTOR_ID
-        FROM
-                DEAL_POSITION pp
-        INNER JOIN BASE_DEAL bd ON
-                bd.ENTITY_ID = pp.DEAL_ID
+              SELECT
+                bd.BUY_SELL_CODE,
+                bd.TICKET_NO,
+                bd.SETTLEMENT_CURRENCY_CODE,
+                bd.POWER_PROFILE_ID,
+                bd.VOLUME_UOM_CODE AS DEAL_UNIT_OF_MEASURE,
+                pp.ENTITY_ID,
+                pp.DEAL_ID,
+                pp.START_DATE,
+                pp.END_DATE,
+                pp.DEAL_TYPE_CODE,
+                pp.FREQUENCY_CODE,
+                pp.CURRENCY_CODE,
+                pp.POWER_FLOW_CODE,
+                pp.CREATE_UPDATE_DATETIME,
+                pp.VALUED_DATETIME,
+                pp.VOLUME_UOM_CODE,
+                pp.VOLUME_QUANTITY,
+                pp.DEAL_PRICE_VALUATION_CODE,
+                pp.FIXED_PRICE,
+                pp.DEAL_PRICE,
+                pp.DEAL_INDEX_PRICE,
+                pp.TOTAL_DEAL_PRICE,
+                pp.MARKET_PRICE,
+                dpi.INDEX_NAME as DEAL_PRICE_INDEX_NAME ,
+                phy.FIXED_PRICE_CURRENCY_CODE as FIXED_PRICE_CURRENCY_CODE,
+                phy.FIXED_PRICE_UOM_CODE as FIXED_PRICE_UOM_CODE,
+                pp.MARKET_VALUATION_CODE,
+                mpi.INDEX_NAME as MARKET_INDEX_NAME,
+                pp.IS_SETTLEMENT_POSITION,
+                pp.MTM_VALUATION,
+                pp.COST_SETTLEMENT_AMOUNT,
+                pp.SETTLEMENT_AMOUNT,
+                pp.TOTAL_SETTLEMENT_AMOUNT,
+                pp.SETTLEMENT_CURRENCY,
+                pp.ERROR_CODE,
+                pp.ERROR_MSG,
+                pp.FIXED_PRICE_FX_RISK_FACTOR_ID ,
+                pp.DEAL_PRICE_RISK_FACTOR_ID,
+                pp.DEAL_PRICE_FX_RISK_FACTOR_ID,
+                pp.MKT_PRICE_RISK_FACTOR_ID,
+                pp.MKT_PRICE_FX_RISK_FACTOR_ID
+              FROM  DEAL_POSITION pp
+        INNER JOIN  BASE_DEAL bd ON bd.ENTITY_ID = pp.DEAL_ID
+   LEFT OUTER JOIN  PHYSICAL_DEAL phy ON phy.ENTITY_ID = pp.DEAL_ID
+   LEFT OUTER JOIN  PRICE_RISK_FACTOR dp ON dp.ENTITY_ID = pp.DEAL_PRICE_RISK_FACTOR_ID
+   LEFT OUTER JOIN  PRICE_INDEX dpi ON dpi.ENTITY_ID = dp.PRICE_INDEX_ID
+   LEFT OUTER JOIN  PRICE_RISK_FACTOR mp ON mp.ENTITY_ID = pp.MKT_PRICE_RISK_FACTOR_ID
+   LEFT OUTER JOIN  PRICE_INDEX mpi ON mpi.ENTITY_ID = mp.PRICE_INDEX_ID
         </createView>
     </changeSet>
 

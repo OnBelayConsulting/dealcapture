@@ -87,13 +87,21 @@
             <column name="FIXED_PRICE"
                     type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
-                </column>
-            <column name="FIXED_PRICE_CURRENCY_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
+            </column>
+            <column name="DEAL_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
-            <column name="FIXED_PRICE_UOM_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
+            <column name="DEAL_INDEX_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="TOTAL_DEAL_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MARKET_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
             <column name="FIXED_PRICE_FX_RISK_FACTOR_ID"

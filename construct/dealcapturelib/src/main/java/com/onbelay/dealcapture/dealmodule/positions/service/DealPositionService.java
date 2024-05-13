@@ -78,6 +78,10 @@ public interface DealPositionService {
 
     List<DealPositionSnapshot> findByIds(QuerySelectedPage selectedPage);
 
+
+    List<DealPositionView> findViewsByIds(QuerySelectedPage selectedPage);
+
+
     DealPositionSnapshot load(EntityId entityId);
 
     List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(

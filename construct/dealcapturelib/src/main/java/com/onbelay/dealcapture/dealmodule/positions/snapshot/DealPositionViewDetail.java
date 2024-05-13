@@ -27,7 +27,9 @@ public class DealPositionViewDetail {
     private LocalDate endDate;
     private String dealTypeCodeValue;
     private String currencyCodeValue;
+    private String frequencyCodeValue;
     private LocalDateTime createdDateTime;
+    private LocalDateTime valuedDateTime;
     private String volumeUnitOfMeasureValue;
     private BigDecimal volumeQuantityValue;
     private String powerFlowCodeValue;
@@ -35,10 +37,23 @@ public class DealPositionViewDetail {
     private String dealPriceValuationValue;
 
     private BigDecimal fixedPriceValue;
+    private BigDecimal dealPriceValue;
+    private String dealIndexName;
+    private BigDecimal dealIndexPriceValue;
+    private BigDecimal totalDealPriceValue;
+
     private String  fixedPriceCurrencyCodeValue;
     private String  fixedPriceUnitOfMeasureCodeValue;
 
     private String marketPriceValuationValue;
+
+    private BigDecimal marketPriceValue;
+    private String marketIndexName;
+
+    private BigDecimal mtmAmountValue;
+    private BigDecimal costSettlementAmountValue;
+    private BigDecimal settlementAmountValue;
+    private BigDecimal totalSettlementAmountValue;
 
     private String ticketNo;
     private String buySellCodeValue;
@@ -46,6 +61,11 @@ public class DealPositionViewDetail {
     private Boolean isSettlementPosition;
     private String settlementCurrencyCodeValue;
     private String dealUnitOfMeasureCodeValue;
+
+
+    private String errorCode;
+    private String errorMessage;
+
 
     @Transient
     @JsonIgnore
@@ -80,6 +100,14 @@ public class DealPositionViewDetail {
         return endDate;
     }
 
+    @Column(name = "FREQUENCY_CODE")
+    public String getFrequencyCodeValue() {
+        return frequencyCodeValue;
+    }
+
+    public void setFrequencyCodeValue(String frequencyCodeValue) {
+        this.frequencyCodeValue = frequencyCodeValue;
+    }
 
     @Transient
     @JsonIgnore
@@ -143,6 +171,15 @@ public class DealPositionViewDetail {
 
     public void setCreatedDateTime(LocalDateTime createdDateTime) {
         this.createdDateTime = createdDateTime;
+    }
+
+    @Column(name = "VALUED_DATETIME")
+    public LocalDateTime getValuedDateTime() {
+        return valuedDateTime;
+    }
+
+    public void setValuedDateTime(LocalDateTime valuedDateTime) {
+        this.valuedDateTime = valuedDateTime;
     }
 
     @Transient
@@ -221,6 +258,32 @@ public class DealPositionViewDetail {
         this.marketPriceValuationValue = marketPriceValuationValue;
     }
 
+    @Column(name = "DEAL_PRICE_INDEX_NAME")
+    public String getDealIndexName() {
+        return dealIndexName;
+    }
+
+    public void setDealIndexName(String dealIndexName) {
+        this.dealIndexName = dealIndexName;
+    }
+
+    @Column(name = "MARKET_INDEX_NAME")
+    public String getMarketIndexName() {
+        return marketIndexName;
+    }
+
+    public void setMarketIndexName(String marketIndexName) {
+        this.marketIndexName = marketIndexName;
+    }
+
+    @Column(name = "MARKET_PRICE")
+    public BigDecimal getMarketPriceValue() {
+        return marketPriceValue;
+    }
+
+    public void setMarketPriceValue(BigDecimal marketPriceValue) {
+        this.marketPriceValue = marketPriceValue;
+    }
 
     @Column(name = "FIXED_PRICE")
     public BigDecimal getFixedPriceValue() {
@@ -229,6 +292,33 @@ public class DealPositionViewDetail {
 
     public void setFixedPriceValue(BigDecimal fixedPriceValue) {
         this.fixedPriceValue = fixedPriceValue;
+    }
+
+    @Column(name = "DEAL_PRICE")
+    public BigDecimal getDealPriceValue() {
+        return dealPriceValue;
+    }
+
+    public void setDealPriceValue(BigDecimal dealPriceValue) {
+        this.dealPriceValue = dealPriceValue;
+    }
+
+    @Column(name = "DEAL_INDEX_PRICE")
+    public BigDecimal getDealIndexPriceValue() {
+        return dealIndexPriceValue;
+    }
+
+    public void setDealIndexPriceValue(BigDecimal dealIndexPriceValue) {
+        this.dealIndexPriceValue = dealIndexPriceValue;
+    }
+
+    @Column(name = "TOTAL_DEAL_PRICE")
+    public BigDecimal getTotalDealPriceValue() {
+        return totalDealPriceValue;
+    }
+
+    public void setTotalDealPriceValue(BigDecimal totalDealPriceValue) {
+        this.totalDealPriceValue = totalDealPriceValue;
     }
 
     @Column(name = "FIXED_PRICE_CURRENCY_CODE")
@@ -312,5 +402,57 @@ public class DealPositionViewDetail {
         isSettlementPosition = settlementPosition;
     }
 
+    @Column(name = "MTM_VALUATION")
+    public BigDecimal getMtmAmountValue() {
+        return mtmAmountValue;
+    }
 
+    public void setMtmAmountValue(BigDecimal mtmAmountValue) {
+        this.mtmAmountValue = mtmAmountValue;
+    }
+
+    @Column(name = "COST_SETTLEMENT_AMOUNT")
+    public BigDecimal getCostSettlementAmountValue() {
+        return costSettlementAmountValue;
+    }
+
+    public void setCostSettlementAmountValue(BigDecimal costSettlementAmountValue) {
+        this.costSettlementAmountValue = costSettlementAmountValue;
+    }
+
+    @Column(name = "SETTLEMENT_AMOUNT")
+    public BigDecimal getSettlementAmountValue() {
+        return settlementAmountValue;
+    }
+
+    public void setSettlementAmountValue(BigDecimal settlementAmountValue) {
+        this.settlementAmountValue = settlementAmountValue;
+    }
+
+    @Column(name = "TOTAL_SETTLEMENT_AMOUNT")
+    public BigDecimal getTotalSettlementAmountValue() {
+        return totalSettlementAmountValue;
+    }
+
+    public void setTotalSettlementAmountValue(BigDecimal totalSettlementAmountValue) {
+        this.totalSettlementAmountValue = totalSettlementAmountValue;
+    }
+
+    @Column(name = "ERROR_CODE")
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    @Column(name = "ERROR_MSG")
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

@@ -258,6 +258,11 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
+    public List<DealPositionView> findViewsByIds(QuerySelectedPage selectedPage) {
+        return dealPositionRepository.fetchViewsByIds(selectedPage);
+    }
+
+    @Override
     public List<CostPositionSnapshot> findCostPositionsByIds(QuerySelectedPage selectedPage) {
         List<CostPosition> costs = costPositionRepository.fetchByIds(selectedPage);
         CostPositionAssembler assembler = new CostPositionAssembler();

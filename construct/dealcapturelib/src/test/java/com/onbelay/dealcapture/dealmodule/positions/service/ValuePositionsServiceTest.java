@@ -5,6 +5,7 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCod
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
+import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
@@ -130,6 +131,18 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         assertEquals(0, BigDecimal.valueOf(-10).compareTo(positionSnapshot.getSettlementDetail().getSettlementAmount()));
         assertEquals(0, BigDecimal.valueOf(-10).compareTo(positionSnapshot.getSettlementDetail().getTotalSettlementAmount()));
         assertNotNull(positionSnapshot.getSettlementDetail().getSettlementCurrencyCodeValue());
+
+        List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
+                fixedPriceBuyDeal.getId(),
+                CurrencyCode.CAD,
+                createdDateTime);
+        DealPositionView view = views.get(0);
+        assertEquals(marketIndex.getDetail().getName(), view.getDetail().getMarketIndexName());
+        assertNull(view.getDetail().getDealIndexName());
+        assertNull(view.getDetail().getDealIndexPriceValue());
+
+        assertEquals(0, BigDecimal.ONE.compareTo(view.getDetail().getDealPriceValue()));
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getDetail().getMarketPriceValue()));
     }
 
     @Test
@@ -249,6 +262,17 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         assertEquals(0, BigDecimal.valueOf(-20).compareTo(positionSnapshot.getSettlementDetail().getSettlementAmount()));
         assertEquals(0, BigDecimal.valueOf(-20).compareTo(positionSnapshot.getSettlementDetail().getTotalSettlementAmount()));
         assertNotNull(positionSnapshot.getSettlementDetail().getSettlementCurrencyCodeValue());
+
+        List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
+                indexBuyDeal.getId(),
+                CurrencyCode.CAD,
+                createdDateTime);
+        DealPositionView view = views.get(0);
+        assertEquals(dealPriceIndex.getDetail().getName(), view.getDetail().getDealIndexName());
+        assertEquals(0, BigDecimal.valueOf(2).compareTo(view.getDetail().getDealIndexPriceValue()));
+        assertNull(view.getDetail().getDealPriceValue());
+        assertEquals(0, view.getDetail().getDealIndexPriceValue().compareTo(view.getDetail().getTotalDealPriceValue()));
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getDetail().getMarketPriceValue()));
     }
 
     @Test
@@ -359,6 +383,18 @@ public class ValuePositionsServiceTest extends DealServiceTestCase {
         assertEquals(0, BigDecimal.valueOf(-30).compareTo(positionSnapshot.getSettlementDetail().getSettlementAmount()));
         assertEquals(0, BigDecimal.valueOf(-30).compareTo(positionSnapshot.getSettlementDetail().getTotalSettlementAmount()));
         assertNotNull(positionSnapshot.getSettlementDetail().getSettlementCurrencyCodeValue());
+
+        List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
+                indexPlusBuyDeal.getId(),
+                CurrencyCode.CAD,
+                createdDateTime);
+        DealPositionView view = views.get(0);
+        assertEquals(dealPriceIndex.getDetail().getName(), view.getDetail().getDealIndexName());
+        assertEquals(0, BigDecimal.valueOf(2).compareTo(view.getDetail().getDealIndexPriceValue()));
+        assertNotNull(view.getDetail().getDealPriceValue());
+        assertEquals(0, BigDecimal.valueOf(3).compareTo(view.getDetail().getTotalDealPriceValue()));
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getDetail().getMarketPriceValue()));
+
     }
 
     @Test
