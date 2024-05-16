@@ -233,7 +233,6 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                 fromMarketDate,
                 toMarketDate);
 
-
         generatePositionsService.generatePositions(
                 "Test",
                 dealPositionsEvaluationContext,
