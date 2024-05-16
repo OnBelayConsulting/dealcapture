@@ -3,6 +3,16 @@ spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=obdealcapture
 spring.datasource.username=dealcapture
 spring.datasource.password=dealcapture
 spring.profiles.active=test
+
 spring.main.allow-bean-definition-overriding=true
 //spring.jpa.hibernate.use-new-id-generator-mappings=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect
+batchInserterIsSqlServer=true
+spring.security.oauth2.client.provider.okta.issuer-uri=http://localhost:8383/realms/master
+spring.security.oauth2.client.provider.okta.token-uri=http://localhost:8383/realms/master/protocol/openid-connect/token
+spring.security.oauth2.client.registration.okta.client-id=organizations
+spring.security.oauth2.client.registration.okta.client-secret=6018CaG1qcg6VWtfikxEq0VVFjyKtriO
+spring.security.oauth2.client.registration.okta.scope=openid, profile, email
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8383/realms/master/protocol/openid-connect/certs
+
+

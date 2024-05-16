@@ -1,5 +1,5 @@
-spring.datasource.driverClassName=org.postgresql.Driver
-spring.datasource.url=jdbc:postgresql://localhost:5432/ob_dealcapture
+spring.datasource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=obdealcapture;trustServerCertificate=true
 spring.datasource.username=dealcapture
 spring.datasource.password=dealcapture
 endpoints.health.enabled=true
@@ -13,9 +13,9 @@ endpoints.metrics.enabled=true
 server.port=9101
 server.servlet.context-path=/DealCapture
 server.shutdown=graceful
-
+batchInserterIsSqlServer=true
 spring.application.name=DealCapture
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect
 spring.main.allow-bean-definition-overriding=true
 spring.jpa.open-in-view=false
 spring.jpa.properties.hibernate.jdbc.batch_size=20
