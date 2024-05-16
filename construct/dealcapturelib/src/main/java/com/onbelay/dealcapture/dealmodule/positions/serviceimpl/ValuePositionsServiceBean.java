@@ -104,13 +104,13 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
-        logger.info("value positions start: " + LocalDateTime.now().toString());
+        logger.debug("value positions start: " + LocalDateTime.now().toString());
 
-        logger.info("create valuationIndexManager start: " + LocalDateTime.now().toString());
+        logger.debug("create valuationIndexManager start: " + LocalDateTime.now().toString());
         ValuationIndexManager valuationIndexManager = createValuationIndexManager(
                 fromPositionDate,
                 toPositionDate);
-        logger.info("create valuationIndexManager end: " + LocalDateTime.now().toString());
+        logger.debug("create valuationIndexManager end: " + LocalDateTime.now().toString());
 
 
         for (Integer dealId : dealIds) {
@@ -140,7 +140,7 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
                     currentDateTime);
         }
 
-        logger.info("value positions end: " + LocalDateTime.now().toString());
+        logger.debug("value positions end: " + LocalDateTime.now().toString());
     }
 
 private void valueCostsAndPositionsByDeal(

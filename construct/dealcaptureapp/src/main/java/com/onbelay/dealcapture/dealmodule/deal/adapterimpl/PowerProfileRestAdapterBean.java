@@ -8,9 +8,11 @@ import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.PowerProfileRestAdapter;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshotCollection;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePowerProfilePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
@@ -57,7 +59,7 @@ public class PowerProfileRestAdapterBean extends BaseRestAdapterBean implements 
 
         QuerySelectedPage allIds = powerProfileService.findPowerProfileIds(definedQuery);
 
-        if (allIds.getIds().size() == 0 || start >= allIds.getIds().size()) {
+        if (allIds.getIds().isEmpty() || start >= allIds.getIds().size()) {
             return new PowerProfileSnapshotCollection(
                     start,
                     limit,
@@ -76,6 +78,12 @@ public class PowerProfileRestAdapterBean extends BaseRestAdapterBean implements 
                 allIds.getOrderByClause());
 
         List<PowerProfileSnapshot> snapshots = powerProfileService.findByIds(limitedPageSelection);
+        if (snapshots.isEmpty()) {
+            return new PowerProfileSnapshotCollection(
+                    start,
+                    limit,
+                    allIds.getIds().size());
+        }
         return new PowerProfileSnapshotCollection(
                 start,
                 limit,

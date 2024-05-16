@@ -41,6 +41,9 @@ public class GeneratePowerProfilePositionsServiceBean extends BasePositionsServi
                 powerProfileIds);
 
         List<PowerProfileSnapshot> profiles = powerProfileService.getAssignedPowerProfiles(positionGenerationIdentifier);
+        if (profiles.isEmpty()) {
+            return new TransactionResult();
+        }
 
         RiskFactorManager riskFactorManager = createRiskFactorManager(context);
 
@@ -93,7 +96,7 @@ public class GeneratePowerProfilePositionsServiceBean extends BasePositionsServi
         }
 
         SubLister<Integer> profileSubLister = new SubLister<>(powerProfileIds, 2000);
-        logger.info("Update power profile position generation start: " + LocalDateTime.now().toString());
+        logger.debug("Update power profile position generation start: " + LocalDateTime.now().toString());
         while (profileSubLister.moreElements()) {
             powerProfileService.updatePositionStatusToComplete(
                     profileSubLister.nextList(),

@@ -63,6 +63,9 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
             LocalDateTime currentDateTime) {
 
         QuerySelectedPage selectedPage  = powerProfileService.findPowerProfileIds(definedQuery);
+        if (selectedPage.getIds().isEmpty())
+            return new TransactionResult();
+
         valuePositions(
                 selectedPage.getIds(),
                 currencyCode,
@@ -78,7 +81,7 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
-        logger.info("value positions start: " + LocalDateTime.now().toString());
+        logger.debug("value positions start: " + LocalDateTime.now().toString());
 
 
         List<PowerProfilePositionView> views = powerProfilePositionsService.fetchPowerProfilePositionViews(
@@ -109,7 +112,7 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
         while (subLister.moreElements()) {
             powerProfilePositionsBatchUpdater.updatePositions(subLister.nextList());
         }
-        logger.info("value positions end: " + LocalDateTime.now().toString());
+        logger.debug("value positions end: " + LocalDateTime.now().toString());
     }
 
 

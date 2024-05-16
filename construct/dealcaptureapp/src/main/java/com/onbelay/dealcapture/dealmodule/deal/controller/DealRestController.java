@@ -56,6 +56,7 @@ public class DealRestController extends BaseRestController {
 	@Autowired
 	private DealRestAdapter dealRestAdapter;
 
+	@Autowired
 	private MarkToMarketRestAdapter markToMarketAdapter;
 	
 	@Operation(summary="Create or update a deal")
@@ -241,12 +242,11 @@ public class DealRestController extends BaseRestController {
 
 	@Operation(summary="Run Mark to Market")
 	@PostMapping(
-			value = "/{id}/mtm",
+			value = "/mtm",
 			produces="application/json",
 			consumes="application/json"  )
 	public ResponseEntity<MarkToMarketResult> runMarkToMarket(
 			@RequestHeader Map<String, String> headers,
-			@PathVariable Integer id,
 			@RequestBody EvaluationContextRequest request,
 			BindingResult bindingResult) {
 
@@ -271,7 +271,7 @@ public class DealRestController extends BaseRestController {
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", "application/json; charset=utf-8");
-		return result.isSuccessful() ? new ResponseEntity(result, httpHeaders, HttpStatus.OK) : new ResponseEntity(result, httpHeaders, HttpStatus.BAD_REQUEST);
+		return result.isSuccessful() ? new ResponseEntity<MarkToMarketResult>(result, httpHeaders, HttpStatus.OK) : new ResponseEntity<MarkToMarketResult>(result, httpHeaders, HttpStatus.BAD_REQUEST);
 	}
 
 }

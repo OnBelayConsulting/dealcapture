@@ -88,16 +88,16 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         SubLister<Integer> subLister = new SubLister<>(dealIdsIn, 100);
         while (subLister.moreElements()) {
             List<Integer> dealIds = subLister.nextList();
-            logger.info("assign pg identifiers start: " + LocalDateTime.now().toString());
+            logger.debug("assign pg identifiers start: " + LocalDateTime.now().toString());
             dealService.assignPositionIdentifierToDeals(
                     positionGenerationIdentifier,
                     dealIds);
 
-            logger.info("assign pg identifiers end: " + LocalDateTime.now().toString());
+            logger.debug("assign pg identifiers end: " + LocalDateTime.now().toString());
 
-            logger.info("get assigned deal summaries start: " + LocalDateTime.now().toString());
+            logger.debug("get assigned deal summaries start: " + LocalDateTime.now().toString());
             List<DealSummary> summaries = dealService.getAssignedDealSummaries(positionGenerationIdentifier);
-            logger.info("get assigned deal summaries end: " + LocalDateTime.now().toString());
+            logger.debug("get assigned deal summaries end: " + LocalDateTime.now().toString());
 
             List<DealCostSummary> dealCostSummaries = dealService.fetchDealCostSummaries(dealIds);
 
@@ -137,9 +137,9 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
                 .map(c-> c.getDealId())
                 .collect(Collectors.toList());
 
-        logger.info("get physical deal summaries start: " + LocalDateTime.now().toString());
+        logger.debug("get physical deal summaries start: " + LocalDateTime.now().toString());
         List<PhysicalDealSummary> physicalDealSummaries = dealService.findPhysicalDealSummariesByIds(physicalDealIds);
-        logger.info("get physical deal summaries end: " + LocalDateTime.now().toString());
+        logger.debug("get physical deal summaries end: " + LocalDateTime.now().toString());
 
 
         DealPositionGeneratorFactory factory = DealPositionGeneratorFactory.newFactory();
@@ -164,7 +164,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         List<DealPositionGenerator> dealPositionGenerators = new ArrayList<>(dealSummaries.size());
 
-        logger.info("generate position holders start: " + LocalDateTime.now().toString());
+        logger.debug("generate position holders start: " + LocalDateTime.now().toString());
         for (PhysicalDealSummary summary : physicalDealSummaries) {
             DealPositionGenerator dealPositionGenerator = factory.newGenerator(
                         context,
@@ -176,7 +176,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
             dealPositionGenerator.generatePositionHolders();
 
         }
-        logger.info("generate position holders end: " + LocalDateTime.now().toString());
+        logger.debug("generate position holders end: " + LocalDateTime.now().toString());
 
         processPriceRiskFactors(
                 riskFactorManager,
@@ -199,7 +199,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
             List<DealPositionGenerator> dealPositionGenerators) {
 
 
-        logger.info("save deal positions start: " + LocalDateTime.now().toString());
+        logger.debug("save deal positions start: " + LocalDateTime.now().toString());
 
         ArrayList<DealPositionSnapshot> positionSnapshots = new ArrayList<>();
         ArrayList<DealHourlyPositionSnapshot> hourlyPositionSnapshots = new ArrayList<>();
@@ -240,9 +240,9 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
             }
         }
 
-        logger.info("save deal positions end: " + LocalDateTime.now().toString());
+        logger.debug("save deal positions end: " + LocalDateTime.now().toString());
 
-        logger.info("save position risk factor mappings start: " + LocalDateTime.now().toString());
+        logger.debug("save position risk factor mappings start: " + LocalDateTime.now().toString());
 
         ArrayList<PositionRiskFactorMappingSnapshot> mappings = new ArrayList<>();
         for (DealPositionSnapshot snapshot : positionSnapshots) {
@@ -254,17 +254,17 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         if (mappings.size() > 0)
             positionRiskFactorMappingBatchInserter.savePositionRiskFactorMappings(mappings);
-        logger.info("save position risk factor mappings emd: " + LocalDateTime.now().toString());
+        logger.debug("save position risk factor mappings emd: " + LocalDateTime.now().toString());
 
 
         SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
-        logger.info("Update deal position generation start: " + LocalDateTime.now().toString());
+        logger.debug("Update deal position generation start: " + LocalDateTime.now().toString());
         while (subLister.moreElements()) {
             dealService.updateDealPositionStatusToComplete(
                     subLister.nextList(),
                     createdDateTime);
         }
-        logger.info("Update deal position generation end: " + LocalDateTime.now().toString());
+        logger.debug("Update deal position generation end: " + LocalDateTime.now().toString());
 
     }
 

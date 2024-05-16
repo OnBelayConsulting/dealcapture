@@ -62,6 +62,9 @@ public class PowerProfilePositionRestAdapterBean extends BaseRestAdapterBean imp
 
         QuerySelectedPage selection = powerProfileService.findPowerProfileIds(definedQuery);
 
+        if (selection.getIds().isEmpty())
+            return new TransactionResult();
+
         powerProfileService.updatePositionGenerationStatusToPending(selection.getIds());
 
         String positionGenerationIdentifier;
@@ -126,7 +129,7 @@ public class PowerProfilePositionRestAdapterBean extends BaseRestAdapterBean imp
                 definedQuery,
                 evaluationContextRequest.getCurrencyCode(),
                 evaluationContextRequest.getCreatedDateTime(),
-                LocalDateTime.now());
+                currentDateTime);
 
         logger.error("Value positions end: " + LocalDateTime.now().toString());
         return result;

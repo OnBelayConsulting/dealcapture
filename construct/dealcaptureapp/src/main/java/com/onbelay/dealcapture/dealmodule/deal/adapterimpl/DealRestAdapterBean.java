@@ -116,6 +116,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
 
     @Override
     public TransactionResult saveFile(String originalFileName, byte[] fileContents) {
+        initializeSession();
 
         ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
         DealFileReader dealFileReader = new DealFileReader(fileStream);

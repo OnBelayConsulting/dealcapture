@@ -144,7 +144,9 @@ public class DealPositionRestController extends BaseRestController {
 	
 	
 	@Operation(summary="get Positions")
-	@GetMapping
+	@GetMapping(
+			produces="application/json"
+	)
 	public ResponseEntity<DealPositionSnapshotCollection> getPositions(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
@@ -224,7 +226,9 @@ public class DealPositionRestController extends BaseRestController {
 	}
 
 
-	@RequestMapping(value = "/positionsFile", method = RequestMethod.GET, produces ="application/text")
+	@Operation(summary="get positions as a CSV file")
+	@GetMapping(
+			produces ="application/text")
 	public HttpEntity<byte[]> getReportAsBytes(
 			@RequestHeader Map<String, String> headersIn,
 			@RequestParam(value = "query", defaultValue="default") String queryText,

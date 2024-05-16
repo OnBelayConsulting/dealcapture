@@ -65,14 +65,14 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
 
         List<FxIndexSnapshot> activeFxIndices = fxIndexService.findActiveFxIndices();
 
-        logger.info("fetch active price risk factors start: " + LocalDateTime.now().toString());
+        logger.debug("fetch active price risk factors start: " + LocalDateTime.now().toString());
         List<PriceRiskFactorSnapshot> activePriceRiskFactors = priceRiskFactorService.findByPriceIndexIds(
                 activePriceIndices.stream().map(c-> c.getEntityId().getId()).toList(),
                 context.getStartPositionDate(),
                 context.getEndPositionDate());
-        logger.info("fetch active price risk factors end: " + LocalDateTime.now().toString());
+        logger.debug("fetch active price risk factors end: " + LocalDateTime.now().toString());
 
-        logger.info("fetch active FX risk factors start: " + LocalDateTime.now().toString());
+        logger.debug("fetch active FX risk factors start: " + LocalDateTime.now().toString());
         List<FxRiskFactorSnapshot> activeFxRiskFactors = fxRiskFactorService.findByFxIndexIds(
                 activeFxIndices
                         .stream()
@@ -80,7 +80,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
                         .collect(Collectors.toList()),
                 context.getStartPositionDate(),
                 context.getEndPositionDate());
-        logger.info("fetch FX price risk factors end: " + LocalDateTime.now().toString());
+        logger.debug("fetch FX price risk factors end: " + LocalDateTime.now().toString());
 
         return new ConcurrentRiskFactorManager(
                 activePriceIndices,
@@ -95,7 +95,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
             LocalDate endPositionDate,
             LocalDateTime createdDateTime) {
 
-        logger.info("fetch basis price risk factors start: " + LocalDateTime.now().toString());
+        logger.debug("fetch basis price risk factors start: " + LocalDateTime.now().toString());
         if (riskFactorManager.getPriceRiskFactorsSearch().keySet().size() > 0) {
             List<PriceRiskFactorSnapshot> existingSnapshots = priceRiskFactorService.findByPriceIndexIds(
                     riskFactorManager.getPriceRiskFactorsSearch().keySet().stream().toList(),
@@ -125,13 +125,13 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
             }
 
         }
-        logger.info("fetch basis price risk factors end: " + LocalDateTime.now().toString());
+        logger.debug("fetch basis price risk factors end: " + LocalDateTime.now().toString());
 
         List<PriceRiskFactorSnapshot> priceRiskFactorsToSave = new ArrayList<>();
 
         HashMap<String, PriceRiskFactorSnapshot> distinctPriceRiskFactors = new HashMap<>();
 
-        logger.info("Save price risk factors start: " + LocalDateTime.now().toString());
+        logger.debug("Save price risk factors start: " + LocalDateTime.now().toString());
         for (PriceRiskFactorHolder holder : riskFactorManager.getPriceRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
                 PriceRiskFactorSnapshot snapshot = distinctPriceRiskFactors.get(holder.generateUniqueKey());
@@ -162,7 +162,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
         for (PriceRiskFactorSnapshot snapshot : priceRiskFactorsToSave) {
             snapshot.setEntityState(EntityState.UNMODIFIED);
         }
-        logger.info("assign new price risk factors to holders start: " + LocalDateTime.now().toString());
+        logger.debug("assign new price risk factors to holders start: " + LocalDateTime.now().toString());
         for (PriceRiskFactorHolder holder : riskFactorManager.getPriceRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
                 throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
@@ -170,7 +170,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
             if (holder.getRiskFactor().getEntityId() == null)
                 throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
         }
-        logger.info("assign new price risk factors to holders end: " + LocalDateTime.now().toString());
+        logger.debug("assign new price risk factors to holders end: " + LocalDateTime.now().toString());
 
     }
 
@@ -181,7 +181,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
         HashMap<String, FxRiskFactorSnapshot> distinctFxRiskFactors = new HashMap<>();
         List<FxRiskFactorSnapshot> fxRiskFactorsToSave = new ArrayList<>();
 
-        logger.info("save new fx risk factors start: " + LocalDateTime.now().toString());
+        logger.debug("save new fx risk factors start: " + LocalDateTime.now().toString());
         for (FxRiskFactorHolder holder : riskFactorManager.getFxRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
                 FxRiskFactorSnapshot snapshot = distinctFxRiskFactors.get(holder.generateUniqueKey());
@@ -198,7 +198,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
                     fxRiskFactorsToSave.add(snapshot);
                 }
             }
-            logger.info("assign new fx risk factors to holders end: " + LocalDateTime.now().toString());
+            logger.debug("assign new fx risk factors to holders end: " + LocalDateTime.now().toString());
 
         }
         SubLister<FxRiskFactorSnapshot> subLister = new SubLister<>(fxRiskFactorsToSave, 1000);
@@ -210,7 +210,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
         for (FxRiskFactorSnapshot snapshot : fxRiskFactorsToSave) {
             snapshot.setEntityState(EntityState.UNMODIFIED);
         }
-        logger.info("assign new fx risk factors to holders start: " + LocalDateTime.now().toString());
+        logger.debug("assign new fx risk factors to holders start: " + LocalDateTime.now().toString());
         for (FxRiskFactorHolder holder : riskFactorManager.getFxRiskFactorHolderQueue()) {
             if (holder.hasRiskFactor() == false) {
                 throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
@@ -218,7 +218,7 @@ public abstract class BasePositionsServiceBean  extends BaseDomainService {
             if (holder.getRiskFactor().getEntityId() == null)
                 throw new OBRuntimeException(PositionErrorCode.MISSING_RISK_FACTOR_ID_ASSIGNMENT.name());
         }
-        logger.info("assign new fx risk factors to holders end: " + LocalDateTime.now().toString());
+        logger.debug("assign new fx risk factors to holders end: " + LocalDateTime.now().toString());
 
 
     }

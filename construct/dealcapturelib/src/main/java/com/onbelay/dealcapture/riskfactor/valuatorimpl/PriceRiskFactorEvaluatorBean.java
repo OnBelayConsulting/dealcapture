@@ -44,12 +44,12 @@ public class PriceRiskFactorEvaluatorBean implements PriceRiskFactorEvaluator {
     public void valueRiskFactors(
             DefinedQuery definedQuery,
             LocalDateTime currentDateTime) {
-        logger.error("Value risk factors start: " + LocalDateTime.now());
+        logger.debug("Value risk factors start: " + LocalDateTime.now());
         List<Integer> ids = priceRiskFactorRepository.findPriceRiskFactorIds(definedQuery);
         List<PriceRiskFactor> factors = priceRiskFactorRepository.fetchByIds(new QuerySelectedPage(ids));
 
         doValueRiskFactors(factors, currentDateTime);
-        logger.error("Value risk factors end: " + LocalDateTime.now());
+        logger.debug("Value risk factors end: " + LocalDateTime.now());
     }
 
     @Override

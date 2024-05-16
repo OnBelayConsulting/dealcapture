@@ -131,7 +131,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
                 evaluationContextRequest.getFromDate(),
                 evaluationContextRequest.getToDate(),
                 evaluationContextRequest.getCreatedDateTime(),
-                LocalDateTime.now());
+                currentDateTime);
 
         logger.error("Value positions end: " + LocalDateTime.now().toString());
         return result;

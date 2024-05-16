@@ -34,10 +34,16 @@ public class MarkToMarketAdapterBean extends BaseRestAdapterBean implements Mark
     @Override
     public MarkToMarketResult runMarkToMarket(EvaluationContextRequest evaluationContextRequest) {
         initializeSession();
-        logger.error("Run MtM Start: " + LocalDateTime.now().toString());
-        String positionGenerationIdentifier = "MTM_" + System.currentTimeMillis();
-        MarkToMarketResult markToMarketResult = new MarkToMarketResult();
-        markToMarketResult.setPositionGenerationIdentifier(positionGenerationIdentifier);
+        LocalDateTime startDateTime = LocalDateTime.now();
+        logger.info("Run MtM Start: " + startDateTime);
+
+        final String positionGenerationIdentifier;
+        if (evaluationContextRequest.getPositionGenerationIdentifier() != null)
+            positionGenerationIdentifier = evaluationContextRequest.getPositionGenerationIdentifier();
+        else
+            positionGenerationIdentifier = "MTM_" + System.currentTimeMillis();
+
+        MarkToMarketResult markToMarketResult = new MarkToMarketResult(startDateTime, positionGenerationIdentifier);
 
         EvaluationContextRequest powerProfileEvaluationContextRequest = new EvaluationContextRequest();
         powerProfileEvaluationContextRequest.setQueryText("default");
@@ -48,19 +54,28 @@ public class MarkToMarketAdapterBean extends BaseRestAdapterBean implements Mark
 
         powerProfileEvaluationContextRequest.setPositionGenerationIdentifier(positionGenerationIdentifier);
 
+        logger.debug("Generate PowerProfile Positions: " + LocalDateTime.now().toString());
         powerProfilePositionRestAdapter.generatePositions(powerProfileEvaluationContextRequest);
 
+
         evaluationContextRequest.setPositionGenerationIdentifier(positionGenerationIdentifier);
+        logger.debug("Generate Deal Positions: " + LocalDateTime.now().toString());
         dealPositionRestAdapter.generatePositions(evaluationContextRequest);
 
+        logger.debug("Value Risk Factors: " + LocalDateTime.now().toString());
         priceRiskFactorRestAdapter.valueRiskFactors("default");
         fxRiskFactorRestAdapter.valueRiskFactors("default");
 
+        logger.debug("Value Power Profile positions: " + LocalDateTime.now().toString());
         powerProfilePositionRestAdapter.valuePositions(powerProfileEvaluationContextRequest);
 
+        logger.debug("Value deal positions: " + LocalDateTime.now().toString());
         dealPositionRestAdapter.valuePositions(evaluationContextRequest);
 
-        logger.error("Run MtM End: " + LocalDateTime.now().toString());
+        LocalDateTime endDateTime = LocalDateTime.now();
+        logger.info("Run MtM End: " + endDateTime);
+
+        markToMarketResult.computeElapsedTime(endDateTime);
 
         return markToMarketResult;
     }
