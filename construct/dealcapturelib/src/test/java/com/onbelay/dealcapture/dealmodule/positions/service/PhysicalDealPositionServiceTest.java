@@ -1,6 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
-import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
+import com.onbelay.dealcapture.dealmodule.deal.service.PhysicalDealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.repository.DealPositionRepository;
@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DealPositionServiceTest extends DealServiceTestCase {
+public class PhysicalDealPositionServiceTest extends PhysicalDealServiceTestCase {
     private static final Logger logger = LogManager.getLogger();
 
 

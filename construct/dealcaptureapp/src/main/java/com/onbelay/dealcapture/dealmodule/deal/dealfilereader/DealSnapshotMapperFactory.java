@@ -13,33 +13,27 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dealcapture.dealmodule.deal.model;
+package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class CreateDealFactory {
-
-
-	private static Map<DealTypeCode, Supplier<BaseDeal>> factoryMap = new HashMap<>();
-
+public class DealSnapshotMapperFactory {
+	
+	private static Map<DealTypeCode, Supplier<BaseDealSnapshotMapper>> mappersMap = new HashMap<DealTypeCode, Supplier<BaseDealSnapshotMapper>>();
+	
 	static {
-
-		factoryMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDeal::new);
-		factoryMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDeal::new);
+		
+		mappersMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDealSnapshotMapper::new);
+		mappersMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDealSnapshotMapper::new);
 
 	}
 
-
-	public static BaseDeal createDealFromSnapshot(BaseDealSnapshot snapshot) {
-		BaseDeal deal =  factoryMap.get(snapshot.getDealType()).get();
-		deal.createWith(snapshot);
-		return deal;
+	public static BaseDealSnapshotMapper newMapper(DealTypeCode dealType) {
+		return mappersMap.get(dealType).get();
 	}
 
 }

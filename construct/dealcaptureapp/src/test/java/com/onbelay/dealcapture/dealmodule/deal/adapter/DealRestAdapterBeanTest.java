@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -172,7 +171,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
     @Test
     public void createIndexPhysicalDealUsingCSV() throws IOException {
 
-        InputStream inputStream = getClass().getResourceAsStream("/dealupload.csv");
+        InputStream inputStream = getClass().getResourceAsStream("/physicaldealfixedupload.csv");
 
         TransactionResult result = dealRestAdapter.saveFile("test.csv", inputStream.readAllBytes());
         flush();

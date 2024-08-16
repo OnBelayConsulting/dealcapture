@@ -55,7 +55,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WithMockUser(username="test")
-public class DealRestControllerTest extends DealCaptureAppSpringTestCase {
+public class
+DealRestControllerTest extends DealCaptureAppSpringTestCase {
 	private static final Logger logger = LogManager.getLogger(DealRestControllerTest.class);
 	
 	@Autowired

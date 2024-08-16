@@ -9,7 +9,7 @@
  * in FAR 52.227-19, Commercial Computer Software
  * Restricted Rights (June 1987).
  */
-package com.onbelay.dealcapture.dealmodule.deal.component;
+package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;

@@ -15,16 +15,22 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
+import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
+import com.onbelay.dealcapture.pricing.model.PricingLocation;
+import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.SpringVersion;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,11 +47,30 @@ public class DealTest extends DealCaptureSpringTestCase {
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
 
+	private PricingLocation location;
+	private PriceIndex firstIndex;
+	private PriceIndex secondIndex;
+
 	@Override
 	public void setUp() {
 		super.setUp();
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
+
+		location = PricingLocationFixture.createPricingLocation("west");
+		firstIndex = PriceIndexFixture.createPriceIndex(
+				"first",
+				FrequencyCode.MONTHLY,
+				CurrencyCode.USD,
+				UnitOfMeasureCode.GJ,
+				location);
+		secondIndex = PriceIndexFixture.createPriceIndex(
+				"second",
+				FrequencyCode.MONTHLY,
+				CurrencyCode.USD,
+				UnitOfMeasureCode.GJ,
+				location);
+
 		flush();
 	}
 
@@ -104,6 +129,30 @@ public class DealTest extends DealCaptureSpringTestCase {
 		assertEquals(0, BigDecimal.valueOf(1.55).compareTo(created.getDetail().getFixedPriceValue()));
 		assertEquals(UnitOfMeasureCode.MMBTU, created.getDetail().getFixedPriceUnitOfMeasure());
 		assertEquals(CurrencyCode.CAD, created.getDetail().getFixedPriceCurrencyCode());
+	}
+
+	@Test
+	public void createFixed4Float() {
+		FinancialSwapDeal swapDeal = FinancialSwapDealFixture.createFixed4FloatSwapDeal(
+				CommodityCode.NATGAS,
+				"ddd",
+				companyRole,
+				counterpartyRole,
+				firstIndex,
+				LocalDate.of(2019, 1, 1),
+				LocalDate.of(2019, 1, 31),
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				CurrencyCode.CAD,
+				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+
+		flush();
+		swapDeal = (FinancialSwapDeal) dealRepository.load(swapDeal.generateEntityId());
+		assertEquals(CommodityCode.NATGAS, swapDeal.getDealDetail().getCommodityCode());
+		assertEquals(companyRole.getId(), swapDeal.getCompanyRole().getId());
+		assertEquals(counterpartyRole.getId(), swapDeal.getCounterpartyRole().getId());
+		assertEquals(firstIndex.getId(), swapDeal.getReceivesPriceIndex().getId());
+		assertEquals(new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ), swapDeal.getDetail().getFixedPrice());
 	}
 
 	private void setDealAttributes(

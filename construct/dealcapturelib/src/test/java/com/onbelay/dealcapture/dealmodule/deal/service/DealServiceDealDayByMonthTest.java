@@ -30,7 +30,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class DealServiceDealDayByMonthTest extends DealServiceTestCase {
+public class DealServiceDealDayByMonthTest extends PhysicalDealServiceTestCase {
 
 	private PhysicalDeal physicalDeal;
 

@@ -4,7 +4,7 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
+import com.onbelay.dealcapture.dealmodule.deal.service.PhysicalDealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
@@ -24,7 +24,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ValuePositionsServiceTest extends DealServiceTestCase {
+public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
     @Autowired
     private DealPositionService dealPositionService;

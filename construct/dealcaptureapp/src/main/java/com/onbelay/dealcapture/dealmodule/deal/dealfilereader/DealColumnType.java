@@ -9,7 +9,7 @@
  * in FAR 52.227-19, Commercial Computer Software
  * Restricted Rights (June 1987).
  */
-package com.onbelay.dealcapture.dealmodule.deal.component;
+package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
 
 import java.util.EnumSet;
@@ -22,6 +22,7 @@ import java.util.Map;
  *
  */
 public enum DealColumnType {
+	DEAL_TYPE ("DEAL_TYPE", ColumnType.STRING),
 	COMPANY_NAME ("COMPANY", ColumnType.STRING),
 	COUNTERPARTY_NAME ("COUNTERPARTY", ColumnType.STRING),
 	COMMODITY ("Commodity", ColumnType.STRING),
@@ -35,11 +36,16 @@ public enum DealColumnType {
 	VOL_FREQUENCY ("VOL_FREQUENCY", ColumnType.STRING),
 	REP_CURRENCY ("REP_CURRENCY", ColumnType.STRING),
 	SETTLE_CURRENCY ("SETTLE_CURRENCY", ColumnType.STRING),
+	DEAL_INDEX_NAME ("DEAL_INDEX", ColumnType.STRING),
 	DEAL_PRICE ("DEAL_PRICE", ColumnType.BIG_DECIMAL),
 	DEAL_PRICE_UOM ("DEAL_PRICE_UOM", ColumnType.STRING),
 	DEAL_PRICE_CURRENCY ("DEAL_PRICE_CURRENCY", ColumnType.STRING),
 	MARKET_INDEX_NAME ("MARKET_INDEX", ColumnType.STRING),
-	
+	PAYS_INDEX_NAME ("PAYS_INDEX", ColumnType.STRING),
+	RECEIVES_INDEX_NAME ("RECEIVES_INDEX", ColumnType.STRING),
+	PAYS_PRICE ("PAYS_PRICE", ColumnType.BIG_DECIMAL),
+	PAYS_PRICE_UOM ("PAYS_PRICE_UOM", ColumnType.STRING),
+	PAYS_PRICE_CURRENCY ("PAYS_PRICE_CURRENCY", ColumnType.STRING),
 	;
 
 	private final String code;

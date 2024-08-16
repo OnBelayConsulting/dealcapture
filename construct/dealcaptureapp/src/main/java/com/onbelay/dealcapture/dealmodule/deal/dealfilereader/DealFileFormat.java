@@ -1,13 +1,14 @@
-package com.onbelay.dealcapture.dealmodule.deal.component;
+package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DealFileFormat implements SourceFileFormat {
+public abstract class DealFileFormat implements SourceFileFormat {
 
     private List<DealColumnType> columns = new ArrayList<>();
 
     public DealFileFormat() {
+        addColumn(DealColumnType.DEAL_TYPE);
         addColumn(DealColumnType.COMPANY_NAME);
         addColumn(DealColumnType.COUNTERPARTY_NAME);
         addColumn(DealColumnType.COMMODITY);
@@ -21,17 +22,13 @@ public class DealFileFormat implements SourceFileFormat {
         addColumn(DealColumnType.VOL_FREQUENCY);
         addColumn(DealColumnType.REP_CURRENCY);
         addColumn(DealColumnType.SETTLE_CURRENCY);
-        addColumn(DealColumnType.DEAL_PRICE);
-        addColumn(DealColumnType.DEAL_PRICE_UOM);
-        addColumn(DealColumnType.DEAL_PRICE_CURRENCY);
-        addColumn(DealColumnType.MARKET_INDEX_NAME);
-
     }
 
-    private void addColumn(DealColumnType columnType) {
+    protected void addColumn(DealColumnType columnType) {
         columns.add(columnType);
     }
 
+    @Override
     public DealColumnType get(int index) {
         return columns.get(index);
     }

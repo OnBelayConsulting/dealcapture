@@ -93,7 +93,6 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 			
 			if (snapshot.getEntityState() == EntityState.NEW) {
 				 deal = CreateDealFactory.createDealFromSnapshot(snapshot);
-				 deal.createWith(snapshot);
 			} else {
 				 deal = dealRepository.load(snapshot.getEntityId());
 				 if (deal == null) {
@@ -153,7 +152,6 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 		
 		if (snapshot.getEntityState() == EntityState.NEW) {
 			 deal = CreateDealFactory.createDealFromSnapshot(snapshot);
-			 deal.createWith(snapshot);
 		} else {
 			 deal = dealRepository.load(snapshot.getEntityId());
 			 if (deal == null) 

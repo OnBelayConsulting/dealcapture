@@ -3,15 +3,12 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.service.DealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
-import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
@@ -21,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

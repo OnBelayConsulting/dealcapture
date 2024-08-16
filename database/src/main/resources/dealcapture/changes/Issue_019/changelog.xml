@@ -1,0 +1,16 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/changes/ISSUE_019.xml"
+>
+    <!--
+        Point to other change log files that contain the change(s)
+        This gives us flexibility to add future changes without changing
+        the MD5 checksum for changes that have already run.
+    -->
+
+    <include file="ADD_FINANCIAL_SWAP_DEAL.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>
