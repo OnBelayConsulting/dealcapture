@@ -20,6 +20,7 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 
 import java.time.LocalDateTime;
@@ -63,7 +64,10 @@ public interface DealRepository {
 	public List<Integer> findDealIds(DefinedQuery definedQuery);
 
 	public DealSummary getDealSummary(EntityId id);
-	/**
+
+    List<FinancialSwapDealSummary> findFinancialDealSummariesByIds(List<Integer> physicalDealIds);
+
+    /**
 	 * Find deals using a defined query
 	 * @param query
 	 * @return

@@ -78,39 +78,6 @@ public class PriceIndexRepositoryBean extends BaseRepository<PriceIndex> impleme
 	}
 
 	@Override
-	public List<PriceIndex> findByDealIds(List<Integer> dealIds) {
-		Set<Integer> priceIndexIdSet = new HashSet<>();
-
-		if (dealIds.size() < 2000) {
-			List<EntityIdCollection> idLists = (List<EntityIdCollection>) executeReportQuery(
-					FIND_BY_DEAL_IDS,
-					"dealIds",
-					dealIds);
-			priceIndexIdSet.addAll(
-					idLists
-							.stream()
-							.flatMap( c-> c.getList().stream())
-							.collect(Collectors.toList()));
-		} else {
-			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
-			while (subLister.moreElements()) {
-				List<Integer> subList = subLister.nextList();
-				List<EntityIdCollection> idLists = (List<EntityIdCollection>) executeReportQuery(
-						FIND_BY_DEAL_IDS,
-						"dealIds",
-						subList);
-				priceIndexIdSet.addAll(
-						idLists
-								.stream()
-								.flatMap( c-> c.getList().stream())
-								.collect(Collectors.toList()));
-			}
-		}
-		List<Integer> ids =  priceIndexIdSet.stream().toList();
-		return fetchByIds(new QuerySelectedPage(ids));
-	}
-
-	@Override
 	public PriceIndex load(EntityId entityId) {
 
 		if (entityId == null)

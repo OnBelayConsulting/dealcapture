@@ -15,6 +15,184 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
-public class FinancialSwapDeal {
+import com.onbelay.core.entity.model.AuditAbstractEntity;
+import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
+import jakarta.persistence.*;
 
+/**
+ * A financial swap deal consists of a pays leg and a receives leg. The buy and sell on the deal indicates
+ * who is paying and who is selling.
+ *
+ * A company that buys a fixed for float financial swap will pay a fixed price for a float index.
+ * A company that sells a fixed  for float financial swap will receive the fixed  and pay the float index.
+ *
+ * Subtypes of financial swaps are as follows:
+ * <:ol>
+ * <:li>fixed for float = pays fixed receives index
+ * <:li>fixed for power profile - pays fixed and receives power profile indices.
+ * <:li>float for float = pays float receives float
+ * <:li>float for power profile - pays float and receives power profile indices.
+ * <:li>float plus fixed for float =  pays float plus a positive or negative fixed value for a float.
+ * <:li>float plus for power profile - pays float and fixed prices and receives power profile indices.
+ * </:ol>
+ *
+ *
+ */
+@Entity
+@Table (name = "FINANCIAL_SWAP_DEAL")
+@NamedQueries({
+        @NamedQuery(
+                name = DealRepositoryBean.FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES,
+                query =  "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary( "
+                        + "          deal.id, "
+                        + "          powerProfile.id, "
+                        + "          deal.dealDetail.ticketNo, "
+                        + "          deal.dealDetail.startDate,"
+                        + "          deal.dealDetail.endDate,"
+                        + "          deal.dealTypeValue, "
+                        + "          deal.dealDetail.buySellCodeValue,"
+                        +  "         deal.dealDetail.reportingCurrencyCodeValue,"
+                        +  "		 deal.dealDetail.volumeQuantity,"
+                        +  "         deal.dealDetail.volumeUnitOfMeasureCodeValue,"
+                        +  "         deal.dealDetail.volumeFrequencyCodeValue,"
+                        +  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"
+                        +  "         deal.detail.paysValuationCodeValue,"
+                        +  "         paysIndex.id,"
+                        +  "         deal.detail.fixedPriceValue,"
+                        +  "         deal.detail.fixedPriceUnitOfMeasureCodeValue,"
+                        +  "         deal.detail.fixedPriceCurrencyCodeValue,"
+                        +  "         deal.detail.receivesValuationCodeValue,"
+                        +  "         receivesIndex.id"
+                        +  "         ) "
+                        + "FROM FinancialSwapDeal deal "
+                        + "LEFT OUTER JOIN deal.powerProfile as powerProfile " +
+                        "  LEFT OUTER JOIN deal.paysPriceIndex as paysIndex " +
+                        "  LEFT OUTER JOIN deal.receivesPriceIndex as receivesIndex " +
+                        "  WHERE deal.id in (:dealIds) " +
+                        "  ORDER BY deal.dealDetail.ticketNo DESC")
+})
+public class FinancialSwapDeal extends BaseDeal {
+
+    private PriceIndex paysPriceIndex;
+
+    private PriceIndex receivesPriceIndex;
+
+    private FinancialSwapDealDetail detail = new FinancialSwapDealDetail();
+
+
+    public FinancialSwapDeal() {
+        super(DealTypeCode.FINANCIAL_SWAP);
+    }
+
+
+    public static FinancialSwapDeal create(FinancialSwapDealSnapshot snapshot) {
+        FinancialSwapDeal deal = new FinancialSwapDeal();
+        deal.createWith(snapshot);
+        return deal;
+    }
+
+
+    @Override
+    @Transient
+    public String getEntityName() {
+        return "FinancialSwap";
+    }
+
+
+    @Embedded
+    public FinancialSwapDealDetail getDetail() {
+        return detail;
+    }
+
+    public void setDetail(FinancialSwapDealDetail detail) {
+        this.detail = detail;
+    }
+
+    public void createWith(BaseDealSnapshot dealSnapshot) {
+        super.createWith(dealSnapshot);
+        FinancialSwapDealSnapshot snapshot = (FinancialSwapDealSnapshot) dealSnapshot;
+        detail.copyFrom(snapshot.getDetail());
+        updateRelationships(snapshot);
+        save();
+    }
+
+    public void updateWith(BaseDealSnapshot dealSnapshot) {
+        super.updateWith(dealSnapshot);
+        FinancialSwapDealSnapshot snapshot = (FinancialSwapDealSnapshot) dealSnapshot;
+        detail.copyFrom(snapshot.getDetail());
+        updateRelationships(snapshot);
+        update();
+    }
+
+    protected void updateRelationships(BaseDealSnapshot baseSnapshot) {
+        super.updateRelationships(baseSnapshot);
+
+        FinancialSwapDealSnapshot snapshot = (FinancialSwapDealSnapshot) baseSnapshot;
+
+        if (snapshot.getPaysPriceIndexId() != null)
+            this.paysPriceIndex = getPriceIndexRepository().load(snapshot.getPaysPriceIndexId());
+
+        if (snapshot.getReceivesPriceIndexId() != null)
+            this.receivesPriceIndex = getPriceIndexRepository().load(snapshot.getReceivesPriceIndexId());
+
+    }
+
+    @Override
+    protected void validate() throws OBValidationException {
+        super.validate();
+        detail.validate();
+        if (detail.getPaysValuationCode() == ValuationCode.FIXED) {
+            if (detail.isFixedPriceMissing())
+                throw new OBValidationException(DealErrorCode.MISSING_FIXED_PRICE_VALUE.getCode());
+        }
+
+        if (detail.getPaysValuationCode() == ValuationCode.INDEX) {
+            if (paysPriceIndex == null)
+                throw new OBValidationException(DealErrorCode.MISSING_PAYS_PRICE.getCode());
+        }
+
+        if (detail.getRecievesValuationCode() == ValuationCode.INDEX)
+            if (receivesPriceIndex == null)
+                throw new OBValidationException(DealErrorCode.MISSING_RECEIVES_PRICE.getCode());
+
+
+        if (detail.getRecievesValuationCode() == ValuationCode.POWER_PROFILE)
+            if (getPowerProfile() == null)
+                throw new OBValidationException(DealErrorCode.MISSING_MARKET_POWER_PROFILE.getCode());
+
+
+    }
+
+    @ManyToOne()
+    @JoinColumn(name = "PAYS_INDEX_ID")
+    public PriceIndex getPaysPriceIndex() {
+        return paysPriceIndex;
+    }
+
+    public void setPaysPriceIndex(PriceIndex paysPriceIndex) {
+        this.paysPriceIndex = paysPriceIndex;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "RECEIVES_INDEX_ID")
+    public PriceIndex getReceivesPriceIndex() {
+        return receivesPriceIndex;
+    }
+
+    public void setReceivesPriceIndex(PriceIndex receivesPriceIndex) {
+        this.receivesPriceIndex = receivesPriceIndex;
+    }
+
+    @Override
+    protected AuditAbstractEntity createHistory() {
+        return FinancialSwapDealAudit.create(this);
+    }
 }

@@ -49,6 +49,11 @@ public enum DealErrorCode {
     INVALID_FIXED_PRICE_VALUE  		 ("DC_DL-E0320", "Error: Invalid fixed price value. Valuation is Index."),
     MISSING_FIXED_PRICE_VALUE  		 ("DC_DL-E0321", "Error: Missing fixed price value, Valuation is Index plus"),
 
+    MISSING_PAYS_PRICE       		 ("DC_DL-E0400", "Error: Missing pays price leg."),
+    MISSING_RECEIVES_PRICE     		 ("DC_DL-E0401", "Error: Missing receives price leg."),
+    INVALID_RECEIVES_VALUATION 		 ("DC_DL-E0402", "Error: Invalid receives valuation: FLOAT OR POWER PROFILE."),
+    INVALID_PAYS_VALUATION   		 ("DC_DL-E0403", "Error: Invalid pays valuation: FLOAT, FLOAT_PLUS OR FIXED."),
+
 
     MISSING_MARKET_INDEX      		 ("DC_DL-E0501", "Error: Missing market index"),
     MISSING_MARKET_POWER_PROFILE	 ("DC_DL-E0502", "Error: Missing market Power Profile."),

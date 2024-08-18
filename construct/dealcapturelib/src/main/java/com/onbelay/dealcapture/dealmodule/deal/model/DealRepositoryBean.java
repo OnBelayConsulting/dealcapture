@@ -24,6 +24,7 @@ import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 	public static final String FIND_DEAL_BY_TICKET_NO = "DealRepository.FIND_DEAL_BY_TICKET_NO";
 	public static final String GET_DEAL_SUMMARY = "DealRepository.GET_DEAL_SUMMARY";
     public static final String FETCH_PHYSICAL_DEAL_SUMMARIES = "DealRepository.FETCH_PHYSICAL_DEAL_SUMMARIES" ;
+	public static final String FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES = "DealRepository.FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES" ;
 
     private static final String UPDATE_DEAL_POSITION_GENERATION_STATUS
 			= "UPDATE BaseDeal  " +
@@ -171,6 +173,31 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 			return summaries;
 		}
 	}
+
+
+	@Override
+	public List<FinancialSwapDealSummary> findFinancialDealSummariesByIds(List<Integer> swapDealIds) {
+
+		if (swapDealIds.size() < 2000) {
+			return (List<FinancialSwapDealSummary>) executeReportQuery(
+					FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES,
+					"dealIds",
+					swapDealIds);
+		} else {
+			SubLister<Integer> subLister = new SubLister<>(swapDealIds, 2000);
+			ArrayList<FinancialSwapDealSummary> summaries = new ArrayList<>();
+			while (subLister.moreElements()) {
+				summaries.addAll(
+						(  (List<FinancialSwapDealSummary>)executeReportQuery(
+								FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES,
+								"dealIds",
+								subLister.nextList())));
+			}
+			return summaries;
+		}
+	}
+
+
 
 	/*
 	 * Defined in bean only for testing.

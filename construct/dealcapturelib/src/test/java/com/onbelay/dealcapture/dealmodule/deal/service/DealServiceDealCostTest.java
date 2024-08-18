@@ -32,7 +32,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DealServiceDealCostTest extends DealServiceTestCase {
+public class DealServiceDealCostTest extends PhysicalDealServiceTestCase {
 
 	private PhysicalDeal physicalDeal;
 

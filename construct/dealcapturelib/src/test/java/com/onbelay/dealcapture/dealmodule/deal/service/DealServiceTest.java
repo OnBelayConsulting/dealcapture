@@ -16,8 +16,13 @@
 package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
@@ -25,18 +30,22 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
+import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import com.onbelay.shared.enums.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DealServiceTest extends DealServiceTestCase {
+public class DealServiceTest extends PhysicalDealServiceTestCase {
 
 
 	@Override
@@ -46,7 +55,29 @@ public class DealServiceTest extends DealServiceTestCase {
 	}
 
 	@Test
-	public void testUpdatePhysicalDeal() {
+	// TicketNo is defined as an alternative unique business key for deal
+	public void findByTicketNo() {
+		EntityId entityId = new EntityId(fixedPriceBuyDeal.getDealDetail().getTicketNo());
+		BaseDealSnapshot deal = dealService.load(entityId);
+		assertNotNull(deal);
+	}
+
+	@Test
+	public void findByContainsTicketNo() {
+		DefinedQuery definedQuery = new DefinedQuery("BaseDeal");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression(
+						"ticketNo",
+						ExpressionOperator.LIKE,
+						"indexSell%"));
+		QuerySelectedPage selectedPage = dealService.findDealIds(definedQuery);
+		assertEquals(1, selectedPage.getIds().size());
+		List<BaseDealSnapshot> snapshots = dealService.findByIds(selectedPage);
+		assertEquals(1, snapshots.size());
+	}
+
+	@Test
+	public void updateMultipleDeals() {
 		PhysicalDeal physicalDeal = DealFixture.createSamplePhysicalDeal(
 				CommodityCode.CRUDE,
 				"myDeal", 
@@ -80,36 +111,28 @@ public class DealServiceTest extends DealServiceTestCase {
 	}
 
 	@Test
-	public void fetchDealSummariesFixedPriceDeal() {
+	public void createMultipleDeals() {
+		List<BaseDealSnapshot> snapshots = new ArrayList<>();
 
-		List<PhysicalDealSummary> summaries = dealService.findPhysicalDealSummariesByIds(List.of(fixedPriceSellDeal.getId()));
-		assertEquals(1, summaries.size());
-		PhysicalDealSummary summary = summaries.get(0);
 
-		assertNotNull(summary.getDealId());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getBuySell(), summary.getBuySellCode());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getTicketNo(), summary.getTicketNo());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), summary.getStartDate());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getEndDate(), summary.getEndDate());
-		assertEquals(0, fixedPriceSellDeal.getDealDetail().getVolumeQuantity().compareTo(summary.getVolumeQuantity()));
+		Price paysPrice = new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ);
 
-		assertEquals(DealTypeCode.PHYSICAL_DEAL, summary.getDealTypeCode());
-		assertEquals(CurrencyCode.CAD, summary.getSettlementCurrencyCode());
-		assertEquals(CurrencyCode.CAD, summary.getReportingCurrencyCode());
-		assertEquals(UnitOfMeasureCode.GJ, summary.getVolumeUnitOfMeasureCode());
+		FinancialSwapDealSnapshot swapDealSnapshot = FinancialSwapDealFixture.createFixedForFloatSwapDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"mine_1",
+				companyRole,
+				counterpartyRole,
+				dealPriceIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				paysPrice);
 
-		assertEquals(ValuationCode.FIXED, summary.getDealPriceValuationCode());
-		assertEquals(0, BigDecimal.ONE.compareTo(summary.getFixedPriceValue()));
-		assertEquals(UnitOfMeasureCode.GJ, summary.getFixedPriceUnitOfMeasureCode());
-		assertEquals(CurrencyCode.CAD, summary.getFixedPriceCurrencyCode());
-		assertNull(summary.getDealPriceIndexId());
-
-		assertEquals(ValuationCode.INDEX, summary.getMarketValuationCode());
-		assertEquals(marketIndex.getId(), summary.getMarketIndexId());
-	}
-
-	@Test
-	public void testCreateFixedPriceMarketIndexPhysicalDeal() {
+		snapshots.add(swapDealSnapshot);
 
 		PhysicalDealSnapshot dealSnapshot = DealFixture.createPhysicalDealSnapshot(
 				CommodityCode.CRUDE,
@@ -118,7 +141,7 @@ public class DealServiceTest extends DealServiceTestCase {
 				endDate,
 				DealStatusCode.VERIFIED,
 				CurrencyCode.CAD,
-				"mydeal",
+				"mine_2",
 				companyRole, 
 				counterpartyRole,
 				marketIndex,
@@ -128,99 +151,22 @@ public class DealServiceTest extends DealServiceTestCase {
 						BigDecimal.ONE,
 						CurrencyCode.USD,
 						UnitOfMeasureCode.GJ));
-		
-		TransactionResult result  = dealService.save(dealSnapshot);
+		snapshots.add(dealSnapshot);
+
+		TransactionResult result  = dealService.save(snapshots);
 		flush();
 		clearCache();
-		PhysicalDeal physicalDeal = (PhysicalDeal) dealRepository.load(result.getEntityId());
-		assertEquals(companyRole.getId(), physicalDeal.getCompanyRole().getId());
-		assertEquals(counterpartyRole.getId(), physicalDeal.getCounterpartyRole().getId());
-		assertEquals(startDate, physicalDeal.getDealDetail().getStartDate());
-		assertEquals(endDate, physicalDeal.getDealDetail().getEndDate());
-		assertEquals(BuySellCode.SELL, physicalDeal.getDealDetail().getBuySell());
-		assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getReportingCurrencyCode());
-		assertEquals(DealStatusCode.VERIFIED, physicalDeal.getDealDetail().getDealStatus());
-		assertEquals(marketIndex.getId(), physicalDeal.getMarketPriceIndex().getId());
-	}
+		DefinedQuery definedQuery = new DefinedQuery("BaseDeal");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression(
+						"ticketNo",
+						ExpressionOperator.LIKE,
+						"mine_%"));
 
-	@Test
-	public void testCreateIndexPriceMarketIndexPhysicalDeal() {
-
-		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
-
-		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
-		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
-
-		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
-		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
-		dealSnapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
-		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
-		dealSnapshot.getDealDetail().setStartDate(startDate);
-		dealSnapshot.getDealDetail().setEndDate(endDate);
-		dealSnapshot.getDealDetail().setTicketNo("GHT");
-
-		dealSnapshot.setMarketPriceIndexId(marketIndex.generateEntityId());
-		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
-		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
-
-		dealSnapshot.getDealDetail().setVolume(
-				new Quantity(
-						BigDecimal.valueOf(34.78),
-						UnitOfMeasureCode.GJ));
-
-		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX);
-		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
-
-		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
-
-		TransactionResult result  = dealService.save(dealSnapshot);
-		flush();
-		clearCache();
-		PhysicalDeal physicalDeal = (PhysicalDeal) dealRepository.load(result.getEntityId());
-		assertEquals(dealPriceIndex.getId(), physicalDeal.getDealPriceIndex().getId());
-	}
-
-	@Test
-	public void testCreateIndexPhysicalDealWithFixedPriceFail() {
-
-		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
-
-		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
-		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
-		dealSnapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
-		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
-		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
-		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
-		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
-		dealSnapshot.getDealDetail().setStartDate(startDate);
-		dealSnapshot.getDealDetail().setEndDate(endDate);
-		dealSnapshot.getDealDetail().setTicketNo("GHT");
-
-		dealSnapshot.setMarketPriceIndexId(marketIndex.generateEntityId());
-
-		dealSnapshot.getDealDetail().setVolume(
-				new Quantity(
-						BigDecimal.valueOf(34.78),
-						UnitOfMeasureCode.GJ));
-		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
-		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX);
-		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
-		dealSnapshot.getDetail().setFixedPrice(
-				new Price(
-					BigDecimal.ONE,
-					CurrencyCode.USD,
-					UnitOfMeasureCode.GJ));
-
-		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
-
-		try {
-			dealService.save(dealSnapshot);
-			fail("Should have thrown exception");
-		} catch (OBValidationException e) {
-			assertEquals(DealErrorCode.INVALID_FIXED_PRICE_VALUE.getCode(), e.getErrorCode());
-			return;
-		}
-		fail("Should have thrown ob exception");
+		QuerySelectedPage selectedPage = dealService.findDealIds(definedQuery);
+		assertEquals(2, selectedPage.getIds().size());
+		List<BaseDealSnapshot> snapshots2 = dealService.findByIds(selectedPage);
+		assertEquals(2, snapshots2.size());
 	}
 
 }

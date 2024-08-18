@@ -12,7 +12,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.component;
 
 
-import com.onbelay.dealcapture.dealmodule.deal.component.ColumnType;
+import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.ColumnType;
 
 import java.util.*;
 

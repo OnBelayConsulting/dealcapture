@@ -42,8 +42,6 @@ public interface PriceIndexService {
 
 	PriceIndexSnapshot findPriceIndexByName(String indexName);
 
-	List<PriceIndexSnapshot> findActivePriceIndicesBy(List<Integer> collect);
-
 	public List<PriceIndexReport> fetchPriceIndexReports(QuerySelectedPage priceIndices);
 
 	//////////////// Price Curves /////////////////

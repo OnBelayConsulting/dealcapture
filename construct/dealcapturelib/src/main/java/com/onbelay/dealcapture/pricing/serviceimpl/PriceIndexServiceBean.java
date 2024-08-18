@@ -70,13 +70,6 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 	}
 
 	@Override
-	public List<PriceIndexSnapshot> findActivePriceIndicesBy(List<Integer> dealIds) {
-		List<PriceIndex> indices = priceIndexRepository.findByDealIds(dealIds);
-		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();
-		return assembler.assemble(indices);
-	}
-
-	@Override
 	public List<PriceIndexSnapshot> findActivePriceIndices() {
 		List<PriceIndex> indices = priceIndexRepository.findActivePriceIndices();
 		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();

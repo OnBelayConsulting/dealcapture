@@ -32,7 +32,8 @@ public class DealSnapshotAssemblerFactory {
 	static {
 		
 		assemblersMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDealAssembler::new);
-		
+		assemblersMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDealAssembler::new);
+
 	}
 
 	public static AbstractDealAssembler newAssembler(DealTypeCode dealType) {

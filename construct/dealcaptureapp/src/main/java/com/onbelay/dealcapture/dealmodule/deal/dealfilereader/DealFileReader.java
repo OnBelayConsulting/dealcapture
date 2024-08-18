@@ -1,7 +1,8 @@
-package com.onbelay.dealcapture.dealmodule.deal.component;
+package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import org.apache.commons.csv.CSVFormat;
@@ -21,8 +22,6 @@ public class DealFileReader {
 
     private ByteArrayInputStream streamIn;
 
-    private DealFileFormat dealFileFormat = new DealFileFormat();
-    
     private List<BaseDealSnapshot> dealSnapshots = new ArrayList<>();
 
     public DealFileReader(ByteArrayInputStream streamIn) {
@@ -37,13 +36,14 @@ public class DealFileReader {
             CSVParser parser = new CSVParser(
                     reader,
                     CSVFormat.EXCEL.builder()
-                        .setHeader(dealFileFormat.getAsArray())
+                            .setHeader()
                         .setSkipHeaderRecord(true)
                         .build());
 
             Iterable<CSVRecord> records = parser;
 
             for (CSVRecord record : records) {
+
                 if (record.get(0).isBlank() == false)
                     dealSnapshots.add(
                             parse(record));
@@ -60,20 +60,25 @@ public class DealFileReader {
         return dealSnapshots;
     }
 
-    private PhysicalDealSnapshot parse(CSVRecord record) {
+    private BaseDealSnapshot parse(CSVRecord record) {
 
-        PhysicalDealSnapshot snapshot = new PhysicalDealSnapshot();
-        for (int i=0; i <dealFileFormat.length(); i++) {
+        String code = record.get(0);
+        DealTypeCode dealTypeCode = DealTypeCode.lookUp(code);
+        BaseDealSnapshotMapper mapper = DealSnapshotMapperFactory.newMapper(dealTypeCode);
+        SourceFileFormat sourceFileFormat = mapper.getSourceFileFormat();;
 
-            DealColumnType type = dealFileFormat.get(i);
-            String field = record.get(type.getCode());
+        for (int i=1; i < sourceFileFormat.length(); i++) {
+
+            DealColumnType type = sourceFileFormat.get(i);
+            String field = record.get(i);
+            if (field == null || field.isEmpty())
+                continue;
             Object value = type.getColumnType().getFromCSVConverter().apply(field);
 
-            PhysicalDealSnapshotMapper.setValue(
-                snapshot,
+            mapper.setPropertyValue(
                 type,
                 value);
         }
-        return snapshot;
+        return mapper.getSnapshot();
     }
 }
