@@ -187,6 +187,49 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 	}
 
 	@Test
+	public void testCreateIndexPlusPriceMarketIndexPhysicalDeal() {
+
+		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
+
+		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
+		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+
+		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);
+		dealSnapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.USD);
+		dealSnapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		dealSnapshot.getDealDetail().setBuySell(BuySellCode.SELL);
+		dealSnapshot.getDealDetail().setStartDate(startDate);
+		dealSnapshot.getDealDetail().setEndDate(endDate);
+		dealSnapshot.getDealDetail().setTicketNo("GHT");
+
+		dealSnapshot.setMarketPriceIndexId(marketIndex.generateEntityId());
+		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
+		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
+
+		dealSnapshot.getDealDetail().setVolume(
+				new Quantity(
+						BigDecimal.valueOf(34.78),
+						UnitOfMeasureCode.GJ));
+
+		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX_PLUS);
+
+		dealSnapshot.getDetail().setFixedPrice( new Price(
+				BigDecimal.ONE,
+				CurrencyCode.USD,
+				UnitOfMeasureCode.GJ));
+
+		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
+
+		dealSnapshot.getDetail().setMarketValuationCode(ValuationCode.INDEX);
+
+		TransactionResult result  = dealService.save(dealSnapshot);
+		flush();
+		clearCache();
+		PhysicalDeal physicalDeal = (PhysicalDeal) dealRepository.load(result.getEntityId());
+		assertEquals(dealPriceIndex.getId(), physicalDeal.getDealPriceIndex().getId());
+	}
+
+	@Test
 	public void testCreateIndexPhysicalDealWithFixedPriceFail() {
 
 		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();

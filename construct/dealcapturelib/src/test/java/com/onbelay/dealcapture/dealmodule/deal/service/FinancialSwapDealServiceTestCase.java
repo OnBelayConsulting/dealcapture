@@ -17,9 +17,7 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
-import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDeal;
-import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealFixture;
+import com.onbelay.dealcapture.dealmodule.deal.model.*;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
@@ -45,10 +43,49 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 	protected FinancialSwapDeal float4FloatDeal;
 	protected FinancialSwapDeal float4FloatPlusDeal;
 
+	protected PriceIndex settledHourlyIndex;
+	protected PriceIndex onPeakDailyIndex;
+	protected PriceIndex offPeakDailyIndex;
+
+	protected PowerProfile powerProfile;
+
+
+
 
 	@Override
 	public void setUp() {
 		super.setUp();
+
+
+		settledHourlyIndex = PriceIndexFixture.createPriceIndex(
+				"SETTLE",
+				FrequencyCode.HOURLY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
+				pricingLocation);
+
+		onPeakDailyIndex = PriceIndexFixture.createPriceIndex(
+				"ON PEAK",
+				FrequencyCode.DAILY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
+				pricingLocation);
+
+		offPeakDailyIndex = PriceIndexFixture.createPriceIndex(
+				"OFF PEAK",
+				FrequencyCode.DAILY,
+				CurrencyCode.CAD,
+				UnitOfMeasureCode.GJ,
+				pricingLocation);
+
+
+		powerProfile = PowerProfileFixture.createPowerProfileAllDaysAllHours(
+				"24By7",
+				settledHourlyIndex,
+				offPeakDailyIndex,
+				onPeakDailyIndex);
+
+
 
 		receivesIndex = PriceIndexFixture.createPriceIndex(
 				"Receives",

@@ -23,6 +23,7 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -30,11 +31,21 @@ import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCase {
 
+
+	@Test
+	public void fetchSwapDealSummaries() {
+
+		List<FinancialSwapDealSummary> summaries = dealService.findFinancialSwapDealSummariesByIds(List.of(fixed4FloatDeal.getId()));
+		assertEquals(1, summaries.size());
+		FinancialSwapDealSummary summary = summaries.get(0);
+		assertNull(summary.getPaysIndexId());
+	}
 
 	@Test
 	public void createFixed4FloatFinancialSwapDeal() {
@@ -73,6 +84,87 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 		assertEquals(ValuationCode.FIXED, swapDeal.getDetail().getPaysValuationCode());
 		assertEquals(paysPrice, swapDeal.getDetail().getFixedPrice());
 	}
+
+
+	@Test
+	public void createFloatPlus4FloatFinancialSwapDeal() {
+
+		Price paysPrice = new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ);
+
+		FinancialSwapDealSnapshot swapDealSnapshot = FinancialSwapDealFixture.createFloat4FloatPlusSwapDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"ghkk",
+				companyRole,
+				counterpartyRole,
+				paysIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				receivesIndex,
+				paysPrice);
+
+		TransactionResult result  = dealService.save(swapDealSnapshot);
+		flush();
+		clearCache();
+		FinancialSwapDeal swapDeal = (FinancialSwapDeal) dealRepository.load(result.getEntityId());
+		assertEquals(companyRole.getId(), swapDeal.getCompanyRole().getId());
+		assertEquals(counterpartyRole.getId(), swapDeal.getCounterpartyRole().getId());
+		assertEquals(startDate, swapDeal.getDealDetail().getStartDate());
+		assertEquals(endDate, swapDeal.getDealDetail().getEndDate());
+		assertEquals(BuySellCode.BUY, swapDeal.getDealDetail().getBuySell());
+		assertEquals(CurrencyCode.CAD, swapDeal.getDealDetail().getReportingCurrencyCode());
+		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
+		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
+		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getRecievesValuationCode());
+		assertEquals(receivesIndex.getId(), swapDeal.getReceivesPriceIndex().getId());
+		assertEquals(ValuationCode.INDEX_PLUS, swapDeal.getDetail().getPaysValuationCode());
+		assertEquals(paysPrice, swapDeal.getDetail().getFixedPrice());
+	}
+
+
+	@Test
+	public void createFixed4PowerProfileFinancialSwapDeal() {
+
+		Price paysPrice = new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ);
+
+		FinancialSwapDealSnapshot swapDealSnapshot = FinancialSwapDealFixture.createWithPowerProfileFinancialSwapDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"ghkk",
+				companyRole,
+				counterpartyRole,
+				powerProfile,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				paysPrice);
+
+		TransactionResult result  = dealService.save(swapDealSnapshot);
+		flush();
+		clearCache();
+		FinancialSwapDeal swapDeal = (FinancialSwapDeal) dealRepository.load(result.getEntityId());
+		assertEquals(companyRole.getId(), swapDeal.getCompanyRole().getId());
+		assertEquals(counterpartyRole.getId(), swapDeal.getCounterpartyRole().getId());
+		assertEquals(startDate, swapDeal.getDealDetail().getStartDate());
+		assertEquals(endDate, swapDeal.getDealDetail().getEndDate());
+		assertEquals(BuySellCode.BUY, swapDeal.getDealDetail().getBuySell());
+		assertEquals(CurrencyCode.CAD, swapDeal.getDealDetail().getReportingCurrencyCode());
+		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
+		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
+		assertEquals(ValuationCode.FIXED, swapDeal.getDetail().getPaysValuationCode());
+		assertEquals(paysPrice, swapDeal.getDetail().getFixedPrice());
+		assertEquals(ValuationCode.POWER_PROFILE, swapDeal.getDetail().getRecievesValuationCode());
+		assertEquals(powerProfile.getId(), swapDeal.getPowerProfile().getId());
+
+	}
+
 
 
 	@Test

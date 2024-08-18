@@ -93,6 +93,8 @@ public interface DealService {
 
 	List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds);
 
+	List<FinancialSwapDealSummary> findFinancialSwapDealSummariesByIds(List<Integer> swapDealIds);
+
     void updateDealPositionStatusToComplete(
 			List<Integer> dealIds,
 			LocalDateTime observedDateTime);

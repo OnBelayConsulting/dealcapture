@@ -200,10 +200,10 @@ public class FinancialSwapDealFixture {
 		dealSnapshot.getDealDetail().setVolumeQuantity(volumeQuantity);
 		dealSnapshot.getDealDetail().setVolumeUnitOfMeasure(volumeUnitOfMeasureCode);
 
-		dealSnapshot.getDetail().setPaysValuationCode(ValuationCode.INDEX);
+		dealSnapshot.getDetail().setPaysValuationCode(ValuationCode.INDEX_PLUS);
 		dealSnapshot.setPaysPriceIndexId(paysIndex.generateEntityId());
 
-		dealSnapshot.getDetail().setReceivesValuationCode(ValuationCode.INDEX_PLUS);
+		dealSnapshot.getDetail().setReceivesValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setReceivesPriceIndexId(receivesIndex.generateEntityId());
 		dealSnapshot.getDetail().setFixedPrice(receivesFixedPrice);
 

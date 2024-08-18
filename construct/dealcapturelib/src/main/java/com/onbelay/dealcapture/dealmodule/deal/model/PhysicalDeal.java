@@ -27,6 +27,10 @@ import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
 import jakarta.persistence.*;
 
+/**
+ * A physical deal buys and sells the commodity with either a fixed price, float price or a float plus fixed price.
+ *
+ */
 @Entity
 @Table (name = "PHYSICAL_DEAL")
 @NamedQueries({
@@ -46,25 +50,19 @@ import jakarta.persistence.*;
 		    +  "         deal.dealDetail.volumeFrequencyCodeValue,"
 			+  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"
 			+  "         deal.detail.dealPriceValuationCodeValue,"
-			+  "         deal.dealPriceIndex.id,"
+			+  "         dealIndex.id,"
 			+  "         deal.detail.fixedPriceValue,"
 			+  "         deal.detail.fixedPriceUnitOfMeasureCodeValue,"
 			+  "         deal.detail.fixedPriceCurrencyCodeValue,"
 			+  "         deal.detail.marketValuationCodeValue,"
-			+  "         deal.marketPriceIndex.id"
+			+  "         marketIndex.id"
 			+  "         ) "
-       		+ "   FROM PhysicalDeal deal "
- + "   LEFT OUTER JOIN deal.powerProfile as powerProfile " +
+       		+ "   FROM PhysicalDeal deal " +
+  "    LEFT OUTER JOIN deal.powerProfile as powerProfile " +
+   "   LEFT OUTER JOIN deal.dealPriceIndex as dealIndex " +
+   "   LEFT OUTER JOIN deal.marketPriceIndex as marketIndex " +
 			   " WHERE deal.id in (:dealIds) " +
-       	     "ORDER BY deal.dealDetail.ticketNo DESC"),
-		@NamedQuery(
-				name = PriceIndexRepositoryBean.FIND_BY_DEAL_IDS,
-				query = "SELECT " +
-						"	new com.onbelay.dealcapture.common.snapshot.EntityIdCollection(" +
-						"			deal.dealPriceIndex.id,  " +
-						"			deal.marketPriceIndex.id)" +
-						"  FROM PhysicalDeal deal" +
-						" WHERE deal.id in (:dealIds)  ")
+       	     "ORDER BY deal.dealDetail.ticketNo DESC")
 })
 public class PhysicalDeal extends BaseDeal {
 

@@ -51,7 +51,8 @@ public class FinancialSwapDealDetail {
 		if (paysValuationCodeValue == null)
 			throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUATION.getCode());
 
-		if  (! (getPaysValuationCode() == ValuationCode.FIXED || getPaysValuationCode() == ValuationCode.INDEX) )
+		if  (! (getPaysValuationCode() == ValuationCode.FIXED || getPaysValuationCode() == ValuationCode.INDEX ||
+				getPaysValuationCode() == ValuationCode.INDEX_PLUS) )
 			throw new OBValidationException(DealErrorCode.INVALID_PAYS_VALUATION.getCode());
 
 		if (fixedPriceValue != null) {
@@ -67,11 +68,11 @@ public class FinancialSwapDealDetail {
 			throw new OBValidationException(DealErrorCode.MISSING_MARKET_PRICE_VALUATION.getCode());
 		}
 
-		if  (! (getRecievesValuationCode() == ValuationCode.INDEX_PLUS || getRecievesValuationCode() == ValuationCode.INDEX) )
+		if  (! (getRecievesValuationCode() == ValuationCode.POWER_PROFILE || getRecievesValuationCode() == ValuationCode.INDEX) )
 			throw new OBValidationException(DealErrorCode.INVALID_RECEIVES_VALUATION.getCode());
 
 		if (fixedPriceValue != null) {
-			if (! (getPaysValuationCode() == ValuationCode.FIXED || getRecievesValuationCode() == ValuationCode.INDEX_PLUS) )
+			if (! (getPaysValuationCode() == ValuationCode.FIXED || getPaysValuationCode() == ValuationCode.INDEX_PLUS) )
 				throw new OBValidationException(DealErrorCode.INVALID_FIXED_PRICE_VALUE.getCode());
 		}
 
@@ -106,11 +107,11 @@ public class FinancialSwapDealDetail {
 	}
 
 	@Column(name="PAYS_VALUATION_CODE")
-	public String getPaysPriceValuationCodeValue() {
+	public String getPaysValuationCodeValue() {
 		return paysValuationCodeValue;
 	}
 
-	public void setPaysPriceValuationCodeValue(String paysPriceValuationCodeValue) {
+	public void setPaysValuationCodeValue(String paysPriceValuationCodeValue) {
 		this.paysValuationCodeValue = paysPriceValuationCodeValue;
 	}
 

@@ -51,8 +51,8 @@ public enum DealErrorCode {
 
     MISSING_PAYS_PRICE       		 ("DC_DL-E0400", "Error: Missing pays price leg."),
     MISSING_RECEIVES_PRICE     		 ("DC_DL-E0401", "Error: Missing receives price leg."),
-    INVALID_RECEIVES_VALUATION 		 ("DC_DL-E0402", "Error: Invalid receives valuation: FLOAT OR FLOAT PLUS."),
-    INVALID_PAYS_VALUATION   		 ("DC_DL-E0403", "Error: Invalid pays valuation: FLOAT OR FIXED."),
+    INVALID_RECEIVES_VALUATION 		 ("DC_DL-E0402", "Error: Invalid receives valuation: FLOAT OR POWER PROFILE."),
+    INVALID_PAYS_VALUATION   		 ("DC_DL-E0403", "Error: Invalid pays valuation: FLOAT, FLOAT_PLUS OR FIXED."),
 
 
     MISSING_MARKET_INDEX      		 ("DC_DL-E0501", "Error: Missing market index"),

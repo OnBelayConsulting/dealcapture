@@ -34,8 +34,6 @@ public interface PriceIndexRepository {
 
 	public List<PriceIndex> findActivePriceIndices();
 
-	public List<PriceIndex> findByDealIds(List<Integer> dealIds);
-
 	public List<PriceIndex> fetchByIds(QuerySelectedPage selectedPage);
 
 	List<PriceIndexReport> fetchPriceIndexReports(List<Integer> indexIds);
