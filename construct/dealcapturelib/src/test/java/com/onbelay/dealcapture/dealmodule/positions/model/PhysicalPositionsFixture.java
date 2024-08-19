@@ -32,21 +32,18 @@ public class PhysicalPositionsFixture {
             snapshot.setDealPriceFxRiskFactorId(fxRiskFactor.generateEntityId());
             snapshot.setMarketPriceRiskFactorId(marketPriceRiskFactor.generateEntityId());
 
-            snapshot.getDealPositionDetail().setCurrencyCode(currencyCode);
-            snapshot.getDealPositionDetail().setCreatedDateTime(createdDateTime);
+            snapshot.getDetail().setCurrencyCode(currencyCode);
+            snapshot.getDetail().setCreatedDateTime(createdDateTime);
 
-            snapshot.getDetail().setDealMarketValuationCode(ValuationCode.INDEX);
-            snapshot.getDetail().setDealPriceValuationCode(ValuationCode.FIXED);
-
-            snapshot.getDealPositionDetail().setFrequencyCode(FrequencyCode.DAILY);
-            snapshot.getDealPositionDetail().setStartDate(current);
-            snapshot.getDealPositionDetail().setEndDate(current);
-            snapshot.getDealPositionDetail().setCurrencyCode(deal.getDealDetail().getReportingCurrencyCode());
+            snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
+            snapshot.getDetail().setStartDate(current);
+            snapshot.getDetail().setEndDate(current);
+            snapshot.getDetail().setCurrencyCode(deal.getDealDetail().getReportingCurrencyCode());
             snapshot.getSettlementDetail().setIsSettlementPosition(true);
             snapshot.getSettlementDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 
-            snapshot.getDealPositionDetail().setVolumeQuantityValue(deal.getDealDetail().getVolumeQuantity());
-            snapshot.getDealPositionDetail().setVolumeUnitOfMeasure(UnitOfMeasureCode.GJ);
+            snapshot.getDetail().setVolumeQuantityValue(deal.getDealDetail().getVolumeQuantity());
+            snapshot.getDetail().setVolumeUnitOfMeasure(UnitOfMeasureCode.GJ);
             snapshot.getDetail().setFixedPriceValue(deal.getDetail().getFixedPriceValue());
             snapshots.add(snapshot);
             current = current.plusDays(1);

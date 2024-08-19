@@ -171,7 +171,7 @@ public class DealPositionServiceBean implements DealPositionService {
 
         List<DealPositionSnapshot> dealPositionSnapshots = findPositionsByDeal(dealId);
         for (DealPositionSnapshot snapshot : dealPositionSnapshots) {
-            List<DealHourlyPositionSnapshot> list = positionMap.get(snapshot.getDealPositionDetail().getStartDate());
+            List<DealHourlyPositionSnapshot> list = positionMap.get(snapshot.getDetail().getStartDate());
             if (list != null) {
                 snapshot.setHourlyPositionSnapshots(list);
             }

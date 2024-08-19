@@ -90,25 +90,21 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
         assertEquals(31, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
-
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
-
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
     }
@@ -163,17 +159,15 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
         assertEquals(31, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
-
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
@@ -181,7 +175,6 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
 
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         List<Integer> costPositionIds = dealPositionService.findCostPositionIdsByDeal(deal.generateEntityId());
@@ -189,7 +182,7 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
         assertEquals(62, costSnapshots.size());
         List<CostPositionSnapshot> costsPerPosition = costSnapshots
                 .stream()
-                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDealPositionDetail().getStartDate()))
+                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDetail().getStartDate()))
                 .toList();
 
         assertEquals(2, costsPerPosition.size());
@@ -199,7 +192,7 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
                 .findFirst()
                 .get();
         assertEquals(0, BigDecimal.TEN.compareTo(facilityPerUnitFee.getDetail().getCostAmount()));
-        assertEquals(positionSnapshot.getDealPositionDetail().getCreatedDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
+        assertEquals(positionSnapshot.getDetail().getCreatedDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
 
         List<TotalCostPositionSummary> summaries = dealPositionService.calculateTotalCostPositionSummaries(
                 fixedPriceBuyDeal.getId(),
@@ -299,25 +292,21 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
         assertEquals(31, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
-
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
-
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         List<Integer> costPositionIds = dealPositionService.findCostPositionIdsByDeal(deal.generateEntityId());
@@ -325,7 +314,7 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
         assertEquals(186, costSnapshots.size());
         List<CostPositionSnapshot> costsPerPosition = costSnapshots
                 .stream()
-                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDealPositionDetail().getStartDate()))
+                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDetail().getStartDate()))
                 .collect(Collectors.toList());
 
         assertEquals(6, costsPerPosition.size());
@@ -344,7 +333,7 @@ public class GeneratePositionsServiceWithCostsTest extends PhysicalDealServiceTe
         Amount amount = costPrice.multiply(facilityPerUnitFee.getQuantity());
         amount = amount.round();
         assertEquals(0, amount.getValue().compareTo(facilityPerUnitFee.getDetail().getCostAmount()));
-        assertEquals(positionSnapshot.getDealPositionDetail().getCreatedDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
+        assertEquals(positionSnapshot.getDetail().getCreatedDateTime(), facilityPerUnitFee.getDetail().getCreatedDateTime());
     }
 
 

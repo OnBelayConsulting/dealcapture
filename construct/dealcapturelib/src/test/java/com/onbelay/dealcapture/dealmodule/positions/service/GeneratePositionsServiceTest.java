@@ -62,25 +62,22 @@ public class GeneratePositionsServiceTest extends PhysicalDealServiceTestCase {
         assertEquals(31, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDealPositionDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDealPositionDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDealPositionDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDealPositionDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDealPositionDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDealPositionDetail().getErrorCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
 
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
-
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
         PriceRiskFactorSnapshot marketRiskFactor = priceRiskFactorService.findByPriceIndexIds(
                 List.of(marketIndex.getId()),
@@ -115,9 +112,7 @@ public class GeneratePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         PriceRiskFactorSnapshot dealIndexRiskFactor = priceRiskFactorService.findByPriceIndexIds(
@@ -155,9 +150,7 @@ public class GeneratePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX_PLUS, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
 
         PriceRiskFactorSnapshot dealIndexRiskFactor = priceRiskFactorService.findByPriceIndexIds(
                 List.of(dealPriceIndex.getId()),

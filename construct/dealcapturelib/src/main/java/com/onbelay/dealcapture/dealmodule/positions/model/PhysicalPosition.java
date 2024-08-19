@@ -16,11 +16,6 @@ import jakarta.persistence.*;
 @DiscriminatorValue("PHY")
 public class PhysicalPosition extends DealPosition {
 
-
-    private PhysicalPositionDetail detail = new PhysicalPositionDetail();
-
-    private FxRiskFactor fixedPriceFxRiskFactor;
-
     private PriceRiskFactor dealPriceRiskFactor;
     private FxRiskFactor dealPriceFxRiskFactor;
 
@@ -32,19 +27,10 @@ public class PhysicalPosition extends DealPosition {
 
     }
 
-    @Embedded
-    public PhysicalPositionDetail getDetail() {
-        return detail;
-    }
-
-    public void setDetail(PhysicalPositionDetail detail) {
-        this.detail = detail;
-    }
 
     public void createWith(DealPositionSnapshot snapshot) {
         super.createWith(snapshot);
         PhysicalPositionSnapshot physicalPositionSnapshot = (PhysicalPositionSnapshot) snapshot;
-        detail.copyFrom(physicalPositionSnapshot.getDetail());
         setAssociations(physicalPositionSnapshot);
         save();
         postCreateWith(snapshot);
@@ -55,7 +41,6 @@ public class PhysicalPosition extends DealPosition {
     public void updateWith(DealPositionSnapshot snapshot) {
         super.updateWith(snapshot);
         PhysicalPositionSnapshot physicalPositionSnapshot = (PhysicalPositionSnapshot) snapshot;
-        detail.copyFrom(physicalPositionSnapshot.getDetail());
         setAssociations(physicalPositionSnapshot);
         postCreateWith(snapshot);
         update();
@@ -63,9 +48,6 @@ public class PhysicalPosition extends DealPosition {
 
     private void setAssociations(PhysicalPositionSnapshot snapshot) {
 
-
-        if (snapshot.getFixedPriceFxRiskFactorId() != null)
-            this.fixedPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getFixedPriceFxRiskFactorId());
 
         if (snapshot.getDealPriceRiskFactorId() != null)
             this.dealPriceRiskFactor = getPriceRiskFactorRepository().load(snapshot.getDealPriceRiskFactorId());
@@ -81,18 +63,6 @@ public class PhysicalPosition extends DealPosition {
 
 
     }
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FIXED_PRICE_FX_RISK_FACTOR_ID")
-    public FxRiskFactor getFixedPriceFxRiskFactor() {
-        return fixedPriceFxRiskFactor;
-    }
-
-
-    public void setFixedPriceFxRiskFactor(FxRiskFactor fixedPriceFxRiskFactor) {
-        this.fixedPriceFxRiskFactor = fixedPriceFxRiskFactor;
-    }
-
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "DEAL_PRICE_RISK_FACTOR_ID")
@@ -132,10 +102,6 @@ public class PhysicalPosition extends DealPosition {
 
     public void setMarketPriceFxRiskFactor(FxRiskFactor marketPriceFxRiskFactor) {
         this.marketPriceFxRiskFactor = marketPriceFxRiskFactor;
-    }
-
-    private static FxRiskFactorRepository getFxRiskFactorRepository() {
-        return (FxRiskFactorRepository) ApplicationContextFactory.getBean(FxRiskFactorRepository.BEAN_NAME);
     }
 
     private static PriceRiskFactorRepository getPriceRiskFactorRepository() {

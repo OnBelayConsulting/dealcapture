@@ -13,7 +13,7 @@ public abstract class BasePositionHolder {
 
     private DealSummary  dealSummary;
 
-    private DealPositionDetail dealPositionDetail = new DealPositionDetail();
+    private DealPositionDetail detail = new DealPositionDetail();
 
     private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
 
@@ -41,8 +41,8 @@ public abstract class BasePositionHolder {
         return dealSummary;
     }
 
-    public DealPositionDetail getDealPositionDetail() {
-        return dealPositionDetail;
+    public DealPositionDetail getDetail() {
+        return detail;
     }
 
     public PositionSettlementDetail getSettlementDetail() {

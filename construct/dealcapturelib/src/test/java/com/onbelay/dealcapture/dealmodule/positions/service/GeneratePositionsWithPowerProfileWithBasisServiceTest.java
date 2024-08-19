@@ -11,13 +11,10 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapsho
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,10 +73,9 @@ public class GeneratePositionsWithPowerProfileWithBasisServiceTest extends Posit
         assertEquals(107, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
+        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
 
-        assertEquals(ValuationCode.POWER_PROFILE, positionSnapshot.getDetail().getMarketPriceValuationCode());
 
         List<DealHourlyPositionSnapshot>  hourlyPositionSnapshots = dealPositionService.findHourlyPositionsByDeal(fixedPriceMarketPowerProfileDeal.generateEntityId());
         assertEquals(129, hourlyPositionSnapshots.size());
@@ -125,9 +121,7 @@ public class GeneratePositionsWithPowerProfileWithBasisServiceTest extends Posit
 
         assertEquals(91, positionSnapshots.size());
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.POWER_PROFILE, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexSellMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNull(positionSnapshot.getMarketPriceRiskFactorId());
 
 

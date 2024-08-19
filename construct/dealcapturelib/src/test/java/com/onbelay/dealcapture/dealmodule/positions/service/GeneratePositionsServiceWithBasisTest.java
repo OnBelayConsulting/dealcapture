@@ -102,9 +102,7 @@ public class GeneratePositionsServiceWithBasisTest extends PositionsServiceWithB
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
         assertNotNull(positionSnapshot.getDealPriceRiskFactorId());
         assertEquals(2, positionSnapshot.getDealPriceMappings().size());

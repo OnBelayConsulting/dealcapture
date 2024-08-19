@@ -381,9 +381,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX_PLUS, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

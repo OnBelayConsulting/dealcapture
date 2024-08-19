@@ -33,6 +33,10 @@ public class DealPositionDetail extends AbstractDetail {
 
     private String currencyCodeValue;
 
+
+    private BigDecimal fixedPriceValue;
+
+
     private String errorCode;
     private String errorMessage;
 
@@ -73,6 +77,9 @@ public class DealPositionDetail extends AbstractDetail {
 
         if (copy.currencyCodeValue != null)
             this.currencyCodeValue = copy.currencyCodeValue;
+
+        if (copy.fixedPriceValue != null)
+            this.fixedPriceValue = copy.fixedPriceValue;
 
         if (copy.errorCode != null)
             this.errorCode = copy.errorCode;
@@ -214,6 +221,17 @@ public class DealPositionDetail extends AbstractDetail {
     public void setFrequencyCodeValue(String frequencyCodeValue) {
         this.frequencyCodeValue = frequencyCodeValue;
     }
+
+
+    @Column(name = "FIXED_PRICE")
+    public BigDecimal getFixedPriceValue() {
+        return fixedPriceValue;
+    }
+
+    public void setFixedPriceValue(BigDecimal fixedPriceValue) {
+        this.fixedPriceValue = fixedPriceValue;
+    }
+
 
     @Column(name = "ERROR_CODE")
     public String getErrorCode() {

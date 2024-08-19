@@ -116,13 +116,11 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -192,13 +190,11 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
                 fixedPriceSellDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -251,9 +247,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -317,9 +311,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -372,9 +364,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX_PLUS, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -439,9 +429,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX_PLUS, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

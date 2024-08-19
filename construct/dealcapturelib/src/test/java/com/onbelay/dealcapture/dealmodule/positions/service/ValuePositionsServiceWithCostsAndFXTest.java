@@ -141,13 +141,11 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         List<Integer> costPositionIds = dealPositionService.findCostPositionIdsByDeal(deal.generateEntityId());
@@ -155,7 +153,7 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
         assertEquals(31, costSnapshots.size());
         List<CostPositionSnapshot> costsPerPosition = costSnapshots
                 .stream()
-                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDealPositionDetail().getStartDate()))
+                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDetail().getStartDate()))
                 .toList();
 
         assertEquals(1, costsPerPosition.size());
@@ -234,13 +232,11 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getEndDate());
-        assertEquals(ValuationCode.FIXED, positionSnapshot.getDetail().getDealPriceValuationCode());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
                 fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         List<Integer> costPositionIds = dealPositionService.findCostPositionIdsByDeal(deal.generateEntityId());
@@ -248,7 +244,7 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
         assertEquals(31, costSnapshots.size());
         List<CostPositionSnapshot> costsPerPosition = costSnapshots
                 .stream()
-                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDealPositionDetail().getStartDate()))
+                .filter( c->c.getDetail().getStartDate().isEqual(positionSnapshot.getDetail().getStartDate()))
                 .toList();
 
         assertEquals(1, costsPerPosition.size());
@@ -268,8 +264,8 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
         assertNull(positionSnapshot.getSettlementDetail().getCostSettlementAmount());
         assertEquals(0, BigDecimal.valueOf(-10.00).compareTo(positionSnapshot.getSettlementDetail().getSettlementAmount()));
         assertNull(positionSnapshot.getSettlementDetail().getTotalSettlementAmount());
-        assertEquals(PositionErrorCode.ERROR_INVALID_POSITION_VALUATION.getCode(), positionSnapshot.getDealPositionDetail().getErrorCode());
-        assertNotNull(positionSnapshot.getDealPositionDetail().getErrorMessage());
+        assertEquals(PositionErrorCode.ERROR_INVALID_POSITION_VALUATION.getCode(), positionSnapshot.getDetail().getErrorCode());
+        assertNotNull(positionSnapshot.getDetail().getErrorMessage());
         assertNotNull(positionSnapshot.getSettlementDetail().getSettlementCurrencyCodeValue());
     }
 

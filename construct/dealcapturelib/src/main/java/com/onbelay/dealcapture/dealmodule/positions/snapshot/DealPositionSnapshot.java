@@ -28,7 +28,7 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     private EntityId dealId;
 
-    private DealPositionDetail dealPositionDetail = new DealPositionDetail();
+    private DealPositionDetail detail = new DealPositionDetail();
 
     private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
 
@@ -37,6 +37,7 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
     private List<DealHourlyPositionSnapshot> hourlyPositionSnapshots = new ArrayList<>();
 
     private String dealTypeValue;
+    private EntityId fixedPriceFxRiskFactorId;
 
     public DealPositionSnapshot() {
     }
@@ -90,12 +91,12 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
     }
 
 
-    public DealPositionDetail getDealPositionDetail() {
-        return dealPositionDetail;
+    public DealPositionDetail getDetail() {
+        return detail;
     }
 
-    public void setDealPositionDetail(DealPositionDetail dealPositionDetail) {
-        this.dealPositionDetail = dealPositionDetail;
+    public void setDetail(DealPositionDetail detail) {
+        this.detail = detail;
     }
 
     public PositionSettlementDetail getSettlementDetail() {
@@ -142,5 +143,13 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
     @JsonIgnore
     public List<PositionRiskFactorMappingSnapshot> getMarketPriceMappings() {
         return riskFactorMappingSnapshots.stream().filter( c-> c.getDetail().getPriceTypeCode() == PriceTypeCode.MARKET_PRICE).collect(Collectors.toList());
+    }
+
+    public EntityId getFixedPriceFxRiskFactorId() {
+        return fixedPriceFxRiskFactorId;
+    }
+
+    public void setFixedPriceFxRiskFactorId(EntityId fixedPriceFxRiskFactorId) {
+        this.fixedPriceFxRiskFactorId = fixedPriceFxRiskFactorId;
     }
 }

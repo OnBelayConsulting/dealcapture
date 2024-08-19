@@ -13,8 +13,6 @@ public class PhysicalPositionHolder extends BasePositionHolder {
 
     private FxRiskFactorHolder fixedPriceFxHolder;
 
-    private PhysicalPositionDetail detail = new PhysicalPositionDetail();
-
     private PriceRiskFactorHolder marketRiskFactorHolder;
     private FxRiskFactorHolder marketFxHolder;
 
@@ -82,9 +80,5 @@ public class PhysicalPositionHolder extends BasePositionHolder {
 
     public void setBasisMarketHolders(List<PriceRiskFactorHolder> basisMarketHolders) {
         this.basisMarketHolders = basisMarketHolders;
-    }
-
-    public PhysicalPositionDetail getDetail() {
-        return detail;
     }
 }
