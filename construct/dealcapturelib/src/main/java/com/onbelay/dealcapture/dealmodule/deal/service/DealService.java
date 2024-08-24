@@ -20,8 +20,7 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
+import com.onbelay.dealcapture.dealmodule.deal.model.*;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 
 import java.time.LocalDate;
@@ -91,9 +90,7 @@ public interface DealService {
 			String positionGenerationIdentifier,
 			List<Integer> dealIds);
 
-	List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds);
-
-	List<FinancialSwapDealSummary> findFinancialSwapDealSummariesByIds(List<Integer> swapDealIds);
+	List<DealSummary> fetchDealSummariesByIds(List<Integer> dealIds);
 
     void updateDealPositionStatusToComplete(
 			List<Integer> dealIds,

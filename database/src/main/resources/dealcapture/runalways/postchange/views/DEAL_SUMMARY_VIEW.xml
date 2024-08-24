@@ -1,0 +1,56 @@
+<databaseChangeLog
+        xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+        xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog-ext
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        logicalFilePath='/com/onbelay/dealcapture/runalways/postchange/views/DEAL_SUMMARY_VIEW.xml'
+>
+    <changeSet
+            author='lefeuvrem'
+            id='1'
+            runAlways='true'
+            runOnChange='true'
+    >
+    <createView viewName="DEAL_SUMMARY_VIEW">
+    SELECT
+            bd.ENTITY_ID,
+            bd.DEAL_TYPE_CODE,
+            bd.COMMODITY_CODE,
+            bd.DEAL_STATUS_CODE,
+            bd.POSITION_GENERATION_STATUS_CODE,
+            bd.POSITION_GENERATION_IDENTIFIER,
+            bd.POSITION_GENERATION_DATE_TIME,
+            bd.START_DATE,
+            bd.END_DATE,
+            bd.BUY_SELL_CODE,
+            bd.REPORTING_CURRENCY_CODE,
+            bd.TICKET_NO,
+            bd.VOLUME_QUANTITY,
+            bd.VOLUME_UOM_CODE,
+            bd.VOLUME_FREQUENCY_CODE,
+            bd.SETTLEMENT_CURRENCY_CODE,
+            bd.POWER_PROFILE_ID,
+            bd.FIXED_PRICE,
+            bd.FIXED_PRICE_UOM_CODE,
+            bd.FIXED_PRICE_CURRENCY_CODE,
+            phy.MARKET_VALUATION_CODE,
+            phy.MARKET_PRICE_INDEX_ID,
+            phy.DEAL_PRICE_VALUATION_CODE,
+            phy.DEAL_PRICE_INDEX_ID,
+            swp.PAYS_VALUATION_CODE,
+            swp.PAYS_INDEX_ID,
+            swp.RECEIVES_VALUATION_CODE,
+            swp.RECEIVES_INDEX_ID
+            FROM
+            BASE_DEAL bd
+            LEFT OUTER JOIN PHYSICAL_DEAL phy ON
+                bd.ENTITY_ID = phy.ENTITY_ID
+            LEFT OUTER JOIN FINANCIAL_SWAP_DEAL swp ON
+                bd.ENTITY_ID = swp.ENTITY_ID
+        </createView>
+    </changeSet>
+
+
+</databaseChangeLog>

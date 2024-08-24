@@ -90,7 +90,7 @@ public class GeneratePositionsWithPowerProfileServiceTest extends PositionsServi
         assertEquals("0", positionSnapshot.getDetail().getErrorCode());
 
         assertEquals(0,
-                fixedPriceMarketPowerProfileDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceMarketPowerProfileDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

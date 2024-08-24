@@ -104,6 +104,7 @@ public class PhysicalPosition extends DealPosition {
         this.marketPriceFxRiskFactor = marketPriceFxRiskFactor;
     }
 
+    @Transient
     private static PriceRiskFactorRepository getPriceRiskFactorRepository() {
         return (PriceRiskFactorRepository) ApplicationContextFactory.getBean(PriceRiskFactorRepository.BEAN_NAME);
     }

@@ -80,14 +80,14 @@ public class PhysicalDealReaderTest extends DealCaptureAppSpringTestCase {
         assertEquals(LocalDate.of(2024, 1, 1), physicalDeal.getDealDetail().getStartDate());
         assertEquals(LocalDate.of(2024, 12, 31), physicalDeal.getDealDetail().getEndDate());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(physicalDeal.getDealDetail().getVolumeQuantity()));
-        assertEquals(UnitOfMeasureCode.GJ, physicalDeal.getDealDetail().getVolumeUnitOfMeasure());
+        assertEquals(UnitOfMeasureCode.GJ, physicalDeal.getDealDetail().getVolumeUnitOfMeasureCode());
         assertEquals(FrequencyCode.DAILY, physicalDeal.getDealDetail().getVolumeFrequencyCode());
         assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getReportingCurrencyCode());
         assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getSettlementCurrencyCode());
         assertEquals(ValuationCode.FIXED, physicalDeal.getDetail().getDealPriceValuationCode());
-        assertEquals(0, BigDecimal.valueOf(2).compareTo(physicalDeal.getDetail().getFixedPriceValue()));
-        assertEquals(UnitOfMeasureCode.GJ, physicalDeal.getDetail().getFixedPriceUnitOfMeasure());
-        assertEquals(CurrencyCode.CAD, physicalDeal.getDetail().getFixedPriceCurrencyCode());
+        assertEquals(0, BigDecimal.valueOf(2).compareTo(physicalDeal.getDealDetail().getFixedPriceValue()));
+        assertEquals(UnitOfMeasureCode.GJ, physicalDeal.getDealDetail().getFixedPriceUnitOfMeasureCode());
+        assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getFixedPriceCurrencyCode());
         assertEquals(ValuationCode.INDEX, physicalDeal.getDetail().getMarketValuationCode());
         assertEquals("AECO", physicalDeal.getMarketPriceIndexId().getCode());
     }
@@ -114,13 +114,13 @@ public class PhysicalDealReaderTest extends DealCaptureAppSpringTestCase {
         assertEquals(LocalDate.of(2024, 1, 1), physicalDeal.getDealDetail().getStartDate());
         assertEquals(LocalDate.of(2024, 12, 31), physicalDeal.getDealDetail().getEndDate());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(physicalDeal.getDealDetail().getVolumeQuantity()));
-        assertEquals(UnitOfMeasureCode.GJ, physicalDeal.getDealDetail().getVolumeUnitOfMeasure());
+        assertEquals(UnitOfMeasureCode.GJ, physicalDeal.getDealDetail().getVolumeUnitOfMeasureCode());
         assertEquals(FrequencyCode.DAILY, physicalDeal.getDealDetail().getVolumeFrequencyCode());
         assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getReportingCurrencyCode());
         assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getSettlementCurrencyCode());
         assertEquals(ValuationCode.INDEX, physicalDeal.getDetail().getDealPriceValuationCode());
         assertEquals("CCVV", physicalDeal.getDealPriceIndexId().getCode());
-        assertNull(physicalDeal.getDetail().getFixedPriceValue());
+        assertNull(physicalDeal.getDealDetail().getFixedPriceValue());
         assertEquals("AECO", physicalDeal.getMarketPriceIndexId().getCode());
     }
 

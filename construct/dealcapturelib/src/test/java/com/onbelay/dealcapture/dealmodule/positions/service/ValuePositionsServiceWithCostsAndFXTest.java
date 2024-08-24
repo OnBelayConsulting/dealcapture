@@ -144,7 +144,7 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
         assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
-                fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
@@ -235,7 +235,7 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
         assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
-                fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 

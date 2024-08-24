@@ -13,5 +13,7 @@
 
     <include file="ADD_COLS_TO_DEAL_POSITION.xml" relativeToChangelogFile="true"/>
     <include file="DELETE_COLS_ON_DEAL_POSITION.xml" relativeToChangelogFile="true"/>
+    <include file="ADD_COLS_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
+    <include file="DELETE_COLS_ON_PHYSICAL_FINSWAP_POSITION.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

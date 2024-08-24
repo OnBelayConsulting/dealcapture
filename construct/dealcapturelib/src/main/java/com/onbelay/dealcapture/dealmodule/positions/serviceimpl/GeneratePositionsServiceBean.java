@@ -7,13 +7,10 @@ import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.batch.sql.*;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
-import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGeneratorFactory;
 import com.onbelay.dealcapture.dealmodule.positions.model.PositionGenerationResult;
-import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionView;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.service.PowerProfilePositionsService;
@@ -35,6 +32,9 @@ import java.util.stream.Collectors;
 @Service
 public class GeneratePositionsServiceBean extends BasePositionsServiceBean implements GeneratePositionsService {
     private static final Logger logger = LogManager.getLogger();
+
+    @Autowired
+    private DealPositionsGeneratorPlant dealPositionsGeneratorPlant;
 
     @Autowired
     private DealPositionsBatchInserter dealPositionsBatchInserter;
@@ -131,51 +131,14 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
             List<DealDayByMonthView> dealDayByMonthViews,
             List<DealHourByDayView> dealHourByDayViews) {
 
-        List<Integer> physicalDealIds = dealSummaries
-                .stream()
-                .filter(c-> c.getDealTypeCode() == DealTypeCode.PHYSICAL_DEAL)
-                .map(c-> c.getDealId())
-                .collect(Collectors.toList());
+        List<DealPositionGenerator> physicalPositionGenerators = dealPositionsGeneratorPlant.createDealPositionGenerators(
+                context,
+                riskFactorManager,
+                dealSummaries,
+                dealCostSummaries,
+                dealDayByMonthViews,
+                dealHourByDayViews);
 
-        logger.debug("get physical deal summaries start: " + LocalDateTime.now().toString());
-        List<PhysicalDealSummary> physicalDealSummaries = dealService.findPhysicalDealSummariesByIds(physicalDealIds);
-        logger.debug("get physical deal summaries end: " + LocalDateTime.now().toString());
-
-
-        DealPositionGeneratorFactory factory = DealPositionGeneratorFactory.newFactory();
-        if (dealCostSummaries.size() > 0)
-            factory.withCosts(dealCostSummaries);
-
-        if (dealDayByMonthViews.size() > 0)
-            factory.withDealDayByMonthViews(dealDayByMonthViews);
-
-        if (dealHourByDayViews.size() > 0)
-            factory.withHourByDayViews(dealHourByDayViews);
-
-
-        List<PowerProfilePositionView> powerProfilePositionViews = powerProfilePositionsService.fetchPowerProfilePositionViews(
-                context.getStartPositionDate(),
-                context.getEndPositionDate(),
-                context.getCreatedDateTime());
-
-        if(powerProfilePositionViews.size() > 0)
-            factory.withPowerProfilePositionViews(powerProfilePositionViews);
-
-
-        List<DealPositionGenerator> dealPositionGenerators = new ArrayList<>(dealSummaries.size());
-
-        logger.debug("generate position holders start: " + LocalDateTime.now().toString());
-        for (PhysicalDealSummary summary : physicalDealSummaries) {
-            DealPositionGenerator dealPositionGenerator = factory.newGenerator(
-                        context,
-                        summary,
-                        riskFactorManager);
-            dealPositionGenerators.add(dealPositionGenerator);
-
-            // create position control
-            dealPositionGenerator.generatePositionHolders();
-
-        }
         logger.debug("generate position holders end: " + LocalDateTime.now().toString());
 
         processPriceRiskFactors(
@@ -190,7 +153,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         batchSavePositions(
                 context.getCreatedDateTime(),
-                dealPositionGenerators);
+                physicalPositionGenerators);
     }
 
 
@@ -207,7 +170,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         ArrayList<Integer> dealIds = new ArrayList<>();
         for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
-            dealIds.add(dealPositionGenerator.getDealSummary().getDealId());
+            dealIds.add(dealPositionGenerator.getDealSummary().getId());
             PositionGenerationResult generationResult = dealPositionGenerator.generatePositionSnapshots();
             costPositionSnapshots.addAll(
                     generationResult.getCostPositionSnapshots());

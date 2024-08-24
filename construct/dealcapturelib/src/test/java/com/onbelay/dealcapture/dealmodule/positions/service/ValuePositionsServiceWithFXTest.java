@@ -113,7 +113,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
 
         assertEquals(0,
-                fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

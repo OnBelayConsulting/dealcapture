@@ -147,7 +147,7 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
         assertEquals("0", positionSnapshot.getDetail().getErrorCode());
         assertEquals(0,
-                fixedPriceSellDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceSellDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -245,7 +245,7 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         assertEquals("0", positionSnapshot.getDetail().getErrorCode());
 
         assertEquals(0,
-                fixedPriceSellDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceSellDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

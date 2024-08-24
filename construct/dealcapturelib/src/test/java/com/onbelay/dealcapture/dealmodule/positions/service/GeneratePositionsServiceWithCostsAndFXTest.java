@@ -100,7 +100,7 @@ public class GeneratePositionsServiceWithCostsAndFXTest extends PhysicalDealServ
         assertEquals("0", positionSnapshot.getDetail().getErrorCode());
 
         assertEquals(0,
-                fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -186,7 +186,7 @@ public class GeneratePositionsServiceWithCostsAndFXTest extends PhysicalDealServ
         assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
         assertEquals("0", positionSnapshot.getDetail().getErrorCode());
         assertEquals(0,
-                fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -320,7 +320,7 @@ public class GeneratePositionsServiceWithCostsAndFXTest extends PhysicalDealServ
         assertEquals("0", positionSnapshot.getDetail().getErrorCode());
 
         assertEquals(0,
-                fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

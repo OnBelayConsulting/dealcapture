@@ -19,9 +19,9 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDealSummary;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,8 +65,6 @@ public interface DealRepository {
 
 	public DealSummary getDealSummary(EntityId id);
 
-    List<FinancialSwapDealSummary> findFinancialDealSummariesByIds(List<Integer> physicalDealIds);
-
     /**
 	 * Find deals using a defined query
 	 * @param query
@@ -84,6 +82,6 @@ public interface DealRepository {
 
 	List<DealSummary> findAssignedDealSummaries(String positionGenerationIdentifier);
 
-	List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds);
+	List<DealSummary> fetchDealSummariesByIds(List<Integer> dealIds);
 
 }

@@ -63,11 +63,11 @@ public class FinancialSwapDealFixture {
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 
 		dealSnapshot.getDealDetail().setVolumeQuantity(volumeQuantity);
-		dealSnapshot.getDealDetail().setVolumeUnitOfMeasure(volumeUnitOfMeasureCode);
+		dealSnapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 
 		dealSnapshot.getDetail().setPaysValuationCode(ValuationCode.FIXED);
 
-		dealSnapshot.getDetail().setFixedPrice(paysPrice);
+		dealSnapshot.getDealDetail().setFixedPrice(paysPrice);
 
 		dealSnapshot.getDetail().setReceivesValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setReceivesPriceIndexId(receivesIndex.generateEntityId());
@@ -108,11 +108,11 @@ public class FinancialSwapDealFixture {
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 
 		dealSnapshot.getDealDetail().setVolumeQuantity(volumeQuantity);
-		dealSnapshot.getDealDetail().setVolumeUnitOfMeasure(volumeUnitOfMeasureCode);
+		dealSnapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 
 		dealSnapshot.getDetail().setPaysValuationCode(ValuationCode.FIXED);
 
-		dealSnapshot.getDetail().setFixedPrice(dealPrice);
+		dealSnapshot.getDealDetail().setFixedPrice(dealPrice);
 
 		dealSnapshot.getDetail().setReceivesValuationCode(ValuationCode.POWER_PROFILE);
 		dealSnapshot.setPowerProfileId(powerProfile.generateEntityId());
@@ -153,7 +153,7 @@ public class FinancialSwapDealFixture {
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 
 		dealSnapshot.getDealDetail().setVolumeQuantity(volumeQuantity);
-		dealSnapshot.getDealDetail().setVolumeUnitOfMeasure(volumeUnitOfMeasureCode);
+		dealSnapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 
 		dealSnapshot.getDetail().setPaysValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setPaysPriceIndexId(paysIndex.generateEntityId());
@@ -198,14 +198,14 @@ public class FinancialSwapDealFixture {
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 
 		dealSnapshot.getDealDetail().setVolumeQuantity(volumeQuantity);
-		dealSnapshot.getDealDetail().setVolumeUnitOfMeasure(volumeUnitOfMeasureCode);
+		dealSnapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 
 		dealSnapshot.getDetail().setPaysValuationCode(ValuationCode.INDEX_PLUS);
 		dealSnapshot.setPaysPriceIndexId(paysIndex.generateEntityId());
 
 		dealSnapshot.getDetail().setReceivesValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setReceivesPriceIndexId(receivesIndex.generateEntityId());
-		dealSnapshot.getDetail().setFixedPrice(receivesFixedPrice);
+		dealSnapshot.getDealDetail().setFixedPrice(receivesFixedPrice);
 
 		return dealSnapshot;
 	}
@@ -243,7 +243,7 @@ public class FinancialSwapDealFixture {
 		dealSnapshot.getDealDetail().setTicketNo(ticketNo);
 
 		dealSnapshot.getDealDetail().setVolumeQuantity(volumeQuantity);
-		dealSnapshot.getDealDetail().setVolumeUnitOfMeasure(volumeUnitOfMeasureCode);
+		dealSnapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 
 		dealSnapshot.getDetail().setPaysValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setPaysPriceIndexId(paysIndex.generateEntityId());
@@ -283,7 +283,7 @@ public class FinancialSwapDealFixture {
 				UnitOfMeasureCode.GJ,
 				paysPrice);
 
-		snapshot.getDealDetail().setVolumeUnitOfMeasure(volumeUnitOfMeasureCode);
+		snapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 		snapshot.getDealDetail().setSettlementCurrencyCode(reportingCurrencyCode);
 		snapshot.getDealDetail().setVolumeQuantity(volume);
 		FinancialSwapDeal swapDeal = new FinancialSwapDeal();

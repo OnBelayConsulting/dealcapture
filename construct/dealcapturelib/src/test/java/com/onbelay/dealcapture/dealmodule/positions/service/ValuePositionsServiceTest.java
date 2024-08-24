@@ -119,7 +119,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
         assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
-                fixedPriceBuyDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
@@ -193,7 +193,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
         assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
         assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
         assertEquals(0,
-                fixedPriceSellDeal.getDetail().getFixedPrice().getValue().compareTo(
+                fixedPriceSellDeal.getDealDetail().getFixedPrice().getValue().compareTo(
                         positionSnapshot.getDetail().getFixedPriceValue()));
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 

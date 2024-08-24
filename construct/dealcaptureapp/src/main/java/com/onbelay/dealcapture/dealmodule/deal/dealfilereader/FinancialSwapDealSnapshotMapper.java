@@ -4,7 +4,6 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 
@@ -29,7 +28,7 @@ public class FinancialSwapDealSnapshotMapper extends BaseDealSnapshotMapper{
         if (financialSwapDealSnapshot.getPaysPriceIndexId() != null)
             financialSwapDealSnapshot.getDetail().setPaysValuationCode(ValuationCode.INDEX);
 
-        if (financialSwapDealSnapshot.getDetail().getFixedPrice() != null) {
+        if (financialSwapDealSnapshot.getDealDetail().getFixedPrice() != null) {
             if (financialSwapDealSnapshot.getPaysPriceIndexId() == null)
                 financialSwapDealSnapshot.getDetail().setPaysValuationCode(ValuationCode.FIXED);
             else
@@ -60,19 +59,19 @@ public class FinancialSwapDealSnapshotMapper extends BaseDealSnapshotMapper{
             }
 
             case PAYS_PRICE -> {
-                financialSwapDealSnapshot.getDetail().setFixedPriceValue((BigDecimal) value);
+                financialSwapDealSnapshot.getDealDetail().setFixedPriceValue((BigDecimal) value);
                 return true;
             }
 
             case PAYS_PRICE_UOM -> {
                 UnitOfMeasureCode unitOfMeasureCode = UnitOfMeasureCode.lookUp((String) value);
-                financialSwapDealSnapshot.getDetail().setFixedPriceUnitOfMeasure(unitOfMeasureCode);
+                financialSwapDealSnapshot.getDealDetail().setFixedPriceUnitOfMeasureCode(unitOfMeasureCode);
                 return true;
             }
 
             case PAYS_PRICE_CURRENCY -> {
                 CurrencyCode currencyCode = CurrencyCode.lookUp((String) value);
-                financialSwapDealSnapshot.getDetail().setFixedPriceCurrencyCode(currencyCode);
+                financialSwapDealSnapshot.getDealDetail().setFixedPriceCurrencyCode(currencyCode);
                 return true;
             }
 

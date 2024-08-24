@@ -44,7 +44,7 @@ public class PhysicalPositionsFixture {
 
             snapshot.getDetail().setVolumeQuantityValue(deal.getDealDetail().getVolumeQuantity());
             snapshot.getDetail().setVolumeUnitOfMeasure(UnitOfMeasureCode.GJ);
-            snapshot.getDetail().setFixedPriceValue(deal.getDetail().getFixedPriceValue());
+            snapshot.getDetail().setFixedPriceValue(deal.getDealDetail().getFixedPriceValue());
             snapshots.add(snapshot);
             current = current.plusDays(1);
         }

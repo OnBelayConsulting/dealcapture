@@ -80,16 +80,16 @@ public class FinancialSwapDealReaderTest extends DealCaptureAppSpringTestCase {
         assertEquals(LocalDate.of(2024, 1, 1), swapDealSnapshot.getDealDetail().getStartDate());
         assertEquals(LocalDate.of(2024, 12, 31), swapDealSnapshot.getDealDetail().getEndDate());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(swapDealSnapshot.getDealDetail().getVolumeQuantity()));
-        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getVolumeUnitOfMeasure());
+        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getVolumeUnitOfMeasureCode());
         assertEquals(FrequencyCode.DAILY, swapDealSnapshot.getDealDetail().getVolumeFrequencyCode());
         assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getReportingCurrencyCode());
         assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getSettlementCurrencyCode());
         assertEquals(ValuationCode.FIXED, swapDealSnapshot.getDetail().getPaysValuationCode());
-        assertEquals(0, BigDecimal.valueOf(2).compareTo(swapDealSnapshot.getDetail().getFixedPriceValue()));
-        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDetail().getFixedPriceUnitOfMeasure());
-        assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDetail().getFixedPriceCurrencyCode());
+        assertEquals(0, BigDecimal.valueOf(2).compareTo(swapDealSnapshot.getDealDetail().getFixedPriceValue()));
+        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getFixedPriceUnitOfMeasureCode());
+        assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getFixedPriceCurrencyCode());
         assertEquals("AECO", swapDealSnapshot.getReceivesPriceIndexId().getCode());
-        assertEquals(ValuationCode.INDEX, swapDealSnapshot.getDetail().getRecievesValuationCode());
+        assertEquals(ValuationCode.INDEX, swapDealSnapshot.getDetail().getReceivesValuationCode());
     }
 
 
@@ -114,14 +114,14 @@ public class FinancialSwapDealReaderTest extends DealCaptureAppSpringTestCase {
         assertEquals(LocalDate.of(2024, 1, 1), swapDealSnapshot.getDealDetail().getStartDate());
         assertEquals(LocalDate.of(2024, 12, 31), swapDealSnapshot.getDealDetail().getEndDate());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(swapDealSnapshot.getDealDetail().getVolumeQuantity()));
-        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getVolumeUnitOfMeasure());
+        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getVolumeUnitOfMeasureCode());
         assertEquals(FrequencyCode.DAILY, swapDealSnapshot.getDealDetail().getVolumeFrequencyCode());
         assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getReportingCurrencyCode());
         assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getSettlementCurrencyCode());
         assertEquals(ValuationCode.INDEX, swapDealSnapshot.getDetail().getPaysValuationCode());
-        assertNull(swapDealSnapshot.getDetail().getFixedPriceValue());
+        assertNull(swapDealSnapshot.getDealDetail().getFixedPriceValue());
         assertEquals("PAYS", swapDealSnapshot.getPaysPriceIndexId().getCode());
-        assertEquals(ValuationCode.INDEX, swapDealSnapshot.getDetail().getRecievesValuationCode());
+        assertEquals(ValuationCode.INDEX, swapDealSnapshot.getDetail().getReceivesValuationCode());
         assertEquals("AECO", swapDealSnapshot.getReceivesPriceIndexId().getCode());
     }
 
@@ -147,17 +147,17 @@ public class FinancialSwapDealReaderTest extends DealCaptureAppSpringTestCase {
         assertEquals(LocalDate.of(2024, 1, 1), swapDealSnapshot.getDealDetail().getStartDate());
         assertEquals(LocalDate.of(2024, 12, 31), swapDealSnapshot.getDealDetail().getEndDate());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(swapDealSnapshot.getDealDetail().getVolumeQuantity()));
-        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getVolumeUnitOfMeasure());
+        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getVolumeUnitOfMeasureCode());
         assertEquals(FrequencyCode.DAILY, swapDealSnapshot.getDealDetail().getVolumeFrequencyCode());
         assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getReportingCurrencyCode());
         assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getSettlementCurrencyCode());
         assertEquals(ValuationCode.INDEX_PLUS, swapDealSnapshot.getDetail().getPaysValuationCode());
         assertEquals("PAYS", swapDealSnapshot.getPaysPriceIndexId().getCode());
-        assertEquals(0, BigDecimal.valueOf(2).compareTo(swapDealSnapshot.getDetail().getFixedPriceValue()));
-        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDetail().getFixedPriceUnitOfMeasure());
-        assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDetail().getFixedPriceCurrencyCode());
+        assertEquals(0, BigDecimal.valueOf(2).compareTo(swapDealSnapshot.getDealDetail().getFixedPriceValue()));
+        assertEquals(UnitOfMeasureCode.GJ, swapDealSnapshot.getDealDetail().getFixedPriceUnitOfMeasureCode());
+        assertEquals(CurrencyCode.CAD, swapDealSnapshot.getDealDetail().getFixedPriceCurrencyCode());
         assertEquals("AECO", swapDealSnapshot.getReceivesPriceIndexId().getCode());
-        assertEquals(ValuationCode.INDEX, swapDealSnapshot.getDetail().getRecievesValuationCode());
+        assertEquals(ValuationCode.INDEX, swapDealSnapshot.getDetail().getReceivesValuationCode());
     }
 
 }

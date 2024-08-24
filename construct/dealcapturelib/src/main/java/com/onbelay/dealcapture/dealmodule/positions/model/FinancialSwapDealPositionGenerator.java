@@ -5,11 +5,11 @@ import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.components.PriceIndexPositionDateContainer;
@@ -22,19 +22,19 @@ import org.apache.logging.log4j.Logger;
 import java.time.LocalDate;
 import java.util.List;
 
-public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
+public class FinancialSwapDealPositionGenerator extends BaseDealPositionGenerator {
     private static final Logger logger = LogManager.getLogger();
 
     public static DealPositionGenerator newGenerator(
             DealSummary dealSummary,
             RiskFactorManager riskFactorManager) {
-        
-        return new PhysicalDealPositionGenerator(
+
+        return new FinancialSwapDealPositionGenerator(
                 dealSummary,
                 riskFactorManager);
     }
 
-    private PhysicalDealPositionGenerator(
+    private FinancialSwapDealPositionGenerator(
             DealSummary dealSummary,
             RiskFactorManager riskFactorManager) {
         super(
@@ -54,13 +54,11 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
         }
    }
 
-   public PhysicalDealSummary getPhysicalDealSummary() {
-        return (PhysicalDealSummary) dealSummary;
+   public FinancialSwapDealSummary getFinancialSwapDealSummary() {
+        return (FinancialSwapDealSummary) dealSummary;
    }
 
     private void generatePositionHoldersFromPowerProfile() {
-
-        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) dealSummary;
 
         if (context.getEndPositionDate().isBefore(context.getStartPositionDate()))
             return;
@@ -78,40 +76,40 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                         powerFlowCode);
 
                     logger.debug("generating position for : " + currentDate);
-                    PhysicalPositionHolder physicalPositionHolder = new PhysicalPositionHolder(physicalDealSummary);
+                    FinancialSwapPositionHolder financialSwapPositionHolder = new FinancialSwapPositionHolder(getFinancialSwapDealSummary());
 
                     setBasePositionHolderAttributes(
-                            physicalPositionHolder,
+                            financialSwapPositionHolder,
                             currentDate);
 
-                    physicalPositionHolder.getDetail().setPowerFlowCode(powerFlowCode);
+                    financialSwapPositionHolder.getDetail().setPowerFlowCode(powerFlowCode);
 
-                    physicalPositionHolder.setHourSlotsForPowerProfile(calculateHourlyQuantitySlots(powerProfilePositionViews.get(0)));
-                    determinePositionQuantityFromPowerProfile(physicalPositionHolder);
+                    financialSwapPositionHolder.setHourSlotsForPowerProfile(calculateHourlyQuantitySlots(powerProfilePositionViews.get(0)));
+                    determinePositionQuantityFromPowerProfile(financialSwapPositionHolder);
 
-                    generateCostPositionHolders(physicalPositionHolder);
+                    generateCostPositionHolders(financialSwapPositionHolder);
 
                     // if deal price valuation is fixed or INDEX Plus
-                    if (getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.FIXED ||
-                            getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
+                    if (getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.FIXED ||
+                            getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.INDEX_PLUS) {
 
-                        determineFixedPrice(physicalPositionHolder);
+                        determineFixedPrice(financialSwapPositionHolder);
 
-                        determineFixedPriceRiskFactors(physicalPositionHolder);
+                        determineFixedPriceRiskFactors(financialSwapPositionHolder);
                     }
 
-                    if (getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX ||
-                            getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
-                        determineDealPriceRiskFactors(physicalPositionHolder);
+                    if (getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.INDEX ||
+                            getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.INDEX_PLUS) {
+                        determinePaysPriceRiskFactors(financialSwapPositionHolder);
                     }
 
                     generateDealHourlyPositionHoldersFromPowerProfile(
-                            physicalPositionHolder,
+                            financialSwapPositionHolder,
                             powerProfilePositionViews,
                             PriceTypeCode.MARKET_PRICE);
 
 
-                    positionHolders.add(physicalPositionHolder);
+                    positionHolders.add(financialSwapPositionHolder);
                 }
             }
             currentDate = currentDate.plusDays(1);
@@ -120,142 +118,137 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
 
     public void generatePositionHoldersDaily() {
 
-        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) dealSummary;
-
         if (context.getEndPositionDate().isBefore(context.getStartPositionDate()))
             return;
 
         LocalDate currentDate = context.getStartPositionDate();
         while (currentDate.isAfter(context.getEndPositionDate()) == false) {
-            PhysicalPositionHolder physicalPositionHolder = new PhysicalPositionHolder(physicalDealSummary);
+            FinancialSwapPositionHolder financialSwapPositionHolder = new FinancialSwapPositionHolder(getFinancialSwapDealSummary());
 
             setBasePositionHolderAttributes(
-                    physicalPositionHolder,
+                    financialSwapPositionHolder,
                     currentDate);
-            physicalPositionHolder.getDetail().setPowerFlowCode(PowerFlowCode.DAILY);
+            financialSwapPositionHolder.getDetail().setPowerFlowCode(PowerFlowCode.DAILY);
 
-            physicalPositionHolder.setHourSlotsForPowerProfile(calculate24HourSlots());
-            determinePositionQuantity(physicalPositionHolder);
+            financialSwapPositionHolder.setHourSlotsForPowerProfile(calculate24HourSlots());
+            determinePositionQuantity(financialSwapPositionHolder);
 
-            generateCostPositionHolders(physicalPositionHolder);
+            generateCostPositionHolders(financialSwapPositionHolder);
 
             // if deal price valuation is fixed or INDEX Plus
-            if (getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.FIXED ||
-                    getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
+            if (getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.FIXED ||
+                    getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.INDEX_PLUS) {
 
-                determineFixedPrice(physicalPositionHolder);
+                determineFixedPrice(financialSwapPositionHolder);
 
-                determineFixedPriceRiskFactors(physicalPositionHolder);
+                determineFixedPriceRiskFactors(financialSwapPositionHolder);
             }
 
-            if (getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX ||
-                    getPhysicalDealSummary().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
-                determineDealPriceRiskFactors(physicalPositionHolder);
+            if (getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.INDEX ||
+                    getFinancialSwapDealSummary().getDetail().getPaysValuationCode() == ValuationCode.INDEX_PLUS) {
+                determinePaysPriceRiskFactors(financialSwapPositionHolder);
             }
 
             // Market
-            determineMarketPriceRiskFactors(physicalPositionHolder);
+            determineReceivesPriceRiskFactors(financialSwapPositionHolder);
 
 
-            positionHolders.add(physicalPositionHolder);
+            positionHolders.add(financialSwapPositionHolder);
             currentDate = currentDate.plusDays(1);
         }
     }
 
 
-    private void determineDealPriceRiskFactors(PhysicalPositionHolder physicalPositionHolder) {
 
-        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) physicalPositionHolder.getDealSummary();
+    private void determinePaysPriceRiskFactors(FinancialSwapPositionHolder financialSwapPositionHolder) {
 
-        PriceIndexSnapshot priceIndexSnapshot = riskFactorManager.findPriceIndex(physicalDealSummary.getDealPriceIndexId());
+
+        PriceIndexSnapshot priceIndexSnapshot = riskFactorManager.findPriceIndex(getFinancialSwapDealSummary().getPaysIndexId());
 
         if (priceIndexSnapshot.getDetail().getFrequencyCode() == FrequencyCode.HOURLY) {
-            physicalPositionHolder.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
+            financialSwapPositionHolder.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
             generateHourlyPositionHolder(
-                    physicalPositionHolder,
-                    PriceTypeCode.DEAL_PRICE,
-                    physicalDealSummary.getDealPriceIndexId());
+                    financialSwapPositionHolder,
+                    PriceTypeCode.PAYS_PRICE,
+                    getFinancialSwapDealSummary().getPaysIndexId());
         } else {
-            physicalPositionHolder.setDealPriceRiskFactorHolder(
+            financialSwapPositionHolder.setPaysPriceRiskFactorHolder(
                     riskFactorManager.determinePriceRiskFactor(
-                            physicalDealSummary.getDealPriceIndexId(),
-                            physicalPositionHolder.getDetail().getStartDate()));
+                            getFinancialSwapDealSummary().getPaysIndexId(),
+                            financialSwapPositionHolder.getDetail().getStartDate()));
         }
 
         if (priceIndexSnapshot.getDetail().getCurrencyCode() != context.getCurrencyCode()) {
-            physicalPositionHolder.setDealPriceFxHolder(
+            financialSwapPositionHolder.setPaysFxHolder(
                     riskFactorManager.determineFxRiskFactor(
                             priceIndexSnapshot.getDetail().getCurrencyCode(),
                             context.getCurrencyCode(),
-                            physicalPositionHolder.getDetail().getStartDate()));
+                            financialSwapPositionHolder.getDetail().getStartDate()));
         }
 
         PriceIndexPositionDateContainer priceIndexContainer = riskFactorManager
-                .findPriceIndexContainer(physicalDealSummary.getDealPriceIndexId());
+                .findPriceIndexContainer(getFinancialSwapDealSummary().getPaysIndexId());
 
         // Collect basis containers
         if (priceIndexContainer.isBasis()) {
-            physicalPositionHolder.setBasisDealPriceHolders(
+            financialSwapPositionHolder.setBasisPaysPriceHolders(
                     determineBasisPriceRiskFactors(
-                            physicalPositionHolder.getDetail().getStartDate(),
-                            physicalDealSummary.getDealPriceIndexId()));
+                            financialSwapPositionHolder.getDetail().getStartDate(),
+                            getFinancialSwapDealSummary().getPaysIndexId()));
         }
     }
 
+    private void determineReceivesPriceRiskFactors(FinancialSwapPositionHolder financialSwapPositionHolder) {
 
-    private void determineMarketPriceRiskFactors(PhysicalPositionHolder physicalPositionHolder) {
 
-        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) physicalPositionHolder.getDealSummary();
-
-        PriceIndexSnapshot priceIndexSnapshot = riskFactorManager.findPriceIndex(physicalDealSummary.getMarketIndexId());
+        PriceIndexSnapshot priceIndexSnapshot = riskFactorManager.findPriceIndex(getFinancialSwapDealSummary().getReceivesIndexId());
 
         if (priceIndexSnapshot.getDetail().getFrequencyCode() == FrequencyCode.HOURLY) {
-            physicalPositionHolder.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
+            financialSwapPositionHolder.getDetail().setPowerFlowCode(PowerFlowCode.HOURLY);
             generateHourlyPositionHolder(
-                    physicalPositionHolder,
-                    PriceTypeCode.MARKET_PRICE,
-                    physicalDealSummary.getMarketIndexId());
+                    financialSwapPositionHolder,
+                    PriceTypeCode.RECEIVES_PRICE,
+                    getFinancialSwapDealSummary().getReceivesIndexId());
         } else {
 
-            PriceRiskFactorHolder marketRiskFactorHolder = riskFactorManager.determinePriceRiskFactor(
-                    physicalDealSummary.getMarketIndexId(),
-                    physicalPositionHolder.getDetail().getStartDate());
+            PriceRiskFactorHolder receivesRiskFactorHolder = riskFactorManager.determinePriceRiskFactor(
+                    getFinancialSwapDealSummary().getReceivesIndexId(),
+                    financialSwapPositionHolder.getDetail().getStartDate());
 
-            physicalPositionHolder.setMarketRiskFactorHolder(marketRiskFactorHolder);
+            financialSwapPositionHolder.setReceivesPriceRiskFactorHolder(receivesRiskFactorHolder);
         }
 
 
         if (priceIndexSnapshot.getDetail().getCurrencyCode() != context.getCurrencyCode()) {
-            physicalPositionHolder.setMarketFxHolder(
+            financialSwapPositionHolder.setReceivesFxHolder(
                     riskFactorManager.determineFxRiskFactor(
                             priceIndexSnapshot.getDetail().getCurrencyCode(),
                             context.getCurrencyCode(),
-                            physicalPositionHolder.getDetail().getStartDate()));
+                            financialSwapPositionHolder.getDetail().getStartDate()));
 
         }
 
         PriceIndexPositionDateContainer priceIndexContainer = riskFactorManager
                 .findPriceIndexContainer(
-                        physicalDealSummary.getMarketIndexId());
+                        getFinancialSwapDealSummary().getReceivesIndexId());
 
         // Collect basis containers
         if (priceIndexContainer.isBasis()) {
-            physicalPositionHolder.setBasisMarketHolders(
+            financialSwapPositionHolder.setBasisReceivesHolders(
                     determineBasisPriceRiskFactors(
-                        physicalPositionHolder.getDetail().getStartDate(),
-                        physicalDealSummary.getMarketIndexId()));
+                        financialSwapPositionHolder.getDetail().getStartDate(),
+                            getFinancialSwapDealSummary().getReceivesIndexId()));
         }
     }
 
     @Override
     public PositionGenerationResult generatePositionSnapshots() {
 
-        PhysicalDealSummary physicalDealSummary = (PhysicalDealSummary) dealSummary;
         PositionGenerationResult generationResult = new PositionGenerationResult();
 
         for (BasePositionHolder positionHolder : positionHolders) {
-            PhysicalPositionHolder physicalPositionHolder = (PhysicalPositionHolder) positionHolder;
-            PhysicalPositionSnapshot positionSnapshot = new PhysicalPositionSnapshot();
+            FinancialSwapPositionHolder financialSwapPositionHolder = (FinancialSwapPositionHolder) positionHolder;
+            FinancialSwapPositionSnapshot positionSnapshot = new FinancialSwapPositionSnapshot();
 
             positionSnapshot.setDealId(new EntityId(positionHolder.getDealSummary().getId()));
             positionSnapshot.getDetail().copyFrom(positionHolder.getDetail());
@@ -319,9 +312,9 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 hourlyPositionSnapshot.getDetail().setPriceTypeCode(PriceTypeCode.FIXED_PRICE);
                 hourlyPositionSnapshot.getDetail().setStartDate(positionSnapshot.getDetail().getStartDate());
                 hourlyPositionSnapshot.getDetail().setEndDate(positionSnapshot.getDetail().getEndDate());
-                hourlyPositionSnapshot.getDetail().setCurrencyCode(physicalDealSummary.getDealDetail().getFixedPriceCurrencyCode());
+                hourlyPositionSnapshot.getDetail().setCurrencyCode(getFinancialSwapDealSummary().getDealDetail().getFixedPriceCurrencyCode());
                 hourlyPositionSnapshot.getDetail().setIsSettlementPosition(positionSnapshot.getSettlementDetail().getIsSettlementPosition());
-                hourlyPositionSnapshot.getDetail().setUnitOfMeasure(physicalDealSummary.getDealDetail().getFixedPriceUnitOfMeasureCode());
+                hourlyPositionSnapshot.getDetail().setUnitOfMeasure(getFinancialSwapDealSummary().getDealDetail().getFixedPriceUnitOfMeasureCode());
                 hourlyPositionSnapshot.getDetail().setCreatedDateTime(context.getCreatedDateTime());
                 hourlyPositionSnapshot.setDealId(new EntityId(dealSummary.getId()));
                 hourlyPositionSnapshot.getDetail().setErrorCode("0");
@@ -336,18 +329,18 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 }
             }
 
-            // Market Price
-            if (physicalPositionHolder.getMarketRiskFactorHolder() != null)
-                positionSnapshot.setMarketPriceRiskFactorId(physicalPositionHolder.getMarketRiskFactorHolder().getRiskFactor().getEntityId());
+            // Receives Price
+            if (financialSwapPositionHolder.getReceivesPriceRiskFactorHolder() != null)
+                positionSnapshot.setReceivesPriceRiskFactorId(financialSwapPositionHolder.getReceivesPriceRiskFactorHolder().getRiskFactor().getEntityId());
 
-            if (physicalPositionHolder.getMarketFxHolder() != null) {
-                positionSnapshot.setMarketPriceFxRiskFactorId(
-                        physicalPositionHolder.getMarketFxHolder().getRiskFactor().getEntityId());
+            if (financialSwapPositionHolder.getReceivesFxHolder() != null) {
+                positionSnapshot.setReceivesFxRiskFactorId(
+                        financialSwapPositionHolder.getReceivesFxHolder().getRiskFactor().getEntityId());
             }
 
-            for (PriceRiskFactorHolder factorHolder : physicalPositionHolder.getBasisMarketHolders()) {
+            for (PriceRiskFactorHolder factorHolder : financialSwapPositionHolder.getBasisReceivesHolders()) {
                 PositionRiskFactorMappingSnapshot mapping = new PositionRiskFactorMappingSnapshot();
-                mapping.getDetail().setPriceTypeCode(PriceTypeCode.MARKET_PRICE);
+                mapping.getDetail().setPriceTypeCode(PriceTypeCode.RECEIVES_PRICE);
                 mapping.setPriceRiskFactorId(factorHolder.getRiskFactor().getEntityId());
 
                 if (factorHolder.getFxRiskFactorHolder() != null)
@@ -355,24 +348,24 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 positionSnapshot.addRiskFactorMappingSnapshot(mapping);
             }
 
-            // Deal Price
+            // Pays Price
 
-            if (physicalPositionHolder.getFixedPriceFxHolder() != null) {
-                positionSnapshot.setFixedPriceFxRiskFactorId(physicalPositionHolder.getFixedPriceFxHolder().getRiskFactor().getEntityId());
+            if (financialSwapPositionHolder.getFixedPriceFxHolder() != null) {
+                positionSnapshot.setFixedPriceFxRiskFactorId(financialSwapPositionHolder.getFixedPriceFxHolder().getRiskFactor().getEntityId());
             }
 
-            if (physicalPositionHolder.getDealPriceRiskFactorHolder() != null) {
-                positionSnapshot.setDealPriceRiskFactorId(physicalPositionHolder.getDealPriceRiskFactorHolder().getRiskFactor().getEntityId());
+            if (financialSwapPositionHolder.getPaysPriceRiskFactorHolder() != null) {
+                positionSnapshot.setPaysPriceRiskFactorId(financialSwapPositionHolder.getPaysPriceRiskFactorHolder().getRiskFactor().getEntityId());
             }
 
-            if (physicalPositionHolder.getDealPriceFxHolder() != null) {
-                positionSnapshot.setDealPriceFxRiskFactorId(physicalPositionHolder.getDealPriceFxHolder().getRiskFactor().getEntityId());
+            if (financialSwapPositionHolder.getPaysFxHolder() != null) {
+                positionSnapshot.setPaysFxRiskFactorId(financialSwapPositionHolder.getPaysFxHolder().getRiskFactor().getEntityId());
             }
 
 
-            for (PriceRiskFactorHolder factorHolder : physicalPositionHolder.getBasisDealPriceHolders()) {
+            for (PriceRiskFactorHolder factorHolder : financialSwapPositionHolder.getBasisPaysPriceHolders()) {
                 PositionRiskFactorMappingSnapshot mapping = new PositionRiskFactorMappingSnapshot();
-                mapping.getDetail().setPriceTypeCode(PriceTypeCode.DEAL_PRICE);
+                mapping.getDetail().setPriceTypeCode(PriceTypeCode.PAYS_PRICE);
 
                 mapping.setPriceRiskFactorId(factorHolder.getRiskFactor().getEntityId());
                 if (factorHolder.getFxRiskFactorHolder() != null)

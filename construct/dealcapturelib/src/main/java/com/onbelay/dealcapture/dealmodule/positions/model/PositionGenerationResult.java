@@ -45,7 +45,7 @@ public class PositionGenerationResult {
         this.dealHourlyPositionSnapshots = dealHourlyPositionSnapshots;
     }
 
-    public void addDealPositionSnapshot(PhysicalPositionSnapshot positionSnapshot) {
+    public void addDealPositionSnapshot(DealPositionSnapshot positionSnapshot) {
         dealPositionSnapshots.add(positionSnapshot);
     }
 }

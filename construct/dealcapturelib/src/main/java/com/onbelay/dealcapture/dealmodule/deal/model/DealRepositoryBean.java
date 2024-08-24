@@ -23,9 +23,6 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -40,11 +37,10 @@ import java.util.List;
 
 public class DealRepositoryBean extends BaseRepository<BaseDeal> implements DealRepository {
 	public static final String FETCH_ALL_DEALS = "DealRepository.FETCH_ALL_DEALS";
+	public static final String FETCH_DEAL_SUMMARIES = "DealRepository.FETCH_DEAL_SUMMARIES" ;
 	public static final String FETCH_ASSIGNED_DEAL_SUMMARIES = "DealRepository.FETCH_ASSIGNED_DEAL_SUMMARIES";
 	public static final String FIND_DEAL_BY_TICKET_NO = "DealRepository.FIND_DEAL_BY_TICKET_NO";
 	public static final String GET_DEAL_SUMMARY = "DealRepository.GET_DEAL_SUMMARY";
-    public static final String FETCH_PHYSICAL_DEAL_SUMMARIES = "DealRepository.FETCH_PHYSICAL_DEAL_SUMMARIES" ;
-	public static final String FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES = "DealRepository.FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES" ;
 
     private static final String UPDATE_DEAL_POSITION_GENERATION_STATUS
 			= "UPDATE BaseDeal  " +
@@ -153,45 +149,22 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 	}
 
 	@Override
-	public List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds) {
+	public List<DealSummary> fetchDealSummariesByIds(List<Integer> dealIds) {
 
-		if (physicalDealIds.size() < 2000) {
-			return (List<PhysicalDealSummary>) executeReportQuery(
-					FETCH_PHYSICAL_DEAL_SUMMARIES,
+		if (dealIds.size() < 2000) {
+			return (List<DealSummary>) executeReportQuery(
+					FETCH_DEAL_SUMMARIES,
 					"dealIds",
-					physicalDealIds);
+					dealIds);
 		} else {
-			SubLister<Integer> subLister = new SubLister<>(physicalDealIds, 2000);
-			ArrayList<PhysicalDealSummary> summaries = new ArrayList<>();
+			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
+			ArrayList<DealSummary> summaries = new ArrayList<>();
 			while (subLister.moreElements()) {
 				summaries.addAll(
-                        (Collection<? extends PhysicalDealSummary>) executeReportQuery(
-                            FETCH_PHYSICAL_DEAL_SUMMARIES,
+                        (Collection<? extends DealSummary>) executeReportQuery(
+                            FETCH_DEAL_SUMMARIES,
                             "dealIds",
                             subLister.nextList()));
-			}
-			return summaries;
-		}
-	}
-
-
-	@Override
-	public List<FinancialSwapDealSummary> findFinancialDealSummariesByIds(List<Integer> swapDealIds) {
-
-		if (swapDealIds.size() < 2000) {
-			return (List<FinancialSwapDealSummary>) executeReportQuery(
-					FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES,
-					"dealIds",
-					swapDealIds);
-		} else {
-			SubLister<Integer> subLister = new SubLister<>(swapDealIds, 2000);
-			ArrayList<FinancialSwapDealSummary> summaries = new ArrayList<>();
-			while (subLister.moreElements()) {
-				summaries.addAll(
-						(  (List<FinancialSwapDealSummary>)executeReportQuery(
-								FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES,
-								"dealIds",
-								subLister.nextList())));
 			}
 			return summaries;
 		}
