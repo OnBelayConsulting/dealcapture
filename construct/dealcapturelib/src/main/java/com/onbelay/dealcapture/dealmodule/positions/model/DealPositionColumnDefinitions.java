@@ -25,12 +25,16 @@ import org.springframework.stereotype.Component;
 public class DealPositionColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeValue");
 	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "deal.dealDetail.ticketNo");
+	public static final ColumnDefinition startDate = new ColumnDefinition("startDate", ColumnDataType.DATE, "detail.startDate");
+	public static final ColumnDefinition endDate = new ColumnDefinition("endDate", ColumnDataType.DATE, "detail.endDate");
 	public static final ColumnDefinition companyShortName = new ColumnDefinition("companyShortName", ColumnDataType.STRING, "deal.companyRole.detail.shortName");
 	public static final ColumnDefinition counterpartyShortName = new ColumnDefinition("counterpartyShortName", ColumnDataType.STRING, "deal.counterpartyRole.detail.shortName");
 
 	public DealPositionColumnDefinitions() {
 		add(dealType);
 		add(ticketNo);
+		add(startDate);
+		add(endDate);
 		add(companyShortName);
 		add(counterpartyShortName);
 	}

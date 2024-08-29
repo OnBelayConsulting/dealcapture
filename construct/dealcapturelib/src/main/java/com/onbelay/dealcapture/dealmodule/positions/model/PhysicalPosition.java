@@ -5,6 +5,7 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionDetail;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionPriceDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
@@ -22,6 +23,8 @@ public class PhysicalPosition extends DealPosition {
     private PriceRiskFactor marketPriceRiskFactor;
     private FxRiskFactor marketPriceFxRiskFactor;
 
+    private PhysicalPositionPriceDetail priceDetail = new PhysicalPositionPriceDetail();
+
     public PhysicalPosition() {
         super(DealTypeCode.PHYSICAL_DEAL.getCode());
 
@@ -31,6 +34,7 @@ public class PhysicalPosition extends DealPosition {
     public void createWith(DealPositionSnapshot snapshot) {
         super.createWith(snapshot);
         PhysicalPositionSnapshot physicalPositionSnapshot = (PhysicalPositionSnapshot) snapshot;
+        priceDetail.copyFrom(physicalPositionSnapshot.getPriceDetail());
         setAssociations(physicalPositionSnapshot);
         save();
         postCreateWith(snapshot);
@@ -41,6 +45,7 @@ public class PhysicalPosition extends DealPosition {
     public void updateWith(DealPositionSnapshot snapshot) {
         super.updateWith(snapshot);
         PhysicalPositionSnapshot physicalPositionSnapshot = (PhysicalPositionSnapshot) snapshot;
+        priceDetail.copyFrom(physicalPositionSnapshot.getPriceDetail());
         setAssociations(physicalPositionSnapshot);
         postCreateWith(snapshot);
         update();
@@ -62,6 +67,15 @@ public class PhysicalPosition extends DealPosition {
             this.marketPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getMarketPriceFxRiskFactorId());
 
 
+    }
+
+    @Embedded
+    public PhysicalPositionPriceDetail getPriceDetail() {
+        return priceDetail;
+    }
+
+    public void setPriceDetail(PhysicalPositionPriceDetail priceDetail) {
+        this.priceDetail = priceDetail;
     }
 
     @ManyToOne(fetch = FetchType.EAGER)

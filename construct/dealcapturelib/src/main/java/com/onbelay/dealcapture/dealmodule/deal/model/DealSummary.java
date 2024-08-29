@@ -31,11 +31,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-//@Entity
-//@Table(name = "DEAL_SUMMARY_VIEW")
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "DEAL_TYPE_CODE")
-//@Immutable
+@Entity
+@Table(name = "DEAL_SUMMARY_VIEW")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DEAL_TYPE_CODE")
+@Immutable
 @NamedQueries({
 		@NamedQuery(
 				name = DealRepositoryBean.FETCH_ASSIGNED_DEAL_SUMMARIES,

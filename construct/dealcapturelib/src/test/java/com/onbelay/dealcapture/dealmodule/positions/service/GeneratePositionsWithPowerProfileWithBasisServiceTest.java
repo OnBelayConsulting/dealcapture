@@ -2,7 +2,6 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
@@ -73,8 +72,8 @@ public class GeneratePositionsWithPowerProfileWithBasisServiceTest extends Posit
         assertEquals(107, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
 
 
         List<DealHourlyPositionSnapshot>  hourlyPositionSnapshots = dealPositionService.findHourlyPositionsByDeal(fixedPriceMarketPowerProfileDeal.generateEntityId());
@@ -121,7 +120,7 @@ public class GeneratePositionsWithPowerProfileWithBasisServiceTest extends Posit
 
         assertEquals(91, positionSnapshots.size());
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexSellMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNull(positionSnapshot.getMarketPriceRiskFactorId());
 
 

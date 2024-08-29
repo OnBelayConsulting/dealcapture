@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
@@ -51,19 +50,19 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
         assertEquals(31, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getPositionDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getPositionDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getPositionDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getPositionDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getPositionDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getPositionDetail().getErrorCode());
 
         assertEquals(0,
                 fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getFixedPriceValue()));
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
 
         assertEquals(false, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
 
@@ -112,7 +111,7 @@ public class GeneratePositionsServiceWithMthlyFXTest extends PositionsServiceWit
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
 
         assertNull(positionSnapshot.getDealPriceFxRiskFactorId());
 

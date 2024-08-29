@@ -8,8 +8,9 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
-import com.onbelay.dealcapture.dealmodule.positions.component.DealPositionColumnType;
+import com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter.DealPositionColumnType;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
+import com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter.PhysicalPositionColumnType;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -45,6 +46,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -261,14 +263,18 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
         flush();
         clearCache();
 
-        FileReportResult fileReportResult = dealPositionRestAdapter.findPositionsAsCSV(query, 0, 500);
+        String positionQuery = query + " ORDER BY startDate";
+        FileReportResult fileReportResult = dealPositionRestAdapter.findPositionsAsCSV(positionQuery, 0, 500);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(fileReportResult.getDocumentInBytes());
+        ArrayList<String> list = new ArrayList<>(DealPositionColumnType.getAsList());
+        list.addAll(PhysicalPositionColumnType.getAsList());
+        String[] header =  list.toArray(new String[0]);
 
         try (InputStreamReader reader = new InputStreamReader(inputStream)) {
             CSVParser parser = new CSVParser(
                     reader,
                     CSVFormat.EXCEL.builder()
-                            .setHeader(DealPositionColumnType.getAsArray())
+                            .setHeader(header)
                             .setSkipHeaderRecord(true)
                             .build());
 
@@ -283,26 +289,24 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
             assertEquals("2023-01-01", record.get(DealPositionColumnType.END_DATE.getCode()));
             assertEquals("D", record.get(DealPositionColumnType.FREQUENCY.getCode()));
             assertEquals("CAD", record.get(DealPositionColumnType.CURRENCY.getCode()));
-            assertEquals("10.000",  record.get(DealPositionColumnType.VOL_QUANTITY.getCode()));
+            assertEquals("10.00",  record.get(DealPositionColumnType.VOL_QUANTITY.getCode()));
             assertEquals("GJ", record.get(DealPositionColumnType.VOL_UNIT_OF_MEASURE.getCode()));
-            record.get(DealPositionColumnType.POWER_FLOW_CODE.getCode());
+            assertEquals("DAILY",record.get(DealPositionColumnType.POWER_FLOW_CODE.getCode()));
             assertEquals("2023-01-01T01:00", record.get(DealPositionColumnType.CREATED_DATE_TIME.getCode()));
             assertNotNull(record.get(DealPositionColumnType.VALUED_DATE_TIME.getCode()));
-            assertEquals("FIXED", record.get(DealPositionColumnType.DEAL_PRICE_VALUATION_CODE.getCode()));
-            assertEquals("1.000", record.get(DealPositionColumnType.DEAL_PRICE.getCode()));
-            assertEquals("", record.get(DealPositionColumnType.DEAL_INDEX_NAME.getCode()));
-            assertEquals("", record.get(DealPositionColumnType.DEAL_INDEX_PRICE.getCode()));
-            assertEquals("1.000", record.get(DealPositionColumnType.TOTAL_DEAL_PRICE.getCode()));
-            assertEquals("INDEX", record.get(DealPositionColumnType.MARKET_VALUATION_CODE.getCode()));
-            assertEquals("ACEE", record.get(DealPositionColumnType.MARKET_INDEX_NAME.getCode()));
-            assertEquals("10.000", record.get(DealPositionColumnType.MARKET_PRICE.getCode()));
-            assertEquals("-90.000", record.get(DealPositionColumnType.MTM_AMT.getCode()));
+            assertEquals("-90.00", record.get(DealPositionColumnType.MTM_AMT.getCode()));
             assertEquals("CAD", record.get(DealPositionColumnType.SETTLEMENT_CURRENCY.getCode()));
-            assertEquals("0.000", record.get(DealPositionColumnType.COST_SETTLEMENT_AMT.getCode()));
-            assertEquals("10.000", record.get(DealPositionColumnType.SETTLEMENT_AMT.getCode()));
-            assertEquals("10.000", record.get(DealPositionColumnType.TOTAL_SETTLEMENT_AMT.getCode()));
+            assertEquals("0.00", record.get(DealPositionColumnType.COST_SETTLEMENT_AMT.getCode()));
+            assertEquals("10.00", record.get(DealPositionColumnType.SETTLEMENT_AMT.getCode()));
+            assertEquals("10.00", record.get(DealPositionColumnType.TOTAL_SETTLEMENT_AMT.getCode()));
             assertEquals("0", record.get(DealPositionColumnType.ERROR_CODE.getCode()));
             assertEquals("", record.get(DealPositionColumnType.ERROR_MSG.getCode()));
+            assertEquals("FIXED", record.get(PhysicalPositionColumnType.DEAL_PRICE_VALUATION_CODE.getCode()));
+            assertEquals("1.000", record.get(PhysicalPositionColumnType.DEAL_PRICE.getCode()));
+            assertEquals("", record.get(PhysicalPositionColumnType.DEAL_INDEX_PRICE.getCode()));
+            assertEquals("1.000", record.get(PhysicalPositionColumnType.TOTAL_DEAL_PRICE.getCode()));
+            assertEquals("INDEX", record.get(PhysicalPositionColumnType.MARKET_VALUATION_CODE.getCode()));
+            assertEquals("10.000", record.get(PhysicalPositionColumnType.MARKET_PRICE.getCode()));
             parser.close();
         } catch (IOException e) {
             throw new OBRuntimeException(DealErrorCode.MISSING_DEAL_STATUS.getCode());

@@ -3,7 +3,6 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
@@ -81,7 +80,7 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
 
 
     @Test
-    public void generatePhysicalPositionsWithFixedDealPrice() {
+    public void generateAndValuePhysicalPositionsWithFixedDealPrice() {
 
         dealService.updateDealPositionGenerationStatusToPending(List.of(fixedPriceSellDeal.getId()));
 
@@ -107,12 +106,6 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         flush();
         clearCache();
 
-        List<PriceRiskFactorSnapshot> riskFactorSnapshots = priceRiskFactorService.findByPriceIndexIds(
-                List.of(dealPriceHourlyIndex.getId()),
-                fromMarketDate,
-                toMarketDate);
-
-
         fxRiskFactorService.valueRiskFactors(
                 new DefinedQuery("FxRiskFactor"),
                 LocalDateTime.now());
@@ -137,18 +130,18 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         assertEquals(1, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getPositionDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getPositionDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getPositionDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getPositionDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getPositionDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getPositionDetail().getErrorCode());
         assertEquals(0,
                 fixedPriceSellDeal.getDealDetail().getFixedPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getFixedPriceValue()));
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
@@ -162,10 +155,12 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
 
         DealHourlyPositionSnapshot hourlyPositionSnapshot = (DealHourlyPositionSnapshot) hourlyPositionSnapshots.get(0);
 
-        PriceRiskFactorSnapshot marketRiskFactor = priceRiskFactorService.findByPriceIndexIds(
-                List.of(marketHourlyIndex.getId()),
-                startDate,
-                endDate).get(0);
+        List<PriceRiskFactorSnapshot> marketRiskFactors = priceRiskFactorService.findByMarketDate(
+                marketHourlyIndex.generateEntityId(),
+                startDate);
+        assertEquals(24, marketRiskFactors.size());
+        PriceRiskFactorSnapshot marketRiskFactor = (PriceRiskFactorSnapshot) marketRiskFactors.get(0);
+        assertEquals(1, marketRiskFactor.getDetail().getHourEnding());
 
         assertEquals(marketRiskFactor.getEntityId().getId(), hourlyPositionSnapshot.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(1));
         assertNull(positionSnapshot.getMarketPriceRiskFactorId());
@@ -234,19 +229,19 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         assertEquals(1, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.valueOf(177.917).compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getPositionDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getPositionDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getPositionDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.valueOf(177.917).compareTo(positionSnapshot.getPositionDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getPositionDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getPositionDetail().getErrorCode());
 
         assertEquals(0,
                 fixedPriceSellDeal.getDealDetail().getFixedPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getFixedPriceValue()));
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
@@ -335,17 +330,17 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
         assertEquals(1, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceHourlySellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceHourlySellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceHourlySellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceHourlySellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.valueOf(48).compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getPositionDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getPositionDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getPositionDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.valueOf(48).compareTo(positionSnapshot.getPositionDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getPositionDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getPositionDetail().getErrorCode());
 
-        assertEquals(0,BigDecimal.valueOf(3.583).compareTo(positionSnapshot.getDetail().getFixedPriceValue()));
+        assertEquals(0,BigDecimal.valueOf(3.583).compareTo(positionSnapshot.getPositionDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
@@ -412,7 +407,7 @@ public class ValueHourlyPositionsServiceTest extends PositionsServiceWithHourlyT
 
         assertEquals(1, positionSnapshots.size());
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNull(positionSnapshot.getMarketPriceRiskFactorId());
 
 

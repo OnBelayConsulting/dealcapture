@@ -23,12 +23,12 @@ import org.springframework.stereotype.Component;
 
 @Component(value = "dealPositionViewColumnDefinitions")
 public class DealPositionViewColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
-	public static final ColumnDefinition startDate = new ColumnDefinition("startDate", ColumnDataType.DATE, "detail.startDate");
-	public static final ColumnDefinition endDate = new ColumnDefinition("endDate", ColumnDataType.DATE, "detail.endDate");
-	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "detail.dealTypeCodeValue");
-	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "detail.ticketNo");
-	public static final ColumnDefinition createdDateTime = new ColumnDefinition("createdDateTime", ColumnDataType.DATE_TIME, "detail.createdDateTime");
-	public static final ColumnDefinition currency = new ColumnDefinition("currency", ColumnDataType.STRING, "detail.currencyCodeValue");
+	public static final ColumnDefinition startDate = new ColumnDefinition("startDate", ColumnDataType.DATE, "viewDetail.startDate");
+	public static final ColumnDefinition endDate = new ColumnDefinition("endDate", ColumnDataType.DATE, "viewDetail.endDate");
+	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "viewDetail.dealTypeCodeValue");
+	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "viewDetail.ticketNo");
+	public static final ColumnDefinition createdDateTime = new ColumnDefinition("createdDateTime", ColumnDataType.DATE_TIME, "viewDetail.createdDateTime");
+	public static final ColumnDefinition currency = new ColumnDefinition("currency", ColumnDataType.STRING, "viewDetail.currencyCodeValue");
 
 	public DealPositionViewColumnDefinitions() {
 		add(startDate);

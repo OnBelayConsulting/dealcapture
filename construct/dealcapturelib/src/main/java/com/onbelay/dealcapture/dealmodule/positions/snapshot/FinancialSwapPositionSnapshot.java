@@ -13,9 +13,18 @@ public class FinancialSwapPositionSnapshot extends DealPositionSnapshot {
 
     private EntityId paysFxRiskFactorId;
 
+    private FinancialSwapPositionPriceDetail priceDetail = new FinancialSwapPositionPriceDetail();
 
     public FinancialSwapPositionSnapshot() {
-        super(DealTypeCode.PHYSICAL_DEAL);
+        super(DealTypeCode.FINANCIAL_SWAP);
+    }
+
+    public FinancialSwapPositionPriceDetail getPriceDetail() {
+        return priceDetail;
+    }
+
+    public void setPriceDetail(FinancialSwapPositionPriceDetail priceDetail) {
+        this.priceDetail = priceDetail;
     }
 
     public EntityId getReceivesPriceRiskFactorId() {

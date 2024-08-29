@@ -13,6 +13,15 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     private EntityId dealPriceFxRiskFactorId;
 
+    private PhysicalPositionPriceDetail priceDetail = new PhysicalPositionPriceDetail();
+
+    public PhysicalPositionPriceDetail getPriceDetail() {
+        return priceDetail;
+    }
+
+    public void setPriceDetail(PhysicalPositionPriceDetail priceDetail) {
+        this.priceDetail = priceDetail;
+    }
 
     public PhysicalPositionSnapshot() {
         super(DealTypeCode.PHYSICAL_DEAL);

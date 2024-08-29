@@ -15,7 +15,7 @@
  */
 package com.onbelay.dealcapture.batch;
 
-public abstract class BaseSqlMapper implements OBSqlMapper {
+public abstract class BaseSqlMapper implements InsertSqlMapper {
 
 	protected final  boolean isAddPrimaryKey;
 

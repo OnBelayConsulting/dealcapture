@@ -3,6 +3,7 @@ package com.onbelay.dealcapture.dealmodule.positions.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionPriceDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
 import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
@@ -19,6 +20,8 @@ public class FinancialSwapPosition extends DealPosition {
     private PriceRiskFactor receivesPriceRiskFactor;
     private FxRiskFactor receivesFxRiskFactor;
 
+    private FinancialSwapPositionPriceDetail priceDetail = new FinancialSwapPositionPriceDetail();
+
     public FinancialSwapPosition() {
         super(DealTypeCode.FINANCIAL_SWAP.getCode());
 
@@ -28,6 +31,7 @@ public class FinancialSwapPosition extends DealPosition {
     public void createWith(DealPositionSnapshot snapshot) {
         super.createWith(snapshot);
         FinancialSwapPositionSnapshot financialSwapPositionSnapshot = (FinancialSwapPositionSnapshot) snapshot;
+        priceDetail.copyFrom(financialSwapPositionSnapshot.getPriceDetail());
         setAssociations(financialSwapPositionSnapshot);
         save();
         postCreateWith(snapshot);
@@ -38,9 +42,19 @@ public class FinancialSwapPosition extends DealPosition {
     public void updateWith(DealPositionSnapshot snapshot) {
         super.updateWith(snapshot);
         FinancialSwapPositionSnapshot financialSwapPositionSnapshot = (FinancialSwapPositionSnapshot) snapshot;
+        priceDetail.copyFrom(financialSwapPositionSnapshot.getPriceDetail());
         setAssociations(financialSwapPositionSnapshot);
         postCreateWith(snapshot);
         update();
+    }
+
+    @Embedded
+    public FinancialSwapPositionPriceDetail getPriceDetail() {
+        return priceDetail;
+    }
+
+    public void setPriceDetail(FinancialSwapPositionPriceDetail priceDetail) {
+        this.priceDetail = priceDetail;
     }
 
     private void setAssociations(FinancialSwapPositionSnapshot snapshot) {

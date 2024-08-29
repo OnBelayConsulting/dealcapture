@@ -2,7 +2,6 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
@@ -114,7 +113,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
 
         assertEquals(0,
                 fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getFixedPriceValue()));
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(0, BigDecimal.valueOf(8.4).compareTo(positionSnapshot.getSettlementDetail().getMarkToMarketValuation()));
@@ -381,7 +380,7 @@ public class ValuePositionsServiceWithFXTest extends PositionsServiceWithFxTestC
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

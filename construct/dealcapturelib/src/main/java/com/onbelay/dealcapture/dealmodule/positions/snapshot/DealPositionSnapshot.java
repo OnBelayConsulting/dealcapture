@@ -28,7 +28,7 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
 
     private EntityId dealId;
 
-    private DealPositionDetail detail = new DealPositionDetail();
+    private DealPositionDetail positionDetail = new DealPositionDetail();
 
     private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
 
@@ -91,12 +91,12 @@ public abstract class DealPositionSnapshot extends AbstractSnapshot {
     }
 
 
-    public DealPositionDetail getDetail() {
-        return detail;
+    public DealPositionDetail getPositionDetail() {
+        return positionDetail;
     }
 
-    public void setDetail(DealPositionDetail detail) {
-        this.detail = detail;
+    public void setPositionDetail(DealPositionDetail positionDetail) {
+        this.positionDetail = positionDetail;
     }
 
     public PositionSettlementDetail getSettlementDetail() {

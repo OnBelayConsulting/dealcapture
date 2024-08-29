@@ -258,9 +258,9 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
             PhysicalPositionSnapshot positionSnapshot = new PhysicalPositionSnapshot();
 
             positionSnapshot.setDealId(new EntityId(positionHolder.getDealSummary().getId()));
-            positionSnapshot.getDetail().copyFrom(positionHolder.getDetail());
+            positionSnapshot.getPositionDetail().copyFrom(positionHolder.getDetail());
             positionSnapshot.getSettlementDetail().copyFrom(positionHolder.getSettlementDetail());
-            positionSnapshot.getDetail().setErrorCode("0");
+            positionSnapshot.getPositionDetail().setErrorCode("0");
 
 
             for (DealHourlyPositionHolder hourlyPositionHolder : positionHolder.getHourlyPositionHolders()) {
@@ -294,11 +294,11 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 DealHourlyPositionSnapshot hourlyPositionSnapshot = new DealHourlyPositionSnapshot();
                 hourlyPositionSnapshot.getDetail().setPowerFlowCode(positionHolder.getDetail().getPowerFlowCode());
                 hourlyPositionSnapshot.getDetail().setPriceTypeCode(PriceTypeCode.FIXED_QUANTITY);
-                hourlyPositionSnapshot.getDetail().setStartDate(positionSnapshot.getDetail().getStartDate());
-                hourlyPositionSnapshot.getDetail().setEndDate(positionSnapshot.getDetail().getEndDate());
-                hourlyPositionSnapshot.getDetail().setCurrencyCode(positionSnapshot.getDetail().getCurrencyCode());
+                hourlyPositionSnapshot.getDetail().setStartDate(positionSnapshot.getPositionDetail().getStartDate());
+                hourlyPositionSnapshot.getDetail().setEndDate(positionSnapshot.getPositionDetail().getEndDate());
+                hourlyPositionSnapshot.getDetail().setCurrencyCode(positionSnapshot.getPositionDetail().getCurrencyCode());
                 hourlyPositionSnapshot.getDetail().setIsSettlementPosition(positionSnapshot.getSettlementDetail().getIsSettlementPosition());
-                hourlyPositionSnapshot.getDetail().setUnitOfMeasure(positionSnapshot.getDetail().getVolumeUnitOfMeasure());
+                hourlyPositionSnapshot.getDetail().setUnitOfMeasure(positionSnapshot.getPositionDetail().getVolumeUnitOfMeasure());
                 hourlyPositionSnapshot.getDetail().setCreatedDateTime(context.getCreatedDateTime());
                 hourlyPositionSnapshot.setDealId(new EntityId(dealSummary.getId()));
                 hourlyPositionSnapshot.getDetail().setErrorCode("0");
@@ -317,8 +317,8 @@ public class PhysicalDealPositionGenerator extends BaseDealPositionGenerator {
                 DealHourlyPositionSnapshot hourlyPositionSnapshot = new DealHourlyPositionSnapshot();
                 hourlyPositionSnapshot.getDetail().setPowerFlowCode(positionHolder.getDetail().getPowerFlowCode());
                 hourlyPositionSnapshot.getDetail().setPriceTypeCode(PriceTypeCode.FIXED_PRICE);
-                hourlyPositionSnapshot.getDetail().setStartDate(positionSnapshot.getDetail().getStartDate());
-                hourlyPositionSnapshot.getDetail().setEndDate(positionSnapshot.getDetail().getEndDate());
+                hourlyPositionSnapshot.getDetail().setStartDate(positionSnapshot.getPositionDetail().getStartDate());
+                hourlyPositionSnapshot.getDetail().setEndDate(positionSnapshot.getPositionDetail().getEndDate());
                 hourlyPositionSnapshot.getDetail().setCurrencyCode(physicalDealSummary.getDealDetail().getFixedPriceCurrencyCode());
                 hourlyPositionSnapshot.getDetail().setIsSettlementPosition(positionSnapshot.getSettlementDetail().getIsSettlementPosition());
                 hourlyPositionSnapshot.getDetail().setUnitOfMeasure(physicalDealSummary.getDealDetail().getFixedPriceUnitOfMeasureCode());

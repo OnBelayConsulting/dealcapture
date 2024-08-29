@@ -1,6 +1,5 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
@@ -32,19 +31,19 @@ public class PhysicalPositionsFixture {
             snapshot.setDealPriceFxRiskFactorId(fxRiskFactor.generateEntityId());
             snapshot.setMarketPriceRiskFactorId(marketPriceRiskFactor.generateEntityId());
 
-            snapshot.getDetail().setCurrencyCode(currencyCode);
-            snapshot.getDetail().setCreatedDateTime(createdDateTime);
+            snapshot.getPositionDetail().setCurrencyCode(currencyCode);
+            snapshot.getPositionDetail().setCreatedDateTime(createdDateTime);
 
-            snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
-            snapshot.getDetail().setStartDate(current);
-            snapshot.getDetail().setEndDate(current);
-            snapshot.getDetail().setCurrencyCode(deal.getDealDetail().getReportingCurrencyCode());
+            snapshot.getPositionDetail().setFrequencyCode(FrequencyCode.DAILY);
+            snapshot.getPositionDetail().setStartDate(current);
+            snapshot.getPositionDetail().setEndDate(current);
+            snapshot.getPositionDetail().setCurrencyCode(deal.getDealDetail().getReportingCurrencyCode());
             snapshot.getSettlementDetail().setIsSettlementPosition(true);
             snapshot.getSettlementDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 
-            snapshot.getDetail().setVolumeQuantityValue(deal.getDealDetail().getVolumeQuantity());
-            snapshot.getDetail().setVolumeUnitOfMeasure(UnitOfMeasureCode.GJ);
-            snapshot.getDetail().setFixedPriceValue(deal.getDealDetail().getFixedPriceValue());
+            snapshot.getPositionDetail().setVolumeQuantityValue(deal.getDealDetail().getVolumeQuantity());
+            snapshot.getPositionDetail().setVolumeUnitOfMeasure(UnitOfMeasureCode.GJ);
+            snapshot.getPositionDetail().setFixedPriceValue(deal.getDealDetail().getFixedPriceValue());
             snapshots.add(snapshot);
             current = current.plusDays(1);
         }

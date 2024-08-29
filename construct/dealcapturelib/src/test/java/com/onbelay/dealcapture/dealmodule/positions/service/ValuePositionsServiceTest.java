@@ -2,10 +2,10 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.PhysicalDealServiceTestCase;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
+import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
@@ -116,11 +116,11 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
         assertEquals(0,
                 fixedPriceBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getFixedPriceValue()));
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -134,13 +134,11 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
                 fixedPriceBuyDeal.getId(),
                 CurrencyCode.CAD,
                 createdDateTime);
-        DealPositionView view = views.get(0);
-        assertEquals(marketIndex.getDetail().getName(), view.getDetail().getMarketIndexName());
-        assertNull(view.getDetail().getDealIndexName());
-        assertNull(view.getDetail().getDealIndexPriceValue());
+        PhysicalPositionView view = (PhysicalPositionView) views.get(0);
+        assertNull(view.getPriceDetail().getDealIndexPriceValue());
 
-        assertEquals(0, BigDecimal.ONE.compareTo(view.getDetail().getDealPriceValue()));
-        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getDetail().getMarketPriceValue()));
+        assertEquals(0, BigDecimal.ONE.compareTo(view.getPriceDetail().getDealPriceValue()));
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getPriceDetail().getMarketPriceValue()));
     }
 
     @Test
@@ -190,11 +188,11 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
         assertEquals(0,
                 fixedPriceSellDeal.getDealDetail().getFixedPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getFixedPriceValue()));
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -247,7 +245,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -261,12 +259,12 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
                 indexBuyDeal.getId(),
                 CurrencyCode.CAD,
                 createdDateTime);
-        DealPositionView view = views.get(0);
-        assertEquals(dealPriceIndex.getDetail().getName(), view.getDetail().getDealIndexName());
-        assertEquals(0, BigDecimal.valueOf(2).compareTo(view.getDetail().getDealIndexPriceValue()));
-        assertNull(view.getDetail().getDealPriceValue());
-        assertEquals(0, view.getDetail().getDealIndexPriceValue().compareTo(view.getDetail().getTotalDealPriceValue()));
-        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getDetail().getMarketPriceValue()));
+        PhysicalPositionView view = (PhysicalPositionView) views.get(0);
+
+        assertEquals(0, BigDecimal.valueOf(2).compareTo(view.getPriceDetail().getDealIndexPriceValue()));
+        assertNull(view.getPriceDetail().getDealPriceValue());
+        assertEquals(0, view.getPriceDetail().getDealIndexPriceValue().compareTo(view.getPriceDetail().getTotalDealPriceValue()));
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getPriceDetail().getMarketPriceValue()));
     }
 
     @Test
@@ -311,7 +309,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -364,7 +362,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
@@ -378,12 +376,12 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
                 indexPlusBuyDeal.getId(),
                 CurrencyCode.CAD,
                 createdDateTime);
-        DealPositionView view = views.get(0);
-        assertEquals(dealPriceIndex.getDetail().getName(), view.getDetail().getDealIndexName());
-        assertEquals(0, BigDecimal.valueOf(2).compareTo(view.getDetail().getDealIndexPriceValue()));
-        assertNotNull(view.getDetail().getDealPriceValue());
-        assertEquals(0, BigDecimal.valueOf(3).compareTo(view.getDetail().getTotalDealPriceValue()));
-        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getDetail().getMarketPriceValue()));
+        PhysicalPositionView view = (PhysicalPositionView) views.get(0);
+
+        assertEquals(0, BigDecimal.valueOf(2).compareTo(view.getPriceDetail().getDealIndexPriceValue()));
+        assertNotNull(view.getPriceDetail().getDealPriceValue());
+        assertEquals(0, BigDecimal.valueOf(3).compareTo(view.getPriceDetail().getTotalDealPriceValue()));
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(view.getPriceDetail().getMarketPriceValue()));
 
     }
 
@@ -429,7 +427,7 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexPlusSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());

@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
                 query = "  SELECT riskFactor " +
                         "    FROM PriceRiskFactor riskFactor " +
                         "   WHERE riskFactor.index.id = :indexId " +
-                        "ORDER BY riskFactor.detail.marketDate "),
+                        "ORDER BY riskFactor.detail.marketDate, riskFactor.detail.hourEnding "),
         @NamedQuery(
                 name = PriceRiskFactorRepositoryBean.FETCH_BY_PRICE_INDEX_IDS,
                 query = "  SELECT riskFactor " +
@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
                         "   WHERE riskFactor.index.id in (:indexIds) " +
                         "     AND riskFactor.detail.marketDate >= :fromDate " +
                         "     AND riskFactor.detail.marketDate <= :toDate " +
-                        "ORDER BY riskFactor.index.id, riskFactor.detail.marketDate "),
+                        "ORDER BY riskFactor.index.id, riskFactor.detail.marketDate, riskFactor.detail.hourEnding "),
 
         @NamedQuery(
                 name = PriceRiskFactorRepositoryBean.FETCH_RISK_FACTORS_BY_DATES,

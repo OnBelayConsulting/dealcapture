@@ -2,7 +2,6 @@ package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
@@ -79,19 +78,19 @@ public class GeneratePositionsWithPowerProfileServiceTest extends PositionsServi
         assertEquals(2, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
-        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getEndDate());
+        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
 
-        assertEquals(FrequencyCode.DAILY, positionSnapshot.getDetail().getFrequencyCode());
-        assertEquals(CurrencyCode.CAD, positionSnapshot.getDetail().getCurrencyCode());
-        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getDetail().getVolumeUnitOfMeasure());
-        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getDetail().getVolumeQuantityValue()));
-        assertNotNull(positionSnapshot.getDetail().getCreatedDateTime());
-        assertEquals("0", positionSnapshot.getDetail().getErrorCode());
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getPositionDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.CAD, positionSnapshot.getPositionDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getPositionDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getPositionDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getPositionDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getPositionDetail().getErrorCode());
 
         assertEquals(0,
                 fixedPriceMarketPowerProfileDeal.getDealDetail().getFixedPrice().getValue().compareTo(
-                        positionSnapshot.getDetail().getFixedPriceValue()));
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
@@ -141,7 +140,7 @@ public class GeneratePositionsWithPowerProfileServiceTest extends PositionsServi
 
         assertEquals(1, positionSnapshots.size());
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getDetail().getStartDate());
+        assertEquals(indexSellMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNull(positionSnapshot.getMarketPriceRiskFactorId());
 
 

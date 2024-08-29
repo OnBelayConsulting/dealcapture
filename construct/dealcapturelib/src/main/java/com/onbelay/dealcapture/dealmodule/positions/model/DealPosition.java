@@ -190,12 +190,12 @@ public abstract class DealPosition extends AbstractEntity {
         this.detail.setDefaults();
         this.settlementDetail.setDefaults();
 
-        this.detail.copyFrom(snapshot.getDetail());
+        this.detail.copyFrom(snapshot.getPositionDetail());
         this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
     }
 
     public void updateWith(DealPositionSnapshot snapshot) {
-        this.detail.copyFrom(snapshot.getDetail());
+        this.detail.copyFrom(snapshot.getPositionDetail());
         this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
     }
 

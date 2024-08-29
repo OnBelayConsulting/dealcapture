@@ -59,8 +59,8 @@ public class FinancialSwapPositionSqlMapper extends DealPositionSqlMapper {
 			preparedStatement.setNull(n +2, Types.INTEGER);
 
 
-		if (swapPosition.getReceivesFxRiskFactorId() != null)
-			preparedStatement.setInt(n + 3, swapPosition.getReceivesFxRiskFactorId().getId());
+		if (swapPosition.getReceivesPriceRiskFactorId() != null)
+			preparedStatement.setInt(n + 3, swapPosition.getReceivesPriceRiskFactorId().getId());
 		else
 			preparedStatement.setNull(n + 3, Types.INTEGER);
 

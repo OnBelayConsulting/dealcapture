@@ -85,17 +85,17 @@ public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 		preparedStatement.setInt(n + 1, position.getDealId().getId());
 		preparedStatement.setString(n + 2, position.getDealTypeValue());
 
-		preparedStatement.setDate(n + 3, Date.valueOf(position.getDetail().getStartDate()));
-		preparedStatement.setDate(n + 4, Date.valueOf(position.getDetail().getEndDate()));
-		preparedStatement.setTimestamp(n + 5, Timestamp.valueOf(position.getDetail().getCreatedDateTime()));
+		preparedStatement.setDate(n + 3, Date.valueOf(position.getPositionDetail().getStartDate()));
+		preparedStatement.setDate(n + 4, Date.valueOf(position.getPositionDetail().getEndDate()));
+		preparedStatement.setTimestamp(n + 5, Timestamp.valueOf(position.getPositionDetail().getCreatedDateTime()));
 
-		preparedStatement.setBigDecimal(n + 6, position.getDetail().getVolumeQuantityValue());
-		preparedStatement.setString(n + 7, position.getDetail().getCurrencyCodeValue());
-		preparedStatement.setString(n + 8, position.getDetail().getVolumeUnitOfMeasureValue());
-		preparedStatement.setString(n + 9, position.getDetail().getFrequencyCodeValue());
+		preparedStatement.setBigDecimal(n + 6, position.getPositionDetail().getVolumeQuantityValue());
+		preparedStatement.setString(n + 7, position.getPositionDetail().getCurrencyCodeValue());
+		preparedStatement.setString(n + 8, position.getPositionDetail().getVolumeUnitOfMeasureValue());
+		preparedStatement.setString(n + 9, position.getPositionDetail().getFrequencyCodeValue());
 
-		if (position.getDetail().getPowerFlowCodeValue() != null)
-			preparedStatement.setString(n + 10, position.getDetail().getPowerFlowCodeValue());
+		if (position.getPositionDetail().getPowerFlowCodeValue() != null)
+			preparedStatement.setString(n + 10, position.getPositionDetail().getPowerFlowCodeValue());
 		else
 			preparedStatement.setNull(n + 10, Types.VARCHAR);
 
@@ -141,8 +141,8 @@ public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 		} else {
 			preparedStatement.setNull(n + 17, Types.CHAR);
 		}
-		if (position.getDetail().getFixedPriceValue() != null)
-			preparedStatement.setBigDecimal(n + 18, position.getDetail().getFixedPriceValue());
+		if (position.getPositionDetail().getFixedPriceValue() != null)
+			preparedStatement.setBigDecimal(n + 18, position.getPositionDetail().getFixedPriceValue());
 		else
 			preparedStatement.setNull(n+ 18, Types.DECIMAL);
 
@@ -153,8 +153,8 @@ public abstract class DealPositionSqlMapper extends BaseSqlMapper {
 
 
 		// Error Code
-		if (position.getDetail().getErrorCode() != null)
-			preparedStatement.setString(n + 20, position.getDetail().getErrorCode());
+		if (position.getPositionDetail().getErrorCode() != null)
+			preparedStatement.setString(n + 20, position.getPositionDetail().getErrorCode());
 		else
 			preparedStatement.setNull(n + 20, Types.VARCHAR);
 

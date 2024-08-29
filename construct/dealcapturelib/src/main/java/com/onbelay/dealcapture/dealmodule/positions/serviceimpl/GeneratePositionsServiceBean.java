@@ -131,7 +131,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
             List<DealDayByMonthView> dealDayByMonthViews,
             List<DealHourByDayView> dealHourByDayViews) {
 
-        List<DealPositionGenerator> physicalPositionGenerators = dealPositionsGeneratorPlant.createDealPositionGenerators(
+        List<DealPositionGenerator> dealPositionGenerators = dealPositionsGeneratorPlant.createDealPositionGenerators(
                 context,
                 riskFactorManager,
                 dealSummaries,
@@ -153,7 +153,7 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         batchSavePositions(
                 context.getCreatedDateTime(),
-                physicalPositionGenerators);
+                dealPositionGenerators);
     }
 
 
@@ -164,7 +164,8 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
 
         logger.debug("save deal positions start: " + LocalDateTime.now().toString());
 
-        ArrayList<DealPositionSnapshot> positionSnapshots = new ArrayList<>();
+        HashMap<DealTypeCode, List<DealPositionSnapshot>> positionMap = new HashMap<>(dealPositionGenerators.size());
+
         ArrayList<DealHourlyPositionSnapshot> hourlyPositionSnapshots = new ArrayList<>();
         ArrayList<CostPositionSnapshot> costPositionSnapshots = new ArrayList<>();
 
@@ -172,20 +173,31 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         for (DealPositionGenerator dealPositionGenerator : dealPositionGenerators) {
             dealIds.add(dealPositionGenerator.getDealSummary().getId());
             PositionGenerationResult generationResult = dealPositionGenerator.generatePositionSnapshots();
+
             costPositionSnapshots.addAll(
                     generationResult.getCostPositionSnapshots());
-            positionSnapshots.addAll(
+
+            List<DealPositionSnapshot> positionSnapshotList = positionMap.get(dealPositionGenerator.getDealSummary().getDealTypeCode());
+            if (positionSnapshotList == null) {
+                positionSnapshotList = new ArrayList<>();
+                positionMap.put(dealPositionGenerator.getDealSummary().getDealTypeCode(), positionSnapshotList);
+            }
+
+            positionSnapshotList.addAll(
                     generationResult.getDealPositionSnapshots());
             hourlyPositionSnapshots.addAll(
                     generationResult.getDealHourlyPositionSnapshots());
         }
 
+        for (DealTypeCode dealTypeCode : positionMap.keySet()) {
 
-        SubLister<DealPositionSnapshot> positionSubLister = new SubLister<>(positionSnapshots, 1000);
-        while (positionSubLister.moreElements()) {
-            dealPositionsBatchInserter.savePositions(
-                    DealTypeCode.PHYSICAL_DEAL,
-                    positionSubLister.nextList());
+            List<DealPositionSnapshot> positionSnapshotList = positionMap.get(dealTypeCode);
+            SubLister<DealPositionSnapshot> positionSubLister = new SubLister<>(positionSnapshotList, 1000);
+            while (positionSubLister.moreElements()) {
+                dealPositionsBatchInserter.savePositions(
+                        dealTypeCode,
+                        positionSubLister.nextList());
+            }
         }
 
         if (hourlyPositionSnapshots.isEmpty() == false) {
@@ -208,11 +220,14 @@ public class GeneratePositionsServiceBean extends BasePositionsServiceBean imple
         logger.debug("save position risk factor mappings start: " + LocalDateTime.now().toString());
 
         ArrayList<PositionRiskFactorMappingSnapshot> mappings = new ArrayList<>();
-        for (DealPositionSnapshot snapshot : positionSnapshots) {
-            if (snapshot.getRiskFactorMappingSnapshots().isEmpty() == false) {
-                snapshot.setIdInMappings();
-                mappings.addAll(snapshot.getRiskFactorMappingSnapshots());
-            }
+        for (DealTypeCode dealTypeCode : positionMap.keySet()) {
+
+            positionMap.get(dealTypeCode).forEach(snapshot -> {
+                if (snapshot.getRiskFactorMappingSnapshots().isEmpty() == false) {
+                    snapshot.setIdInMappings();
+                    mappings.addAll(snapshot.getRiskFactorMappingSnapshots());
+                }
+            });
         }
 
         if (mappings.size() > 0)

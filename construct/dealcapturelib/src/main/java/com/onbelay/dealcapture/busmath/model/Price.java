@@ -81,6 +81,17 @@ public class Price extends CalculatedEntity {
 				unitOfMeasure);
 	}
 
+	public Price negate() {
+		if (this.isInError())
+			return this;
+
+		return new Price(
+				value.negate(MathContext.DECIMAL128),
+				currency,
+				unitOfMeasure);
+	}
+
+
 	@Override
 	public CalculatedEntity add(CalculatedEntity entity) {
 		if (entity instanceof Price price == false) {

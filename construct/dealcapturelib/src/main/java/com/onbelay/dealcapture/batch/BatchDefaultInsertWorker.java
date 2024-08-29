@@ -15,12 +15,12 @@ public class BatchDefaultInsertWorker implements Work {
     private static final Logger logger = LogManager.getLogger();
 
 
-    private OBSqlMapper sqlMapper;
+    private InsertSqlMapper sqlMapper;
     private List<? extends AbstractSnapshot> snapshots;
     private int batchSize;
 
     public BatchDefaultInsertWorker(
-            OBSqlMapper sqlMapper,
+            InsertSqlMapper sqlMapper,
             List<? extends AbstractSnapshot> snapshots,
             int batchSize) {
 

@@ -10,7 +10,7 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
-import com.onbelay.dealcapture.dealmodule.positions.component.DealPositionFileWriter;
+import com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter.DealPositionFileWriter;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;

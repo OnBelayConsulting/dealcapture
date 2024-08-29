@@ -31,7 +31,7 @@ import jakarta.persistence.*;
  * A financial swap deal consists of a pays leg and a receives leg. The buy and sell on the deal indicates
  * who is paying and who is selling.
  *
- * A company that buys a fixed for float financial swap will pay a fixed price for a float index.
+ * A company that buys a fixed for float financial swap will  pay a fixed price and receive float index.
  * A company that sells a fixed  for float financial swap will receive the fixed  and pay the float index.
  *
  * Subtypes of financial swaps are as follows:

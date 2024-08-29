@@ -42,7 +42,7 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 	@Test
 	public void fetchSwapDealSummaries() {
 
-		List<DealSummary> summaries = dealService.fetchDealSummariesByIds(List.of(fixed4FloatDeal.getId()));
+		List<DealSummary> summaries = dealService.fetchDealSummariesByIds(List.of(fixed4FloatSellDeal.getId()));
 		assertEquals(1, summaries.size());
 		FinancialSwapDealSummary summary = (FinancialSwapDealSummary) summaries.get(0);
 		assertNull(summary.getPaysIndexId());
@@ -209,14 +209,14 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 
 		FinancialSwapDealSnapshot snapshot = new FinancialSwapDealSnapshot();
 		snapshot.getDealDetail().setBuySell(BuySellCode.BUY);
-		snapshot.setEntityId(fixed4FloatDeal.generateEntityId());
+		snapshot.setEntityId(fixed4FloatSellDeal.generateEntityId());
 		snapshot.setEntityState(EntityState.MODIFIED);
 
 		dealService.save(snapshot);
 		flush();
 		clearCache();
 
-		FinancialSwapDealSnapshot swapDeal = (FinancialSwapDealSnapshot) dealService.load(fixed4FloatDeal.generateEntityId());
+		FinancialSwapDealSnapshot swapDeal = (FinancialSwapDealSnapshot) dealService.load(fixed4FloatSellDeal.generateEntityId());
 
 		assertNull(swapDeal.getPaysPriceIndexId());
 		assertNotNull(swapDeal.getReceivesPriceIndexId());
