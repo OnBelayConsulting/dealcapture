@@ -10,6 +10,7 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -34,21 +35,9 @@ public class DealPositionViewDetail {
     private BigDecimal volumeQuantityValue;
     private String powerFlowCodeValue;
 
-    private String dealPriceValuationValue;
-
     private BigDecimal fixedPriceValue;
-    private BigDecimal dealPriceValue;
-    private String dealIndexName;
-    private BigDecimal dealIndexPriceValue;
-    private BigDecimal totalDealPriceValue;
-
     private String  fixedPriceCurrencyCodeValue;
     private String  fixedPriceUnitOfMeasureCodeValue;
-
-    private String marketPriceValuationValue;
-
-    private BigDecimal marketPriceValue;
-    private String marketIndexName;
 
     private BigDecimal mtmAmountValue;
     private BigDecimal costSettlementAmountValue;
@@ -98,6 +87,16 @@ public class DealPositionViewDetail {
     @Column(name = "END_DATE")
     public LocalDate getEndDate() {
         return endDate;
+    }
+
+    @Transient
+    @JsonIgnore
+    public FrequencyCode getFrequencyCode() {
+        return FrequencyCode.lookUp(frequencyCodeValue);
+    }
+
+    public void setFrequencyCode(FrequencyCode frequencyCode) {
+        this.frequencyCodeValue = frequencyCode.getCode();
     }
 
     @Column(name = "FREQUENCY_CODE")
@@ -222,69 +221,6 @@ public class DealPositionViewDetail {
         this.volumeUnitOfMeasureValue = volumeUnitOfMeasureValue;
     }
 
-    @Transient
-    public ValuationCode getDealPriceValuationCode() {
-        return ValuationCode.lookUp(dealPriceValuationValue);
-    }
-
-    public void setDealPriceValuationCode(ValuationCode code) {
-        this.dealPriceValuationValue = code.getCode();
-    }
-
-    @Column(name = "DEAL_PRICE_VALUATION_CODE")
-    public String getDealPriceValuationValue() {
-        return dealPriceValuationValue;
-    }
-
-    public void setDealPriceValuationValue(String dealPriceValuationValue) {
-        this.dealPriceValuationValue = dealPriceValuationValue;
-    }
-
-    @Transient
-    public ValuationCode getMarketPriceValuationCode() {
-        return ValuationCode.lookUp(marketPriceValuationValue);
-    }
-
-    public void setDealMarketValuationCode(ValuationCode code) {
-        this.marketPriceValuationValue = code.getCode();
-    }
-
-    @Column(name = "MARKET_VALUATION_CODE")
-    public String getMarketPriceValuationValue() {
-        return marketPriceValuationValue;
-    }
-
-    public void setMarketPriceValuationValue(String marketPriceValuationValue) {
-        this.marketPriceValuationValue = marketPriceValuationValue;
-    }
-
-    @Column(name = "DEAL_PRICE_INDEX_NAME")
-    public String getDealIndexName() {
-        return dealIndexName;
-    }
-
-    public void setDealIndexName(String dealIndexName) {
-        this.dealIndexName = dealIndexName;
-    }
-
-    @Column(name = "MARKET_INDEX_NAME")
-    public String getMarketIndexName() {
-        return marketIndexName;
-    }
-
-    public void setMarketIndexName(String marketIndexName) {
-        this.marketIndexName = marketIndexName;
-    }
-
-    @Column(name = "MARKET_PRICE")
-    public BigDecimal getMarketPriceValue() {
-        return marketPriceValue;
-    }
-
-    public void setMarketPriceValue(BigDecimal marketPriceValue) {
-        this.marketPriceValue = marketPriceValue;
-    }
-
     @Column(name = "FIXED_PRICE")
     public BigDecimal getFixedPriceValue() {
         return fixedPriceValue;
@@ -294,32 +230,6 @@ public class DealPositionViewDetail {
         this.fixedPriceValue = fixedPriceValue;
     }
 
-    @Column(name = "DEAL_PRICE")
-    public BigDecimal getDealPriceValue() {
-        return dealPriceValue;
-    }
-
-    public void setDealPriceValue(BigDecimal dealPriceValue) {
-        this.dealPriceValue = dealPriceValue;
-    }
-
-    @Column(name = "DEAL_INDEX_PRICE")
-    public BigDecimal getDealIndexPriceValue() {
-        return dealIndexPriceValue;
-    }
-
-    public void setDealIndexPriceValue(BigDecimal dealIndexPriceValue) {
-        this.dealIndexPriceValue = dealIndexPriceValue;
-    }
-
-    @Column(name = "TOTAL_DEAL_PRICE")
-    public BigDecimal getTotalDealPriceValue() {
-        return totalDealPriceValue;
-    }
-
-    public void setTotalDealPriceValue(BigDecimal totalDealPriceValue) {
-        this.totalDealPriceValue = totalDealPriceValue;
-    }
 
     @Column(name = "FIXED_PRICE_CURRENCY_CODE")
     public String getFixedPriceCurrencyCodeValue() {

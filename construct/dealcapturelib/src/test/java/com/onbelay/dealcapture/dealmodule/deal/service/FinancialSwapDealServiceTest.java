@@ -20,10 +20,11 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealSummary;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -41,9 +42,9 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 	@Test
 	public void fetchSwapDealSummaries() {
 
-		List<FinancialSwapDealSummary> summaries = dealService.findFinancialSwapDealSummariesByIds(List.of(fixed4FloatDeal.getId()));
+		List<DealSummary> summaries = dealService.fetchDealSummariesByIds(List.of(fixed4FloatSellDeal.getId()));
 		assertEquals(1, summaries.size());
-		FinancialSwapDealSummary summary = summaries.get(0);
+		FinancialSwapDealSummary summary = (FinancialSwapDealSummary) summaries.get(0);
 		assertNull(summary.getPaysIndexId());
 	}
 
@@ -79,10 +80,10 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 		assertEquals(CurrencyCode.CAD, swapDeal.getDealDetail().getReportingCurrencyCode());
 		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
 		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
-		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getRecievesValuationCode());
+		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getReceivesValuationCode());
 		assertEquals(receivesIndex.getId(), swapDeal.getReceivesPriceIndex().getId());
 		assertEquals(ValuationCode.FIXED, swapDeal.getDetail().getPaysValuationCode());
-		assertEquals(paysPrice, swapDeal.getDetail().getFixedPrice());
+		assertEquals(paysPrice, swapDeal.getDealDetail().getFixedPrice());
 	}
 
 
@@ -119,10 +120,10 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 		assertEquals(CurrencyCode.CAD, swapDeal.getDealDetail().getReportingCurrencyCode());
 		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
 		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
-		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getRecievesValuationCode());
+		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getReceivesValuationCode());
 		assertEquals(receivesIndex.getId(), swapDeal.getReceivesPriceIndex().getId());
 		assertEquals(ValuationCode.INDEX_PLUS, swapDeal.getDetail().getPaysValuationCode());
-		assertEquals(paysPrice, swapDeal.getDetail().getFixedPrice());
+		assertEquals(paysPrice, swapDeal.getDealDetail().getFixedPrice());
 	}
 
 
@@ -159,8 +160,8 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
 		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
 		assertEquals(ValuationCode.FIXED, swapDeal.getDetail().getPaysValuationCode());
-		assertEquals(paysPrice, swapDeal.getDetail().getFixedPrice());
-		assertEquals(ValuationCode.POWER_PROFILE, swapDeal.getDetail().getRecievesValuationCode());
+		assertEquals(paysPrice, swapDeal.getDealDetail().getFixedPrice());
+		assertEquals(ValuationCode.POWER_PROFILE, swapDeal.getDetail().getReceivesValuationCode());
 		assertEquals(powerProfile.getId(), swapDeal.getPowerProfile().getId());
 
 	}
@@ -196,9 +197,9 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 		assertEquals(BuySellCode.SELL, swapDeal.getDealDetail().getBuySell());
 		assertEquals(CurrencyCode.CAD, swapDeal.getDealDetail().getReportingCurrencyCode());
 		assertEquals(DealStatusCode.VERIFIED, swapDeal.getDealDetail().getDealStatus());
-		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getRecievesValuationCode());
+		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getReceivesValuationCode());
 		assertEquals(receivesIndex.getId(), swapDeal.getReceivesPriceIndex().getId());
-		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getRecievesValuationCode());
+		assertEquals(ValuationCode.INDEX, swapDeal.getDetail().getReceivesValuationCode());
 		assertEquals(paysIndex.getId(), swapDeal.getPaysPriceIndex().getId());
 	}
 
@@ -208,14 +209,14 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 
 		FinancialSwapDealSnapshot snapshot = new FinancialSwapDealSnapshot();
 		snapshot.getDealDetail().setBuySell(BuySellCode.BUY);
-		snapshot.setEntityId(fixed4FloatDeal.generateEntityId());
+		snapshot.setEntityId(fixed4FloatSellDeal.generateEntityId());
 		snapshot.setEntityState(EntityState.MODIFIED);
 
 		dealService.save(snapshot);
 		flush();
 		clearCache();
 
-		FinancialSwapDealSnapshot swapDeal = (FinancialSwapDealSnapshot) dealService.load(fixed4FloatDeal.generateEntityId());
+		FinancialSwapDealSnapshot swapDeal = (FinancialSwapDealSnapshot) dealService.load(fixed4FloatSellDeal.generateEntityId());
 
 		assertNull(swapDeal.getPaysPriceIndexId());
 		assertNotNull(swapDeal.getReceivesPriceIndexId());

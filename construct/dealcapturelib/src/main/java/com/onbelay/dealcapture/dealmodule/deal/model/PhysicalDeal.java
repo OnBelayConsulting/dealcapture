@@ -33,37 +33,6 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table (name = "PHYSICAL_DEAL")
-@NamedQueries({
-    @NamedQuery(
-       name = DealRepositoryBean.FETCH_PHYSICAL_DEAL_SUMMARIES,
-       query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary( "
-       		+ "          deal.id, "
-	        + "          powerProfile.id, "
-       		+ "          deal.dealDetail.ticketNo, "
-       		+ "          deal.dealDetail.startDate,"
-	  	    + "          deal.dealDetail.endDate,"
-       		+ "          deal.dealTypeValue, "
-       		+ "          deal.dealDetail.buySellCodeValue,"
-		    +  "         deal.dealDetail.reportingCurrencyCodeValue,"
-			+  "		 deal.dealDetail.volumeQuantity,"
-			+  "         deal.dealDetail.volumeUnitOfMeasureCodeValue,"
-		    +  "         deal.dealDetail.volumeFrequencyCodeValue,"
-			+  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"
-			+  "         deal.detail.dealPriceValuationCodeValue,"
-			+  "         dealIndex.id,"
-			+  "         deal.detail.fixedPriceValue,"
-			+  "         deal.detail.fixedPriceUnitOfMeasureCodeValue,"
-			+  "         deal.detail.fixedPriceCurrencyCodeValue,"
-			+  "         deal.detail.marketValuationCodeValue,"
-			+  "         marketIndex.id"
-			+  "         ) "
-       		+ "   FROM PhysicalDeal deal " +
-  "    LEFT OUTER JOIN deal.powerProfile as powerProfile " +
-   "   LEFT OUTER JOIN deal.dealPriceIndex as dealIndex " +
-   "   LEFT OUTER JOIN deal.marketPriceIndex as marketIndex " +
-			   " WHERE deal.id in (:dealIds) " +
-       	     "ORDER BY deal.dealDetail.ticketNo DESC")
-})
 public class PhysicalDeal extends BaseDeal {
 
 	private PriceIndex dealPriceIndex;
@@ -139,19 +108,19 @@ public class PhysicalDeal extends BaseDeal {
 				case FIXED -> {
 					if (dealPriceIndex != null)
 						throw new OBValidationException(DealErrorCode.INVALID_DEAL_PRICE_INDEX.getCode());
-					if (getDetail().getFixedPrice() == null)
+					if (getDealDetail().isFixedPriceMissing())
 						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
 				}
 				case INDEX -> {
 					if (dealPriceIndex == null)
 						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
-					if (getDetail().getFixedPrice() != null)
+					if (getDealDetail().getFixedPrice() != null)
 						throw new OBValidationException(DealErrorCode.INVALID_FIXED_PRICE_VALUE.getCode());
 				}
 				case INDEX_PLUS -> {
 					if (dealPriceIndex == null)
 						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_INDEX.getCode());
-					if (getDetail().getFixedPrice() == null)
+					if (getDealDetail().getFixedPrice() == null)
 						throw new OBValidationException(DealErrorCode.MISSING_DEAL_PRICE_VALUE.getCode());
 				}
 

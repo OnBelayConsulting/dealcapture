@@ -16,13 +16,8 @@
 package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.enums.EntityState;
-import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.core.query.enums.ExpressionOperator;
-import com.onbelay.core.query.snapshot.DefinedQuery;
-import com.onbelay.core.query.snapshot.DefinedWhereExpression;
-import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
@@ -30,10 +25,10 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDealSummary;
 import com.onbelay.shared.enums.*;
 import org.junit.jupiter.api.Test;
 
@@ -88,29 +83,29 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 	@Test
 	public void fetchDealSummariesFixedPriceDeal() {
 
-		List<PhysicalDealSummary> summaries = dealService.findPhysicalDealSummariesByIds(List.of(fixedPriceSellDeal.getId()));
+		List<DealSummary> summaries = dealService.fetchDealSummariesByIds(List.of(fixedPriceSellDeal.getId()));
 		assertEquals(1, summaries.size());
-		PhysicalDealSummary summary = summaries.get(0);
+		PhysicalDealSummary summary = (PhysicalDealSummary) summaries.get(0);
 
-		assertNotNull(summary.getDealId());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getBuySell(), summary.getBuySellCode());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getTicketNo(), summary.getTicketNo());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), summary.getStartDate());
-		assertEquals(fixedPriceSellDeal.getDealDetail().getEndDate(), summary.getEndDate());
-		assertEquals(0, fixedPriceSellDeal.getDealDetail().getVolumeQuantity().compareTo(summary.getVolumeQuantity()));
+		assertNotNull(summary.getId());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getBuySell(), summary.getDealDetail().getBuySell());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getTicketNo(), summary.getDealDetail().getTicketNo());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getStartDate(), summary.getDealDetail().getStartDate());
+		assertEquals(fixedPriceSellDeal.getDealDetail().getEndDate(), summary.getDealDetail().getEndDate());
+		assertEquals(0, fixedPriceSellDeal.getDealDetail().getVolumeQuantity().compareTo(summary.getDealDetail().getVolumeQuantity()));
 
 		assertEquals(DealTypeCode.PHYSICAL_DEAL, summary.getDealTypeCode());
-		assertEquals(CurrencyCode.CAD, summary.getSettlementCurrencyCode());
-		assertEquals(CurrencyCode.CAD, summary.getReportingCurrencyCode());
-		assertEquals(UnitOfMeasureCode.GJ, summary.getVolumeUnitOfMeasureCode());
+		assertEquals(CurrencyCode.CAD, summary.getDealDetail().getSettlementCurrencyCode());
+		assertEquals(CurrencyCode.CAD, summary.getDealDetail().getReportingCurrencyCode());
+		assertEquals(UnitOfMeasureCode.GJ, summary.getDealDetail().getVolumeUnitOfMeasureCode());
 
-		assertEquals(ValuationCode.FIXED, summary.getDealPriceValuationCode());
-		assertEquals(0, BigDecimal.ONE.compareTo(summary.getFixedPriceValue()));
-		assertEquals(UnitOfMeasureCode.GJ, summary.getFixedPriceUnitOfMeasureCode());
-		assertEquals(CurrencyCode.CAD, summary.getFixedPriceCurrencyCode());
+		assertEquals(ValuationCode.FIXED, summary.getDetail().getDealPriceValuationCode());
+		assertEquals(0, BigDecimal.ONE.compareTo(summary.getDealDetail().getFixedPriceValue()));
+		assertEquals(UnitOfMeasureCode.GJ, summary.getDealDetail().getFixedPriceUnitOfMeasureCode());
+		assertEquals(CurrencyCode.CAD, summary.getDealDetail().getFixedPriceCurrencyCode());
 		assertNull(summary.getDealPriceIndexId());
 
-		assertEquals(ValuationCode.INDEX, summary.getMarketValuationCode());
+		assertEquals(ValuationCode.INDEX, summary.getDetail().getMarketValuationCode());
 		assertEquals(marketIndex.getId(), summary.getMarketIndexId());
 	}
 
@@ -213,7 +208,7 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 
 		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX_PLUS);
 
-		dealSnapshot.getDetail().setFixedPrice( new Price(
+		dealSnapshot.getDealDetail().setFixedPrice( new Price(
 				BigDecimal.ONE,
 				CurrencyCode.USD,
 				UnitOfMeasureCode.GJ));
@@ -254,7 +249,7 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 		dealSnapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
 		dealSnapshot.getDetail().setDealPriceValuationCode(ValuationCode.INDEX);
 		dealSnapshot.setDealPriceIndexId(dealPriceIndex.generateEntityId());
-		dealSnapshot.getDetail().setFixedPrice(
+		dealSnapshot.getDealDetail().setFixedPrice(
 				new Price(
 					BigDecimal.ONE,
 					CurrencyCode.USD,

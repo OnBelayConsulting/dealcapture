@@ -126,5 +126,22 @@
 				viewName='DEAL_HOURLY_POSITION_VIEW'
 		/>
 	</changeSet>
+	<changeSet
+			author='lefeuvrem'
+			id='drop DEAL_SUMMARY_VIEW'
+			runAlways='true'
+			runOnChange='true'
+	>
+		<preConditions
+				onFail='MARK_RAN'
+		>
+			<viewExists
+					viewName='DEAL_SUMMARY_VIEW'
+			/>
+		</preConditions>
+		<dropView
+				viewName='DEAL_SUMMARY_VIEW'
+		/>
+	</changeSet>
 
 </databaseChangeLog>

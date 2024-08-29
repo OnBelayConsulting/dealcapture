@@ -49,44 +49,6 @@ import java.util.List;
 			   "  FROM BaseDeal deal " +
        	     "ORDER BY deal.dealDetail.ticketNo DESC"),
     @NamedQuery(
-       name = DealRepositoryBean.FETCH_ASSIGNED_DEAL_SUMMARIES,
-       query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary( "
-			   + "          deal.id, "
-			   + "          powerProfile.id, "
-			   + "          deal.dealDetail.ticketNo, "
-			   + "          deal.dealDetail.startDate,"
-			   + "          deal.dealDetail.endDate,"
-			   + "          deal.dealTypeValue, "
-			   + "          deal.dealDetail.buySellCodeValue,"
-			   + "          deal.dealDetail.reportingCurrencyCodeValue,"
-			   + "		    deal.dealDetail.volumeQuantity,"
-			   + "          deal.dealDetail.volumeUnitOfMeasureCodeValue,"
-			   + "          deal.dealDetail.volumeFrequencyCodeValue,"
-			   + "          deal.dealDetail.settlementCurrencyCodeValue)"
-	   + "      FROM BaseDeal deal "
-+ "  LEFT OUTER JOIN deal.powerProfile as powerProfile "
- 	   +   "   WHERE deal.dealDetail.positionGenerationIdentifier = :identifier " +
-			   " AND deal.dealDetail.positionGenerationStatusValue = 'Generating'" +
-          " ORDER BY deal.dealDetail.ticketNo DESC"),
-    @NamedQuery(
-       name = DealRepositoryBean.GET_DEAL_SUMMARY,
-       query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary( "
-			   + "          deal.id, "
-			   + "          powerProfile.id, "
-			   + "          deal.dealDetail.ticketNo, "
-			   + "          deal.dealDetail.startDate,"
-			   + "          deal.dealDetail.endDate,"
-			   + "          deal.dealTypeValue, "
-			   + "          deal.dealDetail.buySellCodeValue,"
-			   + "          deal.dealDetail.reportingCurrencyCodeValue,"
-			   + "		    deal.dealDetail.volumeQuantity,"
-			   + "          deal.dealDetail.volumeUnitOfMeasureCodeValue,"
-			   + "          deal.dealDetail.volumeFrequencyCodeValue,"
-			   + "          deal.dealDetail.settlementCurrencyCodeValue)"
-       	+ "    FROM BaseDeal deal "
- + "LEFT OUTER JOIN deal.powerProfile as powerProfile " +
-       	    " WHERE deal.id = :dealId"),
-    @NamedQuery(
        name = DealRepositoryBean.FIND_DEAL_BY_TICKET_NO,
        query = "SELECT deal " +
 			   "  FROM BaseDeal deal " +

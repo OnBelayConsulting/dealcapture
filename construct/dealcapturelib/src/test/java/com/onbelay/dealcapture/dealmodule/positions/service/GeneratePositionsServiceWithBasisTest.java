@@ -1,6 +1,5 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
@@ -102,9 +101,7 @@ public class GeneratePositionsServiceWithBasisTest extends PositionsServiceWithB
 
         assertTrue(positionSnapshots.size() > 0);
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
-        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getDealPositionDetail().getStartDate());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getDealPriceValuationCode());
-        assertEquals(ValuationCode.INDEX, positionSnapshot.getDetail().getMarketPriceValuationCode());
+        assertEquals(indexSellDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
         assertNotNull(positionSnapshot.getMarketPriceRiskFactorId());
         assertNotNull(positionSnapshot.getDealPriceRiskFactorId());
         assertEquals(2, positionSnapshot.getDealPriceMappings().size());

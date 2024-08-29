@@ -18,8 +18,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
     private String dealPriceValuationValue;
     private String marketPriceValuationValue;
 
-    private BigDecimal fixedPriceValue;
-
 
     public void copyFrom(PhysicalPositionDetail copy) {
         if (copy.dealPriceValuationValue != null)
@@ -27,9 +25,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
         if (copy.marketPriceValuationValue != null)
             this.marketPriceValuationValue = copy.marketPriceValuationValue;
-
-        if (copy.fixedPriceValue != null)
-            this.fixedPriceValue = copy.fixedPriceValue;
 
     }
 
@@ -67,15 +62,6 @@ public class PhysicalPositionDetail extends AbstractDetail {
 
     public void setMarketPriceValuationValue(String marketPriceValuationValue) {
         this.marketPriceValuationValue = marketPriceValuationValue;
-    }
-
-    @Column(name = "FIXED_PRICE")
-    public BigDecimal getFixedPriceValue() {
-        return fixedPriceValue;
-    }
-
-    public void setFixedPriceValue(BigDecimal fixedPriceValue) {
-        this.fixedPriceValue = fixedPriceValue;
     }
 
 }

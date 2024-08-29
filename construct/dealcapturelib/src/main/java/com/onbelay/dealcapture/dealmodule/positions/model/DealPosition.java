@@ -12,6 +12,8 @@ import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.repository.PositionRiskFactorMappingRepository;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.*;
+import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
+import com.onbelay.dealcapture.riskfactor.repository.FxRiskFactorRepository;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -24,28 +26,28 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_MIN_START_DATE,
-                query = "SELECT min(position.dealPositionDetail.startDate) " +
+                query = "SELECT min(position.detail.startDate) " +
                         "  FROM DealPosition position " +
-                        " WHERE position.dealPositionDetail.createdDateTime = :createdDateTime " +
-                      "     AND position.dealPositionDetail.currencyCodeValue = :currencyCode "),
+                        " WHERE position.detail.createdDateTime = :createdDateTime " +
+                      "     AND position.detail.currencyCodeValue = :currencyCode "),
          @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_MAX_START_DATE,
-                query = "SELECT max(position.dealPositionDetail.startDate) " +
+                query = "SELECT max(position.detail.startDate) " +
                         "  FROM DealPosition position " +
-                        " WHERE position.dealPositionDetail.createdDateTime = :createdDateTime " +
-                      "     AND position.dealPositionDetail.currencyCodeValue = :currencyCode "),
+                        " WHERE position.detail.createdDateTime = :createdDateTime " +
+                      "     AND position.detail.currencyCodeValue = :currencyCode "),
        @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_IDS_BY_DEAL,
                 query = "SELECT position.id " +
                         "  FROM DealPosition position " +
                         " WHERE position.deal.id = :dealId " +
-                      "ORDER BY position.dealPositionDetail.startDate "),
+                      "ORDER BY position.detail.startDate "),
         @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_BY_DEAL,
                 query = "SELECT position " +
                         "  FROM DealPosition position " +
                         " WHERE position.deal.id = :dealId " +
-                      "ORDER BY position.dealPositionDetail.startDate ")
+                      "ORDER BY position.detail.startDate ")
 })
 public abstract class DealPosition extends AbstractEntity {
 
@@ -54,7 +56,9 @@ public abstract class DealPosition extends AbstractEntity {
 
     private BaseDeal deal;
 
-    private DealPositionDetail dealPositionDetail = new DealPositionDetail();
+    private FxRiskFactor fixedPriceFxRiskFactor;
+
+    private DealPositionDetail detail = new DealPositionDetail();
 
     private PositionSettlementDetail settlementDetail = new PositionSettlementDetail();
 
@@ -110,13 +114,25 @@ public abstract class DealPosition extends AbstractEntity {
     }
 
 
-    @Embedded
-    public DealPositionDetail getDealPositionDetail() {
-        return dealPositionDetail;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FIXED_PRICE_FX_RISK_FACTOR_ID")
+    public FxRiskFactor getFixedPriceFxRiskFactor() {
+        return fixedPriceFxRiskFactor;
     }
 
-    public void setDealPositionDetail(DealPositionDetail detail) {
-        this.dealPositionDetail = detail;
+
+    public void setFixedPriceFxRiskFactor(FxRiskFactor fixedPriceFxRiskFactor) {
+        this.fixedPriceFxRiskFactor = fixedPriceFxRiskFactor;
+    }
+
+
+    @Embedded
+    public DealPositionDetail getDetail() {
+        return detail;
+    }
+
+    public void setDetail(DealPositionDetail detail) {
+        this.detail = detail;
     }
 
     @Embedded
@@ -129,6 +145,7 @@ public abstract class DealPosition extends AbstractEntity {
     }
 
     public List<EntityId> savePositionRiskFactorMappings(List<PositionRiskFactorMappingSnapshot> snapshots) {
+
         ArrayList<EntityId> ids = new ArrayList<>();
         for (PositionRiskFactorMappingSnapshot snapshot : snapshots) {
             if (snapshot.getEntityState() == EntityState.NEW) {
@@ -139,6 +156,13 @@ public abstract class DealPosition extends AbstractEntity {
             }
         }
         return ids;
+    }
+
+    private void setAssociations(DealPositionSnapshot snapshot) {
+
+        if (snapshot.getFixedPriceFxRiskFactorId() != null)
+            this.fixedPriceFxRiskFactor = getFxRiskFactorRepository().load(snapshot.getFixedPriceFxRiskFactorId());
+
     }
 
     @Override
@@ -163,21 +187,25 @@ public abstract class DealPosition extends AbstractEntity {
 
     public void createWith(DealPositionSnapshot snapshot) {
         this.deal = getDealRepository().load(snapshot.getDealId());
-        this.dealPositionDetail.setDefaults();
+        this.detail.setDefaults();
         this.settlementDetail.setDefaults();
 
-        this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
+        this.detail.copyFrom(snapshot.getPositionDetail());
         this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
     }
 
     public void updateWith(DealPositionSnapshot snapshot) {
-        this.dealPositionDetail.copyFrom(snapshot.getDealPositionDetail());
+        this.detail.copyFrom(snapshot.getPositionDetail());
         this.settlementDetail.copyFrom(snapshot.getSettlementDetail());
     }
 
     @Transient
     protected static DealRepository getDealRepository() {
         return (DealRepository) ApplicationContextFactory.getBean(DealRepository.BEAN_NAME);
+    }
+
+    protected static FxRiskFactorRepository getFxRiskFactorRepository() {
+        return (FxRiskFactorRepository) ApplicationContextFactory.getBean(FxRiskFactorRepository.BEAN_NAME);
     }
 
     @Transient

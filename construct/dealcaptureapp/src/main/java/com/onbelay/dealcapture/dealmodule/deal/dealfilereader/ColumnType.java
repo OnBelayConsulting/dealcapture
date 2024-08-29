@@ -159,6 +159,7 @@ public enum ColumnType {
 
 	private static String convertToCSVFromBigDecimal(Object in) {
 		BigDecimal b = (BigDecimal) in;
+		b = b.setScale(2, BigDecimal.ROUND_HALF_UP);
 		return b == null ? null : b.toPlainString();
 	}
 
@@ -181,6 +182,7 @@ public enum ColumnType {
 
 	private static String convertToCSVFromPrice(Object in) {
 		BigDecimal b = (BigDecimal) in;
+		b = b.setScale(3, BigDecimal.ROUND_HALF_UP);
 		return b == null ? null : b.toPlainString();
 	}
 

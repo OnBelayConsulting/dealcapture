@@ -75,7 +75,7 @@ public abstract  class BaseDealSnapshotMapper {
 
             case VOL_UNIT_OF_MEASURE -> {
                 UnitOfMeasureCode unitOfMeasureCode = UnitOfMeasureCode.lookUp((String) value);
-                snapshot.getDealDetail().setVolumeUnitOfMeasure(unitOfMeasureCode);
+                snapshot.getDealDetail().setVolumeUnitOfMeasureCode(unitOfMeasureCode);
                 return true;
             }
 

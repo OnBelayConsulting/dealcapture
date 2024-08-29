@@ -18,20 +18,11 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.*;
-import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
 import com.onbelay.dealcapture.pricing.model.*;
-import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
-import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCase {
 	
@@ -39,9 +30,11 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 	protected PriceIndex receivesIndex;
 	protected PriceIndex paysIndex;
 
-	protected FinancialSwapDeal fixed4FloatDeal;
-	protected FinancialSwapDeal float4FloatDeal;
-	protected FinancialSwapDeal float4FloatPlusDeal;
+	protected FinancialSwapDeal fixed4FloatSellDeal;
+	protected FinancialSwapDeal fixed4FloatBuyDeal;
+	protected FinancialSwapDeal float4FloatBuyDeal;
+	protected FinancialSwapDeal float4FloatPlusBuyDeal;
+	protected FinancialSwapDeal fixed4PowerProfileBuyDeal;
 
 	protected PriceIndex settledHourlyIndex;
 	protected PriceIndex onPeakDailyIndex;
@@ -106,11 +99,11 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 		FinancialSwapDealSnapshot snapshot = FinancialSwapDealFixture.createFixedForFloatSwapDealSnapshot(
 				CommodityCode.NATGAS,
 				BuySellCode.SELL,
-				LocalDate.of(2019, 1, 1),
-				LocalDate.of(2019, 1, 31),
+				startDate,
+				endDate,
 				DealStatusCode.VERIFIED,
 				CurrencyCode.CAD,
-				"f4float",
+				"f4floatsell",
 				companyRole,
 				counterpartyRole,
 				receivesIndex,
@@ -119,7 +112,27 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 
-		fixed4FloatDeal = FinancialSwapDeal.create(snapshot);
+		fixed4FloatSellDeal = FinancialSwapDeal.create(snapshot);
+
+
+		snapshot = FinancialSwapDealFixture.createFixedForFloatSwapDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"f4floatbuy",
+				companyRole,
+				counterpartyRole,
+				receivesIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+
+		fixed4FloatBuyDeal = FinancialSwapDeal.create(snapshot);
+
 
 		snapshot = FinancialSwapDealFixture.createFloat4FloatSwapDealSnapshot(
 				CommodityCode.NATGAS,
@@ -128,15 +141,15 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				endDate,
 				DealStatusCode.VERIFIED,
 				CurrencyCode.CAD,
-				"float4float",
+				"float4floatbuy",
 				companyRole,
 				counterpartyRole,
-				receivesIndex,
+				paysIndex,
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
-				paysIndex);
+				receivesIndex);
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
-		float4FloatDeal = FinancialSwapDeal.create(snapshot);
+		float4FloatBuyDeal = FinancialSwapDeal.create(snapshot);
 
 
 		snapshot = FinancialSwapDealFixture.createFloat4FloatPlusSwapDealSnapshot(
@@ -146,24 +159,43 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				endDate,
 				DealStatusCode.VERIFIED,
 				CurrencyCode.CAD,
-				"float4floatPlus",
+				"float4floatPlusbuy",
 				companyRole,
 				counterpartyRole,
-				receivesIndex,
+				paysIndex,
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
-				paysIndex,
+				receivesIndex,
+				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		float4FloatPlusBuyDeal = FinancialSwapDeal.create(snapshot);
+
+
+		snapshot = FinancialSwapDealFixture.createWithPowerProfileFinancialSwapDealSnapshot(
+				CommodityCode.NATGAS,
+				BuySellCode.BUY,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				CurrencyCode.CAD,
+				"float4powerprofbuy",
+				companyRole,
+				counterpartyRole,
+				powerProfile,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
 
+
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
-		float4FloatPlusDeal = FinancialSwapDeal.create(snapshot);
+		fixed4PowerProfileBuyDeal = FinancialSwapDeal.create(snapshot);
 
 		flush();
 		clearCache();
 
-		fixed4FloatDeal = (FinancialSwapDeal) dealRepository.load(fixed4FloatDeal.generateEntityId());
-		float4FloatDeal = (FinancialSwapDeal) dealRepository.load(float4FloatDeal.generateEntityId());
-		float4FloatPlusDeal = (FinancialSwapDeal) dealRepository.load(float4FloatPlusDeal.generateEntityId());
+		fixed4FloatSellDeal = (FinancialSwapDeal) dealRepository.load(fixed4FloatSellDeal.generateEntityId());
+		float4FloatBuyDeal = (FinancialSwapDeal) dealRepository.load(float4FloatBuyDeal.generateEntityId());
+		float4FloatPlusBuyDeal = (FinancialSwapDeal) dealRepository.load(float4FloatPlusBuyDeal.generateEntityId());
+		fixed4PowerProfileBuyDeal = (FinancialSwapDeal) dealRepository.load(fixed4PowerProfileBuyDeal.generateEntityId());
 
 	}
 

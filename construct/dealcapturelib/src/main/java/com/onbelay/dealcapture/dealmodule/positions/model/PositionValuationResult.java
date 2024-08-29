@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PositionValuationResult extends BaseValuationResult {
+public abstract class PositionValuationResult extends BaseValuationResult {
     private static Logger logger = LogManager.getLogger();
 
     private List<HourlyPositionValuationResult> hourlyPositionValuationResults = new ArrayList<>();

@@ -31,7 +31,7 @@ import jakarta.persistence.*;
  * A financial swap deal consists of a pays leg and a receives leg. The buy and sell on the deal indicates
  * who is paying and who is selling.
  *
- * A company that buys a fixed for float financial swap will pay a fixed price for a float index.
+ * A company that buys a fixed for float financial swap will  pay a fixed price and receive float index.
  * A company that sells a fixed  for float financial swap will receive the fixed  and pay the float index.
  *
  * Subtypes of financial swaps are as follows:
@@ -48,37 +48,6 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table (name = "FINANCIAL_SWAP_DEAL")
-@NamedQueries({
-        @NamedQuery(
-                name = DealRepositoryBean.FETCH_FINANCIAL_SWAP_DEAL_SUMMARIES,
-                query =  "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSummary( "
-                        + "          deal.id, "
-                        + "          powerProfile.id, "
-                        + "          deal.dealDetail.ticketNo, "
-                        + "          deal.dealDetail.startDate,"
-                        + "          deal.dealDetail.endDate,"
-                        + "          deal.dealTypeValue, "
-                        + "          deal.dealDetail.buySellCodeValue,"
-                        +  "         deal.dealDetail.reportingCurrencyCodeValue,"
-                        +  "		 deal.dealDetail.volumeQuantity,"
-                        +  "         deal.dealDetail.volumeUnitOfMeasureCodeValue,"
-                        +  "         deal.dealDetail.volumeFrequencyCodeValue,"
-                        +  "	  	 deal.dealDetail.settlementCurrencyCodeValue,"
-                        +  "         deal.detail.paysValuationCodeValue,"
-                        +  "         paysIndex.id,"
-                        +  "         deal.detail.fixedPriceValue,"
-                        +  "         deal.detail.fixedPriceUnitOfMeasureCodeValue,"
-                        +  "         deal.detail.fixedPriceCurrencyCodeValue,"
-                        +  "         deal.detail.receivesValuationCodeValue,"
-                        +  "         receivesIndex.id"
-                        +  "         ) "
-                        + "FROM FinancialSwapDeal deal "
-                        + "LEFT OUTER JOIN deal.powerProfile as powerProfile " +
-                        "  LEFT OUTER JOIN deal.paysPriceIndex as paysIndex " +
-                        "  LEFT OUTER JOIN deal.receivesPriceIndex as receivesIndex " +
-                        "  WHERE deal.id in (:dealIds) " +
-                        "  ORDER BY deal.dealDetail.ticketNo DESC")
-})
 public class FinancialSwapDeal extends BaseDeal {
 
     private PriceIndex paysPriceIndex;
@@ -149,8 +118,9 @@ public class FinancialSwapDeal extends BaseDeal {
     protected void validate() throws OBValidationException {
         super.validate();
         detail.validate();
-        if (detail.getPaysValuationCode() == ValuationCode.FIXED) {
-            if (detail.isFixedPriceMissing())
+
+        if (detail.getPaysValuationCode() == ValuationCode.FIXED || detail.getPaysValuationCode() == ValuationCode.INDEX_PLUS) {
+            if (getDealDetail().isFixedPriceMissing())
                 throw new OBValidationException(DealErrorCode.MISSING_FIXED_PRICE_VALUE.getCode());
         }
 
@@ -159,12 +129,12 @@ public class FinancialSwapDeal extends BaseDeal {
                 throw new OBValidationException(DealErrorCode.MISSING_PAYS_PRICE.getCode());
         }
 
-        if (detail.getRecievesValuationCode() == ValuationCode.INDEX)
+        if (detail.getReceivesValuationCode() == ValuationCode.INDEX)
             if (receivesPriceIndex == null)
                 throw new OBValidationException(DealErrorCode.MISSING_RECEIVES_PRICE.getCode());
 
 
-        if (detail.getRecievesValuationCode() == ValuationCode.POWER_PROFILE)
+        if (detail.getReceivesValuationCode() == ValuationCode.POWER_PROFILE)
             if (getPowerProfile() == null)
                 throw new OBValidationException(DealErrorCode.MISSING_MARKET_POWER_PROFILE.getCode());
 

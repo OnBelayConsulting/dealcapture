@@ -78,13 +78,8 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
-	public List<FinancialSwapDealSummary> findFinancialSwapDealSummariesByIds(List<Integer> swapDealIds) {
-		return dealRepository.findFinancialDealSummariesByIds(swapDealIds);
-	}
-
-	@Override
-	public List<PhysicalDealSummary> findPhysicalDealSummariesByIds(List<Integer> physicalDealIds) {
-		return dealRepository.findPhysicalDealSummariesByIds(physicalDealIds);
+	public List<DealSummary> fetchDealSummariesByIds(List<Integer> dealIds) {
+		return dealRepository.fetchDealSummariesByIds(dealIds);
 	}
 
 	@Override

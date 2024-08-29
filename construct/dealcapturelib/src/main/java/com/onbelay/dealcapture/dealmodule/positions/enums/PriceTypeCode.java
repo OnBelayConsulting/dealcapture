@@ -28,6 +28,8 @@ import java.util.Map;
 public enum PriceTypeCode {
 	FIXED_PRICE 		("FIXED_PRICE"),
 	FIXED_QUANTITY 		("FIXED_QUANTITY"),
+	PAYS_PRICE 			("PAYS_PRICE"),
+	RECEIVES_PRICE 		("RECEIVES_PRICE"),
 	DEAL_PRICE 			("DEAL_PRICE"),
 	MARKET_PRICE 		("MARKET_PRICE");
 

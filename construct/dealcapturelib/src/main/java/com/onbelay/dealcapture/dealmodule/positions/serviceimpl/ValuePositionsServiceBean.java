@@ -5,6 +5,7 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
@@ -206,27 +207,29 @@ private void valueCostsAndPositionsByDeal(
         }
 
 
-        ArrayList<PositionValuationResult> results = new ArrayList<>();
         ArrayList<HourlyPositionValuationResult> hourlyPositionValuationResults = new ArrayList<>();
+
+        PositionEvaluatorFactory positionEvaluatorFactory = new PositionEvaluatorFactory(
+                currentDateTime,
+                valuationIndexManager);
+
+        HashMap<DealTypeCode, List<PositionValuationResult>> resultsMap = new HashMap<>();
 
         for (DealPositionView view : dealPositionViews) {
 
-            PhysicalPositionEvaluator evaluator = PhysicalPositionEvaluator.build(
-                    currentDateTime,
-                    valuationIndexManager,
-                    view);
+            DealPositionEvaluator evaluator = positionEvaluatorFactory.createPositionEvaluator(view);
 
             Map<LocalDate, TotalCostPositionSummary> map = totalCostMap.get(view.getDealId());
             if (map != null)
-                evaluator.withCosts(map.get(view.getDetail().getStartDate()));
+                evaluator.withCosts(map.get(view.getViewDetail().getStartDate()));
 
             Map<LocalDate, List<DealHourlyPositionView>> viewMap = hourlyPositionViewMap.get(view.getDealId());
             if (viewMap != null) {
-                List<DealHourlyPositionView> viewList = viewMap.get(view.getDetail().getStartDate());
-                if (viewList != null && view.getDetail().getPowerFlowCode() != null) {
+                List<DealHourlyPositionView> viewList = viewMap.get(view.getViewDetail().getStartDate());
+                if (viewList != null && view.getViewDetail().getPowerFlowCode() != null) {
                     List<DealHourlyPositionView> viewListByFlowCode = viewList
                             .stream()
-                            .filter( c-> c.getDetail().getPowerFlowCode() == view.getDetail().getPowerFlowCode())
+                            .filter( c-> c.getDetail().getPowerFlowCode() == view.getViewDetail().getPowerFlowCode())
                             .toList();
                     evaluator.withHourlyPositions(viewListByFlowCode);
                 }
@@ -235,18 +238,25 @@ private void valueCostsAndPositionsByDeal(
             if (view.getPowerProfileId() != null) {
                 Map<LocalDate, List<PowerProfilePositionView>> powerPositionByDateMap = powerProfilePositionViewMap.get(
                         view.getPowerProfileId());
-                List<PowerProfilePositionView> viewList = powerPositionByDateMap.get(view.getDetail().getStartDate());
+                List<PowerProfilePositionView> viewList = powerPositionByDateMap.get(view.getViewDetail().getStartDate());
                 evaluator.withPowerProfilePositions(viewList);
             }
 
             PositionValuationResult valuationResult = evaluator.valuePosition();
             hourlyPositionValuationResults.addAll(valuationResult.getHourlyPositionResults());
+            List<PositionValuationResult> results = resultsMap.computeIfAbsent(
+                    view.getViewDetail().getDealTypeCode(),
+                    k -> new ArrayList<>());
             results.add(valuationResult);
         }
 
-        SubLister<PositionValuationResult> subLister = new SubLister<>(results, 1000);
-        while (subLister.moreElements()) {
-            dealPositionsBatchUpdater.updatePositions(subLister.nextList());
+        for (DealTypeCode code : resultsMap.keySet()) {
+            SubLister<PositionValuationResult> subLister = new SubLister<>(resultsMap.get(code), 1000);
+            while (subLister.moreElements()) {
+                dealPositionsBatchUpdater.updatePositions(
+                        code,
+                        subLister.nextList());
+            }
         }
 
         if (hourlyPositionValuationResults.isEmpty() == false) {

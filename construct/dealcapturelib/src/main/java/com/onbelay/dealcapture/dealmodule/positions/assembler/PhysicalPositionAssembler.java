@@ -13,7 +13,8 @@ public class PhysicalPositionAssembler extends DealPositionAssembler implements 
         PhysicalPositionSnapshot snapshot = new PhysicalPositionSnapshot();
         super.setEntityAttributes(position, snapshot);
 
-        snapshot.getDetail().copyFrom(position.getDetail());
+        if (position.getPriceDetail() != null)
+            snapshot.getPriceDetail().copyFrom(position.getPriceDetail());
 
         if (position.getFixedPriceFxRiskFactor() != null)
             snapshot.setFixedPriceFxRiskFactorId(position.getFixedPriceFxRiskFactor().generateEntityId());

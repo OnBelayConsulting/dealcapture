@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "DEAL_POSITION_VIEW")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DEAL_TYPE_CODE")
 @Immutable
 @NamedQueries({
         @NamedQuery(
@@ -26,17 +28,17 @@ import java.util.stream.Collectors;
                 query = "SELECT position " +
                         "  FROM DealPositionView position " +
                         " WHERE position.dealId in (:dealIds) " +
-                        "   AND detail.currencyCodeValue = :currencyCode " +
-                        "   AND detail.createdDateTime = :createdDateTime "),
+                        "   AND viewDetail.currencyCodeValue = :currencyCode " +
+                        "   AND viewDetail.createdDateTime = :createdDateTime "),
         @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_DEAL_POSITION_VIEWS_BY_DEAL,
                 query = "SELECT position " +
                         "  FROM DealPositionView position " +
                         " WHERE position.dealId = :dealId " +
-                        "   AND detail.currencyCodeValue = :currencyCode " +
-                        "   AND detail.createdDateTime = :createdDateTime ")
+                        "   AND viewDetail.currencyCodeValue = :currencyCode " +
+                        "   AND viewDetail.createdDateTime = :createdDateTime ")
 })
-public class DealPositionView extends AbstractEntity {
+public abstract class DealPositionView extends AbstractEntity {
     private Integer id;
 
     private Integer dealId;
@@ -45,13 +47,7 @@ public class DealPositionView extends AbstractEntity {
 
     private Integer fixedPriceFXRiskFactorId;
 
-    private Integer dealPriceRiskFactorId;
-    private Integer dealPriceFXRiskFactorId;
-
-    private Integer marketPriceRiskFactorId;
-    private Integer marketPriceFXRiskFactorId;
-
-    private DealPositionViewDetail detail = new DealPositionViewDetail();
+    private DealPositionViewDetail viewDetail = new DealPositionViewDetail();
 
     private List<PositionRiskFactorMappingSummary> mappingSummaries = new ArrayList<>();
 
@@ -91,58 +87,21 @@ public class DealPositionView extends AbstractEntity {
     public void setFixedPriceFXRiskFactorId(Integer fixedPriceFXRiskFactorId) {
         this.fixedPriceFXRiskFactorId = fixedPriceFXRiskFactorId;
     }
-
-    @Column(name = "DEAL_PRICE_RISK_FACTOR_ID")
-    public Integer getDealPriceRiskFactorId() {
-        return dealPriceRiskFactorId;
-    }
-
-    public void setDealPriceRiskFactorId(Integer dealPriceRiskFactorId) {
-        this.dealPriceRiskFactorId = dealPriceRiskFactorId;
-    }
-
-    @Column(name = "DEAL_PRICE_FX_RISK_FACTOR_ID")
-    public Integer getDealPriceFXRiskFactorId() {
-        return dealPriceFXRiskFactorId;
-    }
-
-    public void setDealPriceFXRiskFactorId(Integer dealPriceFXRiskFactorId) {
-        this.dealPriceFXRiskFactorId = dealPriceFXRiskFactorId;
-    }
-
-    @Column(name = "MKT_PRICE_RISK_FACTOR_ID")
-    public Integer getMarketPriceRiskFactorId() {
-        return marketPriceRiskFactorId;
-    }
-
-    public void setMarketPriceRiskFactorId(Integer marketPriceRiskFactorId) {
-        this.marketPriceRiskFactorId = marketPriceRiskFactorId;
-    }
-
-    @Column(name = "MKT_PRICE_FX_RISK_FACTOR_ID")
-    public Integer getMarketPriceFXRiskFactorId() {
-        return marketPriceFXRiskFactorId;
-    }
-
-    public void setMarketPriceFXRiskFactorId(Integer marketPriceFXRiskFactorId) {
-        this.marketPriceFXRiskFactorId = marketPriceFXRiskFactorId;
-    }
-
     @Embedded
-    public DealPositionViewDetail getDetail() {
-        return detail;
+    public DealPositionViewDetail getViewDetail() {
+        return viewDetail;
     }
 
-    public void setDetail(DealPositionViewDetail detail) {
-        this.detail = detail;
+    public void setViewDetail(DealPositionViewDetail detail) {
+        this.viewDetail = detail;
     }
 
     @Transient
     public Price getFixedPrice() {
         return new Price(
-                detail.getFixedPriceValue(),
-                detail.getFixedPriceCurrencyCode(),
-                detail.getFixedPriceUnitOfMeasure());
+                viewDetail.getFixedPriceValue(),
+                viewDetail.getFixedPriceCurrencyCode(),
+                viewDetail.getFixedPriceUnitOfMeasure());
     }
 
     @Transient
@@ -152,54 +111,6 @@ public class DealPositionView extends AbstractEntity {
             return null;
 
         FxRiskFactorSnapshot snapshot = valuationIndexManager.getFxRiskFactor(fixedPriceFXRiskFactorId);
-        return valuationIndexManager.generateFxRate(
-                snapshot.getFxIndexId().getId(),
-                snapshot.getDetail().getValue());
-    }
-
-    @Transient
-    @JsonIgnore
-    public Price getDealPrice(ValuationIndexManager valuationIndexManager) {
-        if (dealPriceRiskFactorId == null)
-            return null;
-
-        PriceRiskFactorSnapshot snapshot = valuationIndexManager.getPriceRiskFactor(dealPriceRiskFactorId);
-        return valuationIndexManager.generatePrice(
-                snapshot.getPriceIndexId().getId(),
-                snapshot.getDetail().getValue());
-    }
-
-    @Transient
-    @JsonIgnore
-    public FxRate getDealPriceFxRate(ValuationIndexManager valuationIndexManager) {
-        if (dealPriceFXRiskFactorId == null)
-            return null;
-
-        FxRiskFactorSnapshot snapshot = valuationIndexManager.getFxRiskFactor(dealPriceFXRiskFactorId);
-        return valuationIndexManager.generateFxRate(
-                snapshot.getFxIndexId().getId(),
-                snapshot.getDetail().getValue());
-    }
-
-
-    @Transient
-    @JsonIgnore
-    public Price getMarketPrice(ValuationIndexManager valuationIndexManager) {
-        if (marketPriceRiskFactorId == null)
-            return null;
-
-        PriceRiskFactorSnapshot snapshot = valuationIndexManager.getPriceRiskFactor(marketPriceRiskFactorId);
-        return valuationIndexManager.generatePrice(
-                snapshot.getPriceIndexId().getId(),
-                snapshot.getDetail().getValue());
-    }
-    @Transient
-    @JsonIgnore
-    public FxRate getMarketPriceFxRate(ValuationIndexManager valuationIndexManager) {
-        if (marketPriceFXRiskFactorId == null)
-            return null;
-
-        FxRiskFactorSnapshot snapshot = valuationIndexManager.getFxRiskFactor(marketPriceFXRiskFactorId);
         return valuationIndexManager.generateFxRate(
                 snapshot.getFxIndexId().getId(),
                 snapshot.getDetail().getValue());

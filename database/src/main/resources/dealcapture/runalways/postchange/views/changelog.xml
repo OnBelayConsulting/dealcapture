@@ -15,6 +15,7 @@
     <include file="COST_POSITION_VIEW.xml" relativeToChangelogFile="true"/>
     <include file="POWER_PROFILE_POSITION_VIEW.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_HOURLY_POSITION_VIEW.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_SUMMARY_VIEW.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

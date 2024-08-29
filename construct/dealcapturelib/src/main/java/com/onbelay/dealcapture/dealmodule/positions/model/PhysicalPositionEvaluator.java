@@ -8,73 +8,40 @@ import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourFixedValueDayDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
-import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.dealcapture.unitofmeasure.UnitOfMeasureConverter;
 import com.onbelay.shared.enums.BuySellCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-public class PhysicalPositionEvaluator implements PositionEvaluator {
+public class PhysicalPositionEvaluator extends DealPositionEvaluator implements PositionEvaluator {
     private static final Logger logger = LogManager.getLogger();
-    private DealPositionView dealPositionView;
-    private List<DealHourlyPositionView> hourlyPositionViews = new ArrayList<>();
 
-    private List<PowerProfilePositionView> powerProfilePositionViews = new ArrayList<>();
+    public PhysicalPositionEvaluator(
+            DealPositionView view,
+            ValuationIndexManager valuationIndexManager) {
+        super(
+                view,
+                valuationIndexManager);
 
-    private TotalCostPositionSummary totalCostPositionSummary;
-    private ValuationIndexManager valuationIndexManager;
-
-    private LocalDateTime currentDateTime;
-
-    public static PhysicalPositionEvaluator build(
-            LocalDateTime currentDateTime,
-            ValuationIndexManager valuationIndexManager,
-            DealPositionView positionView) {
-
-        return new PhysicalPositionEvaluator(
-                currentDateTime,
-                valuationIndexManager,
-                positionView);
     }
 
-    protected PhysicalPositionEvaluator(
-            LocalDateTime currentDateTime,
-            ValuationIndexManager valuationIndexManager,
-            DealPositionView dealPositionView) {
-
-        this.currentDateTime = currentDateTime;
-        this.valuationIndexManager = valuationIndexManager;
-        this.dealPositionView = dealPositionView;
-    }
-
-    public PhysicalPositionEvaluator withCosts(TotalCostPositionSummary totalCostPositionSummary) {
-        this.totalCostPositionSummary = totalCostPositionSummary;
-        return this;
-    }
-
-    public PhysicalPositionEvaluator withHourlyPositions(List<DealHourlyPositionView> hourlyPositionViews) {
-        this.hourlyPositionViews = hourlyPositionViews;
-        return this;
+    private PhysicalPositionView getPhysicalPositionView() {
+        return (PhysicalPositionView) dealPositionView;
     }
 
     public PositionValuationResult valuePosition() {
-        PositionValuationResult valuationResult = new PositionValuationResult(
+        PhysicalPositionValuationResult valuationResult = new PhysicalPositionValuationResult(
                 dealPositionView.getId(),
                 currentDateTime);
 
         Price dealPrice = calculateDealPrice(valuationResult);
 
         Price marketPrice = calculateMarketPrice(valuationResult);
-        valuationResult.getSettlementDetail().setMarketPriceValue(marketPrice.roundPrice().getValue());
+        valuationResult.getPriceDetail().setMarketPriceValue(marketPrice.roundPrice().getValue());
 
         if (dealPrice.isInError())
             valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MTM_DEAL_PRICE);
@@ -83,40 +50,60 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
         if (totalCostPositionSummary != null)
             totalCostAmount = new Amount(
                     totalCostPositionSummary.getTotalCostAmount(),
-                    dealPositionView.getDetail().getCurrencyCode());
+                    dealPositionView.getViewDetail().getCurrencyCode());
         else
             totalCostAmount = new Amount(
                     BigDecimal.ZERO,
-                    dealPositionView.getDetail().getCurrencyCode());
+                    dealPositionView.getViewDetail().getCurrencyCode());
 
         valuationResult.getSettlementDetail().setCostSettlementAmount(totalCostAmount.getValue());
 
-        setMarkToMarket(
-                dealPrice,
-                marketPrice,
-                totalCostAmount,
-                valuationResult);
+        if (dealPrice.isInError() == false && marketPrice.isInError() == false) {
+            dealPrice = dealPrice.roundPrice();
+            marketPrice = marketPrice.roundPrice();
 
-        if (dealPositionView.getDetail().getIsSettlementPosition())
+            Price netPrice;
+            if (dealPositionView.getViewDetail().getBuySellCode() == BuySellCode.BUY)
+                netPrice = marketPrice.subtract(dealPrice);
+            else
+                netPrice = dealPrice.subtract(marketPrice);
+
+            setMarkToMarket(
+                    netPrice,
+                    totalCostAmount,
+                    valuationResult);
+        }
+
+        if (dealPositionView.getViewDetail().getIsSettlementPosition()) {
+
+            Price settlementPrice;
+            if (dealPositionView.getViewDetail().getBuySellCode() == BuySellCode.BUY) {
+                settlementPrice = dealPrice.negate();
+            } else {
+                settlementPrice = dealPrice;
+            }
+
             setSettlementAmounts(
-                dealPrice,
-                totalCostAmount,
-                valuationResult);
+                    settlementPrice,
+                    totalCostAmount,
+                    valuationResult);
+        }
+
 
         return valuationResult;
     }
 
-    private Price calculateDealPrice(PositionValuationResult valuationResult) {
+    private Price calculateDealPrice(PhysicalPositionValuationResult valuationResult) {
         Price fixedPrice = null;
-        if (dealPositionView.getDetail().getDealPriceValuationCode() == ValuationCode.FIXED
-                || dealPositionView.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
+        if (getPhysicalPositionView().getDetail().getDealPriceValuationCode() == ValuationCode.FIXED
+                || getPhysicalPositionView().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
             fixedPrice = getFixedPrice();
-            valuationResult.getSettlementDetail().setDealPriceValue(fixedPrice.roundPrice().getValue());
+            valuationResult.getPriceDetail().setDealPriceValue(fixedPrice.roundPrice().getValue());
         }
 
         Price dealPrice = null;
-        if (dealPositionView.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX
-                || dealPositionView.getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
+        if (getPhysicalPositionView().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX
+                || getPhysicalPositionView().getDetail().getDealPriceValuationCode() == ValuationCode.INDEX_PLUS) {
 
             if (getDealHourlyPositionView(PriceTypeCode.DEAL_PRICE) != null) {
                 DealHourlyPositionView hourlyPositionView = getDealHourlyPositionView(PriceTypeCode.DEAL_PRICE);
@@ -151,7 +138,7 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
 
             } else {
                 dealPrice  = getDealIndexPrice();
-                valuationResult.getSettlementDetail().setDealIndexPriceValue(dealPrice.roundPrice().getValue());
+                valuationResult.getPriceDetail().setDealIndexPriceValue(dealPrice.roundPrice().getValue());
             }
         }
 
@@ -165,7 +152,7 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
         }
 
 
-        Price totalDealPrice = switch (dealPositionView.getDetail().getDealPriceValuationCode()) {
+        Price totalDealPrice = switch (getPhysicalPositionView().getDetail().getDealPriceValuationCode()) {
 
             case FIXED -> fixedPrice;
 
@@ -176,95 +163,21 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
             case POWER_PROFILE ->  throw new OBRuntimeException(PositionErrorCode.ERROR_INVALID_POSITION_VALUATION.getCode());
         };
 
-        valuationResult.getSettlementDetail().setTotalDealPriceValue(totalDealPrice.roundPrice().getValue());
+        valuationResult.getPriceDetail().setTotalDealPriceValue(totalDealPrice.roundPrice().getValue());
         return totalDealPrice;
     }
 
-    private void setMarkToMarket(
-            Price dealPrice,
-            Price marketPrice,
-            Amount totalCostAmount,
-            PositionValuationResult valuationResult) {
+    private Price calculateMarketPrice(PhysicalPositionValuationResult valuationResult) {
 
-        if (marketPrice.isInError()) {
-            valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MISSING_MARKET_PRICE);
-        }
-
-        if (dealPrice.isInError() == false && marketPrice.isInError() == false) {
-            dealPrice = dealPrice.roundPrice();
-            marketPrice = marketPrice.roundPrice();
-            Price netPrice;
-            if (dealPositionView.getDetail().getBuySellCode() == BuySellCode.BUY)
-                netPrice = marketPrice.subtract(dealPrice);
-            else
-                netPrice = dealPrice.subtract(marketPrice);
-            Amount amount = netPrice.multiply(dealPositionView.getDetail().getQuantity());
-
-            if (amount.isInError()) {
-                valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MTM_CALCULATION);
-            } else {
-                amount = amount.add(totalCostAmount);
-                if (amount.isInError()) {
-                    valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_MTM_CALCULATION);
-                    valuationResult.addErrorMessage(PositionErrorCode.ERROR_MISSING_COST_FX_RATE_CONVERSION);
-                } else {
-                    amount = amount.round();
-                    valuationResult.getSettlementDetail().setMarkToMarketValuation(amount.getValue());
-                }
-            }
-
-        }
-    }
-
-    private void setSettlementAmounts(
-            Price dealPrice,
-            Amount totalCostAmount,
-            PositionValuationResult valuationResult) {
-
-        if (dealPrice.isInError()) {
-            valuationResult.addErrorMessage(PositionErrorCode.ERROR_VALUE_SET_DEAL_PRICE);
-            return;
-        }
-
-        Amount settlementAmount = dealPrice.multiply(dealPositionView.getDetail().getQuantity());
-
-        if (dealPositionView.getDetail().getBuySellCode() == BuySellCode.BUY) {
-            settlementAmount = settlementAmount.negate();
-        }
-
-        settlementAmount = settlementAmount.round();
-        if (settlementAmount.isInError()) {
-            valuationResult.addErrorMessage(PositionErrorCode.ERROR_INVALID_SETTLE_AMOUNT);
-        } else {
-            valuationResult.getSettlementDetail().setSettlementAmount(settlementAmount.getValue());
-        }
-
-        if (settlementAmount.isInError()) {
-            valuationResult.addErrorMessage(PositionErrorCode.ERROR_INVALID_TOTAL_SETTLE_MISSING_COST);
-        } else {
-            Amount totalSettlementAmount = settlementAmount.add(totalCostAmount);
-
-            if (totalSettlementAmount.isInError()) {
-                valuationResult.addErrorMessage(PositionErrorCode.ERROR_INVALID_TOTAL_SETTLE_MISSING_COST);
-            } else {
-                totalSettlementAmount = totalSettlementAmount.round();
-                valuationResult.getSettlementDetail().setTotalSettlementAmount(totalSettlementAmount.getValue());
-            }
-        }
-
-    }
-
-    private Price calculateMarketPrice(PositionValuationResult valuationResult) {
-
-        if (dealPositionView.getDetail().getMarketPriceValuationCode() == ValuationCode.POWER_PROFILE) {
-            return calculateMarketIndexPriceWithPowerProfile(valuationResult);
+        if (getPhysicalPositionView().getDetail().getMarketPriceValuationCode() == ValuationCode.POWER_PROFILE) {
+            return calculateIndexPriceWithPowerProfile(valuationResult);
         } else {
             return calculateMarketPriceFromIndex(valuationResult);
         }
 
     }
 
-    private Price calculateMarketPriceFromIndex(PositionValuationResult valuationResult) {
+    private Price calculateMarketPriceFromIndex(PhysicalPositionValuationResult valuationResult) {
 
         Price marketPrice;
         if (getDealHourlyPositionView(PriceTypeCode.MARKET_PRICE) != null) {
@@ -299,17 +212,17 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
             }
 
         } else {
-            marketPrice = dealPositionView.getMarketPrice(valuationIndexManager);
+            marketPrice = getPhysicalPositionView().getMarketPrice(valuationIndexManager);
         }
 
 
-        if (marketPrice.getCurrency() != dealPositionView.getDetail().getCurrencyCode()) {
-            FxRate marketPriceFxRate = dealPositionView.getMarketPriceFxRate(valuationIndexManager);
+        if (marketPrice.getCurrency() != dealPositionView.getViewDetail().getCurrencyCode()) {
+            FxRate marketPriceFxRate = getPhysicalPositionView().getMarketPriceFxRate(valuationIndexManager);
 
             if (marketPriceFxRate == null) {
                 logger.error("Market Price Fx rate is missing and is required.");
                 logger.error("Market Price Currency: " + marketPrice.getCurrency().getCode()
-                        + " vs position view: " + dealPositionView.getDetail().getCurrencyCodeValue());
+                        + " vs position view: " + dealPositionView.getViewDetail().getCurrencyCodeValue());
 
                 return new Price(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
             }
@@ -319,9 +232,9 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
         if (marketPrice.isInError())
             return marketPrice;
 
-        if (dealPositionView.getDetail().getVolumeUnitOfMeasure() != marketPrice.getUnitOfMeasure()) {
+        if (dealPositionView.getViewDetail().getVolumeUnitOfMeasure() != marketPrice.getUnitOfMeasure()) {
             Conversion conversion = UnitOfMeasureConverter.findConversion(
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure(),
+                    dealPositionView.getViewDetail().getVolumeUnitOfMeasure(),
                     marketPrice.getUnitOfMeasure());
             marketPrice = marketPrice.apply(conversion);
         }
@@ -339,117 +252,16 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
     }
 
 
-    private Price calculateMarketIndexPriceWithPowerProfile(PositionValuationResult valuationResult) {
-
-        if (powerProfilePositionViews.isEmpty())
-            throw new OBRuntimeException(PositionErrorCode.MISSING_POWER_PROFILE_POSITIONS.getCode());
-
-        Price totalPrice = new Price(
-                BigDecimal.ZERO,
-                dealPositionView.getDetail().getCurrencyCode(),
-                dealPositionView.getDetail().getVolumeUnitOfMeasure());
-
-        int totalPriceCount = 0;
-
-        Amount totalAmount = new Amount(
-                BigDecimal.ZERO,
-                dealPositionView.getDetail().getCurrencyCode());
-
-        Quantity totalQuantiy = new Quantity(
-                BigDecimal.ZERO,
-                dealPositionView.getDetail().getVolumeUnitOfMeasure());
-
-        boolean hasVariableQuantity = false;
-        DealHourlyPositionView quantitiesView = null;
-        if (getDealHourlyPositionView(PriceTypeCode.FIXED_QUANTITY) != null) {
-            hasVariableQuantity = true;
-            quantitiesView = getDealHourlyPositionView(PriceTypeCode.FIXED_QUANTITY);
-        }
-
-
-            // Fetch current prices for this hourly position via the associated powerProfilePosition.
-        for (DealHourlyPositionView hourlyPositionView : hourlyPositionViews) {
-
-            PowerProfilePositionView powerProfilePositionView = findPowerProfilePositionViewById(hourlyPositionView.getPowerProfilePositionId());
-            PriceIndexSnapshot indexSnapshot = valuationIndexManager.getPriceIndex(powerProfilePositionView.getPriceIndexId());
-
-            FxRate fxRate = null;
-            if (indexSnapshot.getDetail().getCurrencyCode() != hourlyPositionView.getDetail().getCurrencyCode()) {
-                fxRate = hourlyPositionView.getFxRate(valuationIndexManager);
-            }
-
-            Conversion conversion = null;
-            if (indexSnapshot.getDetail().getUnitOfMeasureCode()  != hourlyPositionView.getDetail().getUnitOfMeasure()) {
-                conversion = UnitOfMeasureConverter.findConversion(
-                        hourlyPositionView.getDetail().getUnitOfMeasure(),
-                        indexSnapshot.getDetail().getUnitOfMeasureCode());
-            }
-
-            for (int i=1; i <25; i++) {
-                Integer priceRiskFactorId = powerProfilePositionView.getHourPriceRiskFactorIdMap().getHourPriceRiskFactorId(i);
-                if (priceRiskFactorId != null) {
-                    totalPriceCount++;
-
-                    PriceRiskFactorSnapshot factorSnapshot = valuationIndexManager.getPriceRiskFactor(priceRiskFactorId);
-                    Price unconvertedPrice = new Price(
-                            factorSnapshot.getDetail().getValue(),
-                            indexSnapshot.getDetail().getCurrencyCode(),
-                            indexSnapshot.getDetail().getUnitOfMeasureCode());
-                    if (fxRate != null)
-                        unconvertedPrice = unconvertedPrice.apply(fxRate);
-
-                    if (conversion != null)
-                        unconvertedPrice = unconvertedPrice.apply(conversion);
-
-                    if (hasVariableQuantity) {
-                        BigDecimal value = quantitiesView.getHourFixedValueDayDetail().getHourFixedValue(i);
-                        Quantity quantity = new Quantity(
-                                value,
-                                dealPositionView.getDetail().getVolumeUnitOfMeasure());
-                        totalQuantiy = totalQuantiy.add(quantity);
-                        Amount amount = quantity.multiply(unconvertedPrice);
-                        totalAmount = totalAmount.add(amount);
-                    } else {
-                        totalPrice = totalPrice.add(unconvertedPrice);
-                    }
-
-                    hourlyPositionView.getHourFixedValueDayDetail().setHourFixedValue(i, unconvertedPrice.roundPrice().getValue());
-                }
-            }
-
-            valuationResult.addHourlyPositionResult(
-                    new HourlyPositionValuationResult(
-                            hourlyPositionView.getId(),
-                            hourlyPositionView.getHourFixedValueDayDetail(),
-                            currentDateTime));
-        }
-
-        Price marketPrice;
-        if (totalPrice.isInError())
-            logger.error("market price is in error.");
-
-        if (totalPriceCount == 0)
-            logger.error("count is 0.");
-
-        if (hasVariableQuantity) {
-            marketPrice = totalAmount.divide(totalQuantiy);
-        } else {
-            marketPrice = totalPrice.divide(BigDecimal.valueOf(totalPriceCount));
-        }
-        return marketPrice.roundPrice();
-    }
-
-
     private Price getDealIndexPrice() {
-        Price dealPrice = dealPositionView.getDealPrice(valuationIndexManager);
+        Price dealPrice = getPhysicalPositionView().getDealPrice(valuationIndexManager);
 
-        if (dealPrice.getCurrency() != dealPositionView.getDetail().getCurrencyCode()) {
-            FxRate  fxRate = dealPositionView.getDealPriceFxRate(valuationIndexManager);
+        if (dealPrice.getCurrency() != dealPositionView.getViewDetail().getCurrencyCode()) {
+            FxRate  fxRate = getPhysicalPositionView().getDealPriceFxRate(valuationIndexManager);
 
             if (fxRate == null) {
                 logger.error("DealPrice Fx rate is missing and is required.");
                 logger.error("DealPrice Currency: " + dealPrice.getCurrency().getCode()
-                        + " vs position view: " + dealPositionView.getDetail().getCurrencyCodeValue());
+                        + " vs position view: " + dealPositionView.getViewDetail().getCurrencyCodeValue());
 
                 return new Price(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
             }
@@ -460,179 +272,15 @@ public class PhysicalPositionEvaluator implements PositionEvaluator {
           return dealPrice;
         }
 
-        if (dealPositionView.getDetail().getVolumeUnitOfMeasure() != dealPrice.getUnitOfMeasure()) {
+        if (dealPositionView.getViewDetail().getVolumeUnitOfMeasure() != dealPrice.getUnitOfMeasure()) {
             Conversion conversion = UnitOfMeasureConverter.findConversion(
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure(),
+                    dealPositionView.getViewDetail().getVolumeUnitOfMeasure(),
                     dealPrice.getUnitOfMeasure());
             dealPrice = dealPrice.apply(conversion);
         }
 
 
         return dealPrice;
-    }
-
-
-
-    private HourFixedValueDayDetail calculateHourlyIndexPrices(
-            FxRate fxRate,
-            DealHourlyPositionView hourlyPositionView) {
-
-        CurrencyCode targetCurrencyCode = dealPositionView.getDetail().getCurrencyCode();
-        UnitOfMeasureCode targetUnitOfMeasure = dealPositionView.getDetail().getVolumeUnitOfMeasure();
-
-        if (hourlyPositionView == null)
-            return null;
-
-        HourFixedValueDayDetail dealPriceHourlyDetail = new HourFixedValueDayDetail();
-        for (int i = 1; i < 25;i++) {
-            Price price = hourlyPositionView.getPrice(i, valuationIndexManager);
-            if (price != null) {
-                if (price.getCurrency() != targetCurrencyCode) {
-                    price = price.apply(fxRate);
-                }
-
-                if (price.getUnitOfMeasure() != targetUnitOfMeasure) {
-                    Conversion conversion = UnitOfMeasureConverter.findConversion(
-                            targetUnitOfMeasure,
-                            price.getUnitOfMeasure());
-                    price = price.apply(conversion);
-                }
-
-                dealPriceHourlyDetail.setHourFixedValue(i, price.roundPrice().getValue());
-            }
-        }
-
-        return dealPriceHourlyDetail;
-    }
-
-
-    private Price getFixedPrice() {
-        Price fixedPrice = dealPositionView.getFixedPrice();
-
-        if (fixedPrice.getCurrency() != dealPositionView.getDetail().getCurrencyCode()) {
-            FxRate fxRate = dealPositionView.getFixedFxRate(valuationIndexManager);
-
-            if (fxRate == null) {
-                logger.error("Fixed Price Fx rate is missing and is required.");
-                logger.error("Fixed Price Currency: " + fixedPrice.getCurrency().getCode()
-                        + " vs position view: " + dealPositionView.getDetail().getCurrencyCodeValue());
-
-                return new Price(CalculatedErrorType.ERROR_INCOMPAT_CURRENCY);
-            }
-            fixedPrice = fixedPrice.apply(fxRate);
-        }
-
-        if (fixedPrice.isInError())
-            return fixedPrice;
-
-        if (dealPositionView.getDetail().getVolumeUnitOfMeasure() != fixedPrice.getUnitOfMeasure()) {
-            Conversion conversion = UnitOfMeasureConverter.findConversion(
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure(),
-                    fixedPrice.getUnitOfMeasure());
-            fixedPrice = fixedPrice.apply(conversion);
-        }
-        return fixedPrice;
-    }
-
-    private DealHourlyPositionView getDealHourlyPositionView(PriceTypeCode priceTypeCode) {
-        return  hourlyPositionViews
-                .stream()
-                .filter(c-> c.getDetail().getPriceTypeCode() == priceTypeCode)
-                .findFirst()
-                .orElse(null);
-    }
-
-    public PowerProfilePositionView findPowerProfilePositionViewById(Integer powerProfilePositionId) {
-        return powerProfilePositionViews
-                .stream()
-                .filter(c -> c.getId().equals(powerProfilePositionId))
-                .findFirst().orElse(null);
-    }
-
-    public void withPowerProfilePositions(List<PowerProfilePositionView> viewList) {
-        this.powerProfilePositionViews = viewList;
-    }
-
-
-    private Price calculateWeightedAveragePrice(
-            HourFixedValueDayDetail quantities,
-            HourFixedValueDayDetail prices) {
-
-
-        Quantity totalQuantity = new Quantity(
-                BigDecimal.ZERO,
-                dealPositionView.getDetail().getVolumeUnitOfMeasure());
-
-        Amount totalAmount = new Amount(
-                BigDecimal.ZERO,
-                dealPositionView.getDetail().getCurrencyCode());
-
-        for (int i=1; i < 25; i++) {
-            BigDecimal value = quantities.getHourFixedValue(i);
-            if (value == null)
-                continue;
-            Quantity quantity = new Quantity(
-                    value,
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure());
-
-            totalQuantity = totalQuantity.add(quantity);
-
-            Price price = new Price(
-                    prices.getHourFixedValue(i),
-                    dealPositionView.getDetail().getCurrencyCode(),
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure());
-
-            Amount amount = quantity.multiply(price);
-            totalAmount = totalAmount.add(amount);
-        }
-
-        // convert unit of measure
-
-        if (totalQuantity.isZero() == false) {
-            Price averagePrice = totalAmount.divide(totalQuantity);
-            return averagePrice.roundPrice();
-        } else {
-            return new Price(
-                    BigDecimal.ZERO,
-                    dealPositionView.getDetail().getCurrencyCode(),
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure());
-        }
-
-    }
-
-
-    private Price calculateSimpleAveragePrice(HourFixedValueDayDetail prices) {
-
-        Price totalPrice = new Price(
-                BigDecimal.ZERO,
-                dealPositionView.getDetail().getCurrencyCode(),
-                dealPositionView.getDetail().getVolumeUnitOfMeasure());
-
-        int count = 0;
-        for (int i=1; i < 25; i++) {
-
-            BigDecimal value = prices.getHourFixedValue(i);
-            if (value == null)
-                continue;
-            count++;
-
-            Price price = new Price(
-                    value,
-                    dealPositionView.getDetail().getCurrencyCode(),
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure());
-            totalPrice = totalPrice.add(price);
-        }
-
-        if (count != 0) {
-            Price averagePrice = totalPrice.divide(BigDecimal.valueOf(count));
-            return averagePrice.roundPrice();
-        } else {
-            return new Price(
-                    BigDecimal.ZERO,
-                    dealPositionView.getDetail().getCurrencyCode(),
-                    dealPositionView.getDetail().getVolumeUnitOfMeasure());
-        }
-
     }
 
 

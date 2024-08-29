@@ -36,9 +36,6 @@ public class FinancialSwapDealDetail {
 
 	private String paysValuationCodeValue;
 	private String receivesValuationCodeValue;
-	private BigDecimal fixedPriceValue;
-	private String fixedPriceCurrencyCodeValue;
-	private String fixedPriceUnitOfMeasureCodeValue;
 
 	public FinancialSwapDealDetail() {
 	}
@@ -55,45 +52,15 @@ public class FinancialSwapDealDetail {
 				getPaysValuationCode() == ValuationCode.INDEX_PLUS) )
 			throw new OBValidationException(DealErrorCode.INVALID_PAYS_VALUATION.getCode());
 
-		if (fixedPriceValue != null) {
-
-			if (fixedPriceCurrencyCodeValue == null)
-				throw new OBValidationException(DealErrorCode.MISSED_FIXED_PRICE_CURRENCY.getCode());
-
-			if (fixedPriceUnitOfMeasureCodeValue == null)
-				throw new OBValidationException(DealErrorCode.MISSING_FIXED_PRICE_UOM.getCode());
-		}
 
 		if (receivesValuationCodeValue == null) {
 			throw new OBValidationException(DealErrorCode.MISSING_MARKET_PRICE_VALUATION.getCode());
 		}
 
-		if  (! (getRecievesValuationCode() == ValuationCode.POWER_PROFILE || getRecievesValuationCode() == ValuationCode.INDEX) )
+		if  (! (getReceivesValuationCode() == ValuationCode.POWER_PROFILE || getReceivesValuationCode() == ValuationCode.INDEX) )
 			throw new OBValidationException(DealErrorCode.INVALID_RECEIVES_VALUATION.getCode());
 
-		if (fixedPriceValue != null) {
-			if (! (getPaysValuationCode() == ValuationCode.FIXED || getPaysValuationCode() == ValuationCode.INDEX_PLUS) )
-				throw new OBValidationException(DealErrorCode.INVALID_FIXED_PRICE_VALUE.getCode());
-		}
 
-	}
-	
-	@Transient
-	@JsonIgnore
-	public Price getFixedPrice() {
-		if (fixedPriceValue == null)
-			return null;
-		else
-			return new Price(
-					fixedPriceValue,
-				CurrencyCode.lookUp(fixedPriceCurrencyCodeValue),
-				UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue));
-	}
-	
-	public void setFixedPrice(Price price) {
-		this.fixedPriceValue = price.getValue();
-		this.fixedPriceCurrencyCodeValue = price.getCurrency().getCode();
-		this.fixedPriceUnitOfMeasureCodeValue = price.getUnitOfMeasure().getCode();
 	}
 
 	@Transient
@@ -117,7 +84,7 @@ public class FinancialSwapDealDetail {
 
 	@Transient
 	@JsonIgnore
-	public ValuationCode getRecievesValuationCode() {
+	public ValuationCode getReceivesValuationCode() {
 		return ValuationCode.lookUp(receivesValuationCodeValue);
 	}
 
@@ -134,84 +101,11 @@ public class FinancialSwapDealDetail {
 		this.receivesValuationCodeValue = receivesValuationCodeValue;
 	}
 
-	@Column(name="FIXED_PRICE")
-    public BigDecimal getFixedPriceValue() {
-		return fixedPriceValue;
-	}
-
-
-    public void setFixedPriceValue(BigDecimal fixedPriceValue) {
-		this.fixedPriceValue = fixedPriceValue;
-	}
-
-	@Transient
-	@JsonIgnore
-	public CurrencyCode getFixedPriceCurrencyCode() {
-		return CurrencyCode.lookUp(fixedPriceCurrencyCodeValue);
-	}
-
-	public void setFixedPriceCurrencyCode(CurrencyCode code) {
-		this.fixedPriceCurrencyCodeValue = code.getCode();
-	}
-
-    @Column(name="FIXED_PRICE_CURRENCY_CODE")
-	@InjectCodeLabel(codeFamily = "currencyCode", injectedPropertyName = "dealPriceCurrencyCodeItem")
-	@JsonSerialize(using = CodeLabelSerializer.class)
-    public String getFixedPriceCurrencyCodeValue() {
-		return fixedPriceCurrencyCodeValue;
-	}
-
-
-    public void setFixedPriceCurrencyCodeValue(String dealPriceCurrencyValue) {
-		this.fixedPriceCurrencyCodeValue = dealPriceCurrencyValue;
-	}
-
-	@Transient
-	@JsonIgnore
-	public UnitOfMeasureCode getFixedPriceUnitOfMeasure() {
-		return UnitOfMeasureCode.lookUp(fixedPriceUnitOfMeasureCodeValue);
-	}
-
-	public void setFixedPriceUnitOfMeasure(UnitOfMeasureCode code) {
-		this.fixedPriceUnitOfMeasureCodeValue = code.getCode();
-	}
-
-    @Column(name="FIXED_PRICE_UOM_CODE")
-	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "dealPriceUnitOfMeasureCodeItem")
-	@JsonSerialize(using = CodeLabelSerializer.class)
-    public String getFixedPriceUnitOfMeasureCodeValue() {
-		return fixedPriceUnitOfMeasureCodeValue;
-	}
-
-
-    public void setFixedPriceUnitOfMeasureCodeValue(String dealPriceUoMValue) {
-		this.fixedPriceUnitOfMeasureCodeValue = dealPriceUoMValue;
-	}
-
-
     public void copyFrom(FinancialSwapDealDetail copy) {
 		if (copy.paysValuationCodeValue != null)
 			this.paysValuationCodeValue = copy.paysValuationCodeValue;
 
 		if (copy.receivesValuationCodeValue != null)
 			this.receivesValuationCodeValue = copy.receivesValuationCodeValue;
-
-		if (copy.fixedPriceValue != null)
-    		this.fixedPriceValue = copy.fixedPriceValue;
-    	
-    	if (copy.fixedPriceCurrencyCodeValue != null)
-    		this.fixedPriceCurrencyCodeValue = copy.fixedPriceCurrencyCodeValue;
-    	
-    	if (copy.fixedPriceUnitOfMeasureCodeValue != null)
-    		this.fixedPriceUnitOfMeasureCodeValue = copy.fixedPriceUnitOfMeasureCodeValue;
     }
-
-	@Transient
-	public boolean isFixedPriceMissing() {
-		if (fixedPriceValue == null)
-			return true;
-		if (fixedPriceUnitOfMeasureCodeValue == null)
-			return true;
-		return (fixedPriceCurrencyCodeValue == null);
-	}
 }

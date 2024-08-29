@@ -1,4 +1,4 @@
-package com.onbelay.dealcapture.dealmodule.positions.component;
+package com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter;
 
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import org.apache.commons.csv.CSVFormat;
@@ -23,17 +23,23 @@ public class DealPositionFileWriter {
 
     public void write(List<DealPositionView> dealPositions) throws IOException {
 
+        if (dealPositions.isEmpty())
+            return;
+
         StringWriter sw = new StringWriter();
 
+        DealPositionView dvp = dealPositions.get(0);
+        DealPositionStreamerFactory factory = new DealPositionStreamerFactory();
+        DealPositionStreamer streamer = factory.newDealPositionStreamer(dvp.getViewDetail().getDealTypeCode());
+
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-                .setHeader(DealPositionColumnType.getAsArray())
+                .setHeader(streamer.getHeader())
                 .build();
 
         try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat)) {
             dealPositions.forEach( c -> {
                 try {
-                    DealPositionStreamer streamer = new DealPositionStreamer(c);
-                    printer.printRecord(streamer.asAList());
+                    printer.printRecord(streamer.asAList(c));
                 } catch (IOException e) {
                    logger.error("csv print on positions failed", e);
                    throw new RuntimeException(e);

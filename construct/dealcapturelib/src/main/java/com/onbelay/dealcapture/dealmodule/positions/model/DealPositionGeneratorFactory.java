@@ -4,7 +4,7 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 
@@ -54,6 +54,7 @@ public class DealPositionGeneratorFactory {
 
     private void initialize() {
         generatorMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDealPositionGenerator::newGenerator);
+        generatorMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDealPositionGenerator::newGenerator);
     }
 
     private void initializeCostMap(List<DealCostSummary> dealCostSummaries) {
@@ -112,11 +113,11 @@ public class DealPositionGeneratorFactory {
                  dealSummary,
                  riskFactorManager);
 
-        if (costMap.containsKey(dealSummary.getDealId()))
-            generator.withCosts(costMap.get(dealSummary.getDealId()));
+        if (costMap.containsKey(dealSummary.getId()))
+            generator.withCosts(costMap.get(dealSummary.getId()));
 
-        if (dealDayMap.containsKey(dealSummary.getDealId()))
-            generator.withDealDays(dealDayMap.get(dealSummary.getDealId()));
+        if (dealDayMap.containsKey(dealSummary.getId()))
+            generator.withDealDays(dealDayMap.get(dealSummary.getId()));
 
         if (dealSummary.getPowerProfileId() != null) {
             Map<LocalDate, List<PowerProfilePositionView>> positionMap = powerProfileToPositionMap.get(dealSummary.getPowerProfileId());

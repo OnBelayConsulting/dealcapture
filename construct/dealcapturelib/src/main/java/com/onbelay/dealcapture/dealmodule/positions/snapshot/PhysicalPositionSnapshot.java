@@ -5,8 +5,6 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 
 public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
-    private PhysicalPositionDetail detail = new PhysicalPositionDetail();
-
     private EntityId marketPriceRiskFactorId;
 
     private EntityId marketPriceFxRiskFactorId;
@@ -15,20 +13,18 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     private EntityId dealPriceFxRiskFactorId;
 
-    private EntityId fixedPriceFxRiskFactorId;
+    private PhysicalPositionPriceDetail priceDetail = new PhysicalPositionPriceDetail();
 
+    public PhysicalPositionPriceDetail getPriceDetail() {
+        return priceDetail;
+    }
 
+    public void setPriceDetail(PhysicalPositionPriceDetail priceDetail) {
+        this.priceDetail = priceDetail;
+    }
 
     public PhysicalPositionSnapshot() {
         super(DealTypeCode.PHYSICAL_DEAL);
-    }
-
-    public PhysicalPositionDetail getDetail() {
-        return detail;
-    }
-
-    public void setDetail(PhysicalPositionDetail detail) {
-        this.detail = detail;
     }
 
     public EntityId getMarketPriceRiskFactorId() {
@@ -45,14 +41,6 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     public void setMarketPriceFxRiskFactorId(EntityId marketPriceFxRiskFactorId) {
         this.marketPriceFxRiskFactorId = marketPriceFxRiskFactorId;
-    }
-
-    public EntityId getFixedPriceFxRiskFactorId() {
-        return fixedPriceFxRiskFactorId;
-    }
-
-    public void setFixedPriceFxRiskFactorId(EntityId fixedPriceFxRiskFactorId) {
-        this.fixedPriceFxRiskFactorId = fixedPriceFxRiskFactorId;
     }
 
     public EntityId getDealPriceRiskFactorId() {

@@ -30,7 +30,6 @@ import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
 import com.onbelay.shared.enums.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.SpringVersion;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -96,9 +95,9 @@ public class DealTest extends DealCaptureSpringTestCase {
 		snapshot.getDealDetail().setReportingCurrencyCode(CurrencyCode.CAD);
 		snapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.DAILY);
 
-		snapshot.getDetail().setFixedPriceValue(BigDecimal.valueOf(1.55));
-		snapshot.getDetail().setFixedPriceCurrencyCode(CurrencyCode.CAD);
-		snapshot.getDetail().setFixedPriceUnitOfMeasure(UnitOfMeasureCode.MMBTU);
+		snapshot.getDealDetail().setFixedPriceValue(BigDecimal.valueOf(1.55));
+		snapshot.getDealDetail().setFixedPriceCurrencyCode(CurrencyCode.CAD);
+		snapshot.getDealDetail().setFixedPriceUnitOfMeasureCode(UnitOfMeasureCode.MMBTU);
 
 		PhysicalDeal deal = PhysicalDeal.create(snapshot);
 
@@ -124,11 +123,11 @@ public class DealTest extends DealCaptureSpringTestCase {
 		assertEquals(CurrencyCode.USD, created.getDealDetail().getSettlementCurrencyCode());
 		assertEquals(CurrencyCode.CAD, created.getDealDetail().getReportingCurrencyCode());
 
-		assertEquals(UnitOfMeasureCode.GJ, created.getDealDetail().getVolumeUnitOfMeasure());
+		assertEquals(UnitOfMeasureCode.GJ, created.getDealDetail().getVolumeUnitOfMeasureCode());
 
-		assertEquals(0, BigDecimal.valueOf(1.55).compareTo(created.getDetail().getFixedPriceValue()));
-		assertEquals(UnitOfMeasureCode.MMBTU, created.getDetail().getFixedPriceUnitOfMeasure());
-		assertEquals(CurrencyCode.CAD, created.getDetail().getFixedPriceCurrencyCode());
+		assertEquals(0, BigDecimal.valueOf(1.55).compareTo(created.getDealDetail().getFixedPriceValue()));
+		assertEquals(UnitOfMeasureCode.MMBTU, created.getDealDetail().getFixedPriceUnitOfMeasureCode());
+		assertEquals(CurrencyCode.CAD, created.getDealDetail().getFixedPriceCurrencyCode());
 	}
 
 	@Test
@@ -152,7 +151,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 		assertEquals(companyRole.getId(), swapDeal.getCompanyRole().getId());
 		assertEquals(counterpartyRole.getId(), swapDeal.getCounterpartyRole().getId());
 		assertEquals(firstIndex.getId(), swapDeal.getReceivesPriceIndex().getId());
-		assertEquals(new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ), swapDeal.getDetail().getFixedPrice());
+		assertEquals(new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ), swapDeal.getDealDetail().getFixedPrice());
 	}
 
 	private void setDealAttributes(
@@ -173,7 +172,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 		detail.setEndDate(endDate);
 		detail.setVolumeQuantity(quantity);
 		detail.setReportingCurrencyCode(currencyCode);
-		detail.setVolumeUnitOfMeasure(unitOfMeasureCode);
+		detail.setVolumeUnitOfMeasureCode(unitOfMeasureCode);
 
 	}
 

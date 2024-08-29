@@ -32,17 +32,21 @@
                 pp.VALUED_DATETIME,
                 pp.VOLUME_UOM_CODE,
                 pp.VOLUME_QUANTITY,
-                pp.DEAL_PRICE_VALUATION_CODE,
                 pp.FIXED_PRICE,
                 pp.DEAL_PRICE,
                 pp.DEAL_INDEX_PRICE,
                 pp.TOTAL_DEAL_PRICE,
                 pp.MARKET_PRICE,
-                dpi.INDEX_NAME as DEAL_PRICE_INDEX_NAME ,
-                phy.FIXED_PRICE_CURRENCY_CODE as FIXED_PRICE_CURRENCY_CODE,
-                phy.FIXED_PRICE_UOM_CODE as FIXED_PRICE_UOM_CODE,
-                pp.MARKET_VALUATION_CODE,
-                mpi.INDEX_NAME as MARKET_INDEX_NAME,
+                pp.PAYS_PRICE,
+                pp.PAYS_INDEX_PRICE,
+                pp.TOTAL_PAYS_PRICE,
+                pp.RECEIVES_PRICE,
+                bd.FIXED_PRICE_CURRENCY_CODE as FIXED_PRICE_CURRENCY_CODE,
+                bd.FIXED_PRICE_UOM_CODE as FIXED_PRICE_UOM_CODE,
+                phy.MARKET_VALUATION_CODE,
+                phy.DEAL_PRICE_VALUATION_CODE,
+                swp.PAYS_VALUATION_CODE,
+                swp.RECEIVES_VALUATION_CODE,
                 pp.IS_SETTLEMENT_POSITION,
                 pp.MTM_VALUATION,
                 pp.COST_SETTLEMENT_AMOUNT,
@@ -55,14 +59,15 @@
                 pp.DEAL_PRICE_RISK_FACTOR_ID,
                 pp.DEAL_PRICE_FX_RISK_FACTOR_ID,
                 pp.MKT_PRICE_RISK_FACTOR_ID,
-                pp.MKT_PRICE_FX_RISK_FACTOR_ID
+                pp.MKT_PRICE_FX_RISK_FACTOR_ID,
+                pp.PAYS_PRICE_RISK_FACTOR_ID,
+                pp.PAYS_PRICE_FX_RISK_FACTOR_ID,
+                pp.RECEIVES_PRICE_RISK_FACTOR_ID,
+                pp.RECEIVES_PRICE_FX_RISK_FACTOR_ID
               FROM  DEAL_POSITION pp
         INNER JOIN  BASE_DEAL bd ON bd.ENTITY_ID = pp.DEAL_ID
    LEFT OUTER JOIN  PHYSICAL_DEAL phy ON phy.ENTITY_ID = pp.DEAL_ID
-   LEFT OUTER JOIN  PRICE_RISK_FACTOR dp ON dp.ENTITY_ID = pp.DEAL_PRICE_RISK_FACTOR_ID
-   LEFT OUTER JOIN  PRICE_INDEX dpi ON dpi.ENTITY_ID = dp.PRICE_INDEX_ID
-   LEFT OUTER JOIN  PRICE_RISK_FACTOR mp ON mp.ENTITY_ID = pp.MKT_PRICE_RISK_FACTOR_ID
-   LEFT OUTER JOIN  PRICE_INDEX mpi ON mpi.ENTITY_ID = mp.PRICE_INDEX_ID
+   LEFT OUTER JOIN  FINANCIAL_SWAP_DEAL swp ON swp.ENTITY_ID = pp.DEAL_ID
         </createView>
     </changeSet>
 
