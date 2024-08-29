@@ -18,7 +18,8 @@ import java.time.LocalDateTime;
                 query = "  SELECT riskFactor " +
                         "    FROM PriceRiskFactor riskFactor " +
                         "   WHERE riskFactor.index.id = :indexId " +
-                        "     AND riskFactor.detail.marketDate = :marketDate "),
+                        "     AND riskFactor.detail.marketDate = :marketDate " +
+                        "ORDER BY riskFactor.detail.hourEnding "),
         @NamedQuery(
                 name = PriceRiskFactorRepositoryBean.FIND_BY_PRICE_INDEX_ID,
                 query = "  SELECT riskFactor " +
