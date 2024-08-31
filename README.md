@@ -1,2 +1,3 @@
 # dealcapture
-Example application that demonstrates rich domain modeling and messaging
+DealCapture midtier and database application that implements physical commodity deals and finanical swap deals. Commodities supported include electricty with pricing profiles.
+
