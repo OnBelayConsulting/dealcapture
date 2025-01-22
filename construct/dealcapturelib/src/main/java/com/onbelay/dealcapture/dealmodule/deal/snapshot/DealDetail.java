@@ -480,5 +480,4 @@ public class DealDetail {
 			return true;
 		return (fixedPriceCurrencyCodeValue == null);
 	}
-
 }

@@ -43,7 +43,6 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 	protected PriceIndex marketIndex;
 	protected PriceIndex dealPriceIndex;
 
-
 	protected FxIndex fxIndex;
 
 

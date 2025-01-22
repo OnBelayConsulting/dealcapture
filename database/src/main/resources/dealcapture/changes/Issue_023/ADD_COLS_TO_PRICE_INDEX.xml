@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/changes/issue_023/ADD_COLS_TO_PRICE_INDEX.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <addColumn tableName="PRICE_INDEX" >
+            <column name="VOLATILITY_VALUE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="PRICE_INDEX_AUDIT" >
+            <column name="VOLATILITY_VALUE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+
+</databaseChangeLog>

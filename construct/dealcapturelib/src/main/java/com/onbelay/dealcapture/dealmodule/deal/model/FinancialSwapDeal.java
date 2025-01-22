@@ -72,7 +72,7 @@ public class FinancialSwapDeal extends BaseDeal {
     @Override
     @Transient
     public String getEntityName() {
-        return "FinancialSwap";
+        return "FinancialSwapDeal";
     }
 
 

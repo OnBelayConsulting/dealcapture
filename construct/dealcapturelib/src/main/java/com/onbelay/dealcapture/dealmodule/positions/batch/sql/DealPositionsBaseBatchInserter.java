@@ -35,6 +35,7 @@ public abstract class DealPositionsBaseBatchInserter implements DealPositionsBat
 	public DealPositionsBaseBatchInserter() {
 		sqlMappers.put(DealTypeCode.PHYSICAL_DEAL, PhysicalPositionSqlMapper::new);
 		sqlMappers.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapPositionSqlMapper::new);
+		sqlMappers.put(DealTypeCode.VANILLA_OPTION, VanillaOptionPositionSqlMapper::new);
 	}
 	
 

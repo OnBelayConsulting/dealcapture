@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.busmath.model.FxRate;
+import com.onbelay.dealcapture.busmath.model.InterestRate;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
@@ -14,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ValuationIndexManager {
 
+    private InterestRate currentRiskFreeRate;
+
     private ConcurrentHashMap<Integer, FxIndexSnapshot> fxIndexMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, PriceIndexSnapshot> priceIndexMap = new ConcurrentHashMap<>();
 
@@ -22,10 +25,13 @@ public class ValuationIndexManager {
 
 
     public ValuationIndexManager(
+            InterestRate currentRiskFreeRate,
             List<PriceIndexSnapshot> priceIndices,
             List<FxIndexSnapshot> fxIndices,
             List<PriceRiskFactorSnapshot> priceRiskFactors,
             List<FxRiskFactorSnapshot> fxRiskFactors) {
+
+        this.currentRiskFreeRate = currentRiskFreeRate;
 
         fxIndices.forEach( c-> fxIndexMap.put(c.getEntityId().getId(), c));
         priceIndices.forEach( c-> priceIndexMap.put(c.getEntityId().getId(), c));
@@ -73,4 +79,7 @@ public class ValuationIndexManager {
         return priceIndexMap.get(id);
     }
 
+    public InterestRate getCurrentRiskFreeRate() {
+        return currentRiskFreeRate;
+    }
 }

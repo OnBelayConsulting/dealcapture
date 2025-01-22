@@ -21,6 +21,7 @@ public class DealPositionAssemblerFactory {
     private void initialize() {
         assemblerMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalPositionAssembler::new);
         assemblerMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapPositionAssembler::new);
+        assemblerMap.put(DealTypeCode.VANILLA_OPTION, VanillaOptionPositionAssembler::new);
     }
 
     public PositionAssembler newAssembler(DealTypeCode code) {

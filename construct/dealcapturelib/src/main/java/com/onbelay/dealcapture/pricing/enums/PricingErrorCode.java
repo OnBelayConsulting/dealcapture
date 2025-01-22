@@ -40,6 +40,13 @@ public enum PricingErrorCode {
     MISSING_CURVE_VALUE             ("DC_PR-E0222", "Error: Missing Curve value."),
     MISSING_CURVE_FREQUENCY         ("DC_PR-E0223", "Error: Missing Curve Frequency."),
 
+    MISSING_INTEREST_INDEX          ("DC_PR-E0500", "Error: Missing Interest Index."),
+    MISSING_INTEREST_INDEX_NAME     ("DC_PR-E0501", "Error: Missing Interest Index Name."),
+    DUPLICATE_INTEREST_INDEX_NAME   ("DC_PR-E0502", "Error: Missing Interest Index Name."),
+    MISSING_INTEREST_INDEX_FREQ     ("DC_PR-E0503", "Error: Missing Interest Index frequency code."),
+    MISSING_INTEREST_INDEX_IS_RISK_FREE_RATE     ("DC_PR-E0504", "Error: Missing  is risk free rate."),
+    INVALID_INTEREST_INDEX_IS_RISK_FREE_RATE     ("DC_PR-E0505", "Error: Only one interest index may be the risk free rate."),
+
     ;
 
     private String code;

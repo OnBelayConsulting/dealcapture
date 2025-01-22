@@ -41,12 +41,20 @@
                 pp.PAYS_INDEX_PRICE,
                 pp.TOTAL_PAYS_PRICE,
                 pp.RECEIVES_PRICE,
+                pp.OPTION_EXPIRY_DATE,
+                pp.UNDERLYING_PRICE,
+                pp.STRIKE_PRICE,
                 bd.FIXED_PRICE_CURRENCY_CODE as FIXED_PRICE_CURRENCY_CODE,
                 bd.FIXED_PRICE_UOM_CODE as FIXED_PRICE_UOM_CODE,
                 phy.MARKET_VALUATION_CODE,
                 phy.DEAL_PRICE_VALUATION_CODE,
                 swp.PAYS_VALUATION_CODE,
                 swp.RECEIVES_VALUATION_CODE,
+                vo.STRIKE_PRICE as DEAL_STRIKE_PRICE,
+                vo.TRADE_TYPE_CODE,
+                vo.OPTION_TYPE_CODE,
+                vo.OPTION_STYLE_CODE,
+                upi.VOLATILITY_VALUE,
                 pp.IS_SETTLEMENT_POSITION,
                 pp.MTM_VALUATION,
                 pp.COST_SETTLEMENT_AMOUNT,
@@ -55,6 +63,8 @@
                 pp.SETTLEMENT_CURRENCY,
                 pp.ERROR_CODE,
                 pp.ERROR_MSG,
+                pp.UNDERLYING_PRICE_RISK_FACTOR_ID,
+                pp.UNDERLYING_PRICE_FX_RISK_FACTOR_ID,
                 pp.FIXED_PRICE_FX_RISK_FACTOR_ID ,
                 pp.DEAL_PRICE_RISK_FACTOR_ID,
                 pp.DEAL_PRICE_FX_RISK_FACTOR_ID,
@@ -68,6 +78,8 @@
         INNER JOIN  BASE_DEAL bd ON bd.ENTITY_ID = pp.DEAL_ID
    LEFT OUTER JOIN  PHYSICAL_DEAL phy ON phy.ENTITY_ID = pp.DEAL_ID
    LEFT OUTER JOIN  FINANCIAL_SWAP_DEAL swp ON swp.ENTITY_ID = pp.DEAL_ID
+   LEFT OUTER JOIN  VANILLA_OPTION_DEAL vo ON vo.ENTITY_ID = pp.DEAL_ID
+   LEFT OUTER JOIN  PRICE_INDEX upi ON vo.UNDERLYING_INDEX_ID = upi.ENTITY_ID
         </createView>
     </changeSet>
 

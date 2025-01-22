@@ -93,7 +93,8 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
 
         ValuationIndexManager valuationIndexManager = createValuationIndexManager(
                 startDate,
-                endDate);
+                endDate,
+                currentDateTime);
 
 
 

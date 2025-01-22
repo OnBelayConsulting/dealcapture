@@ -76,5 +76,9 @@ public abstract class CalculatedEntity {
 	}
 
 
-
+    public Double toDouble() {
+        if (isInError() || value == null)
+            throw new ArithmeticException("Cannot convert value to double");
+        return value.doubleValue();
+    }
 }

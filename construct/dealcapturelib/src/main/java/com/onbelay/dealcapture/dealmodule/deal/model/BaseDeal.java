@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+
+
 @Table(name = "BASE_DEAL")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({

@@ -42,13 +42,26 @@
             swp.PAYS_VALUATION_CODE,
             swp.PAYS_INDEX_ID,
             swp.RECEIVES_VALUATION_CODE,
-            swp.RECEIVES_INDEX_ID
+            swp.RECEIVES_INDEX_ID,
+            vo.OPTION_EXPIRY_DATE_RULE,
+            vo.TRADE_TYPE_CODE,
+            vo.OPTION_TYPE_CODE,
+            vo.OPTION_STYLE_CODE,
+            vo.STRIKE_PRICE,
+            vo.STRIKE_PRICE_UOM_CODE,
+            vo.STRIKE_PRICE_CURRENCY_CODE,
+            vo.PREMIUM_PRICE,
+            vo.PREMIUM_PRICE_UOM_CODE,
+            vo.PREMIUM_PRICE_CURRENCY_CODE,
+            vo.UNDERLYING_INDEX_ID
             FROM
             BASE_DEAL bd
             LEFT OUTER JOIN PHYSICAL_DEAL phy ON
                 bd.ENTITY_ID = phy.ENTITY_ID
             LEFT OUTER JOIN FINANCIAL_SWAP_DEAL swp ON
                 bd.ENTITY_ID = swp.ENTITY_ID
+            LEFT OUTER JOIN VANILLA_OPTION_DEAL vo ON
+                bd.ENTITY_ID = vo.ENTITY_ID
         </createView>
     </changeSet>
 

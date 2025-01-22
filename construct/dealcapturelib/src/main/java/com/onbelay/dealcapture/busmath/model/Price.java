@@ -44,7 +44,15 @@ public class Price extends CalculatedEntity {
 		this.unitOfMeasure = unitOfMeasure;
 	}
 
-	public Price apply(FxRate rate) {
+    public static Price zeroUsing(Price underlyingPrice) {
+		return new Price(
+				BigDecimal.ZERO,
+				underlyingPrice.getCurrency(),
+				underlyingPrice.getUnitOfMeasure());
+
+    }
+
+    public Price apply(FxRate rate) {
 		if (rate == null)
 			return new Price(CalculatedErrorType.ERROR);
 
@@ -273,5 +281,53 @@ public class Price extends CalculatedEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hash(getValue(), currency, unitOfMeasure);
+	}
+
+	/**
+	 * True if price and the priceIn are both valid and have same currency and uom and this price value
+	 * is greater than priceIn price value;
+	 * False if price and the priceIn are both valid and have same currency and uom and this price value
+	 * is less than or equal to priceIn price value;
+	 * @throws com.onbelay.core.exception.OBRuntimeException if values are missing and currency/uom don't match.
+	 * @param priceIn
+	 * @return true or false
+	 */
+	public boolean isGreaterThan(Price priceIn) {
+		if (this == priceIn) return false;
+		if (priceIn == null || getClass() != priceIn.getClass())
+			throw new OBBusinessMathException("Incompatible Price");
+		if ( priceIn.isInError() && isInError())
+			throw new OBBusinessMathException("Invalid Price comparison.");
+		if ( priceIn.isInError() == false && isInError())
+			throw new OBBusinessMathException("Invalid Price comparison.");
+
+		if (this.currency != priceIn.currency && this.unitOfMeasure != priceIn.unitOfMeasure)
+			throw new OBBusinessMathException("Invalid Price comparison.");
+
+		return (getValue().compareTo(priceIn.getValue()) > 0);
+	}
+
+	/**
+	 * True if price and the priceIn are both valid and have same currency and uom and this price value
+	 * is less than priceIn price value;
+	 * False if price and the priceIn are both valid and have same currency and uom and this price value
+	 * is greater than or equal to compared to priceIn price value;
+	 * @throws com.onbelay.core.exception.OBRuntimeException if values are missing and currency/uom don't match.
+	 * @param priceIn
+	 * @return true or false
+	 */
+	public boolean isLessThan(Price priceIn) {
+		if (this == priceIn) return false;
+		if (priceIn == null || getClass() != priceIn.getClass())
+			throw new OBBusinessMathException("Incompatible Price");
+		if ( priceIn.isInError() && isInError())
+			throw new OBBusinessMathException("Invalid Price comparison.");
+		if ( priceIn.isInError() == false && isInError())
+			throw new OBBusinessMathException("Invalid Price comparison.");
+
+		if (this.currency != priceIn.currency && this.unitOfMeasure != priceIn.unitOfMeasure)
+			throw new OBBusinessMathException("Invalid Price comparison.");
+
+		return (getValue().compareTo(priceIn.getValue()) < 0);
 	}
 }
