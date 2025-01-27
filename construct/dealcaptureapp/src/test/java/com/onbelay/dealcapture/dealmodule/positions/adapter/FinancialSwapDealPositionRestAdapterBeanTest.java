@@ -370,7 +370,7 @@ public class FinancialSwapDealPositionRestAdapterBeanTest extends DealPositionRe
             String ticketNo = record.get(DealPositionColumnType.TICKET_NO.getCode());
             assertEquals("f4floatsell", ticketNo);
 
-            assertEquals("PHY", record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
+            assertEquals("FS", record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
             assertEquals("SELL", record.get(DealPositionColumnType.BUY_SELL.getCode()));
             assertEquals("2023-01-01", record.get(DealPositionColumnType.START_DATE.getCode()));
             assertEquals("2023-01-01", record.get(DealPositionColumnType.END_DATE.getCode()));
@@ -381,17 +381,17 @@ public class FinancialSwapDealPositionRestAdapterBeanTest extends DealPositionRe
             assertEquals("DAILY",record.get(DealPositionColumnType.POWER_FLOW_CODE.getCode()));
             assertEquals("2023-01-01T01:00", record.get(DealPositionColumnType.CREATED_DATE_TIME.getCode()));
             assertNotNull(record.get(DealPositionColumnType.VALUED_DATE_TIME.getCode()));
-            assertEquals("-90.00", record.get(DealPositionColumnType.MTM_AMT.getCode()));
+            assertEquals("-17.80", record.get(DealPositionColumnType.MTM_AMT.getCode()));
             assertEquals("CAD", record.get(DealPositionColumnType.SETTLEMENT_CURRENCY.getCode()));
             assertEquals("0.00", record.get(DealPositionColumnType.COST_SETTLEMENT_AMT.getCode()));
-            assertEquals("10.00", record.get(DealPositionColumnType.SETTLEMENT_AMT.getCode()));
-            assertEquals("10.00", record.get(DealPositionColumnType.TOTAL_SETTLEMENT_AMT.getCode()));
+            assertEquals("-17.80", record.get(DealPositionColumnType.SETTLEMENT_AMT.getCode()));
+            assertEquals("-17.80", record.get(DealPositionColumnType.TOTAL_SETTLEMENT_AMT.getCode()));
             assertEquals("0", record.get(DealPositionColumnType.ERROR_CODE.getCode()));
             assertEquals("", record.get(DealPositionColumnType.ERROR_MSG.getCode()));
             assertEquals("FIXED", record.get(FinancialSwapPositionColumnType.PAYS_PRICE_VALUATION_CODE.getCode()));
             assertEquals("1.000", record.get(FinancialSwapPositionColumnType.PAYS_PRICE.getCode()));
             assertEquals("INDEX", record.get(FinancialSwapPositionColumnType.RECEIVES_VALUATION_CODE.getCode()));
-            assertEquals("10.000", record.get(FinancialSwapPositionColumnType.RECEIVES_PRICE.getCode()));
+            assertEquals("2.780", record.get(FinancialSwapPositionColumnType.RECEIVES_PRICE.getCode()));
             parser.close();
         } catch (IOException e) {
             throw new OBRuntimeException(DealErrorCode.MISSING_DEAL_STATUS.getCode());
