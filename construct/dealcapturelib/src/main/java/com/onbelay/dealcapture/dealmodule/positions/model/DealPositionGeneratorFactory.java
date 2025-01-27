@@ -55,6 +55,7 @@ public class DealPositionGeneratorFactory {
     private void initialize() {
         generatorMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDealPositionGenerator::newGenerator);
         generatorMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDealPositionGenerator::newGenerator);
+        generatorMap.put(DealTypeCode.VANILLA_OPTION, VanillaOptionDealPositionGenerator::newGenerator);
     }
 
     private void initializeCostMap(List<DealCostSummary> dealCostSummaries) {

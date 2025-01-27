@@ -61,6 +61,24 @@ public enum DealErrorCode {
     MISSED_FIXED_PRICE_CURRENCY      ("DC_DL-E0550", "Error: Fixed price is set and currency is missing."),
     MISSING_FIXED_PRICE_UOM          ("DC_DL-E0551", "Error: Fixed price is set and unit of measure is missing."),
 
+    MISSING_TRADE_TYPE_CODE          ("DC_DL-E0560", "Error: Missing Trade Type Code: OTC or Exchange Traded."),
+    MISSING_OPTION_TYPE_CODE         ("DC_DL-E0561", "Error: Missing Option Type Code: Call or Put."),
+    MISSING_OPTION_STYLE_CODE        ("DC_DL-E0562", "Error: Missing Trade Type Code: American or European."),
+    MISSING_OPTION_EXPIRY_DATE_RULE  ("DC_DL-E0563", "Error: Missing Option Expiry Date Rule."),
+
+    INVALID_STRIKE_PRICE_VALUE   	 ("DC_DL-E0563", "Error: Invalid strike price value. Can not be negative."),
+    MISSING_STRIKE_PRICE_VALUE  	 ("DC_DL-E0564", "Error: Missing strike price value."),
+    MISSING_STRIKE_PRICE_CURRENCY     ("DC_DL-E0565", "Error: Strike price is set and currency is missing."),
+    MISSING_STRIKE_PRICE_UOM         ("DC_DL-E0567", "Error: Strike price is set and unit of measure is missing."),
+
+    INVALID_PREMIUM_PRICE_VALUE   	 ("DC_DL-E0568", "Error: Invalid premium price value. Can not be negative."),
+    MISSING_PREMIUM_PRICE_VALUE  	 ("DC_DL-E0569", "Error: Missing premium price value."),
+    MISSING_PREMIUM_PRICE_CURRENCY    ("DC_DL-E0570", "Error: Premium price is set and currency is missing."),
+    MISSING_PREMIUM_PRICE_UOM        ("DC_DL-E0571", "Error: Premium price is set and unit of measure is missing."),
+
+    MISSING_UNDERLYING_PRICE_IDX     ("DC_DL-E0580", "Error: Missing underlying price index."),
+
+
     MISSING_DEAL_COST_TYPE		     ("DC_DL-E0600", "Error: Missing deal cost type."),
     MISSING_DEAL_COST_NAME		     ("DC_DL-E0601", "Error: Missing deal cost name."),
     MISSING_DEAL_COST_CURRENCY	     ("DC_DL-E0602", "Error: Missing deal cost currency."),

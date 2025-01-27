@@ -18,6 +18,10 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
@@ -27,6 +31,7 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDealSummary;
 import com.onbelay.shared.enums.*;
@@ -45,6 +50,22 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 		super.setUp();
 
 	}
+
+
+	@Test
+	public void findByMarketIndexName() {
+		DefinedQuery definedQuery = new DefinedQuery("PhysicalDeal");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression(
+						"marketIndexName",
+						ExpressionOperator.EQUALS,
+						"AECO"));
+		QuerySelectedPage selectedPage = dealService.findDealIds(definedQuery);
+		assertEquals(6, selectedPage.getIds().size());
+		List<BaseDealSnapshot> snapshots = dealService.findByIds(selectedPage);
+		assertEquals(6, snapshots.size());
+	}
+
 
 	@Test
 	public void testUpdatePhysicalDeal() {

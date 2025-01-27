@@ -1,8 +1,10 @@
 package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
 import com.onbelay.core.entity.serviceimpl.BaseDomainService;
+import com.onbelay.dealcapture.busmath.model.InterestRate;
 import com.onbelay.dealcapture.dealmodule.positions.model.ValuationIndexManager;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
+import com.onbelay.dealcapture.pricing.service.InterestIndexService;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
@@ -33,9 +35,13 @@ public abstract class AbstractValuePositionsServiceBean extends BaseDomainServic
     @Autowired
     protected FxRiskFactorService fxRiskFactorService;
 
+    @Autowired
+    protected InterestIndexService interestIndexService;
+
     protected ValuationIndexManager createValuationIndexManager(
             LocalDate startDate,
-            LocalDate endDate) {
+            LocalDate endDate,
+            LocalDateTime currentDateTime) {
 
 
         List<PriceIndexSnapshot> activePriceIndices = priceIndexService.findActivePriceIndices();
@@ -58,7 +64,10 @@ public abstract class AbstractValuePositionsServiceBean extends BaseDomainServic
                 endDate);
         logger.info("fetch FX price risk factors end: " + LocalDateTime.now().toString());
 
+        InterestRate rate = interestIndexService.getCurrentInterestRate(currentDateTime.toLocalDate());
+
         return new ValuationIndexManager(
+                rate,
                 activePriceIndices,
                 activeFxIndices,
                 activePriceRiskFactors,

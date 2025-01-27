@@ -27,6 +27,7 @@ public class PositionEvaluatorFactory {
     private void initialize() {
         evaluatorMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalPositionEvaluator::new);
         evaluatorMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapPositionEvaluator::new);
+        evaluatorMap.put(DealTypeCode.VANILLA_OPTION, VanillaOptionsPositionEvaluator::new);
     }
 
     public DealPositionEvaluator createPositionEvaluator(DealPositionView view) {

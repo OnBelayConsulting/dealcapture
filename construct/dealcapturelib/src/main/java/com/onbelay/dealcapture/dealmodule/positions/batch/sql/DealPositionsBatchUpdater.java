@@ -16,23 +16,19 @@
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.model.PositionValuationResult;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Component(value="dealPositionsBatchUpdater")
@@ -48,6 +44,7 @@ public class DealPositionsBatchUpdater {
 	public DealPositionsBatchUpdater() {
 		sqlMappers.put(DealTypeCode.PHYSICAL_DEAL, UpdatePhysicalPositionSqlMapper::new);
 		sqlMappers.put(DealTypeCode.FINANCIAL_SWAP, UpdateFinancialSwapPositionSqlMapper::new);
+		sqlMappers.put(DealTypeCode.VANILLA_OPTION, UpdateVanillaOptionPositionSqlMapper::new);
 	}
 
 

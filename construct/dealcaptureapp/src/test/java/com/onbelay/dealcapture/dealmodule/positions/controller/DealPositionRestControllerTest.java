@@ -95,6 +95,8 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 	private FxIndex fxIndex;
 
+	protected InterestIndex interestIndex;
+
 	private List<FxRiskFactor> fxRiskFactors;
 	private LocalDateTime createdDateTime = LocalDateTime.of(2023, 1, 1, 1, 0);
 
@@ -107,6 +109,20 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		location = PricingLocationFixture.createPricingLocation("West");
+
+		interestIndex = InterestIndexFixture.createInterestIndex("RATE", true, FrequencyCode.DAILY);
+		flush();
+		LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
+		LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
+		LocalDateTime observedDateTime = LocalDateTime.of(2023, 1, 1, 1, 43);
+
+		InterestIndexFixture.generateDailyInterestCurves(
+				interestIndex,
+				fromMarketDate,
+				toMarketDate,
+				BigDecimal.valueOf(0.12),
+				observedDateTime);
+
 
 		fxIndex = FxIndexFixture.createFxIndex(
 				FrequencyCode.DAILY,

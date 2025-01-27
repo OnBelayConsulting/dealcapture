@@ -27,6 +27,7 @@ import java.util.Map;
  */
 public enum DealTypeCode {
 	ERROR 				("E"),
+	VANILLA_OPTION		("VO"),
 	FINANCIAL_SWAP		("FS"),
 	PHYSICAL_DEAL 		("PHY");
 

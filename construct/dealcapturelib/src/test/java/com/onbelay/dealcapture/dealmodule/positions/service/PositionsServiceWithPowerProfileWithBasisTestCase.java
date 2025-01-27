@@ -60,6 +60,8 @@ public abstract class PositionsServiceWithPowerProfileWithBasisTestCase extends 
 
 	protected FxIndex fxIndex;
 
+	protected InterestIndex interestIndex;
+
 
 	protected PhysicalDeal fixedPriceMarketPowerProfileDeal;
 
@@ -92,6 +94,20 @@ public abstract class PositionsServiceWithPowerProfileWithBasisTestCase extends 
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 
 		pricingLocation = PricingLocationFixture.createPricingLocation("west");
+
+		interestIndex = InterestIndexFixture.createInterestIndex("RATE", true, FrequencyCode.DAILY);
+		flush();
+		LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
+		LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
+		LocalDateTime observedDateTime = LocalDateTime.of(2024, 1, 1, 1, 43);
+
+		InterestIndexFixture.generateDailyInterestCurves(
+				interestIndex,
+				fromMarketDate,
+				toMarketDate,
+				BigDecimal.valueOf(0.12),
+				observedDateTime);
+
 
 
 		hubIndex = PriceIndexFixture.createPriceIndex(

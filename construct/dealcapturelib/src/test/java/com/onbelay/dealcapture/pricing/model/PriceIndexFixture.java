@@ -201,6 +201,7 @@ public class PriceIndexFixture {
         snapshot.getDetail().setCurrencyCode(currencyCode);
         snapshot.getDetail().setUnitOfMeasureCode(unitOfMeasureCode);
         snapshot.getDetail().setFrequencyCode(frequencyCode);
+        snapshot.getDetail().setVolatility( 0.23d);
 
         snapshot.setPricingLocationId(pricingLocation.generateEntityId());
 

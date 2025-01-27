@@ -52,75 +52,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @WithMockUser
-public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
+public class DealPositionRestAdapterBeanTest extends DealPositionRestTestCase {
 
     @Autowired
     private DealPositionRestAdapter dealPositionRestAdapter;
 
-    @Autowired
-    private FxRiskFactorService fxRiskFactorService;
-
-    @Autowired
-    private PriceRiskFactorService priceRiskFactorService;
-
-    @Autowired
-    private DealService dealService;
-
-    @Autowired
-    private DealPositionService dealPositionService;
-
-    @Autowired
-    private GeneratePositionsService generatePositionsService;
-
-    private PricingLocation location;
-    private PriceIndex priceIndex;
-    private PriceRiskFactor priceRiskFactor;
-
-    private CompanyRole companyRole;
-    private CounterpartyRole counterpartyRole;
-
     private PhysicalDeal physicalDeal;
-
-    private FxIndex fxIndex;
-
-    private FxRiskFactor fxRiskFactor;
-
-    private LocalDateTime createdDateTime = LocalDateTime.of(2023, 1, 1, 1, 0);
-    private LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
-    private LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
 
     @Override
     public void setUp() {
         super.setUp();
-        companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
-        counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
-        location = PricingLocationFixture.createPricingLocation("West");
-
-        fxIndex = FxIndexFixture.createFxIndex(
-                FrequencyCode.DAILY,
-                CurrencyCode.USD,
-                CurrencyCode.CAD);
-
-        FxIndexFixture.generateDailyFxCurves(
-                fxIndex,
-                fromMarketDate,
-                toMarketDate,
-                LocalDateTime.of(2023, 11, 1, 1, 1));
-
-        fxRiskFactor = FxRiskFactorFixture.createFxRiskFactor(fxIndex, fromMarketDate);
-
-        priceIndex = PriceIndexFixture.createPriceIndex(
-                "ACEE",
-                FrequencyCode.MONTHLY,
-                CurrencyCode.CAD,
-                UnitOfMeasureCode.GJ,
-                location);
-
-        PriceIndexFixture.generateMonthlyPriceCurves(
-                priceIndex,
-                fromMarketDate,
-                toMarketDate,
-                LocalDateTime.of(2023, 10, 1, 0, 0));
 
         physicalDeal = DealFixture.createPricePhysicalDeal(
                 CommodityCode.CRUDE,
@@ -138,11 +79,6 @@ public class DealPositionRestAdapterBeanTest extends DealCaptureAppSpringTestCas
                         CurrencyCode.USD,
                         UnitOfMeasureCode.GJ)
         );
-
-        priceRiskFactor = PriceRiskFactorFixture.createPriceRiskFactor(
-                priceIndex,
-                fromMarketDate);
-
         flush();
     }
 

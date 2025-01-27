@@ -29,6 +29,7 @@ public class DealSnapshotMapperFactory {
 		
 		mappersMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDealSnapshotMapper::new);
 		mappersMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDealSnapshotMapper::new);
+		mappersMap.put(DealTypeCode.VANILLA_OPTION, VanillaOptionDealSnapshotMapper::new);
 
 	}
 

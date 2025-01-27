@@ -37,6 +37,7 @@ public class PriceIndexDetail {
 	private String unitOfMeasureCodeValue;
 	private String frequencyCodeValue;
 	private String benchSettlementRuleCodeValue;
+	private Double volatility;
 
 	public PriceIndexDetail() {
 		
@@ -179,6 +180,15 @@ public class PriceIndexDetail {
 		this.description = description;
 	}
 
+	@Column(name = "VOLATILITY_VALUE")
+	public Double getVolatility() {
+		return volatility;
+	}
+
+	public void setVolatility(Double volatility) {
+		this.volatility = volatility;
+	}
+
 	@Transient
 	@JsonIgnore
 	public BenchSettlementRuleCode getBenchSettlementRuleCode() {
@@ -220,6 +230,9 @@ public class PriceIndexDetail {
 		
 		if (copy.indexTypeValue != null)
 			this.indexTypeValue = copy.getIndexTypeValue();
+
+		if (copy.volatility != null)
+			this.volatility = copy.volatility;
 	}
 	
 }

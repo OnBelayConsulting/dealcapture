@@ -31,6 +31,7 @@ public class CreateDealFactory {
 	static {
 
 		factoryMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDeal::new);
+		factoryMap.put(DealTypeCode.VANILLA_OPTION, VanillaOptionDeal::new);
 		factoryMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDeal::new);
 
 	}

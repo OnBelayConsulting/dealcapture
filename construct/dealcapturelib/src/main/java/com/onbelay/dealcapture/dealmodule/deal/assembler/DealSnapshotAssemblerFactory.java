@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.assembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.positions.assembler.VanillaOptionPositionAssembler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public class DealSnapshotAssemblerFactory {
 		
 		assemblersMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalDealAssembler::new);
 		assemblersMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapDealAssembler::new);
+		assemblersMap.put(DealTypeCode.VANILLA_OPTION, VanillaOptionDealAssembler::new);
 
 	}
 

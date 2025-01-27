@@ -19,6 +19,7 @@ import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.core.query.model.ColumnDefinitions;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
@@ -66,7 +67,7 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 
 
 	@Autowired
-	private DealColumnDefinitions dealColumnDefinitions;
+	private DealColumnDefinitionsMap dealColumnDefinitionsMap;
 
 	@Override
 	public void executeDealUpdateAssignForPositionGeneration(
@@ -181,8 +182,10 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 	
 	@Override
 	public List<BaseDeal> findByQuery(DefinedQuery definedQuery) {
-		
-		return  executeDefinedQuery(dealColumnDefinitions, definedQuery);
+		ColumnDefinitions columnDefinitions = dealColumnDefinitionsMap.getColumnDefinitions(definedQuery.getEntityName());
+		return  executeDefinedQuery(
+				columnDefinitions,
+				definedQuery);
 	}
 
 	@Override
@@ -229,16 +232,22 @@ public class DealRepositoryBean extends BaseRepository<BaseDeal> implements Deal
 
 	@Override
 	public List<BaseDeal> fetchByIds(QuerySelectedPage querySelectedPage) {
+		String entityName = "BaseDeal";
+		if (querySelectedPage.getEntityName() != null)
+			entityName = querySelectedPage.getEntityName();
+
+		ColumnDefinitions columnDefinitions = dealColumnDefinitionsMap.getColumnDefinitions(entityName);
 		return fetchEntitiesById(
-				dealColumnDefinitions,
-				"BaseDeal",
+				columnDefinitions,
+				entityName,
 				querySelectedPage);
 	}
 
 	@Override
 	public List<Integer> findDealIds(DefinedQuery definedQuery) {
+		ColumnDefinitions columnDefinitions = dealColumnDefinitionsMap.getColumnDefinitions(definedQuery.getEntityName());
 		return executeDefinedQueryForIds(
-				dealColumnDefinitions, 
+				columnDefinitions,
 				definedQuery);
 	
 	}

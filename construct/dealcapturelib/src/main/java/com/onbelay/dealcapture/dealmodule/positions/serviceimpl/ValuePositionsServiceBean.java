@@ -110,7 +110,8 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
         logger.debug("create valuationIndexManager start: " + LocalDateTime.now().toString());
         ValuationIndexManager valuationIndexManager = createValuationIndexManager(
                 fromPositionDate,
-                toPositionDate);
+                toPositionDate,
+                currentDateTime);
         logger.debug("create valuationIndexManager end: " + LocalDateTime.now().toString());
 
 

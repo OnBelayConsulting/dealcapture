@@ -21,7 +21,6 @@ import com.onbelay.core.query.model.ColumnDefinition;
 import com.onbelay.core.query.model.ColumnDefinitions;
 import org.springframework.stereotype.Component;
 
-@Component(value = "dealColumnDefinitions")
 public class DealColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 	public static final ColumnDefinition dealId = new ColumnDefinition("dealId", ColumnDataType.INTEGER, "id");
 	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeValue");
