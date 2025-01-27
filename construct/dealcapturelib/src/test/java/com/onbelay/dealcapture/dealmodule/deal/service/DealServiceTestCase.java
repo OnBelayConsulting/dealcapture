@@ -45,6 +45,7 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 
 	protected FxIndex fxIndex;
 
+	protected InterestIndex interestIndex;
 
 	protected LocalDateTime createdDateTime = LocalDateTime.of(2024, 1, 1, 10, 1);
 
@@ -66,6 +67,23 @@ public abstract class DealServiceTestCase extends DealCaptureSpringTestCase {
 		super.setUp();
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
+
+
+		interestIndex = InterestIndexFixture.createInterestIndex("RATE", true, FrequencyCode.DAILY);
+		flush();
+		LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
+		LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
+		LocalDateTime observedDateTime = LocalDateTime.of(2024, 1, 1, 1, 43);
+
+		InterestIndexFixture.generateDailyInterestCurves(
+				interestIndex,
+				fromMarketDate,
+				toMarketDate,
+				BigDecimal.valueOf(0.12),
+				observedDateTime);
+
+
+
 		pricingLocation = PricingLocationFixture.createPricingLocation("west");
 
 		marketIndex = PriceIndexFixture.createPriceIndex(

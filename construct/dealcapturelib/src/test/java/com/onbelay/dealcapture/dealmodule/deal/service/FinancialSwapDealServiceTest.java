@@ -17,12 +17,17 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealFixture;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealSummary;
 import com.onbelay.shared.enums.BuySellCode;
@@ -37,6 +42,37 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCase {
+
+
+	@Test
+	public void findByContainsTicketNo() {
+		DefinedQuery definedQuery = new DefinedQuery("BaseDeal");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression(
+						"ticketNo",
+						ExpressionOperator.LIKE,
+						"f4floatsell%"));
+		QuerySelectedPage selectedPage = dealService.findDealIds(definedQuery);
+		assertEquals(1, selectedPage.getIds().size());
+		List<BaseDealSnapshot> snapshots = dealService.findByIds(selectedPage);
+		assertEquals(1, snapshots.size());
+	}
+
+
+
+	@Test
+	public void findByPaysIndexName() {
+		DefinedQuery definedQuery = new DefinedQuery("FinancialSwapDeal");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression(
+						"paysIndexName",
+						ExpressionOperator.EQUALS,
+						"Pays"));
+		QuerySelectedPage selectedPage = dealService.findDealIds(definedQuery);
+		assertEquals(2, selectedPage.getIds().size());
+		List<BaseDealSnapshot> snapshots = dealService.findByIds(selectedPage);
+		assertEquals(2, snapshots.size());
+	}
 
 
 	@Test

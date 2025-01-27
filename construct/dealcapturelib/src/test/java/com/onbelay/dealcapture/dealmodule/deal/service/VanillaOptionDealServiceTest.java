@@ -18,10 +18,15 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.*;
 import com.onbelay.dealcapture.dealmodule.deal.model.*;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.VanillaOptionDealSnapshot;
 import com.onbelay.shared.enums.*;
 import org.junit.jupiter.api.Test;
@@ -39,6 +44,38 @@ public class VanillaOptionDealServiceTest extends VanillaOptionDealServiceTestCa
 		super.setUp();
 
 	}
+
+
+	@Test
+	public void findByContainsTicketNo() {
+		DefinedQuery definedQuery = new DefinedQuery("BaseDeal");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression(
+						"ticketNo",
+						ExpressionOperator.LIKE,
+						"%Call%"));
+		QuerySelectedPage selectedPage = dealService.findDealIds(definedQuery);
+		assertEquals(3, selectedPage.getIds().size());
+		List<BaseDealSnapshot> snapshots = dealService.findByIds(selectedPage);
+		assertEquals(3, snapshots.size());
+	}
+
+
+
+	@Test
+	public void findByOptionType() {
+		DefinedQuery definedQuery = new DefinedQuery("VanillaOptionDeal");
+		definedQuery.getWhereClause().addExpression(
+				new DefinedWhereExpression(
+						"optionType",
+						ExpressionOperator.EQUALS,
+						"Call"));
+		QuerySelectedPage selectedPage = dealService.findDealIds(definedQuery);
+		assertEquals(3, selectedPage.getIds().size());
+		List<BaseDealSnapshot> snapshots = dealService.findByIds(selectedPage);
+		assertEquals(3, snapshots.size());
+	}
+
 
 	@Test
 	public void testUpdateVanillaOptionDeal() {

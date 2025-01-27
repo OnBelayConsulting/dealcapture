@@ -244,6 +244,17 @@ public class OptionDealDetail {
 		this.premiumPriceCurrencyCodeValue = premiumPriceCurrencyCodeValue;
 	}
 
+	@JsonIgnore
+	@Transient
+	public CurrencyCode getPremiumPriceCurrencyCode() {
+		return CurrencyCode.lookUp(premiumPriceCurrencyCodeValue);
+	}
+
+	public void setPremiumPriceCurrencyCode(CurrencyCode currencyCode) {
+		this.premiumPriceCurrencyCodeValue = currencyCode.getCode();
+	}
+
+
 	@Column(name="PREMIUM_PRICE_UOM_CODE")
 	public String getPremiumPriceUnitOfMeasureCodeValue() {
 		return premiumPriceUnitOfMeasureCodeValue;
@@ -251,6 +262,17 @@ public class OptionDealDetail {
 
 	public void setPremiumPriceUnitOfMeasureCodeValue(String premiumPriceUnitOfMeasureCodeValue) {
 		this.premiumPriceUnitOfMeasureCodeValue = premiumPriceUnitOfMeasureCodeValue;
+	}
+
+
+	@JsonIgnore
+	@Transient
+	public UnitOfMeasureCode getPremuimPriceUnitOfMeasureCode() {
+		return UnitOfMeasureCode.lookUp(premiumPriceUnitOfMeasureCodeValue);
+	}
+
+	public void setPremiumPriceUnitOfMeasureCode(UnitOfMeasureCode unitOfMeasureCode) {
+		this.premiumPriceUnitOfMeasureCodeValue = unitOfMeasureCode.getCode();
 	}
 
 	public void copyFrom(OptionDealDetail copy) {

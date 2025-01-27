@@ -48,8 +48,6 @@ public abstract class VanillaOptionDealServiceTestCase extends DealServiceTestCa
 	protected PriceIndex monthlySecondOptionIndex;
 
 
-	protected InterestIndex interestIndex;
-
 
 	protected LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
 	protected LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
@@ -60,17 +58,6 @@ public abstract class VanillaOptionDealServiceTestCase extends DealServiceTestCa
 	@Override
 	public void setUp() {
 		super.setUp();
-
-		interestIndex = InterestIndexFixture.createInterestIndex("RATE", true, FrequencyCode.DAILY);
-		flush();
-
-		InterestIndexFixture.generateDailyInterestCurves(
-				interestIndex,
-				fromMarketDate,
-				toMarketDate,
-				BigDecimal.valueOf(0.12),
-				observedDateTime);
-
 		monthlyOptionIndex = PriceIndexFixture.createPriceIndex(
 				"MOPtIDX",
 				FrequencyCode.MONTHLY,

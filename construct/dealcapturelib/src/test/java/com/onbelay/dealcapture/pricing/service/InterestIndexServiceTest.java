@@ -204,7 +204,7 @@ public class InterestIndexServiceTest extends DealCaptureSpringTestCase {
 
     @Test
     public void updateInterestIndexFailDuplicateIsRiskFreeRate() {
-        InterestIndexSnapshot snapshot = interestIndexService.load(dailyInterestIndex.generateEntityId());
+        InterestIndexSnapshot snapshot = interestIndexService.load(monthlyInterestIndex.generateEntityId());
         snapshot.getDetail().setIsRiskFreeRate(true);
         snapshot.setEntityState(EntityState.MODIFIED);
 

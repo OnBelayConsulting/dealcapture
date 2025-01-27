@@ -131,19 +131,9 @@ public class InterestIndexRestControllerTest extends DealCaptureAppSpringTestCas
 
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(interestIndexRestController)
 				.build();
-		
 
-		InterestIndexSnapshot snapshot = new InterestIndexSnapshot();
-		snapshot.getDetail().setName("fred");
-		String jsonPayloadG = objectMapper.writeValueAsString(snapshot);
-		
-//		logger.error(jsonPayloadG);
+		String jsonPayload = "{\"detail\":{\"name\":\"fred\",\"isRiskFreeRate\" : false, \"frequencyCodeValue\": \"D\"} }";
 
-		
-		
-		String jsonPayload = "{\"detail\":{\"name\":\"fred\",\"isRiskFreeRate\" : true} }";
-//		String jsonPayloadFull = "{\"entityState\":\"NEW\",\"entityId\":null,\"version\":-1,\"detail\":{\"name\":\"EBEE\",\"description\":\"EBEE-Desc\",\"daysOffsetForExpiry\":4,\"indexTypeValue\":\"H\"},\"benchmarkIndexSlot\":null,\"baseIndexSlot\":null,\"pricingLocationSlot\":{\"entityId\":{\"id\":44,\"status\":\"VALID\"},\"version\":0,\"code\":\"west\"},\"links\":[]}";
-		
 		logger.error(jsonPayload);
 		
 		ResultActions result = mvc.perform(post("/api/interestIndices")

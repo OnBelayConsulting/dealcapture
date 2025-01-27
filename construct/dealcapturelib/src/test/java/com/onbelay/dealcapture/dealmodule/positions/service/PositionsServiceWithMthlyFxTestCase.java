@@ -47,6 +47,8 @@ public abstract class PositionsServiceWithMthlyFxTestCase extends DealCaptureSpr
 
 	protected FxIndex fxIndex;
 
+	protected InterestIndex interestIndex;
+
 
 	protected PhysicalDeal fixedPriceSellDeal;
 	protected PhysicalDeal indexSellDeal;
@@ -87,7 +89,21 @@ public abstract class PositionsServiceWithMthlyFxTestCase extends DealCaptureSpr
 		super.setUp();
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
-		
+		LocalDate fromMarketDate = LocalDate.of(2024, 1, 1);
+		LocalDate toMarketDate = LocalDate.of(2024, 1, 31);
+		LocalDateTime observedDateTime = LocalDateTime.of(2024, 1, 1, 1, 43);
+
+		interestIndex = InterestIndexFixture.createInterestIndex("RATE", true, FrequencyCode.DAILY);
+		flush();
+		InterestIndexFixture.generateDailyInterestCurves(
+				interestIndex,
+				fromMarketDate,
+				toMarketDate,
+				BigDecimal.valueOf(0.12),
+				observedDateTime);
+
+
+
 		marketIndex = PriceIndexFixture.createPriceIndex(
 				"AECO",
 				FrequencyCode.DAILY,

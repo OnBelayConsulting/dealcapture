@@ -32,6 +32,8 @@ import java.util.List;
 		property = "dealTypeValue")
 @JsonSubTypes( {
 		@Type(value = PhysicalDealSnapshot.class, name = "PHY"),
+		@Type(value = FinancialSwapDealSnapshot.class, name = "FS"),
+		@Type(value = VanillaOptionDealSnapshot.class, name = "VO"),
 		@Type(value = ErrorDealSnapshot.class, name = "E"),
 })
 

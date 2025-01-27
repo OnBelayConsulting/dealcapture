@@ -14,6 +14,7 @@ public class DealPositionStreamerFactory {
 
         mappersMap.put(DealTypeCode.PHYSICAL_DEAL, PhysicalPositionStreamer::new);
         mappersMap.put(DealTypeCode.FINANCIAL_SWAP, FinancialSwapPositionStreamer::new);
+        mappersMap.put(DealTypeCode.VANILLA_OPTION, VanillaOptionPositionStreamer::new);
 
     }
 
