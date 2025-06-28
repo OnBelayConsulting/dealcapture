@@ -57,27 +57,7 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
 
     @Override
     public TransactionResult valuePositions(
-            EntityId dealId,
-            CurrencyCode currencyCode,
-            LocalDate fromPositionDate,
-            LocalDate toPositionDate,
-            LocalDateTime createdDateTime,
-            LocalDateTime currentDateTime) {
-
-        valueCostsAndPositions(
-                List.of(dealId.getId()),
-                currencyCode,
-                fromPositionDate,
-                toPositionDate,
-                createdDateTime,
-                currentDateTime);
-
-        return new TransactionResult();
-    }
-
-    @Override
-    public TransactionResult valuePositions(
-            DefinedQuery definedQuery,
+            List<Integer> dealIds,
             CurrencyCode currencyCode,
             LocalDate fromPositionDate,
             LocalDate toPositionDate,
@@ -85,9 +65,8 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             LocalDateTime currentDateTime) {
 
 
-        QuerySelectedPage selectedPage  = dealService.findDealIds(definedQuery);
         valueCostsAndPositions(
-                selectedPage.getIds(),
+                dealIds,
                 currencyCode,
                 fromPositionDate,
                 toPositionDate,

@@ -9,22 +9,22 @@
 >
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
         <insert tableName='VALUATION_CODE'>
-            <column name='CODE_ID' value='FIXED'/>
+            <column name='CODE_ID' value='Fixed'/>
             <column name='CODE_LABEL' value='Fixed'/>
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
         <insert tableName='VALUATION_CODE'>
-            <column name='CODE_ID' value='INDEX'/>
+            <column name='CODE_ID' value='Index'/>
             <column name='CODE_LABEL' value='Index'/>
             <column name='DISPLAY_ORDER_NO' value='20'/>
         </insert>
         <insert tableName='VALUATION_CODE'>
-            <column name='CODE_ID' value='INDEX_PLUS'/>
+            <column name='CODE_ID' value='IndexPlus'/>
             <column name='CODE_LABEL' value='Index plus'/>
             <column name='DISPLAY_ORDER_NO' value='30'/>
         </insert>
         <insert tableName='VALUATION_CODE'>
-            <column name='CODE_ID' value='POWER_PROFILE'/>
+            <column name='CODE_ID' value='PowerProfile'/>
             <column name='CODE_LABEL' value='Power Profile'/>
             <column name='DISPLAY_ORDER_NO' value='35'/>
         </insert>

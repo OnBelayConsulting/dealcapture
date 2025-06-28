@@ -19,8 +19,10 @@ import java.util.stream.Collectors;
         include = JsonTypeInfo.As.PROPERTY,
         property = "dealTypeValue")
 @JsonSubTypes( {
-        @JsonSubTypes.Type(value = PhysicalPositionSnapshot.class, name = "PHY"),
         @JsonSubTypes.Type(value = ErrorDealPositionSnapshot.class, name = "E"),
+        @JsonSubTypes.Type(value = PhysicalPositionSnapshot.class, name = "PhysicalDeal"),
+        @JsonSubTypes.Type(value = FinancialSwapPositionSnapshot.class, name = "FinancialSwap"),
+        @JsonSubTypes.Type(value = VanillaOptionPositionSnapshot.class, name = "VanillaOption"),
 })
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -27,7 +27,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="CURVE_DATE"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="HOUR_ENDING"
@@ -39,7 +39,7 @@
                 <constraints nullable="true"/>
             </column>
             <column name="OBSERVED_DATE_TIME"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="OPTIMISTIC_LOCK_NO"

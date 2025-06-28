@@ -90,7 +90,7 @@ public class FinancialSwapPositionsFileWriterTest  extends DealCaptureAppSpringT
             String ticketNo = record.get(DealPositionColumnType.TICKET_NO.getCode());
             assertEquals("myticket", ticketNo);
 
-            assertEquals("FS", record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
+            assertEquals("FinancialSwap", record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
             assertEquals("BUY", record.get(DealPositionColumnType.BUY_SELL.getCode()));
             assertEquals("2024-01-01", record.get(DealPositionColumnType.START_DATE.getCode()));
             assertEquals("2024-01-31", record.get(DealPositionColumnType.END_DATE.getCode()));
@@ -108,11 +108,11 @@ public class FinancialSwapPositionsFileWriterTest  extends DealCaptureAppSpringT
             assertEquals("", record.get(DealPositionColumnType.TOTAL_SETTLEMENT_AMT.getCode()));
             assertEquals("0", record.get(DealPositionColumnType.ERROR_CODE.getCode()));
             assertEquals("", record.get(DealPositionColumnType.ERROR_MSG.getCode()));
-            assertEquals("FIXED", record.get(FinancialSwapPositionColumnType.PAYS_PRICE_VALUATION_CODE.getCode()));
+            assertEquals("Fixed", record.get(FinancialSwapPositionColumnType.PAYS_PRICE_VALUATION_CODE.getCode()));
             assertEquals("3.000", record.get(FinancialSwapPositionColumnType.PAYS_PRICE.getCode()));
             assertEquals("", record.get(FinancialSwapPositionColumnType.PAYS_INDEX_PRICE.getCode()));
             assertEquals("3.000", record.get(FinancialSwapPositionColumnType.TOTAL_PAYS_PRICE.getCode()));
-            assertEquals("INDEX", record.get(FinancialSwapPositionColumnType.RECEIVES_VALUATION_CODE.getCode()));
+            assertEquals("Index", record.get(FinancialSwapPositionColumnType.RECEIVES_VALUATION_CODE.getCode()));
             assertEquals("4.000", record.get(FinancialSwapPositionColumnType.RECEIVES_PRICE.getCode()));
             parser.close();
         } catch (IOException e) {

@@ -136,7 +136,7 @@ public class ValuePositionsServiceFinancialSwapWithPowerProfileTest extends Fina
 
 
         valuePositionsService.valuePositions(
-                fixed4PowerProfileBuyDeal.generateEntityId(),
+                List.of(fixed4PowerProfileBuyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 fromMarketDate,

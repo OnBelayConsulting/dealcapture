@@ -23,6 +23,7 @@ import java.util.Map;
  */
 public enum DealColumnType {
 	DEAL_TYPE ("DEAL_TYPE", ColumnType.STRING),
+	COMPANY_TRADER ("COMPANY_TRADER", ColumnType.STRING),
 	COMPANY_NAME ("COMPANY", ColumnType.STRING),
 	COUNTERPARTY_NAME ("COUNTERPARTY", ColumnType.STRING),
 	COMMODITY ("Commodity", ColumnType.STRING),

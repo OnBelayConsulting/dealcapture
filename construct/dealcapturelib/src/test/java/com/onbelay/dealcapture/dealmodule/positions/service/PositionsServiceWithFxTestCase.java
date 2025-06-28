@@ -136,6 +136,7 @@ public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTe
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				dealPriceIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
 		indexSellDeal = PhysicalDeal.create(snapshot);
 
@@ -153,6 +154,7 @@ public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTe
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				dealPriceIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		indexBuyDeal = PhysicalDeal.create(snapshot);
 
@@ -175,6 +177,7 @@ public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTe
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		fixedPriceSellDeal = PhysicalDeal.create(snapshot);
 
@@ -197,6 +200,7 @@ public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTe
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
 		fixedPriceBuyDeal = PhysicalDeal.create(snapshot);
 
@@ -220,6 +224,7 @@ public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTe
 				UnitOfMeasureCode.GJ,
 				dealPriceIndex);
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		indexPlusSellDeal = PhysicalDeal.create(snapshot);
 
@@ -242,6 +247,7 @@ public abstract class PositionsServiceWithFxTestCase extends DealCaptureSpringTe
 				UnitOfMeasureCode.GJ,
 				dealPriceIndex);
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
 		indexPlusBuyDeal = PhysicalDeal.create(snapshot);
 		flush();

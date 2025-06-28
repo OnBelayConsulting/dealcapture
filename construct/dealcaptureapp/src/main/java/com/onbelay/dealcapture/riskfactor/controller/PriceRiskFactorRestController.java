@@ -85,29 +85,6 @@ public class PriceRiskFactorRestController extends BaseRestController {
 	}
 
 
-	@Operation(summary="value priceRiskFactors based on a query")
-	@PostMapping(
-			value = "/riskFactors/valued",
-			produces="application/json"  )
-	public ResponseEntity<TransactionResult> valuePriceRiskFactors(
-			@RequestParam(value = "query", defaultValue="default") String queryText) {
-
-		TransactionResult result;
-		try {
-			result  = priceRiskFactorRestAdapter.valueRiskFactors(queryText);
-		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
-		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
-		}
-
-		return processResponse(result);
-	}
-
-
-
 	@Operation(summary="fetch priceRiskFactors")
 	@GetMapping(
 			value = "/riskFactors",

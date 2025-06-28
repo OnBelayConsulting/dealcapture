@@ -133,7 +133,7 @@ public class ValuePositionsServiceWithPowerProfileTest extends PositionsServiceW
 
 
         valuePositionsService.valuePositions(
-                fixedPriceMarketPowerProfileDeal.generateEntityId(),
+                List.of(fixedPriceMarketPowerProfileDeal.getId()),
                 CurrencyCode.CAD,
                 startDate,
                 endDate,

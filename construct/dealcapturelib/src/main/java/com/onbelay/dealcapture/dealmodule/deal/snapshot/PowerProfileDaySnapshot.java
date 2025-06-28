@@ -9,6 +9,10 @@ public class PowerProfileDaySnapshot extends AbstractSnapshot {
 
     private PowerProfileDayDetail detail = new PowerProfileDayDetail();
 
+    public PowerProfileDaySnapshot() {
+        detail.setDefaults();
+    }
+
     public PowerProfileDayDetail getDetail() {
         return detail;
     }

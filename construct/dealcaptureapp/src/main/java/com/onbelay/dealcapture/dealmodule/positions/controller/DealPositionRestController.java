@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.dealmodule.positions.controller;
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.DealPositionRestAdapter;
@@ -45,38 +46,6 @@ public class DealPositionRestController extends BaseRestController {
 	
 	@Autowired
 	private DealPositionRestAdapter dealPositionRestAdapter;
-
-
-
-	@Operation(summary="value Positions selected by query")
-	@PostMapping(value="/generated" )
-	public ResponseEntity<TransactionResult> generatePositions(
-			@RequestHeader Map<String, String> headers,
-			@RequestBody EvaluationContextRequest evaluationContext,
-			BindingResult bindingResult) {
-
-
-		if (bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach( e -> {
-				logger.error(userMarker, "Error on ", e.toString());
-			});
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-		TransactionResult result;
-		try {
-			result = dealPositionRestAdapter.generatePositions(evaluationContext);
-		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
-		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
-		}
-
-		return (ResponseEntity<TransactionResult>) processResponse(result);
-	}
-
 
 
 	@Operation(summary="Create or update a position")
@@ -164,7 +133,8 @@ public class DealPositionRestController extends BaseRestController {
 			collection = new DealPositionSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new DealPositionSnapshotCollection(r.getMessage());
+			collection = new DealPositionSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new DealPositionSnapshotCollection(r.getMessage());
 		}
@@ -172,33 +142,6 @@ public class DealPositionRestController extends BaseRestController {
 		return (ResponseEntity<DealPositionSnapshotCollection>) processResponse(collection);
 	}
 
-	@Operation(summary="value Positions selected by query")
-	@PostMapping(value="/valued" )
-	public ResponseEntity<TransactionResult> valuePositions(
-			@RequestHeader Map<String, String> headers,
-			@RequestBody EvaluationContextRequest evaluationContext,
-			BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach( e -> {
-				logger.error(userMarker, "Error on ", e.toString());
-			});
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-		TransactionResult result;
-		try {
-			result = dealPositionRestAdapter.valuePositions(evaluationContext);
-		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Value positions failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
-		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
-		}
-
-		return (ResponseEntity<TransactionResult>) processResponse(result);
-	}
 
 	@Operation(summary="get an existing position")
 	@GetMapping(value="/{id}")

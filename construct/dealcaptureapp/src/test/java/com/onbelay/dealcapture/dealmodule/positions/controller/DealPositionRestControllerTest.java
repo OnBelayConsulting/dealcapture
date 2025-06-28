@@ -16,18 +16,18 @@
 package com.onbelay.dealcapture.dealmodule.positions.controller;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContactFixture;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
+import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
-import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -59,7 +59,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WithMockUser(username="test")
@@ -99,13 +100,14 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 
 	private List<FxRiskFactor> fxRiskFactors;
 	private LocalDateTime createdDateTime = LocalDateTime.of(2023, 1, 1, 1, 0);
-
+	private BusinessContact contact;
 	private LocalDate fromMarketDate = LocalDate.of(2023, 1, 1);
 	private LocalDate toMarketDate = LocalDate.of(2023, 1, 31);
 
 	@Override
 	public void setUp() {
 		super.setUp();
+		contact = BusinessContactFixture.createCompanyTrader("hans", "gruber", "gruber@terror.com");
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		location = PricingLocationFixture.createPricingLocation("West");
@@ -152,6 +154,7 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 				LocalDateTime.of(2023, 10, 1, 0, 0));
 
 		physicalDeal = DealFixture.createPricePhysicalDeal(
+				contact,
 				CommodityCode.CRUDE,
 				"5566",
 				companyRole,
@@ -283,102 +286,6 @@ public class DealPositionRestControllerTest extends DealCaptureAppSpringTestCase
 		assertEquals(31, collection.getCount());
 		
 		assertEquals(31, collection.getTotalItems());
-	}
-
-	
-	@Test
-	@WithMockUser(username="test")
-	public void valuePositions() throws Exception {
-		
-		MockMvc mvc = MockMvcBuilders.standaloneSetup(dealPositionRestController)
-				.build();
-		dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDeal.getId()));
-
-		generatePositionsService.generatePositions(
-				"test",
-				new DealPositionsEvaluationContext(
-						CurrencyCode.CAD,
-						createdDateTime,
-						fromMarketDate,
-						toMarketDate),
-				List.of(physicalDeal.getId()));
-		flush();
-		clearCache();
-
-		priceRiskFactorService.valueRiskFactors(
-				new DefinedQuery("PriceRiskFactor"),
-				LocalDateTime.now());
-
-		fxRiskFactorService.valueRiskFactors(
-				new DefinedQuery("FxRiskFactor"),
-				LocalDateTime.now());
-		flush();
-		clearCache();
-
-		EvaluationContextRequest context = new EvaluationContextRequest();
-		context.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
-		context.setCreatedDateTime(createdDateTime);
-		context.setFromDate(fromMarketDate);
-		context.setToDate(toMarketDate);
-
-		String jsonPayload = objectMapper.writeValueAsString(context);
-
-		ResultActions result = mvc.perform(post("/api/positions/valued")
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonPayload));
-
-		MvcResult mvcResult = result.andReturn();
-		
-		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
-		
-		logger.debug("Json: " + jsonStringResponse);
-
-		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		
-		assertEquals(true, transactionResult.isSuccessful());
-
-
-		List<DealPositionSnapshot> snapshots = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
-		DealPositionSnapshot snapshot = snapshots.get(0);
-		assertNotNull(snapshot.getSettlementDetail().getMarkToMarketValuation());
-
-	}
-
-
-	@Test
-	@WithMockUser(username="test")
-	public void generatePositions() throws Exception {
-
-		MockMvc mvc = MockMvcBuilders.standaloneSetup(dealPositionRestController)
-				.build();
-
-		EvaluationContextRequest context = new EvaluationContextRequest();
-		context.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
-		context.setCreatedDateTime(LocalDateTime.now());
-		context.setFromDate(fromMarketDate);
-		context.setToDate(fromMarketDate);
-
-		String jsonPayload = objectMapper.writeValueAsString(context);
-
-		ResultActions result = mvc.perform(post("/api/positions/generated")
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonPayload));
-
-
-		MvcResult mvcResult = result.andReturn();
-
-		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
-
-		logger.debug("Json: " + jsonStringResponse);
-
-		TransactionResult transactionResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-
-		assertEquals(true, transactionResult.isSuccessful());
-		List<DealPositionSnapshot> created = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
-		assertTrue(created.size() > 0);
-
 	}
 
 

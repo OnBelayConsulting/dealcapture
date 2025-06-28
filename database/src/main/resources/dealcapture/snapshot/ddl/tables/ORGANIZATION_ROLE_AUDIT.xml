@@ -51,11 +51,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_FROM_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_TO_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="LAST_USER"

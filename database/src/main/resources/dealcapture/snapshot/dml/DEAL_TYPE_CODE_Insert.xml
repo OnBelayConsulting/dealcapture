@@ -14,14 +14,19 @@
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
         <insert tableName='DEAL_TYPE_CODE'>
-            <column name='CODE_ID' value='FS'/>
+            <column name='CODE_ID' value='FinancialSwap'/>
             <column name='CODE_LABEL' value='Financial Swap'/>
             <column name='DISPLAY_ORDER_NO' value='20'/>
         </insert>
         <insert tableName='DEAL_TYPE_CODE'>
-            <column name='CODE_ID' value='PHY'/>
+            <column name='CODE_ID' value='PhysicalDeal'/>
             <column name='CODE_LABEL' value='Physical'/>
             <column name='DISPLAY_ORDER_NO' value='30'/>
+        </insert>
+        <insert tableName='DEAL_TYPE_CODE'>
+            <column name='CODE_ID' value='VanillaOption'/>
+            <column name='CODE_LABEL' value='Vanilla Option'/>
+            <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
     </changeSet>
 </databaseChangeLog>

@@ -21,8 +21,5 @@ public interface FxRiskFactorRestAdapter {
             String queryText,
             Integer start,
             Integer limit);
-    
-    public TransactionResult valueRiskFactors(
-            String queryText);
-    
+
 }

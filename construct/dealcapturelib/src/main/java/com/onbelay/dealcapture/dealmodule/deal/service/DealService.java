@@ -55,6 +55,10 @@ public interface DealService {
 
 	List<DealDayByMonthView> fetchDealDayByMonthViews(EntityId dealId);
 
+	TransactionResult saveDealCost(
+			EntityId dealId,
+			DealCostSnapshot snapshot);
+
 	List<DealDayByMonthView> fetchDealDayByMonthViewsByDates(
 			List<Integer> dealIds,
 			LocalDate fromDate,
@@ -97,4 +101,6 @@ public interface DealService {
 			LocalDateTime observedDateTime);
 
 	List<DealCostSummary> fetchDealCostSummaries(List<Integer> dealIds);
+
+	DealCostSnapshot loadDealCost(EntityId dealCostId);
 }

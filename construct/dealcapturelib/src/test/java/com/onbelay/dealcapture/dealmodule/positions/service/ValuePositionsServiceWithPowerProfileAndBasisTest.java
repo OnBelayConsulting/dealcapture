@@ -149,7 +149,7 @@ public class ValuePositionsServiceWithPowerProfileAndBasisTest extends Positions
 
 
         valuePositionsService.valuePositions(
-                fixedPriceMarketPowerProfileDeal.generateEntityId(),
+                List.of(fixedPriceMarketPowerProfileDeal.getId()),
                 CurrencyCode.CAD,
                 startDate,
                 endDate,
@@ -164,7 +164,7 @@ public class ValuePositionsServiceWithPowerProfileAndBasisTest extends Positions
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceMarketPowerProfileDeal.generateEntityId());
 
-        assertEquals(107, positionSnapshots.size());
+        assertEquals(129, positionSnapshots.size());
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(0, BigDecimal.valueOf(-30).compareTo(positionSnapshot.getSettlementDetail().getMarkToMarketValuation()));

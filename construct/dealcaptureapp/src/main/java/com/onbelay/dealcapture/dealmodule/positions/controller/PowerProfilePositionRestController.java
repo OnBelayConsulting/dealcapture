@@ -17,11 +17,10 @@ package com.onbelay.dealcapture.dealmodule.positions.controller;
 
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.PowerProfilePositionRestAdapter;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshotCollection;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,10 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,37 +46,6 @@ public class PowerProfilePositionRestController extends BaseRestController {
 	
 	@Autowired
 	private PowerProfilePositionRestAdapter powerProfilePositionRestAdapter;
-
-
-
-	@Operation(summary="value Positions selected by query")
-	@PostMapping(value="/generated" )
-	public ResponseEntity<TransactionResult> generatePositions(
-			@RequestHeader Map<String, String> headers,
-			@RequestBody EvaluationContextRequest evaluationContext,
-			BindingResult bindingResult) {
-
-
-		if (bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach( e -> {
-				logger.error(userMarker, "Error on ", e.toString());
-			});
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-		TransactionResult result;
-		try {
-			result = powerProfilePositionRestAdapter.generatePositions(evaluationContext);
-		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
-		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
-		}
-
-		return (ResponseEntity<TransactionResult>) processResponse(result);
-	}
 
 
 	@Operation(summary="get Positions")
@@ -101,40 +67,13 @@ public class PowerProfilePositionRestController extends BaseRestController {
 			collection = new PowerProfilePositionSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new PowerProfilePositionSnapshotCollection(r.getMessage());
+			collection = new PowerProfilePositionSnapshotCollection(CoreTransactionErrorCode.INVALID_ENTITY_ID.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new PowerProfilePositionSnapshotCollection(r.getMessage());
 		}
 
 		return (ResponseEntity<PowerProfilePositionSnapshotCollection>) processResponse(collection);
-	}
-
-	@Operation(summary="value Positions selected by query")
-	@PostMapping(value="/valued" )
-	public ResponseEntity<TransactionResult> valuePositions(
-			@RequestHeader Map<String, String> headers,
-			@RequestBody EvaluationContextRequest evaluationContext,
-			BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach( e -> {
-				logger.error(userMarker, "Error on ", e.toString());
-			});
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-		TransactionResult result;
-		try {
-			result = powerProfilePositionRestAdapter.valuePositions(evaluationContext);
-		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Value positions failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
-		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
-		}
-
-		return (ResponseEntity<TransactionResult>) processResponse(result);
 	}
 
 	@Operation(summary="get an existing position")

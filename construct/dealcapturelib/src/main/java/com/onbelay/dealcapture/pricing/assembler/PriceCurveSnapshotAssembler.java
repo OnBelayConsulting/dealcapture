@@ -29,6 +29,7 @@ public class PriceCurveSnapshotAssembler extends EntityAssembler {
 		PriceCurveSnapshot snapshot = new PriceCurveSnapshot();
 		super.setEntityAttributes(price, snapshot);
 		snapshot.getDetail().copyFrom(price.getDetail());
+		snapshot.setIndexId(price.getPriceIndex().generateEntityId());
 		return snapshot;
 	}
 	

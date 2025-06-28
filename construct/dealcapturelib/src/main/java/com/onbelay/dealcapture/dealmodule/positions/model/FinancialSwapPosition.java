@@ -11,7 +11,7 @@ import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
 
 @Entity
-@DiscriminatorValue("FS")
+@DiscriminatorValue("FinancialSwap")
 public class FinancialSwapPosition extends DealPosition {
 
     private PriceRiskFactor paysPriceRiskFactor;

@@ -23,6 +23,8 @@ public enum DealErrorCode {
     MISSING_COMPANY_ROLE             ("DC_DL-E0101", "Error: Missing company."),
     MISSING_COUNTERPARTY_ROLE        ("DC_DL-E0102", "Error: Missing counterparty."),
     MISSING_COMMODITY_CODE           ("DC_DL-E0103", "Error: Missing Commodity."),
+    MISSING_COMPANY_TRADER           ("DC_DL-E0110", "Error: Missing Commodity."),
+    MISSING_COUNTERPARTY_TRADER      ("DC_DL-E0111", "Error: Missing Commodity."),
     MISSING_DEAL_STATUS              ("DC_DL-E0150", "Error: Missing deal status."),
     MISSING_POSITION_GEN_STATUS      ("DC_DL-E0151", "Error: Missing position generation status."),
     MISSING_BUY_SELL                 ("DC_DL-E0155", "Error: Missing BUY SELL."),

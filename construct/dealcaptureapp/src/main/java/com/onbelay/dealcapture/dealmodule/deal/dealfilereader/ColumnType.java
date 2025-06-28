@@ -94,7 +94,7 @@ public enum ColumnType {
 	private static Object convertFromCSVToDateTime(String s) {
 		if (s == null || s.isEmpty())
 			return null;
-		DateTimeFormatter sdf =  DateTimeFormatter.ISO_DATE;
+		DateTimeFormatter sdf =  DateTimeFormatter.ISO_DATE_TIME;
 		try {
 			return LocalDateTime.parse(s, sdf);
 		} catch (DateTimeParseException e) {

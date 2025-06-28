@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
@@ -257,35 +258,39 @@ public class DealFixture {
 
 
 	public static PhysicalDeal createSamplePhysicalDeal(
+			BusinessContact companyTrader,
 			CommodityCode commodityCode,
 			String ticketNo,
 			CompanyRole companyRole,
 			CounterpartyRole counterpartyRole,
 			PriceIndex priceIndex)  {
-		
-		return PhysicalDeal.create(
-				createPhysicalDealSnapshot(
-						commodityCode,
-						BuySellCode.SELL,
-						LocalDate.of(2023, 1, 1),
-						LocalDate.of(2023, 12, 31),
-						DealStatusCode.PENDING,
+
+		PhysicalDealSnapshot snapshot = createPhysicalDealSnapshot(
+				commodityCode,
+				BuySellCode.SELL,
+				LocalDate.of(2023, 1, 1),
+				LocalDate.of(2023, 12, 31),
+				DealStatusCode.PENDING,
+				CurrencyCode.CAD,
+				ticketNo,
+				companyRole,
+				counterpartyRole,
+				priceIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				new Price(
+						BigDecimal.ONE,
 						CurrencyCode.CAD,
-						ticketNo, 
-						companyRole, 
-						counterpartyRole,
-                        priceIndex,
-						BigDecimal.TEN,
-						UnitOfMeasureCode.GJ,
-						new Price(
-								BigDecimal.ONE,
-								CurrencyCode.CAD,
-								UnitOfMeasureCode.GJ)));
-		
+						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(companyTrader.generateEntityId());
+
+		return PhysicalDeal.create(snapshot);
+
 	}
 
 
 	public static PhysicalDeal createPricePhysicalDeal(
+			BusinessContact companyTrader,
 			CommodityCode commodityCode,
 			String ticketNo,
 			CompanyRole companyRole,
@@ -312,7 +317,7 @@ public class DealFixture {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				dealPrice);
-
+		snapshot.setCompanyTraderId(companyTrader.generateEntityId());
 		snapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 		snapshot.getDealDetail().setSettlementCurrencyCode(reportingCurrencyCode);
 		snapshot.getDealDetail().setVolumeQuantity(volume);
@@ -323,6 +328,7 @@ public class DealFixture {
 
 
 	public static PhysicalDeal createIndexedPricePhysicalDeal(
+			BusinessContact companyTrader,
 			CommodityCode commodityCode,
 			String ticketNo,
 			CompanyRole companyRole,
@@ -333,27 +339,30 @@ public class DealFixture {
 			CurrencyCode reportingCurrencyCode,
 			PriceIndex dealPriceIndex)  {
 
-		return PhysicalDeal.create(
-				createIndexPhysicalDealSnapshot(
-						commodityCode,
-						BuySellCode.SELL,
-						startDate,
-						endDate,
-						DealStatusCode.VERIFIED,
-						reportingCurrencyCode,
-						ticketNo,
-						companyRole,
-						counterpartyRole,
-						priceIndex,
-						BigDecimal.TEN,
-						UnitOfMeasureCode.GJ,
-						dealPriceIndex));
+		PhysicalDealSnapshot snapshot = createIndexPhysicalDealSnapshot(
+				commodityCode,
+				BuySellCode.SELL,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				reportingCurrencyCode,
+				ticketNo,
+				companyRole,
+				counterpartyRole,
+				priceIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				dealPriceIndex);
+
+		snapshot.setCompanyTraderId(companyTrader.generateEntityId());
+		return PhysicalDeal.create(snapshot);
 
 	}
 
 
 
 	public static PhysicalDeal createIndexedPricePlusPhysicalDeal(
+			BusinessContact companyTrader,
 			CommodityCode commodityCode,
 			BuySellCode buySellCode,
 			String ticketNo,
@@ -367,21 +376,23 @@ public class DealFixture {
 			PriceIndex dealPriceIndex
 			)  {
 
-		return PhysicalDeal.create(
-				createIndexPhysicalDealSnapshot(
-						commodityCode,
-						buySellCode,
-						startDate,
-						endDate,
-						DealStatusCode.VERIFIED,
-						reportingCurrencyCode,
-						ticketNo,
-						companyRole,
-						counterpartyRole,
-						marketIndex,
-						BigDecimal.TEN,
-						UnitOfMeasureCode.GJ,
-						dealPriceIndex));
+		PhysicalDealSnapshot snapshot = createIndexPhysicalDealSnapshot(
+				commodityCode,
+				buySellCode,
+				startDate,
+				endDate,
+				DealStatusCode.VERIFIED,
+				reportingCurrencyCode,
+				ticketNo,
+				companyRole,
+				counterpartyRole,
+				marketIndex,
+				BigDecimal.TEN,
+				UnitOfMeasureCode.GJ,
+				dealPriceIndex);
+		snapshot.getDealDetail().setFixedPrice(fixedPrice);
+		snapshot.setCompanyTraderId(companyTrader.generateEntityId());
+		return PhysicalDeal.create(snapshot);
 
 	}
 

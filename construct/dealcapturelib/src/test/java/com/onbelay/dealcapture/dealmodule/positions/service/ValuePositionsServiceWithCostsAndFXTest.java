@@ -123,7 +123,7 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
                 currentValuationDateTime);
 
         valuePositionsService.valuePositions(
-                fixedPriceBuyDeal.generateEntityId(),
+                List.of(fixedPriceBuyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -214,7 +214,7 @@ public class ValuePositionsServiceWithCostsAndFXTest extends PhysicalDealService
                 currentValuationDateTime);
 
         valuePositionsService.valuePositions(
-                fixedPriceBuyDeal.generateEntityId(),
+                List.of(fixedPriceBuyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,

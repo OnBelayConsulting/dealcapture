@@ -32,7 +32,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="CURVE_DATE"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="HOUR_ENDING"
@@ -44,7 +44,7 @@
                 <constraints nullable="true"/>
             </column>
             <column name="OBSERVED_DATE_TIME"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="AUDIT_LOCK_NO"
@@ -62,11 +62,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_FROM_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_TO_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="LAST_USER"

@@ -32,6 +32,7 @@ public enum PositionErrorCode {
     ERROR_INVALID_TOTAL_SETTLE_MISSING_COST ("DC_PS-E0033", "Error: Position valuation invalid total settlement amount - missing cost."),
     ERROR_INVALID_POSITION_VALUATION        ("DC_PS-E0040", "Error: Position valuation failed. See Error Messages."),
     MISSING_REQUIRED_EVAL_CONTEXT_FIELDS    ("DC_PS-E0100", "Error: Missing required Evaluation Context fields: CurrencyCode, CreatedDateTime, start date."),
+    ERROR_POSITION_GENERATION_FAILED        ("DC_PS-E0110", "Error: Position generation failed."),
     MISSING_POWER_PROFILE_POSITIONS         ("DC_PS-E0200", "Error: Missing power profile positions for deal position generation."),
     MISSING_RISK_FACTOR_ID_ASSIGNMENT       ("DC_PS-E0300", "Error: RiskFactor is missing or id is not assigned."),
     MISSING_BASIS_CONTAINER                 ("DC_PS-E0600", "Error: Missing basis container in position generation.");

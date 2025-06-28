@@ -26,11 +26,11 @@ import java.util.List;
 
 public class DealCostAssembler extends EntityAssembler {
 	
-	private BaseDeal deal;
+	private EntityId dealId;
 
-	public DealCostAssembler(BaseDeal deal) {
+	public DealCostAssembler(EntityId dealId) {
 		super();
-		this.deal = deal;
+		this.dealId = dealId;
 	}
 	
 	
@@ -49,7 +49,7 @@ public class DealCostAssembler extends EntityAssembler {
 	public DealCostSnapshot assemble(DealCost dealCost) {
 		DealCostSnapshot snapshot = new DealCostSnapshot();
 		super.setEntityAttributes(dealCost, snapshot);
-		snapshot.setDealId(new EntityId(deal.getId()));
+		snapshot.setDealId(dealId);
 		snapshot.getDetail().copyFrom(dealCost.getDetail());
 		return snapshot;
 	}

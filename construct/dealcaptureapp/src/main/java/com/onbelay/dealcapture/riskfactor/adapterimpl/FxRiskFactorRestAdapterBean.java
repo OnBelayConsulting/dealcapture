@@ -39,34 +39,6 @@ public class FxRiskFactorRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
-    public TransactionResult valueRiskFactors(String queryText) {
-        initializeSession();
-
-        DefinedQuery definedQuery;
-
-        if (queryText == null || queryText.equals("default")) {
-            definedQuery = new DefinedQuery("FxRiskFactor");
-            definedQuery.getOrderByClause()
-                    .addOrderExpression(
-                            new DefinedOrderExpression("marketDate"));
-        } else {
-            DefinedQueryBuilder builder = new DefinedQueryBuilder("FxRiskFactor", queryText);
-            definedQuery = builder.build();
-
-            if (definedQuery.getOrderByClause().hasExpressions() == false) {
-                definedQuery.getOrderByClause()
-                        .addOrderExpression(
-                                new DefinedOrderExpression("marketDate"));
-            }
-        }
-        fxRiskFactorService.valueRiskFactors(
-                definedQuery,
-                LocalDateTime.now());
-
-        return new TransactionResult();
-    }
-
-    @Override
     public FxRiskFactorSnapshotCollection find(
             String queryText,
             Integer start,

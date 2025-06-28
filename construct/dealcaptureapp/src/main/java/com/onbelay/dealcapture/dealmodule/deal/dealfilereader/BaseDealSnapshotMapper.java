@@ -25,6 +25,10 @@ public abstract  class BaseDealSnapshotMapper {
             Object value) {
 
         switch (columnType) {
+            case COMPANY_TRADER -> {
+                snapshot.setCompanyTraderId(new EntityId((String)value));
+                return true;
+            }
             case COMPANY_NAME -> {
                 snapshot.setCompanyRoleId(new EntityId((String)value));
                 return true;

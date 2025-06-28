@@ -23,12 +23,22 @@ public interface PriceIndexRestAdapter {
 
     PriceIndexSnapshot load(EntityId priceIndexId);
 
-    TransactionResult savePrices(
+    TransactionResult savePriceCurves(
             Integer priceIndexId,
             List<PriceCurveSnapshot> snapshots);
 
-    PriceCurveSnapshotCollection findPrices(
+
+    TransactionResult savePriceCurve(PriceCurveSnapshot snapshot);
+
+
+    PriceCurveSnapshotCollection findPriceCurves(
             String queryText,
             Integer start,
             Integer limit);
+
+    TransactionResult savePriceCurvesFile(
+            String originalFilename,
+            byte[] bytes);
+
+    PriceCurveSnapshot loadPriceCurve(EntityId entityId);
 }

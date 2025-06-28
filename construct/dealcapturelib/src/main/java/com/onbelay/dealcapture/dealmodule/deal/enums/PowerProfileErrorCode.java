@@ -19,7 +19,10 @@ import java.util.*;
 
 public enum PowerProfileErrorCode {
 
-    MISSING_NAME         ("DC_PP-E0001", "Error: Missing name."),
+    MISSING_NAME                   ("DC_PP-E0001", "Error: Missing name."),
+    INVALID_POWER_PROFILE_CODE     ("DC_PP-E0002", "Error: Invalid power profile code. Not marked as supporting hourly profile."),
+    MISSING_POWER_PROFILE_MAPPING  ("DC_PP-E0003", "Error: Profile uses power profile code without price index mapping."),
+    INVALID_JOB                 ("DC_PP-E0020", "Error: Job is not a power profile job."),
 
     ;
 

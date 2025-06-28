@@ -21,6 +21,8 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
+import com.onbelay.dealcapture.businesscontact.repository.BusinessContactRepository;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
@@ -66,6 +68,10 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
     private CompanyRole companyRole;
     private CounterpartyRole counterpartyRole;
 
+	private BusinessContact companyTrader;
+	private BusinessContact counterpartyTrader;
+	private BusinessContact administrator;
+
 	protected BaseDeal() {
 	}
 
@@ -97,7 +103,10 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		
 		if (counterpartyRole == null)
 			throw new OBValidationException(DealErrorCode.MISSING_COUNTERPARTY_ROLE.getCode());
-		
+
+		if (companyTrader == null)
+			throw new OBValidationException(DealErrorCode.MISSING_COMPANY_TRADER.getCode());
+
 	}
 
 	
@@ -120,9 +129,23 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 						OrganizationRoleType.COUNTERPARTY_ROLE);
 			}
 		}
+
 		if (snapshot.getPowerProfileId() != null) {
 			this.powerProfile = getPowerProfileRepository().load(snapshot.getPowerProfileId());
 		}
+
+		if (snapshot.getCompanyTraderId() != null) {
+			this.companyTrader = getBusinessContactRepository().load(snapshot.getCompanyTraderId());
+		}
+
+		if (snapshot.getCounterpartyTraderId() != null) {
+			this.counterpartyTrader = getBusinessContactRepository().load(snapshot.getCounterpartyTraderId());
+		}
+
+		if (snapshot.getAdministratorId() != null) {
+			this.administrator = getBusinessContactRepository().load(snapshot.getAdministratorId());
+		}
+
 	}
 	
 
@@ -150,7 +173,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	}
 
 	public List<DealCostSnapshot> fetchCurrentDealCosts() {
-    	DealCostAssembler assembler = new DealCostAssembler(this);
+    	DealCostAssembler assembler = new DealCostAssembler(this.generateEntityId());
     	return assembler.assemble(
     			getDealCostRepository().fetchDealCosts(this.id));
     }
@@ -305,7 +328,37 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		this.companyRole = companyRole;
 	}
 
-	
+
+	@ManyToOne
+	@JoinColumn(name ="COMPANY_TRADER_ID")
+	public BusinessContact getCompanyTrader() {
+		return companyTrader;
+	}
+
+	public void setCompanyTrader(BusinessContact companyTrader) {
+		this.companyTrader = companyTrader;
+	}
+
+	@ManyToOne
+	@JoinColumn(name ="COUNTERPARTY_TRADER_ID")
+	public BusinessContact getCounterpartyTrader() {
+		return counterpartyTrader;
+	}
+
+	public void setCounterpartyTrader(BusinessContact counterpartyTrader) {
+		this.counterpartyTrader = counterpartyTrader;
+	}
+
+	@ManyToOne
+	@JoinColumn(name ="ADMINISTRATOR_ID")
+	public BusinessContact getAdministrator() {
+		return administrator;
+	}
+
+	public void setAdministrator(BusinessContact administrator) {
+		this.administrator = administrator;
+	}
+
 	@Override
 	public AuditAbstractEntity fetchRecentHistory() {
 		return BaseDealAudit.findRecentHistory(this);
@@ -347,6 +400,13 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	protected static OrganizationRoleRepository getOrganizationRoleRepository() {
 		return (OrganizationRoleRepository) ApplicationContextFactory.getBean(OrganizationRoleRepository.BEAN_NAME);
 	}
+
+
+	@Transient
+	protected static BusinessContactRepository getBusinessContactRepository() {
+		return (BusinessContactRepository) ApplicationContextFactory.getBean(BusinessContactRepository.BEAN_NAME);
+	}
+
 
 	@Transient
 	protected static PowerProfileRepository getPowerProfileRepository() {

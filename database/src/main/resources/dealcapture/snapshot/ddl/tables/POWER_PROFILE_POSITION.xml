@@ -27,10 +27,10 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="START_DATE"  type="java.sql.Types.TIMESTAMP"/>
-            <column name="END_DATE"  type="java.sql.Types.TIMESTAMP"/>
-            <column name="CREATE_UPDATE_DATETIME"  type="java.sql.Types.TIMESTAMP"/>
-            <column name="VALUED_DATETIME"  type="java.sql.Types.TIMESTAMP">
+            <column name="START_DATE"  type="${datetimeDataType}"/>
+            <column name="END_DATE"  type="${datetimeDataType}"/>
+            <column name="CREATE_UPDATE_DATETIME"  type="${datetimeDataType}"/>
+            <column name="VALUED_DATETIME"  type="${datetimeDataType}">
                 <constraints nullable="true"/>
             </column>
             <column name="NUMBER_OF_HOURS"

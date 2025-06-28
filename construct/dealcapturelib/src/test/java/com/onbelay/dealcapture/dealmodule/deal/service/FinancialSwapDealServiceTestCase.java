@@ -110,6 +110,7 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 
 		fixed4FloatSellDeal = FinancialSwapDeal.create(snapshot);
@@ -129,6 +130,7 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 
 		fixed4FloatBuyDeal = FinancialSwapDeal.create(snapshot);
@@ -148,6 +150,7 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				receivesIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		float4FloatBuyDeal = FinancialSwapDeal.create(snapshot);
 
@@ -167,6 +170,7 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				UnitOfMeasureCode.GJ,
 				receivesIndex,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		float4FloatPlusBuyDeal = FinancialSwapDeal.create(snapshot);
 
 
@@ -185,6 +189,7 @@ public abstract class FinancialSwapDealServiceTestCase extends DealServiceTestCa
 				UnitOfMeasureCode.GJ,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		fixed4PowerProfileBuyDeal = FinancialSwapDeal.create(snapshot);

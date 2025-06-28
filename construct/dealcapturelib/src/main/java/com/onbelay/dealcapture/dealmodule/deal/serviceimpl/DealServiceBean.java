@@ -170,6 +170,7 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 		if (deal == null) {
 			BaseDealSnapshot snapshot = new ErrorDealSnapshot(DealErrorCode.INVALID_DEAL_ID.getCode());
 			snapshot.setErrorMessage("Invalid or missing deal id");
+			return snapshot;
 		}
 		
 		AbstractDealAssembler assembler = DealSnapshotAssemblerFactory.newAssembler(deal.getDealType());
@@ -178,10 +179,27 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
+	public DealCostSnapshot loadDealCost(EntityId dealCostId) {
+
+		DealCost cost = dealCostRepository.load(dealCostId);
+
+		if (cost == null) {
+			DealCostSnapshot snapshot = new DealCostSnapshot(DealErrorCode.INVALID_DEAL_ID.getCode());
+			snapshot.setErrorMessage("Invalid or missing deal cost id");
+			return snapshot;
+		}
+
+		DealCostAssembler assembler = new DealCostAssembler(cost.getDeal().generateEntityId());
+
+		return assembler.assemble(cost);
+	}
+
+
+	@Override
 	public List<DealCostSnapshot> fetchDealCosts(EntityId dealId) {
 		BaseDeal deal = dealRepository.load(dealId);
 		List<DealCost> costs = deal.fetchDealCosts();
-		DealCostAssembler assembler = new DealCostAssembler(deal);
+		DealCostAssembler assembler = new DealCostAssembler(dealId);
 		return assembler.assemble(costs);
 	}
 
@@ -192,6 +210,16 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 
 		BaseDeal deal = dealRepository.load(dealId);
 		List<Integer> keys = deal.saveDealCosts(snapshots);
+		return new TransactionResult(keys);
+	}
+
+	@Override
+	public TransactionResult saveDealCost(
+			EntityId dealId,
+			DealCostSnapshot snapshot) {
+
+		BaseDeal deal = dealRepository.load(dealId);
+		List<Integer> keys = deal.saveDealCosts(List.of(snapshot));
 		return new TransactionResult(keys);
 	}
 

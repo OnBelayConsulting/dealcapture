@@ -23,18 +23,6 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
-            <column name="FIXED_PRICE_CURRENCY_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="FIXED_PRICE_UOM_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="FIXED_PRICE"
-                    type="java.sql.Types.NUMERIC(8, 3)">
-                <constraints nullable="true"/>
-            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -63,6 +63,10 @@
                     type="java.sql.Types.VARCHAR(100)">
                 <constraints nullable="true"/>
             </column>
+            <column name="VOLATILITY_VALUE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
             <column name="AUDIT_LOCK_NO"
                     defaultValueNumeric="0"
                     type="java.sql.Types.NUMERIC(10, 0)">
@@ -78,11 +82,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_FROM_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_TO_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="LAST_USER"

@@ -32,8 +32,8 @@ public class DealPositionsSqlServerBatchInserter extends DealPositionsBaseBatchI
     public void savePositions(
             DealTypeCode dealTypeCode,
             List<DealPositionSnapshot> positions) {
+        DealPositionSqlMapper sqlMapper = sqlMappers.get(dealTypeCode).apply(true);
 
-        DealPositionSqlMapper sqlMapper = sqlMappers.get(DealTypeCode.PHYSICAL_DEAL).apply(true);
 
         Long startId = entityRepository.reserveSequenceRange("DEAL_POSITION_SEQ", positions.size());
         for (DealPositionSnapshot snapshot : positions) {

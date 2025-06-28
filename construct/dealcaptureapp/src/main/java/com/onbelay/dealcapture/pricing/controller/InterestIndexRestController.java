@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.pricing.controller;
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.pricing.adapter.InterestIndexRestAdapter;
@@ -172,7 +173,8 @@ public class InterestIndexRestController extends BaseRestController {
 			collection = new InterestIndexSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new InterestIndexSnapshotCollection(r.getMessage());
+			collection = new InterestIndexSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new InterestIndexSnapshotCollection(r.getMessage());
 		}
@@ -224,7 +226,8 @@ public class InterestIndexRestController extends BaseRestController {
 			collection = new InterestCurveSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new InterestCurveSnapshotCollection(r.getMessage());
+			collection = new InterestCurveSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new InterestCurveSnapshotCollection(r.getMessage());
 		}

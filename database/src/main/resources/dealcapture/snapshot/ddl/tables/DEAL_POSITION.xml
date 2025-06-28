@@ -32,10 +32,10 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="START_DATE"  type="java.sql.Types.TIMESTAMP"/>
-            <column name="END_DATE"  type="java.sql.Types.TIMESTAMP"/>
-            <column name="CREATE_UPDATE_DATETIME"  type="java.sql.Types.TIMESTAMP"/>
-            <column name="VALUED_DATETIME"  type="java.sql.Types.TIMESTAMP">
+            <column name="START_DATE"  type="${datetimeDataType}"/>
+            <column name="END_DATE"  type="${datetimeDataType}"/>
+            <column name="CREATE_UPDATE_DATETIME"  type="${datetimeDataType}"/>
+            <column name="VALUED_DATETIME"  type="${datetimeDataType}">
                 <constraints nullable="true"/>
             </column>
 
@@ -80,10 +80,6 @@
                     type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
             </column>
-            <column name="DEAL_PRICE_VALUATION_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
             <column name="FIXED_PRICE"
                     type="java.sql.Types.NUMERIC(8, 3)">
                 <constraints nullable="true"/>
@@ -116,10 +112,6 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
-            <column name="MARKET_VALUATION_CODE"
-                    type="java.sql.Types.VARCHAR(32)">
-                <constraints nullable="true"/>
-            </column>
             <column name="MKT_RISK_FACTOR_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
@@ -129,6 +121,58 @@
                 <constraints nullable="true"/>
             </column>
             <column name="MKT_PRICE_FX_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PAYS_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PAYS_INDEX_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="TOTAL_PAYS_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PAYS_PRICE_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PAYS_PRICE_FX_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="RECEIVES_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="RECEIVES_PRICE_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="RECEIVES_PRICE_FX_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="OPTION_EXPIRY_DATE"
+                    type="${datetimeDataType}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UNDERLYING_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STRIKE_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UNDERLYING_PRICE_RISK_FACTOR_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UNDERLYING_PRICE_FX_RISK_FACTOR_ID"
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>

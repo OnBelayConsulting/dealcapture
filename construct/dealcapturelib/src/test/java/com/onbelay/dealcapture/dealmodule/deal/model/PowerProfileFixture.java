@@ -15,13 +15,11 @@ public class PowerProfileFixture {
                 String name,
                 PriceIndex hourlyIndex) {
 
-            PowerProfileSnapshot powerProfileSnapshot = createPowerProfileSnapshotAllDaysAllHours(name);
+            PowerProfileSnapshot powerProfileSnapshot = createPowerProfileSnapshotAllDaysAllHours(
+                    name,
+                    hourlyIndex,
+                    hourlyIndex);
             powerProfileSnapshot.setSettledPriceIndexId(hourlyIndex.generateEntityId());
-            PowerProfileIndexMappingSnapshot indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
-
-            indexMappingSnapshot.setPriceIndexId(hourlyIndex.generateEntityId());
-            indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.END_OF_MTH);
-            powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
 
             return PowerProfile.create(powerProfileSnapshot);
     }
@@ -33,19 +31,12 @@ public class PowerProfileFixture {
             PriceIndex offPeakIndex,
             PriceIndex onPeakIndex) {
 
-        PowerProfileSnapshot powerProfileSnapshot = createPowerProfileSnapshotAllDaysAllHours(name);
+        PowerProfileSnapshot powerProfileSnapshot = createPowerProfileSnapshotAllDaysAllHours(
+                name,
+                offPeakIndex,
+                onPeakIndex);
         powerProfileSnapshot.setSettledPriceIndexId(settledIndex.generateEntityId());
 
-        // settled
-        PowerProfileIndexMappingSnapshot indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
-        indexMappingSnapshot.setPriceIndexId(offPeakIndex.generateEntityId());
-        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.OFF_PEAK);
-        powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
-
-        indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
-        indexMappingSnapshot.setPriceIndexId(onPeakIndex.generateEntityId());
-        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.ON_PEAK);
-        powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
 
         return PowerProfile.create(powerProfileSnapshot);
     }
@@ -84,8 +75,8 @@ public class PowerProfileFixture {
 
         PowerProfileSnapshot powerProfileSnapshot = createPowerProfileSnapshotWeekDaysSomeHours(name);
         powerProfileSnapshot.setSettledPriceIndexId(settledIndex.generateEntityId());
+        powerProfileSnapshot.setEndOfMonthPriceIndexId(hourlyForwardIndex.generateEntityId());
 
-        // settled
         PowerProfileIndexMappingSnapshot indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
         indexMappingSnapshot.setPriceIndexId(offPeakIndex.generateEntityId());
         indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.OFF_PEAK);
@@ -96,17 +87,16 @@ public class PowerProfileFixture {
         indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.ON_PEAK);
         powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
 
-        indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
-        indexMappingSnapshot.setPriceIndexId(hourlyForwardIndex.generateEntityId());
-        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.END_OF_MTH);
-        powerProfileSnapshot.addIndexMappingSnapshot(indexMappingSnapshot);
-
         return PowerProfile.create(powerProfileSnapshot);
     }
 
 
 
-    public static PowerProfileSnapshot createPowerProfileSnapshotAllDaysAllHours(String name) {
+    public static PowerProfileSnapshot createPowerProfileSnapshotAllDaysAllHours(
+            String name,
+            PriceIndex offPeakIndex,
+            PriceIndex onPeakIndex
+            ) {
         PowerProfileSnapshot snapshot = new PowerProfileSnapshot();
         snapshot.getDetail().setName(name);
 
@@ -122,10 +112,20 @@ public class PowerProfileFixture {
             snapshot.addPowerProfileDay(powerProfileDaySnapshot);
         }
 
+        PowerProfileIndexMappingSnapshot indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
+        indexMappingSnapshot.setPriceIndexId(offPeakIndex.generateEntityId());
+        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.OFF_PEAK);
+        snapshot.addIndexMappingSnapshot(indexMappingSnapshot);
+
+        indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
+        indexMappingSnapshot.setPriceIndexId(onPeakIndex.generateEntityId());
+        indexMappingSnapshot.getDetail().setPowerFlowCode(PowerFlowCode.ON_PEAK);
+        snapshot.addIndexMappingSnapshot(indexMappingSnapshot);
+
         return snapshot;
     }
 
-    public static PowerProfileSnapshot createPowerProfileSnapshotWeekDaysSomeHours(String name) {
+    private static PowerProfileSnapshot createPowerProfileSnapshotWeekDaysSomeHours(String name) {
         PowerProfileSnapshot snapshot = new PowerProfileSnapshot();
         snapshot.getDetail().setName(name);
 

@@ -12,11 +12,9 @@
         Include the "now" and "concatenation_operator" properties once here so that
         all changelogs that follow have access to them.
     -->
+    <include file="databasetypes.xml" relativeToChangelogFile="true"/>
     <include file="now.xml" relativeToChangelogFile="true"/>
     <include file="concatenationOperator.xml" relativeToChangelogFile="true"/>
-    <include file="Issue_019/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="Issue_021/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="Issue_023/changelog.xml" relativeToChangelogFile="true"/>
 
 
 </databaseChangeLog>

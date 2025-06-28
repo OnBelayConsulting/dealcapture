@@ -9,7 +9,7 @@
 >
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
         <insert tableName='RISK_FACTOR_CODE'>
-            <column name='CODE_ID' value='P'/>
+            <column name='CODE_ID' value='Price'/>
             <column name='CODE_LABEL' value='Price'/>
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>

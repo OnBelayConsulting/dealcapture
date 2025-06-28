@@ -85,7 +85,7 @@ public class VanillaOptionPositionsFileWriterTest extends DealCaptureAppSpringTe
             String ticketNo = record.get(DealPositionColumnType.TICKET_NO.getCode());
             assertEquals("myticket", ticketNo);
 
-            assertEquals("VO", record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
+            assertEquals("VanillaOption", record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
             assertEquals("BUY", record.get(DealPositionColumnType.BUY_SELL.getCode()));
             assertEquals("2024-01-01", record.get(DealPositionColumnType.START_DATE.getCode()));
             assertEquals("2024-01-31", record.get(DealPositionColumnType.END_DATE.getCode()));

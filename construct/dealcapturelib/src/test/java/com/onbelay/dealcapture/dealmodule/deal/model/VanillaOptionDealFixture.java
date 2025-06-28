@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.common.enums.OptionExpiryDateRuleToken;
 import com.onbelay.dealcapture.dealmodule.deal.enums.*;
@@ -139,6 +140,7 @@ public class VanillaOptionDealFixture {
 
 
 	public static VanillaOptionDeal createOTCBuyPutVanillaOptionDeal(
+			BusinessContact companyTrader,
 			CommodityCode commodityCode,
 			TradeTypeCode tradeTypeCode,
 			OptionTypeCode optionTypeCode,
@@ -170,7 +172,7 @@ public class VanillaOptionDealFixture {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				strikePrice);
-
+		snapshot.setCompanyTraderId(companyTrader.generateEntityId());
 		snapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 		snapshot.getDealDetail().setSettlementCurrencyCode(reportingCurrencyCode);
 		snapshot.getDealDetail().setVolumeQuantity(volume);

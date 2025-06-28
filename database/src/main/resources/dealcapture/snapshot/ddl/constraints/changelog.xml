@@ -26,7 +26,6 @@
     <include file="FK_DEAL_COST_TO_UNIT_OF_MEASURE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_DAY_TO_DAY_TYPE_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_DEAL_POSITION_TO_BASE_DEAL.xml" relativeToChangelogFile="true"/>
-    <include file="FK_DEAL_POSITION_TO_VALUATION_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_FX_CURVE_TO_FREQUENCY_CODE.xml" relativeToChangelogFile="true"/>
     <include file="FK_FX_CURVE_TO_FX_INDEX.xml" relativeToChangelogFile="true"/>
     <include file="FK_FX_INDEX_TO_FROM_CURRENCY_CODE.xml" relativeToChangelogFile="true"/>
@@ -54,6 +53,7 @@
     <include file="IDX_POSITION_RISK_FACTOR_MAPPING.xml" relativeToChangelogFile="true"/>
     <include file="IDX_DEAL_COST_POSITION.xml" relativeToChangelogFile="true"/>
     <include file="IDX_POWER_PROFILE_POSITION.xml" relativeToChangelogFile="true"/>
+    <include file="FOREIGN_KEYS_INTEREST_CURVE_INDEX.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

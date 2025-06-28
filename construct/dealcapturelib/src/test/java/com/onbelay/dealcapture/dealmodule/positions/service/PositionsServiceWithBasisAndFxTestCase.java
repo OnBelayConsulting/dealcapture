@@ -137,6 +137,7 @@ public abstract class PositionsServiceWithBasisAndFxTestCase extends DealCapture
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				basisToBasisPriceIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		indexSellDeal = PhysicalDeal.create(snapshot);
 
@@ -154,6 +155,7 @@ public abstract class PositionsServiceWithBasisAndFxTestCase extends DealCapture
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				basisPriceIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		indexBuyDeal = PhysicalDeal.create(snapshot);
 
@@ -176,6 +178,7 @@ public abstract class PositionsServiceWithBasisAndFxTestCase extends DealCapture
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		fixedPriceSellDeal = PhysicalDeal.create(snapshot);
 

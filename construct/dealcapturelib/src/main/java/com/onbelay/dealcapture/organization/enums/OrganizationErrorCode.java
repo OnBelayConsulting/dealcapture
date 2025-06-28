@@ -22,6 +22,7 @@ public enum OrganizationErrorCode {
     SUCCESS                       	 ("0", "Success: transaction was successful"),
     MISSING_ORGANIZATION_ID          ("DC_OR-E0001", "Error: Missing organization id."),
     MISSING_ORGANIZATION_NAME        ("DC_OR-E0002", "Error: Missing organization name."),
+    MISSING_ORGANIZATION             ("DC_OR-E0003", "Error: Missing organization. Invalid Organization Id."),
 
     MISSING_CO_IS_HOLDING_PARENT     ("DC_OR-E0200", "Error: Missing CompanyRole: isHoldingParent."),
 

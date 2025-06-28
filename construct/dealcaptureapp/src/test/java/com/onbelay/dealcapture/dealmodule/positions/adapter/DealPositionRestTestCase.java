@@ -1,5 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.adapter;
 
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContactFixture;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
@@ -48,6 +50,7 @@ public class DealPositionRestTestCase extends DealCaptureAppSpringTestCase {
 
     protected InterestIndex interestIndex;
 
+    protected BusinessContact contact;
     protected CompanyRole companyRole;
     protected CounterpartyRole counterpartyRole;
 
@@ -66,6 +69,7 @@ public class DealPositionRestTestCase extends DealCaptureAppSpringTestCase {
     @Override
     public void setUp() {
         super.setUp();
+        contact = BusinessContactFixture.createCompanyTrader("hans", "gruber", "gruber@terror.com");
         companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
         counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
         pricingLocation = PricingLocationFixture.createPricingLocation("West");

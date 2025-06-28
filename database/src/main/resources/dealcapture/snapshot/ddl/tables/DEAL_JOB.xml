@@ -1,0 +1,87 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/DEAL_JOB.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+        <createSequence
+                incrementBy="1"
+                sequenceName="DEAL_JOB_SEQ"
+                startValue="1"
+        />
+
+
+        <createTable tableName="DEAL_JOB" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID"
+                    defaultValueSequenceNext="DEAL_JOB_SEQ"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints primaryKey="true" primaryKeyName="DEAL_JOB_PK" nullable="false"/>
+            </column>
+            <column name="DEPENDS_ON_JOB_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="JOB_TYPE_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_STATUS_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEAL_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEAL_QUERY_TEXT"
+                    type="java.sql.Types.VARCHAR(2000)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="FROM_DATE"  type="${datetimeDataType}"/>
+            <column name="TO_DATE"  type="${datetimeDataType}"/>
+            <column name="CREATED_DATETIME"  type="${datetimeDataType}"/>
+
+            <column name='CURRENCY_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name="VALUATION_DATETIME"  type="${datetimeDataType}">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="POSITION_GENERATION_ID"
+                    type="java.sql.Types.VARCHAR(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="QUEUED_DATETIME"  type="${datetimeDataType}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EXECUTION_START_DATETIME"  type="${datetimeDataType}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EXECUTION_END_DATETIME"  type="${datetimeDataType}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="VALUING_START_DATETIME"  type="${datetimeDataType}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="VALUING_END_DATETIME"  type="${datetimeDataType}">
+                <constraints nullable="true"/>
+            </column>
+            <column name='VOLUME_UOM_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='true'/>
+            </column>
+            <column name="ERROR_CODE"
+                    type="java.sql.Types.VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ERROR_MSG"
+                    type="java.sql.Types.VARCHAR(1000)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

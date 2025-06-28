@@ -1,11 +1,11 @@
 package com.onbelay.dealcapture.organization.subscribe.converter;
 
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
-import com.onbelay.dealcapture.organization.subscribe.snapshot.SubOrganizationSnapshot;
+import com.onbelay.dealcapture.organization.subscribe.snapshot.OrganizationSubscriptionSnapshot;
 
 public class OrganizationSubscriberConverter {
 
-    public OrganizationSnapshot convert(SubOrganizationSnapshot snapshotIn) {
+    public OrganizationSnapshot convert(OrganizationSubscriptionSnapshot snapshotIn) {
         OrganizationSnapshot snapshot = new OrganizationSnapshot();
         snapshot.getDetail().setExternalReferenceId(snapshotIn.getEntityId().getId());
 

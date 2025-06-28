@@ -77,6 +77,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 	public void testCreateDeal() {
 
 		PhysicalDealSnapshot snapshot = new PhysicalDealSnapshot();
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.setCompanyRoleId(companyRole.generateEntityId());
 		snapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 		snapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
@@ -133,6 +134,7 @@ public class DealTest extends DealCaptureSpringTestCase {
 	@Test
 	public void createFixed4Float() {
 		FinancialSwapDeal swapDeal = FinancialSwapDealFixture.createFixed4FloatSwapDeal(
+				myBusinessContact,
 				CommodityCode.NATGAS,
 				"ddd",
 				companyRole,

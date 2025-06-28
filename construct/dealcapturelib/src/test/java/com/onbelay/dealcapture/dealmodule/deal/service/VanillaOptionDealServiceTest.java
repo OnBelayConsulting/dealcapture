@@ -157,7 +157,8 @@ public class VanillaOptionDealServiceTest extends VanillaOptionDealServiceTestCa
 						BigDecimal.TEN,
 						CurrencyCode.USD,
 						UnitOfMeasureCode.GJ));
-		
+		dealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
+
 		TransactionResult result  = dealService.save(dealSnapshot);
 		flush();
 		clearCache();
@@ -202,6 +203,7 @@ public class VanillaOptionDealServiceTest extends VanillaOptionDealServiceTestCa
 						BigDecimal.ONE,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		dealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		TransactionResult result  = dealService.save(dealSnapshot);
 		flush();

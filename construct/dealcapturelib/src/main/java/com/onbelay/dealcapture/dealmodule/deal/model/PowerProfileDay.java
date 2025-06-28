@@ -60,6 +60,7 @@ public class PowerProfileDay extends TemporalAbstractEntity {
 			PowerProfile powerProfile,
 			PowerProfileDaySnapshot snapshot) {
 		super.createWith(snapshot);
+		getDetail().setDefaults();
 		detail.copyFrom(snapshot.getDetail());
 		powerProfile.addPowerProfileDay(this);
 	}

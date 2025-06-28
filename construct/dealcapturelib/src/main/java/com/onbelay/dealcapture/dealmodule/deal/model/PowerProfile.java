@@ -19,6 +19,8 @@ import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerProfileErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileDayRepository;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileIndexMappingRepository;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileRepository;
@@ -31,7 +33,10 @@ import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 @Table (name = "POWER_PROFILE")
@@ -54,6 +59,8 @@ public class PowerProfile extends TemporalAbstractEntity {
 
 	private PriceIndex settledPriceIndex;
 
+	private PriceIndex endOfMonthPriceIndex;
+
 	private PowerProfileDetail detail = new PowerProfileDetail();
 	
 	protected PowerProfile() {
@@ -74,16 +81,24 @@ public class PowerProfile extends TemporalAbstractEntity {
 		detail.setDefaults();
 		detail.copyFrom(snapshot.getDetail());
 		save();
-		savePowerProfileDays(snapshot.getProfileDays());
 		savePowerProfileIndexMappings(snapshot.getIndexMappings());
+		if (snapshot.getDaysMap().isEmpty())
+			savePowerProfileDays(snapshot.getProfileDays());
+		else
+			processPowerProfileDayMap(snapshot.getDaysMap());
 		updateRelationships(snapshot);
+		validateDays();
 	}
 
 	public void updateWith(PowerProfileSnapshot snapshot) {
 		super.updateWith(snapshot);
 		detail.copyFrom(snapshot.getDetail());
-		savePowerProfileDays(snapshot.getProfileDays());
 		savePowerProfileIndexMappings(snapshot.getIndexMappings());
+		if (snapshot.getDaysMap().isEmpty())
+			savePowerProfileDays(snapshot.getProfileDays());
+		else
+			processPowerProfileDayMap(snapshot.getDaysMap());
+
 		updateRelationships(snapshot);
 		update();
 	}
@@ -92,12 +107,32 @@ public class PowerProfile extends TemporalAbstractEntity {
 	protected void validate() throws OBValidationException {
 		super.validate();
 		detail.validate();
+	}
 
+	private void validateDays() throws OBValidationException {
+		Map<PowerFlowCode, PowerProfileIndexMapping> codeMap = fetchPowerProfileIndexMappings()
+				.stream()
+				.collect(
+						Collectors.toMap(c-> c.getDetail().getPowerFlowCode(), c-> c ));
+		for (PowerProfileDay day : fetchPowerProfileDays()) {
+			for (int i=1; i < 25; i++){
+				if (day.getDetail().getPowerFlowCode(i).isHourly() == false)
+					throw new OBValidationException(PowerProfileErrorCode.INVALID_POWER_PROFILE_CODE.getCode());
+
+				if (day.getDetail().getPowerFlowCode(i) != PowerFlowCode.NONE &&
+				 		codeMap.containsKey(day.getDetail().getPowerFlowCode(i)) == false)
+					throw new OBValidationException(PowerProfileErrorCode.MISSING_POWER_PROFILE_MAPPING.getCode());
+			}
+
+		}
 	}
 
 	private void updateRelationships(PowerProfileSnapshot snapshot) {
 		if (snapshot.getSettledPriceIndexId() != null) {
 			this.settledPriceIndex = getPriceIndexRepository().load(snapshot.getSettledPriceIndexId());
+		}
+		if (snapshot.getEndOfMonthPriceIndexId() != null) {
+			this.endOfMonthPriceIndex = getPriceIndexRepository().load(snapshot.getEndOfMonthPriceIndexId());
 		}
 	}
 
@@ -116,26 +151,63 @@ public class PowerProfile extends TemporalAbstractEntity {
 		powerProfileDay.save();
 	}
 
+	@ManyToOne
+	@JoinColumn(name = "END_OF_MTH_PRICE_INDEX_ID")
+	public PriceIndex getEndOfMonthPriceIndex() {
+		return endOfMonthPriceIndex;
+	}
+
+	public void setEndOfMonthPriceIndex(PriceIndex endOfMonthPriceIndex) {
+		this.endOfMonthPriceIndex = endOfMonthPriceIndex;
+	}
+
+	private void processPowerProfileDayMap(Map<Integer, PowerProfileDaySnapshot> powerProfileDayMap) {
+		Map<Integer, PowerProfileDay> powerProfileDayExistingMap = new HashMap<>();
+
+		fetchPowerProfileDays().forEach(powerProfileDay -> {
+			powerProfileDayExistingMap.put(powerProfileDay.getDetail().getDayOfWeek(), powerProfileDay);
+		});
+
+		for (Integer key : powerProfileDayMap.keySet()) {
+			PowerProfileDay existing = powerProfileDayExistingMap.get(key);
+			if (existing == null) {
+				savePowerProfileDay(powerProfileDayMap.get(key));
+			} else {
+				existing.updateWith(powerProfileDayMap.get(key));
+			}
+		}
+	}
+
+	protected Integer savePowerProfileDay(PowerProfileDaySnapshot snapshot) {
+		switch (snapshot.getEntityState()) {
+
+			case NEW -> {
+				PowerProfileDay day = PowerProfileDay.create(this, snapshot);
+				return day.getId();
+			}
+			case MODIFIED -> {
+				PowerProfileDay day = getPowerProfileDayRepository().load(snapshot.getEntityId());
+				day.updateWith(snapshot);
+				return day.getId();
+			}
+			case DELETE -> {
+				PowerProfileDay day = getPowerProfileDayRepository().load(snapshot.getEntityId());
+				day.delete();
+				return day.getId();
+			}
+		}
+		return null;
+
+	}
 
 	public List<Integer> savePowerProfileDays(List<PowerProfileDaySnapshot> snapshots) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		for (PowerProfileDaySnapshot snapshot : snapshots) {
-			switch (snapshot.getEntityState()) {
-
-				case NEW -> {
-					PowerProfileDay day = PowerProfileDay.create(this, snapshot);
-					ids.add(day.getId());
-				}
-				case MODIFIED -> {
-					PowerProfileDay day = getPowerProfileDayRepository().load(snapshot.getEntityId());
-					day.updateWith(snapshot);
-					ids.add(day.getId());
-				}
-				case DELETE -> {
-					PowerProfileDay day = getPowerProfileDayRepository().load(snapshot.getEntityId());
-					day.delete();
-				}
+			Integer id = savePowerProfileDay(snapshot);
+			if (id != null) {
+				ids.add(id);
 			}
+
 		}
 		return ids;
 	}
@@ -148,6 +220,8 @@ public class PowerProfile extends TemporalAbstractEntity {
 	public List<Integer> savePowerProfileIndexMappings(List<PowerProfileIndexMappingSnapshot> snapshots) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		for (PowerProfileIndexMappingSnapshot snapshot : snapshots) {
+			if (snapshot.getDetail().getPowerFlowCode().isHourly() == false)
+				throw new OBValidationException(PowerProfileErrorCode.INVALID_POWER_PROFILE_CODE.getCode());
 			switch (snapshot.getEntityState()) {
 
 				case NEW -> {

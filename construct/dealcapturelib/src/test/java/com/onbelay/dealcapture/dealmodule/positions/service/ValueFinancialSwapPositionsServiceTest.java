@@ -105,7 +105,7 @@ public class ValueFinancialSwapPositionsServiceTest extends FinancialSwapDealSer
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                fixed4FloatSellDeal.generateEntityId(),
+                List.of(fixed4FloatSellDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -181,7 +181,7 @@ public class ValueFinancialSwapPositionsServiceTest extends FinancialSwapDealSer
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                fixed4FloatBuyDeal.generateEntityId(),
+                List.of(fixed4FloatBuyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -245,7 +245,7 @@ public class ValueFinancialSwapPositionsServiceTest extends FinancialSwapDealSer
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                float4FloatBuyDeal.generateEntityId(),
+                List.of(float4FloatBuyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -314,7 +314,7 @@ public class ValueFinancialSwapPositionsServiceTest extends FinancialSwapDealSer
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                float4FloatPlusBuyDeal.generateEntityId(),
+                List.of(float4FloatPlusBuyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,

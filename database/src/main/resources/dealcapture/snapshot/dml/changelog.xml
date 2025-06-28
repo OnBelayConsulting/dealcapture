@@ -19,6 +19,9 @@
     <include file="POWER_FLOW_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="RISK_FACTOR_CODE_Insert.xml" relativeToChangelogFile="true"/>
     <include file="VALUATION_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="OPTION_STYLE_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="OPTION_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
+    <include file="TRADE_TYPE_CODE_Insert.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
 

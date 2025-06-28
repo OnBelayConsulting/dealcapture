@@ -84,29 +84,6 @@ public class FxRiskFactorRestController extends BaseRestController {
 	}
 
 
-	@Operation(summary="value fxRiskFactors based on a query")
-	@PostMapping(
-			value = "/riskFactors/valued",
-			consumes="application/json"  )
-	public ResponseEntity<TransactionResult> valueFxRiskFactors(
-			@RequestParam(value = "query", defaultValue="default") String queryText) {
-
-		TransactionResult result;
-		try {
-			result  = fxRiskFactorRestAdapter.valueRiskFactors(queryText);
-		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
-		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
-		}
-
-		return processResponse(result);
-	}
-
-
-
 	@Operation(summary="fetch fxRiskFactors")
 	@GetMapping(
 			value = "/riskFactors",

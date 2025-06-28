@@ -54,6 +54,8 @@ public class DealServiceWithPowerProfileTest extends DealServiceWithPowerProfile
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				dealPriceIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
+
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		
 		TransactionResult result = dealService.save(snapshot);
@@ -85,6 +87,7 @@ public class DealServiceWithPowerProfileTest extends DealServiceWithPowerProfile
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		TransactionResult result = dealService.save(snapshot);
 		flush();

@@ -5,7 +5,7 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
 import com.onbelay.dealcapture.organization.subscribe.converter.OrganizationSubscriberConverter;
-import com.onbelay.dealcapture.organization.subscribe.snapshot.SubOrganizationSnapshot;
+import com.onbelay.dealcapture.organization.subscribe.snapshot.OrganizationSubscriptionSnapshot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +19,11 @@ public class OrganizationUpdaterBean implements OrganizationUpdater {
     private OrganizationService organizationService;
 
     @Override
-    public TransactionResult updateOrganizations(List<SubOrganizationSnapshot> snapshotsIn) {
+    public TransactionResult updateOrganizations(List<OrganizationSubscriptionSnapshot> snapshotsIn) {
         OrganizationSubscriberConverter converter = new OrganizationSubscriberConverter();
         List<OrganizationSnapshot> snapshots = new ArrayList<>();
 
-        for (SubOrganizationSnapshot snapshotIn: snapshotsIn) {
+        for (OrganizationSubscriptionSnapshot snapshotIn: snapshotsIn) {
             OrganizationSnapshot found = organizationService.findByExternalReference(snapshotIn.getEntityId().getId());
             if (found != null) {
                 OrganizationSnapshot updateMe = converter.convert(snapshotIn);

@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.pricing.controller;
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.pricing.adapter.PricingLocationRestAdapter;
@@ -134,7 +135,8 @@ public class PricingLocationRestController extends BaseRestController {
 			collection = new PricingLocationSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new PricingLocationSnapshotCollection(r.getMessage());
+			collection = new PricingLocationSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new PricingLocationSnapshotCollection(r.getMessage());
 		}

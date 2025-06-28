@@ -44,6 +44,7 @@ public class DealServiceDealHourByDayTest extends PhysicalDealServiceTestCase {
 	public void setUp() {
 		super.setUp();
 		physicalDeal = DealFixture.createSamplePhysicalDeal(
+				myBusinessContact,
 				CommodityCode.CRUDE,
 				"myDeal",
 				companyRole,

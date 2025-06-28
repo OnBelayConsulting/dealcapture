@@ -10,7 +10,7 @@ import org.hibernate.annotations.Immutable;
 
 @Entity
 @Immutable
-@DiscriminatorValue("PHY")
+@DiscriminatorValue("PhysicalDeal")
 public class PhysicalDealSummary extends DealSummary {
 
     private Integer dealPriceIndexId;

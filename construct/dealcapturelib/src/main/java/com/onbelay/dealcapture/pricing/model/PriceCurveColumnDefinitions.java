@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 public class PriceCurveColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 
 	public static final ColumnDefinition id = new ColumnDefinition("id", ColumnDataType.INTEGER, "id");
+	public static final ColumnDefinition priceIndexName = new ColumnDefinition("priceIndexName", ColumnDataType.STRING, "priceIndex.detail.name");
 	public static final ColumnDefinition priceIndexId = new ColumnDefinition("priceIndexId", ColumnDataType.INTEGER, "priceIndex.id");
 	public static final ColumnDefinition frequencyCode = new ColumnDefinition("frequencyCode", ColumnDataType.STRING, "detail.frequencyCodeValue");
 	public static final ColumnDefinition curveDate = new ColumnDefinition("curveDate", ColumnDataType.DATE, "detail.curveDate");
@@ -34,6 +35,7 @@ public class PriceCurveColumnDefinitions extends BaseColumnDefinitions implement
 	public PriceCurveColumnDefinitions() {
 		add(id);
 		add(priceIndexId);
+		add(priceIndexName);
 		add(frequencyCode);
 		add(curveDate);
 		add(observedDateTime);

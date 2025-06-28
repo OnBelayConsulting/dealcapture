@@ -16,6 +16,8 @@
 package com.onbelay.dealcapture.dealmodule.deal.controller;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContactFixture;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
@@ -66,7 +68,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 
 	@Autowired
 	private DealRestAdapter dealRestAdapter;
-
+	private BusinessContact contact;
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
 
@@ -94,6 +96,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 	@Override
 	public void setUp() {
 		super.setUp();
+		contact = BusinessContactFixture.createCompanyTrader("hans", "gruber", "gruber@terror.com");
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 		pricingLocation = PricingLocationFixture.createPricingLocation("west");
@@ -159,6 +162,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 
 		fixed4FloatSellDeal = FinancialSwapDeal.create(snapshot);
@@ -178,6 +182,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 
 		fixed4FloatBuyDeal = FinancialSwapDeal.create(snapshot);
@@ -197,6 +202,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				receivesIndex);
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		float4FloatBuyDeal = FinancialSwapDeal.create(snapshot);
 
@@ -216,6 +222,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 				UnitOfMeasureCode.GJ,
 				receivesIndex,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		float4FloatPlusBuyDeal = FinancialSwapDeal.create(snapshot);
 
 
@@ -236,6 +243,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 
 
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		fixed4PowerProfileBuyDeal = FinancialSwapDeal.create(snapshot);
 
 		flush();
@@ -270,7 +278,7 @@ FinancialSwapDealRestControllerTest extends DealCaptureAppSpringTestCase {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				new Price(BigDecimal.ONE, CurrencyCode.CAD, UnitOfMeasureCode.GJ));
-		
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		String jsonPayload = objectMapper.writeValueAsString(snapshot);
 		
 		logger.error(jsonPayload);

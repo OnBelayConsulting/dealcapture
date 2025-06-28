@@ -5,7 +5,10 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
+import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -15,6 +18,8 @@ public class PowerProfileDayDetail {
     private  HashMap<Integer, Supplier<String>> hourGetterMap = new HashMap<>();
 
     private Integer dayOfWeek;
+
+    private List<String> hours = new ArrayList<>();
     
     private String hour1FlowCodeValue;
     private String hour2FlowCodeValue;
@@ -46,6 +51,20 @@ public class PowerProfileDayDetail {
         initializeSetterMap();
     }
 
+    public void setDefaults() {
+        for (int i = 1; i < 25; i++)
+            setPowerFlowCode(i, PowerFlowCode.NONE);
+    }
+
+    @Transient
+    public List<String> getHours() {
+        return hours;
+    }
+
+    public void setHours(List<String> hours) {
+        this.hours = hours;
+    }
+
     @Transient
     @JsonIgnore
     public PowerFlowCode getPowerFlowCode(int hourEnding) {
@@ -53,6 +72,7 @@ public class PowerProfileDayDetail {
     }
 
     public void setPowerFlowCode(int hourEnding, PowerFlowCode powerFlowCode) {
+        assert(powerFlowCode != null);
         hourSetterMap.get(hourEnding).accept(powerFlowCode.getCode());
     }
 

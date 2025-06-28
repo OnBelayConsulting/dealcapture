@@ -10,6 +10,8 @@
 >
     <include file="BASE_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="BASE_DEAL_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="BUSINESS_CONTACT.xml" relativeToChangelogFile="true"/>
+    <include file="BUSINESS_CONTACT_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PHYSICAL_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="PHYSICAL_DEAL_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_POSITION.xml" relativeToChangelogFile="true"/>
@@ -22,6 +24,9 @@
     <include file="DEAL_DAY_BY_MTH_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_HOUR_BY_DAY.xml" relativeToChangelogFile="true"/>
     <include file="DEAL_HOUR_BY_DAY_AUDIT.xml" relativeToChangelogFile="true"/>
+    <include file="INTEREST_CURVE.xml" relativeToChangelogFile="true"/>
+    <include file="INTEREST_INDEX.xml" relativeToChangelogFile="true"/>
+    <include file="FINANCIAL_SWAP_DEAL.xml" relativeToChangelogFile="true"/>
     <include file="FX_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="FX_CURVE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="FX_INDEX.xml" relativeToChangelogFile="true"/>
@@ -49,6 +54,8 @@
     <include file="PRICE_CURVE.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_CURVE_AUDIT.xml" relativeToChangelogFile="true"/>
     <include file="PRICE_RISK_FACTOR.xml" relativeToChangelogFile="true"/>
+    <include file="VANILLA_OPTION_DEAL.xml" relativeToChangelogFile="true"/>
+    <include file="DEAL_JOB.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
 
 

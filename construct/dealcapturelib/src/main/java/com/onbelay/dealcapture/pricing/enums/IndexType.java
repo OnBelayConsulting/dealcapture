@@ -26,8 +26,8 @@ import java.util.Map;
  *
  */
 public enum IndexType {
-	HUB 	("H"),
-    BASIS	("B");
+	HUB 	("Hub"),
+    BASIS	("Basis");
 
 	private final String code;
 

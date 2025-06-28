@@ -211,6 +211,36 @@ public class OrganizationRestControllerTest extends DealCaptureAppSpringTestCase
 	}
 
 
+
+	@Test
+	public void fetchOrganizationRoleSummariesLikeShortName() throws Exception {
+
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(organizationRestController)
+				.build();
+
+
+		ResultActions result = mvc.perform(get("/api/organizations/searchedRoleSummaries?searchName=O&roleType=CO"));
+
+		MvcResult mvcResult = result.andReturn();
+
+		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
+
+		logger.debug("Json: " + jsonStringResponse);
+
+
+		OrganizationRoleSummaryCollection collection = objectMapper.readValue(jsonStringResponse, OrganizationRoleSummaryCollection.class);
+
+		assertEquals(1, collection.getSnapshots().size());
+
+		assertEquals(1, collection.getCount());
+
+		assertEquals(1, collection.getTotalItems());
+
+		for (OrganizationRoleSummary snapshot : collection.getSnapshots()) {
+			logger.error(snapshot.toString());
+		}
+	}
+
 	@Test
 	@WithMockUser(username="test")
 	public void fetchOrganizationRoleSummariesWithGetAndQuery() throws Exception {
@@ -220,6 +250,37 @@ public class OrganizationRestControllerTest extends DealCaptureAppSpringTestCase
 
 
 		ResultActions result = mvc.perform(get("/api/organizations/roleSummaries?query=WHERE organizationRoleType eq 'CO'"));
+
+		MvcResult mvcResult = result.andReturn();
+
+		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
+
+		logger.debug("Json: " + jsonStringResponse);
+
+
+		OrganizationRoleSummaryCollection collection = objectMapper.readValue(jsonStringResponse, OrganizationRoleSummaryCollection.class);
+
+		assertEquals(1, collection.getSnapshots().size());
+
+		assertEquals(1, collection.getCount());
+
+		assertEquals(1, collection.getTotalItems());
+
+		for (OrganizationRoleSummary snapshot : collection.getSnapshots()) {
+			logger.error(snapshot.toString());
+		}
+	}
+
+
+	@Test
+	@WithMockUser(username="test")
+	public void fetchOrganizationRoleSummariesWithGetTwoQueries() throws Exception {
+
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(organizationRestController)
+				.build();
+
+
+		ResultActions result = mvc.perform(get("/api/organizations/roleSummaries?query=WHERE shortName like 'O%' AND organizationRoleType eq 'CO'"));
 
 		MvcResult mvcResult = result.andReturn();
 

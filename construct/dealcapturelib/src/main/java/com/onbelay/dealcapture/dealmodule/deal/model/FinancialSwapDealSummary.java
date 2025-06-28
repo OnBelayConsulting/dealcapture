@@ -10,7 +10,7 @@ import org.hibernate.annotations.Immutable;
 
 @Entity
 @Immutable
-@DiscriminatorValue("FS")
+@DiscriminatorValue("FinancialSwap")
 public class FinancialSwapDealSummary extends DealSummary {
 
     private Integer paysIndexId;

@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
@@ -48,8 +49,12 @@ public abstract class BaseDealAudit extends AuditAbstractEntity {
 	
 	private CounterpartyRole counterpartyRole;
 	private CompanyRole companyRole;
-	
-	
+
+	private BusinessContact companyTrader;
+	private BusinessContact counterpartyTrader;
+	private BusinessContact administrator;
+
+
 	protected BaseDealAudit() {
 		
 	}
@@ -146,6 +151,37 @@ public abstract class BaseDealAudit extends AuditAbstractEntity {
 	}
 
 
+	@ManyToOne
+	@JoinColumn(name ="COMPANY_TRADER_ID")
+	public BusinessContact getCompanyTrader() {
+		return companyTrader;
+	}
+
+	public void setCompanyTrader(BusinessContact companyTrader) {
+		this.companyTrader = companyTrader;
+	}
+
+	@ManyToOne
+	@JoinColumn(name ="COUNTERPARTY_TRADER_ID")
+	public BusinessContact getCounterpartyTrader() {
+		return counterpartyTrader;
+	}
+
+	public void setCounterpartyTrader(BusinessContact counterpartyTrader) {
+		this.counterpartyTrader = counterpartyTrader;
+	}
+
+	@ManyToOne
+	@JoinColumn(name ="ADMINISTRATOR_ID")
+	public BusinessContact getAdministrator() {
+		return administrator;
+	}
+
+
+	public void setAdministrator(BusinessContact administrator) {
+		this.administrator = administrator;
+	}
+
 	@Override
 	@Transient
 	public TemporalAbstractEntity getParent() {
@@ -159,6 +195,9 @@ public abstract class BaseDealAudit extends AuditAbstractEntity {
 		this.dealTypeValue = deal.getDealType().getCode();
 		this.companyRole = deal.getCompanyRole();
 		this.counterpartyRole = deal.getCounterpartyRole();
+		this.companyTrader = deal.getCompanyTrader();
+		this.administrator = deal.getAdministrator();
+		this.counterpartyTrader = deal.getCounterpartyTrader();
 		this.getDealDetail().copyFrom(deal.getDealDetail());
 	}
 

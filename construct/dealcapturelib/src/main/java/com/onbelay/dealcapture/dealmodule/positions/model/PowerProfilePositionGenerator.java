@@ -72,14 +72,13 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
 
                     positionHolders.add(holder);
                 } else {
-                    if (currentDate.isBefore(endOfMonthDate) && powerProfile.findPriceIndexMappingByFlowCode(PowerFlowCode.END_OF_MTH) != null) {
-                            EntityId priceIndexId = powerProfile.findPriceIndexMappingByFlowCode(PowerFlowCode.END_OF_MTH);
+                    if (currentDate.isBefore(endOfMonthDate) && powerProfile.getEndOfMonthPriceIndexId() != null) {
                             PowerProfilePositionHolder holder = new PowerProfilePositionHolder();
                             holder.getSnapshot().getDetail().setDefaults();
                             holder.getSnapshot().getDetail().setStartDate(currentDate);
                             holder.getSnapshot().getDetail().setEndDate(currentDate);
                             holder.getSnapshot().setPowerProfileId(powerProfile.getEntityId());
-                            holder.getSnapshot().setPriceIndexId(priceIndexId);
+                            holder.getSnapshot().setPriceIndexId(powerProfile.getEndOfMonthPriceIndexId());
 
                             holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
                             holder.getSnapshot().getDetail().setErrorCode("0");
@@ -96,7 +95,7 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
 
                         HashSet<PowerFlowCode> codes = new HashSet<>();
                         for (int i = 1; i < 25; i++) {
-                            if (profileDaySnapshot.getDetail().getPowerFlowCode(i) != null)
+                            if (profileDaySnapshot.getDetail().getPowerFlowCode(i) != PowerFlowCode.NONE)
                                 codes.add(profileDaySnapshot.getDetail().getPowerFlowCode(i));
                         }
 
@@ -225,7 +224,7 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
 
         int totalHours = 0;
         for (int i =1; i < 25; i++) {
-            if (profileDaySnapshot.getDetail().getPowerFlowCode(i)!= null) {
+            if (profileDaySnapshot.getDetail().getPowerFlowCode(i)!= PowerFlowCode.NONE) {
                 totalHours++;
                 if (priceIndex.getDetail().getFrequencyCode() == FrequencyCode.HOURLY) {
                     PriceRiskFactorHolder priceHolder = riskFactorManager.determinePriceRiskFactor(
@@ -271,7 +270,7 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
             PriceRiskFactorHolder priceHolder = holder.getPriceRiskFactorHolder();
             for (int i=1; i < 25; i++ ) {
 
-                if (profileDaySnapshot.getDetail().getPowerFlowCode(i) != null) {
+                if (profileDaySnapshot.getDetail().getPowerFlowCode(i) != PowerFlowCode.NONE) {
                     PowerFlowCode powerFlowCode = profileDaySnapshot.getDetail().getPowerFlowCode(i);
 
                     if (snapshot.getDetail().getPowerFlowCode() == PowerFlowCode.SETTLED

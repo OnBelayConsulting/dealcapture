@@ -18,9 +18,11 @@ package com.onbelay.dealcapture.organization.controller;
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.organization.adapter.OrganizationRestAdapter;
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummaryCollection;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
@@ -128,6 +130,7 @@ public class OrganizationRestController extends BaseRestController {
 	public ResponseEntity<OrganizationSnapshotCollection> getOrganizations(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
+			@RequestParam(value = "orgRoleType", defaultValue="All") String orgRoleType,
 			@RequestParam(value = "start", defaultValue="0")Integer start,
 			@RequestParam(value = "limit", defaultValue="100")Integer limit) {
 
@@ -135,14 +138,16 @@ public class OrganizationRestController extends BaseRestController {
 		
 		try {
 			collection = organizationRestAdapter.find(
-				queryText, 
+				queryText,
+				orgRoleType,
 				start, 
 				limit);
 		} catch (OBRuntimeException r) {
 			collection = new OrganizationSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new OrganizationSnapshotCollection(r.getMessage());
+			collection = new OrganizationSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new OrganizationSnapshotCollection(r.getMessage());
 		}
@@ -194,7 +199,39 @@ public class OrganizationRestController extends BaseRestController {
 			collection = new OrganizationRoleSummaryCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
+			collection = new OrganizationRoleSummaryCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
 			collection = new OrganizationRoleSummaryCollection(r.getMessage());
+		}
+
+		return (ResponseEntity<OrganizationRoleSummaryCollection>) processResponse(collection);
+	}
+
+
+
+	@Operation(summary="fetch organization role summaries by shortName")
+	@GetMapping(value="/searchedRoleSummaries" )
+	public ResponseEntity<OrganizationRoleSummaryCollection> findOrganizationRoleSummaries(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "searchName", required = true) String searchName,
+			@RequestParam(value = "roleType", defaultValue="CP")String roleType,
+			@RequestParam(value = "limit", defaultValue="100")Integer limit) {
+
+		OrganizationRoleSummaryCollection collection;
+
+		try {
+			OrganizationRoleType type = OrganizationRoleType.lookUp(roleType);
+			collection = organizationRestAdapter.findSummariesLikeShortName(
+					searchName,
+					type,
+					limit);
+		} catch (OBRuntimeException r) {
+			collection = new OrganizationRoleSummaryCollection(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new OrganizationRoleSummaryCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new OrganizationRoleSummaryCollection(r.getMessage());
 		}

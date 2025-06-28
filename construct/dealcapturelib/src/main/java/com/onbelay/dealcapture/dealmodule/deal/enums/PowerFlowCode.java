@@ -26,17 +26,19 @@ import java.util.Map;
  *
  */
 public enum PowerFlowCode {
-	HOURLY		("HOURLY"),
-	DAILY		("DAILY"),
-	MONTHLY		("MONTHLY"),
-	END_OF_MTH	("END_OF_MTH"),
-	SETTLED		("SETTLED"),
-	ON_PEAK		("ON_PEAK"),
-	OFF_PEAK	("OFF_PEAK"),
-	SUPER_PEAK	("SUPER_PEAK"),
+	HOURLY		("Hourly", false),
+	DAILY		("Daily", false),
+	MONTHLY		("Monthly", false),
+	END_OF_MTH	("EndOfMonth", false),
+	SETTLED		("Settled", false),
+	ON_PEAK		("OnPeak", true),
+	OFF_PEAK	("OffPeak", true),
+	SUPER_PEAK	("SuperPeak", true),
+	NONE	    ("None", true),
 	;
 
 	private final String code;
+	private final boolean isHourly;
 
     private static final Map<String, PowerFlowCode> lookup
     	= new HashMap<String, PowerFlowCode>();
@@ -46,8 +48,9 @@ public enum PowerFlowCode {
          lookup.put(c.code, c);
     }
 
-	private PowerFlowCode(String code) {
+	private PowerFlowCode(String code, boolean isHourly) {
 		this.code = code;
+		this.isHourly = isHourly;
 	}
 	
 	public String getCode() {
@@ -58,4 +61,7 @@ public enum PowerFlowCode {
 		return lookup.get(code);
 	}
 
+	public boolean isHourly() {
+		return isHourly;
+	}
 }

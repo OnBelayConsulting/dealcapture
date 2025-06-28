@@ -9,12 +9,12 @@
 >
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
         <insert tableName='INDEX_TYPE_CODE'>
-            <column name='CODE_ID' value='B'/>
+            <column name='CODE_ID' value='Basis'/>
             <column name='CODE_LABEL' value='Basis'/>
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
         <insert tableName='INDEX_TYPE_CODE'>
-            <column name='CODE_ID' value='H'/>
+            <column name='CODE_ID' value='Hub'/>
             <column name='CODE_LABEL' value='Hub'/>
             <column name='DISPLAY_ORDER_NO' value='20'/>
         </insert>

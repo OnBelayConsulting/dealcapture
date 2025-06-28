@@ -9,6 +9,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationSnapshot extends AbstractSnapshot {
 
+    private CompanyRoleSnapshot companyRoleSnapshot;
+    private CounterpartyRoleSnapshot counterpartyRoleSnapshot;
+
     private OrganizationDetail detail = new OrganizationDetail();
 
     public OrganizationSnapshot() {
@@ -36,5 +39,21 @@ public class OrganizationSnapshot extends AbstractSnapshot {
 
     public void setDetail(OrganizationDetail detail) {
         this.detail = detail;
+    }
+
+    public CompanyRoleSnapshot getCompanyRoleSnapshot() {
+        return companyRoleSnapshot;
+    }
+
+    public void setCompanyRoleSnapshot(CompanyRoleSnapshot companyRoleSnapshot) {
+        this.companyRoleSnapshot = companyRoleSnapshot;
+    }
+
+    public CounterpartyRoleSnapshot getCounterpartyRoleSnapshot() {
+        return counterpartyRoleSnapshot;
+    }
+
+    public void setCounterpartyRoleSnapshot(CounterpartyRoleSnapshot counterpartyRoleSnapshot) {
+        this.counterpartyRoleSnapshot = counterpartyRoleSnapshot;
     }
 }

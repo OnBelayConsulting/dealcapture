@@ -31,9 +31,9 @@ import java.util.List;
 		include = JsonTypeInfo.As.PROPERTY,
 		property = "dealTypeValue")
 @JsonSubTypes( {
-		@Type(value = PhysicalDealSnapshot.class, name = "PHY"),
-		@Type(value = FinancialSwapDealSnapshot.class, name = "FS"),
-		@Type(value = VanillaOptionDealSnapshot.class, name = "VO"),
+		@Type(value = PhysicalDealSnapshot.class, name = "PhysicalDeal"),
+		@Type(value = FinancialSwapDealSnapshot.class, name = "FinancialSwap"),
+		@Type(value = VanillaOptionDealSnapshot.class, name = "VanillaOption"),
 		@Type(value = ErrorDealSnapshot.class, name = "E"),
 })
 
@@ -44,6 +44,11 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 	private EntityId counterpartyRoleId;
 
 	private EntityId powerProfileId;
+
+	private EntityId companyTraderId;
+	private EntityId counterpartyTraderId;
+	private EntityId administratorId;
+
 
 	private DealDetail dealDetail = new DealDetail();
 	
@@ -131,6 +136,30 @@ public abstract class BaseDealSnapshot extends AbstractSnapshot {
 
 	public void setPowerProfileId(EntityId powerProfileId) {
 		this.powerProfileId = powerProfileId;
+	}
+
+	public EntityId getCompanyTraderId() {
+		return companyTraderId;
+	}
+
+	public void setCompanyTraderId(EntityId companyTraderId) {
+		this.companyTraderId = companyTraderId;
+	}
+
+	public EntityId getCounterpartyTraderId() {
+		return counterpartyTraderId;
+	}
+
+	public void setCounterpartyTraderId(EntityId counterpartyTraderId) {
+		this.counterpartyTraderId = counterpartyTraderId;
+	}
+
+	public EntityId getAdministratorId() {
+		return administratorId;
+	}
+
+	public void setAdministratorId(EntityId administratorId) {
+		this.administratorId = administratorId;
 	}
 
 	public String toString() {

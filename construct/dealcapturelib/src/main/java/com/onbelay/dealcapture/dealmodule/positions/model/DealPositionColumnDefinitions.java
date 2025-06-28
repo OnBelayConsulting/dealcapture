@@ -25,6 +25,10 @@ import org.springframework.stereotype.Component;
 public class DealPositionColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeValue");
 	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "deal.dealDetail.ticketNo");
+	public static final ColumnDefinition frequencyCode = new ColumnDefinition("frequencyCode", ColumnDataType.STRING, "detail.frequencyCodeValue");
+	public static final ColumnDefinition currencyCode = new ColumnDefinition("currencyCode", ColumnDataType.STRING, "detail.currencyCodeValue");
+	public static final ColumnDefinition createdDateTime = new ColumnDefinition("createdDateTime", ColumnDataType.DATE_TIME, "detail.createdDateTime");
+	public static final ColumnDefinition valuedDateTime = new ColumnDefinition("valuedDateTime", ColumnDataType.DATE_TIME, "detail.valuedDateTime");
 	public static final ColumnDefinition startDate = new ColumnDefinition("startDate", ColumnDataType.DATE, "detail.startDate");
 	public static final ColumnDefinition endDate = new ColumnDefinition("endDate", ColumnDataType.DATE, "detail.endDate");
 	public static final ColumnDefinition companyShortName = new ColumnDefinition("companyShortName", ColumnDataType.STRING, "deal.companyRole.detail.shortName");
@@ -33,10 +37,14 @@ public class DealPositionColumnDefinitions extends BaseColumnDefinitions impleme
 	public DealPositionColumnDefinitions() {
 		add(dealType);
 		add(ticketNo);
+		add(createdDateTime);
+		add(valuedDateTime);
 		add(startDate);
 		add(endDate);
 		add(companyShortName);
 		add(counterpartyShortName);
+		add(companyShortName);
+		add(frequencyCode);
 	}
 
 	@Override

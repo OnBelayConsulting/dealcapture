@@ -17,11 +17,40 @@ package com.onbelay.dealcapture.pricing.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.core.entity.snapshot.EntityId;
+
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceCurveSnapshot extends AbstractSnapshot {
+
+	private EntityId indexId;
 	
 	private CurveDetail detail = new CurveDetail();
+
+	public PriceCurveSnapshot() {
+
+	}
+
+	public PriceCurveSnapshot(String errorCode) {
+		super(errorCode);
+	}
+
+	public PriceCurveSnapshot(String errorCode, boolean isPermissionException) {
+		super(errorCode, isPermissionException);
+	}
+
+	public PriceCurveSnapshot(String errorCode, List<String> parameters) {
+		super(errorCode, parameters);
+	}
+
+	public EntityId getIndexId() {
+		return indexId;
+	}
+
+	public void setIndexId(EntityId indexId) {
+		this.indexId = indexId;
+	}
 
 	public CurveDetail getDetail() {
 		return detail;

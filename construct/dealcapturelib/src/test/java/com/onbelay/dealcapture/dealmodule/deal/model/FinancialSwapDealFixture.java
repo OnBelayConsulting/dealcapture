@@ -15,6 +15,7 @@
  */
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
@@ -256,6 +257,7 @@ public class FinancialSwapDealFixture {
 
 
 	public static FinancialSwapDeal createFixed4FloatSwapDeal(
+			BusinessContact companyTrader,
 			CommodityCode commodityCode,
 			String ticketNo,
 			CompanyRole companyRole,
@@ -282,7 +284,7 @@ public class FinancialSwapDealFixture {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				paysPrice);
-
+		snapshot.setCompanyTraderId(companyTrader.generateEntityId());
 		snapshot.getDealDetail().setVolumeUnitOfMeasureCode(volumeUnitOfMeasureCode);
 		snapshot.getDealDetail().setSettlementCurrencyCode(reportingCurrencyCode);
 		snapshot.getDealDetail().setVolumeQuantity(volume);
@@ -293,6 +295,7 @@ public class FinancialSwapDealFixture {
 
 
 	public static FinancialSwapDeal createFloat4FloatSwapDeal(
+			BusinessContact companyTrader,
 			CommodityCode commodityCode,
 			String ticketNo,
 			CompanyRole companyRole,
@@ -317,6 +320,7 @@ public class FinancialSwapDealFixture {
 						BigDecimal.TEN,
 						UnitOfMeasureCode.GJ,
 						receivesIndex);
+		snapshot.setCompanyTraderId(companyTrader.generateEntityId());
 		FinancialSwapDeal swapDeal = new FinancialSwapDeal();
 		swapDeal.createWith(snapshot);
 		return swapDeal;

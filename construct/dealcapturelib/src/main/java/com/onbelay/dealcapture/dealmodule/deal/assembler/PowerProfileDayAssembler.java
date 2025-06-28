@@ -9,10 +9,14 @@ import java.util.List;
 public class PowerProfileDayAssembler extends EntityAssembler {
     
     public PowerProfileDaySnapshot assemble(PowerProfileDay profileDay) {
-        PowerProfileDaySnapshot powerProfileSnapshot = new PowerProfileDaySnapshot();
-        setEntityAttributes(profileDay, powerProfileSnapshot);
-        powerProfileSnapshot.getDetail().copyFrom(profileDay.getDetail());
-        return powerProfileSnapshot;
+        PowerProfileDaySnapshot daySnapshot = new PowerProfileDaySnapshot();
+        setEntityAttributes(profileDay, daySnapshot);
+        daySnapshot.getDetail().copyFrom(profileDay.getDetail());
+        for (int i = 1 ; i <= 24; i++) {
+            daySnapshot.getDetail().getHours().add(
+                    daySnapshot.getDetail().getPowerFlowCode(i).getCode());
+        }
+        return daySnapshot;
     }
     
     public List<PowerProfileDaySnapshot> assemble(List<PowerProfileDay> profileDays) {

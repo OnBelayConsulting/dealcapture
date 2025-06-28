@@ -9,6 +9,7 @@ public abstract class DealFileFormat implements SourceFileFormat {
 
     public DealFileFormat() {
         addColumn(DealColumnType.DEAL_TYPE);
+        addColumn(DealColumnType.COMPANY_TRADER);
         addColumn(DealColumnType.COMPANY_NAME);
         addColumn(DealColumnType.COUNTERPARTY_NAME);
         addColumn(DealColumnType.COMMODITY);

@@ -29,6 +29,7 @@ public class PriceIndexSnapshotAssembler extends EntityAssembler {
 		PriceIndexSnapshot snapshot = new PriceIndexSnapshot();
 		super.setEntityAttributes(index, snapshot);
 		snapshot.getDetail().copyFrom(index.getDetail());
+		snapshot.setPricingLocationId(index.getPricingLocation().generateEntityId());
 		if (index.getBenchmarkPricingIndex() != null)
 			snapshot.setBenchmarkIndexId(index.getBenchmarkPricingIndex().generateEntityId());
 

@@ -25,7 +25,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="DEAL_DAY_DATE"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="DAY_TYPE_CODE"

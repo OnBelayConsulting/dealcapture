@@ -25,8 +25,8 @@ import java.util.Map;
  *
  */
 public enum OptionStyleCode {
-	EUROPEAN 	("Euro"),
-    AMERICAN	("Amer");
+	EUROPEAN 	("European"),
+    AMERICAN	("American");
 
 	private final String code;
 

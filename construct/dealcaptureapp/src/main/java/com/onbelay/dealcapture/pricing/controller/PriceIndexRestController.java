@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.pricing.controller;
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.pricing.adapter.PriceIndexRestAdapter;
@@ -33,10 +34,13 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -137,7 +141,7 @@ public class PriceIndexRestController extends BaseRestController {
 
 		TransactionResult result;
 		try {
-			result  = priceIndexRestAdapter.savePrices(
+			result  = priceIndexRestAdapter.savePriceCurves(
 					id,
 					snapshots);
 		} catch (OBRuntimeException r) {
@@ -149,6 +153,34 @@ public class PriceIndexRestController extends BaseRestController {
 		}
 
 		return processResponse(result);
+	}
+
+	@RequestMapping(
+			value = "prices",
+			consumes = {
+					MediaType.MULTIPART_FORM_DATA_VALUE
+			},
+			produces = "application/json",
+			method = RequestMethod.POST
+	)
+	public ResponseEntity<TransactionResult> uploadPriceCurves(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam("file") List<MultipartFile> submissions) {
+
+		TransactionResult result;
+		try {
+			result = priceIndexRestAdapter.savePriceCurvesFile(
+					submissions.get(0).getOriginalFilename(),
+					submissions.get(0).getBytes());
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (IOException | RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+        return processResponse(result);
 	}
 
 
@@ -172,7 +204,8 @@ public class PriceIndexRestController extends BaseRestController {
 			collection = new PriceIndexSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new PriceIndexSnapshotCollection(r.getMessage());
+			collection = new PriceIndexSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new PriceIndexSnapshotCollection(r.getMessage());
 		}
@@ -205,9 +238,9 @@ public class PriceIndexRestController extends BaseRestController {
 	}
 
 
-	@Operation(summary="fetch all index prices")
+	@Operation(summary="fetch all price curves")
 	@GetMapping(value="/curves" )
-	public ResponseEntity<PriceCurveSnapshotCollection> getIndexPrices(
+	public ResponseEntity<PriceCurveSnapshotCollection> getPriceCurves(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
 			@RequestParam(value = "start", defaultValue="0")Integer start,
@@ -216,7 +249,7 @@ public class PriceIndexRestController extends BaseRestController {
 		PriceCurveSnapshotCollection collection;
 		
 		try {
-			collection = priceIndexRestAdapter.findPrices(
+			collection = priceIndexRestAdapter.findPriceCurves(
 				queryText, 
 				start, 
 				limit);
@@ -224,7 +257,8 @@ public class PriceIndexRestController extends BaseRestController {
 			collection = new PriceCurveSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new PriceCurveSnapshotCollection(r.getMessage());
+			collection = new PriceCurveSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new PriceCurveSnapshotCollection(r.getMessage());
 		}
@@ -234,5 +268,62 @@ public class PriceIndexRestController extends BaseRestController {
 	}
 
 
-	
+
+	@Operation(summary="load price curve")
+	@GetMapping(
+			value = "/curves/{id}",
+			produces="application/json" )
+	public ResponseEntity<PriceCurveSnapshot> loadPriceCurve(
+			@PathVariable Integer id) {
+
+		PriceCurveSnapshot snapshot;
+
+		try {
+			snapshot = priceIndexRestAdapter.loadPriceCurve(new EntityId(id));
+		} catch (OBRuntimeException r) {
+			snapshot = new PriceCurveSnapshot(r.getErrorCode(), r.getParms());
+			snapshot.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			snapshot = new PriceCurveSnapshot(r.getMessage());
+		} catch (RuntimeException r) {
+			snapshot = new PriceCurveSnapshot(r.getMessage());
+		}
+
+		return (ResponseEntity<PriceCurveSnapshot>) processResponse(snapshot);
+	}
+
+
+	@Operation(summary="Create or update a price curve.")
+	@PostMapping(
+			value = "/curves",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> savePriceCurve(
+			@RequestHeader Map<String, String> headers,
+			@RequestBody PriceCurveSnapshot snapshot,
+			BindingResult bindingResult) {
+
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		TransactionResult result;
+		try {
+			result  = priceIndexRestAdapter.savePriceCurve(snapshot);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
 }

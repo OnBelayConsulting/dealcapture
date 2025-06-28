@@ -39,34 +39,6 @@ public class PriceRiskFactorRestAdapterBean extends BaseRestAdapterBean implemen
     }
 
     @Override
-    public TransactionResult valueRiskFactors(String queryText) {
-        initializeSession();
-
-        DefinedQuery definedQuery;
-
-        if (queryText == null || queryText.equals("default")) {
-            definedQuery = new DefinedQuery("PriceRiskFactor");
-            definedQuery.getOrderByClause()
-                    .addOrderExpression(
-                            new DefinedOrderExpression("marketDate"));
-        } else {
-            DefinedQueryBuilder builder = new DefinedQueryBuilder("PriceRiskFactor", queryText);
-            definedQuery = builder.build();
-
-            if (definedQuery.getOrderByClause().hasExpressions() == false) {
-                definedQuery.getOrderByClause()
-                        .addOrderExpression(
-                                new DefinedOrderExpression("marketDate"));
-            }
-        }
-        priceRiskFactorService.valueRiskFactors(
-                definedQuery,
-                LocalDateTime.now());
-
-        return new TransactionResult();
-    }
-
-    @Override
     public PriceRiskFactorSnapshotCollection find(
             String queryText,
             Integer start,

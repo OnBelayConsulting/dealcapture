@@ -40,6 +40,9 @@ public enum PricingErrorCode {
     MISSING_CURVE_VALUE             ("DC_PR-E0222", "Error: Missing Curve value."),
     MISSING_CURVE_FREQUENCY         ("DC_PR-E0223", "Error: Missing Curve Frequency."),
 
+    INVALID_CURVE_FILE_FORMAT       ("DC_PR-E0225", "Error: Invalid Curve file format."),
+
+
     MISSING_INTEREST_INDEX          ("DC_PR-E0500", "Error: Missing Interest Index."),
     MISSING_INTEREST_INDEX_NAME     ("DC_PR-E0501", "Error: Missing Interest Index Name."),
     DUPLICATE_INTEREST_INDEX_NAME   ("DC_PR-E0502", "Error: Missing Interest Index Name."),

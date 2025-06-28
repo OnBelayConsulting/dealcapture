@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public enum TradeTypeCode {
 	OTC 	("OTC"),
-    EXCH	("Exch");
+    EXCH	("Exchange");
 
 	private final String code;
 

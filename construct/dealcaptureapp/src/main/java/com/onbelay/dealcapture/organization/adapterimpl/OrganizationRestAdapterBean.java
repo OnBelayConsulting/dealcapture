@@ -3,13 +3,16 @@ package com.onbelay.dealcapture.organization.adapterimpl;
 import com.onbelay.core.controller.BaseRestAdapterBean;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.enums.ExpressionOperator;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
 import com.onbelay.dealcapture.organization.adapter.OrganizationRestAdapter;
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
 import com.onbelay.dealcapture.organization.snapshot.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,31 +41,40 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
     @Override
     public OrganizationSnapshotCollection find(
             String queryText,
+            String orgRoleTypeString,
             Integer start,
             Integer limit) {
 
         initializeSession();
 
         DefinedQuery definedQuery;
+        QuerySelectedPage allIds;
 
-        if (queryText != null) {
-            if (queryText.equalsIgnoreCase("default")) {
-                definedQuery = new DefinedQuery("Organization");
-            } else {
-                DefinedQueryBuilder builder = new DefinedQueryBuilder("Organization", queryText);
-                definedQuery = builder.build();
-            }
+        if (orgRoleTypeString.equalsIgnoreCase("All") == false) {
+            OrganizationRoleType orgRoleType = OrganizationRoleType.lookUp(orgRoleTypeString);
+            allIds = findOrganizationIdsByRoleType(queryText, orgRoleType);
         } else {
-            definedQuery = new DefinedQuery("Organization");
-        }
 
-        if (definedQuery.getOrderByClause().hasExpressions() == false) {
-            definedQuery.getOrderByClause().addOrderExpression(
-                    new DefinedOrderExpression(
-                            "shortName"));
-        }
 
-        QuerySelectedPage allIds = organizationService.findOrganizationIds(definedQuery);
+            if (queryText != null) {
+                if (queryText.equalsIgnoreCase("default")) {
+                    definedQuery = new DefinedQuery("Organization");
+                } else {
+                    DefinedQueryBuilder builder = new DefinedQueryBuilder("Organization", queryText);
+                    definedQuery = builder.build();
+                }
+            } else {
+                definedQuery = new DefinedQuery("Organization");
+            }
+
+            if (definedQuery.getOrderByClause().hasExpressions() == false) {
+                definedQuery.getOrderByClause().addOrderExpression(
+                        new DefinedOrderExpression(
+                                "shortName"));
+            }
+
+            allIds = organizationService.findOrganizationIds(definedQuery);
+        }
 
         if (allIds.getIds().size() == 0 || start >= allIds.getIds().size()) {
             return new OrganizationSnapshotCollection(
@@ -90,6 +102,44 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
                 snapshots);
     }
 
+    private QuerySelectedPage findOrganizationIdsByRoleType(
+              String queryText,
+              OrganizationRoleType  orgRoleType) {
+
+        initializeSession();
+
+        DefinedQuery definedQuery;
+
+
+        if (queryText != null) {
+            if (queryText.equalsIgnoreCase("default")) {
+                definedQuery = new DefinedQuery("OrganizationRole");
+            } else {
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("OrganizationRole", queryText);
+                definedQuery = builder.build();
+            }
+        } else {
+            definedQuery = new DefinedQuery("OrganizationRole");
+        }
+
+        if (definedQuery.getOrderByClause().hasExpressions() == false) {
+            definedQuery.getOrderByClause().addOrderExpression(
+                    new DefinedOrderExpression(
+                            "shortName"));
+        }
+        definedQuery.getWhereClause().surroundWithBrackets();
+        definedQuery.getWhereClause().addExpression(
+                new DefinedWhereExpression(
+                        "organizationRoleType",
+                        ExpressionOperator.EQUALS,
+                        orgRoleType.getCode())
+        );
+
+        return organizationService.findOrganizationIdsFromOrganizationRoleType(definedQuery);
+
+
+    }
+
     @Override
     public TransactionResult saveRoles(
             EntityId organizationId,
@@ -100,6 +150,24 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
         return organizationService.saveOrganizationRoles(
                 organizationId,
                 snapshots);
+    }
+
+    @Override
+    public OrganizationRoleSummaryCollection findSummariesLikeShortName(
+            String shortName,
+            OrganizationRoleType roleType,
+            Integer limit) {
+        initializeSession();
+
+        List<OrganizationRoleSummary> summaries = organizationService.findOrganizationRoleSummariesLikeShortName(
+                shortName,
+                roleType);
+
+        return new OrganizationRoleSummaryCollection(
+                0,
+                limit,
+                summaries.size(),
+                summaries);
     }
 
     @Override

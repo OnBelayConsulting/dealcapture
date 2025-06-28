@@ -91,12 +91,6 @@ public class FxRiskFactorRestAdapterTest extends DealCaptureAppSpringTestCase {
     }
 
     @Test
-    public void valueRiskFactors() {
-        TransactionResult result = fxRiskFactorRestAdapter.valueRiskFactors("WHERE " );
-
-    }
-
-    @Test
     public void createRiskFactors() {
         FxRiskFactorSnapshot snapshot = new FxRiskFactorSnapshot();
         snapshot.getDetail().setDefaults();

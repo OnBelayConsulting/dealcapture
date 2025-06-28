@@ -1,0 +1,113 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/onbelay/dealcapture/snapshot/ddl/VANILLA_OPTION_DEAL.xml">
+
+    <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <createTable tableName="VANILLA_OPTION_DEAL" tablespace="${tblspace_data}">
+            <column name="ENTITY_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name='OPTION_EXPIRY_DATE_RULE'
+                    type="java.sql.Types.VARCHAR(500)">
+                <constraints nullable='true'/>
+            </column>
+            <column name='TRADE_TYPE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name='OPTION_TYPE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name='OPTION_STYLE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name="STRIKE_PRICE_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STRIKE_PRICE_UOM_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STRIKE_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PREMIUM_PRICE_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PREMIUM_PRICE_UOM_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PREMIUM_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UNDERLYING_INDEX_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="lefeuvrem" id="2.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+        <createTable tableName="VANILLA_OPTION_DEAL_AUDIT" tablespace="${tblspace_data}">
+            <column name="AUDIT_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name='OPTION_EXPIRY_DATE_RULE'
+                    type="java.sql.Types.VARCHAR(500)">
+                <constraints nullable='true'/>
+            </column>
+            <column name='TRADE_TYPE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name='OPTION_TYPE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name='OPTION_STYLE_CODE'
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable='false'/>
+            </column>
+            <column name="STRIKE_PRICE_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STRIKE_PRICE_UOM_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STRIKE_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PREMIUM_PRICE_CURRENCY_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PREMIUM_PRICE_UOM_CODE"
+                    type="java.sql.Types.VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PREMIUM_PRICE"
+                    type="java.sql.Types.NUMERIC(8, 3)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UNDERLYING_INDEX_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

@@ -17,11 +17,11 @@ public class PowerProfileIndexMappingDetail {
     @Transient
     @JsonIgnore
     public PowerFlowCode getPowerFlowCode() {
-        return PowerFlowCode.valueOf(powerFlowCodeValue);
+        return PowerFlowCode.lookUp(powerFlowCodeValue);
     }
 
     public void setPowerFlowCode(PowerFlowCode powerFlowCode) {
-        this.powerFlowCodeValue = powerFlowCode.toString();
+        this.powerFlowCodeValue = powerFlowCode.getCode();
     }
 
     @Column(name = "POWER_FLOW_CODE")

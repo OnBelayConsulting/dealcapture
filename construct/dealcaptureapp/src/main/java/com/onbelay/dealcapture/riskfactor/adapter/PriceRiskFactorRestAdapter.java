@@ -20,7 +20,4 @@ public interface PriceRiskFactorRestAdapter {
             Integer start,
             Integer limit);
 
-    public TransactionResult valueRiskFactors(
-            String queryText);
-
 }

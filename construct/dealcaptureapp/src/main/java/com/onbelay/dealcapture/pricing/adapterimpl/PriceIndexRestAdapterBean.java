@@ -7,7 +7,9 @@ import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.DealFileReader;
 import com.onbelay.dealcapture.pricing.adapter.PriceIndexRestAdapter;
+import com.onbelay.dealcapture.pricing.priceCurvesfilereader.PriceCurvesFileReader;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshotCollection;
@@ -16,6 +18,7 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -41,6 +44,20 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
         initializeSession();
         return priceIndexService.load(priceIndexId);
     }
+
+
+    @Override
+    public PriceCurveSnapshot loadPriceCurve(EntityId priceCurveId) {
+        initializeSession();
+        return priceIndexService.loadPriceCurve(priceCurveId);
+    }
+
+    @Override
+    public TransactionResult savePriceCurve(PriceCurveSnapshot snapshot) {
+        initializeSession();
+        return priceIndexService.savePrices(snapshot.getIndexId(), List.of(snapshot));
+    }
+
 
     @Override
     public PriceIndexSnapshotCollection find(
@@ -101,7 +118,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     }
 
     @Override
-    public TransactionResult savePrices(
+    public TransactionResult savePriceCurves(
             Integer priceIndexId,
             List<PriceCurveSnapshot> snapshots) {
 
@@ -114,7 +131,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     }
 
     @Override
-    public PriceCurveSnapshotCollection findPrices(
+    public PriceCurveSnapshotCollection findPriceCurves(
             String queryText,
             Integer start,
             Integer limit) {
@@ -138,7 +155,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
             }
         }
 
-        QuerySelectedPage selectedPage = priceIndexService.findPriceIndexIds(definedQuery);
+        QuerySelectedPage selectedPage = priceIndexService.findPriceCurveIds(definedQuery);
         List<Integer> totalIds = selectedPage.getIds();
 
         int toIndex =  start.intValue() + limit;
@@ -168,5 +185,23 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
                 limit,
                 totalIds.size(),
                 snapshots);
+    }
+
+    @Override
+    public TransactionResult savePriceCurvesFile(String originalFilename, byte[] fileContents) {
+        initializeSession();
+
+        ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
+        PriceCurvesFileReader fileReader = new PriceCurvesFileReader(fileStream);
+
+        fileReader.readContents();
+        TransactionResult result = new TransactionResult();
+        for (String indexName : fileReader.getCurveSnapshotMap().keySet()) {
+            TransactionResult childResult = priceIndexService.savePrices(
+                    new EntityId(indexName),
+                    fileReader.getCurveSnapshotMap().get(indexName));
+            result.setIds(childResult.getIds());
+        }
+        return result;
     }
 }

@@ -110,7 +110,7 @@ public class PriceIndexRestAdapterTest extends DealCaptureAppSpringTestCase {
 		snapshot.getDetail().setObservedDateTime(LocalDateTime.now());
 		snapshot.getDetail().setFrequencyCode(FrequencyCode.DAILY);
 
-		TransactionResult result = priceIndexRestAdapter.savePrices(
+		TransactionResult result = priceIndexRestAdapter.savePriceCurves(
 				dailyPriceIndex.getId(),
 				List.of(snapshot));
 		flush();

@@ -31,7 +31,7 @@ public class OrganizationRoleSummaryAssembler extends EntityAssembler {
 		OrganizationRoleSummary summary = new OrganizationRoleSummary();
 		super.setEntityAttributes(role, summary);
 		summary.setOrganizationRoleTypeValue(role.getOrganizationRoleType().getCode());
-		
+		summary.setOrganizationId(role.getOrganization().getId());
 		summary.getDetail().setStatus(role.getRoleDetail().getStatus());
 		summary.getDetail().setShortName(role.getOrganization().getDetail().getShortName());
 		summary.getDetail().setLegalName(role.getOrganization().getDetail().getLegalName());

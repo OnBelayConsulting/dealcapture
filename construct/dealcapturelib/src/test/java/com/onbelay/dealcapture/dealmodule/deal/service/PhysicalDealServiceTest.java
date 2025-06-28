@@ -70,6 +70,7 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 	@Test
 	public void testUpdatePhysicalDeal() {
 		PhysicalDeal physicalDeal = DealFixture.createSamplePhysicalDeal(
+				myBusinessContact,
 				CommodityCode.CRUDE,
 				"myDeal", 
 				companyRole, 
@@ -150,7 +151,7 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 						BigDecimal.ONE,
 						CurrencyCode.USD,
 						UnitOfMeasureCode.GJ));
-		
+		dealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		TransactionResult result  = dealService.save(dealSnapshot);
 		flush();
 		clearCache();
@@ -169,6 +170,7 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 	public void testCreateIndexPriceMarketIndexPhysicalDeal() {
 
 		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
+		dealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
@@ -206,6 +208,7 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 	public void testCreateIndexPlusPriceMarketIndexPhysicalDeal() {
 
 		PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
+		dealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
@@ -252,6 +255,7 @@ public class PhysicalDealServiceTest extends PhysicalDealServiceTestCase {
 
 		dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
 		dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
+		dealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		dealSnapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		dealSnapshot.getDealDetail().setCommodityCode(CommodityCode.CRUDE);
 		dealSnapshot.getDealDetail().setDealStatus(DealStatusCode.VERIFIED);

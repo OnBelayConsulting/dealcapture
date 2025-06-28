@@ -41,6 +41,9 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 
 	private PriceIndex settledPriceIndex;
 
+	private PriceIndex endOfMonthPriceIndex;
+
+
 	private PowerProfileDetail detail = new PowerProfileDetail();
 
 	public static PowerProfileAudit create(PowerProfile powerProfile) {
@@ -92,6 +95,15 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 		this.settledPriceIndex = settledPriceIndex;
 	}
 
+	@ManyToOne
+	@JoinColumn(name = "END_OF_MTH_PRICE_INDEX_ID")
+	public PriceIndex getEndOfMonthPriceIndex() {
+		return endOfMonthPriceIndex;
+	}
+
+	public void setEndOfMonthPriceIndex(PriceIndex endOfMonthPriceIndex) {
+		this.endOfMonthPriceIndex = endOfMonthPriceIndex;
+	}
 
 	@Embedded
 	public PowerProfileDetail getDetail() {
@@ -112,6 +124,7 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 	public void copyFrom(TemporalAbstractEntity entity) {
 		PowerProfile powerProfile = (PowerProfile) entity;
 		this.settledPriceIndex = powerProfile.getSettledPriceIndex();
+		this.endOfMonthPriceIndex = powerProfile.getEndOfMonthPriceIndex();
 		this.detail.copyFrom(powerProfile.getDetail());
 	}
 

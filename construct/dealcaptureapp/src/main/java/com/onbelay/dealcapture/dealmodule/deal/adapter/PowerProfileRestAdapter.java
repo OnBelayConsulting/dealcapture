@@ -4,7 +4,6 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 
 import java.util.List;
 
@@ -21,8 +20,4 @@ public interface PowerProfileRestAdapter {
             String queryText,
             Integer start,
             Integer limit);
-
-    TransactionResult generatePositions(
-            Integer powerProfileId,
-            EvaluationContextRequest request);
 }

@@ -1,0 +1,35 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        logicalFilePath="/com/rockpointgs/businessassociatesdbSpecificDataTypes.xml.xml"
+>
+    <!--
+        All columns with a VARCHAR data type need to use the database specific types below.
+    -->
+    <property
+            dbms="postgresql"
+            name="varcharDataType"
+            value="java.sql.Types.VARCHAR"
+    />
+    <property
+            dbms="mssql"
+            name="varcharDataType"
+            value="java.sql.Types.NVARCHAR"
+    />
+
+    <!--
+        All columns with a datetime data type need to use the database specific types below.
+    -->
+    <property
+            dbms="postgresql"
+            name="datetimeDataType"
+            value="java.sql.Types.TIMESTAMP"
+    />
+    <property
+            dbms="mssql"
+            name="datetimeDataType"
+            value="datetime2"
+    />
+</databaseChangeLog>

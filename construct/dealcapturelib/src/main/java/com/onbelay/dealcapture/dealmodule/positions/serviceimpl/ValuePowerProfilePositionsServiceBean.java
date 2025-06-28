@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,12 +40,29 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
 
     @Override
     public TransactionResult valuePositions(
+            List<Integer> powerProfileIds,
+            CurrencyCode currencyCode,
+            LocalDateTime createdDateTime,
+            LocalDateTime currentDateTime) {
+
+        doValuePositions(
+                powerProfileIds,
+                currencyCode,
+                createdDateTime,
+                currentDateTime);
+
+        return new TransactionResult();
+    }
+
+
+    @Override
+    public TransactionResult valuePositions(
             EntityId powerProfileId,
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
-        valuePositions(
+        doValuePositions(
                 List.of(powerProfileId.getId()),
                 currencyCode,
                 createdDateTime,
@@ -66,7 +82,7 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
         if (selectedPage.getIds().isEmpty())
             return new TransactionResult();
 
-        valuePositions(
+        doValuePositions(
                 selectedPage.getIds(),
                 currencyCode,
                 createdDateTime,
@@ -75,7 +91,7 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
         return new TransactionResult();
     }
 
-    private void valuePositions(
+    private void doValuePositions(
             List<Integer> powerProfileIds,
             CurrencyCode currencyCode,
             LocalDateTime createdDateTime,

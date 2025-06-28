@@ -5,7 +5,9 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PowerProfileSnapshot extends AbstractSnapshot {
 
@@ -13,7 +15,11 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
 
     private EntityId settledPriceIndexId;
 
+    private EntityId endOfMonthPriceIndexId;
+
     private List<PowerProfileDaySnapshot> profileDays = new ArrayList<PowerProfileDaySnapshot>();
+
+    private Map<Integer, PowerProfileDaySnapshot> daysMap = new HashMap<>();
 
     private List<PowerProfileIndexMappingSnapshot> indexMappings = new ArrayList<>();
 
@@ -74,6 +80,22 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
 
     public void setIndexMappings(List<PowerProfileIndexMappingSnapshot> indexMappings) {
         this.indexMappings = indexMappings;
+    }
+
+    public EntityId getEndOfMonthPriceIndexId() {
+        return endOfMonthPriceIndexId;
+    }
+
+    public void setEndOfMonthPriceIndexId(EntityId endOfMonthPriceIndexId) {
+        this.endOfMonthPriceIndexId = endOfMonthPriceIndexId;
+    }
+
+    public Map<Integer, PowerProfileDaySnapshot> getDaysMap() {
+        return daysMap;
+    }
+
+    public void setDaysMap(Map<Integer, PowerProfileDaySnapshot> daysMap) {
+        this.daysMap = daysMap;
     }
 
     public EntityId findPriceIndexMappingByFlowCode(PowerFlowCode code) {

@@ -18,12 +18,12 @@ package com.onbelay.dealcapture.dealmodule.deal.controller;
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.PowerProfileRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -134,7 +134,8 @@ public class PowerProfileRestController extends BaseRestController {
 			collection = new PowerProfileSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new PowerProfileSnapshotCollection(r.getMessage());
+			collection = new PowerProfileSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new PowerProfileSnapshotCollection(r.getMessage());
 		}
@@ -165,40 +166,6 @@ public class PowerProfileRestController extends BaseRestController {
 		}
 
 		return (ResponseEntity<PowerProfileSnapshot>) processResponse(snapshot);
-	}
-
-
-	@Operation(summary="Create or update a powerProfile")
-	@PostMapping(
-			value = "/{id}/positions",
-			produces="application/json",
-			consumes="application/json"  )
-	public ResponseEntity<TransactionResult> generatePositions(
-			@RequestHeader Map<String, String> headers,
-			@PathVariable Integer id,
-			@RequestBody EvaluationContextRequest request,
-			BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach( e -> {
-				logger.error(userMarker, "Error on ", e.toString());
-			});
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-
-		TransactionResult result;
-		try {
-			result = powerProfileRestAdapter.generatePositions(id, request);
-		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
-		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
-		}
-
-		return processResponse(result);
 	}
 
 }

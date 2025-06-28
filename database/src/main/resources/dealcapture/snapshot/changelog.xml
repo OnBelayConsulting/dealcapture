@@ -13,6 +13,7 @@
         all changelogs that follow have access to them.
     -->
     <include file="now.xml" relativeToChangelogFile="true"/>
+    <include file="databasetypes.xml" relativeToChangelogFile="true"/>
     <include file="concatenationOperator.xml" relativeToChangelogFile="true"/>
 
     <include file="ddl/changelog.xml" relativeToChangelogFile="true"/>

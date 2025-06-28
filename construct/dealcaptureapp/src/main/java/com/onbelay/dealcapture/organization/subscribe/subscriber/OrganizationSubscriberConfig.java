@@ -2,7 +2,7 @@ package com.onbelay.dealcapture.organization.subscribe.subscriber;
 
 import com.onbelay.core.entity.model.AuditManager;
 import com.onbelay.core.exception.OBRuntimeException;
-import com.onbelay.dealcapture.organization.subscribe.snapshot.SubOrganizationSnapshot;
+import com.onbelay.dealcapture.organization.subscribe.snapshot.OrganizationSubscriptionSnapshot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class OrganizationSubscriberConfig {
 
     @Bean
     @Profile("messaging")
-    public Consumer<Message<List<SubOrganizationSnapshot>>> organizationConsumer() {
+    public Consumer<Message<List<OrganizationSubscriptionSnapshot>>> organizationConsumer() {
 
         return msg -> {
             logger.info("consumer: msg = {}", msg);
@@ -36,9 +36,9 @@ public class OrganizationSubscriberConfig {
             auditManager.setCurrentAuditUserName("obupdate");
             auditManager.setCurrentAuditComments("via messaging");
 
-            List<SubOrganizationSnapshot> externalSnapshots = msg.getPayload();
-            organizationUpdater.updateOrganizations(externalSnapshots);
+            List<OrganizationSubscriptionSnapshot> externalSnapshots = msg.getPayload();
             try {
+                organizationUpdater.updateOrganizations(externalSnapshots);
             } catch (OBRuntimeException e) {
                 logger.error("Organization save failed");
                 throw new NonTransientDataAccessResourceException("Organization save failed.");

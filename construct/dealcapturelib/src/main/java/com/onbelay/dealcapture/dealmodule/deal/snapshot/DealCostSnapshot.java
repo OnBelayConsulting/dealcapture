@@ -19,15 +19,28 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DealCostSnapshot extends AbstractSnapshot {
-	
+
 	private EntityId dealId;
-	
+	private DealCostDetail detail = new DealCostDetail();
+
+	public DealCostSnapshot(String errorCode) {
+		super(errorCode);
+	}
+
+	public DealCostSnapshot(String errorCode, boolean isPermissionException) {
+		super(errorCode, isPermissionException);
+	}
+
+	public DealCostSnapshot(String errorCode, List<String> parameters) {
+		super(errorCode, parameters);
+	}
+
 	public DealCostSnapshot() {
 	}
-	
-	private DealCostDetail detail = new DealCostDetail();
 
 	public EntityId getDealId() {
 		return dealId;

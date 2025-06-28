@@ -21,6 +21,7 @@ import com.onbelay.core.query.snapshot.DefinedOrderByClause;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.DefinedWhereExpression;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
 import com.onbelay.dealcapture.organization.snapshot.*;
 import com.onbelay.dealcapture.test.DealCaptureSpringTestCase;
@@ -136,6 +137,31 @@ public class OrganizationServiceTest extends DealCaptureSpringTestCase {
 						new DefinedOrderByClause()));
 
 		assertEquals(2, roleSnapshots.size());
+	}
+
+
+	@Test
+	public void fetchOrganizationRoleSummariesLikeShortName() {
+		List<OrganizationRoleSnapshot> snapshots = new ArrayList<>();
+
+		CompanyRoleSnapshot snapshot = new CompanyRoleSnapshot();
+		snapshot.getDetail().setIsHoldingParent(false);
+		snapshots.add(snapshot);
+
+		CounterpartyRoleSnapshot counterpartyRoleSnapshot = new CounterpartyRoleSnapshot();
+		counterpartyRoleSnapshot.getDetail().setSettlementCurrency(CurrencyCode.USD);
+		snapshots.add(counterpartyRoleSnapshot);
+
+		TransactionResult result = organizationService.saveOrganizationRoles(
+				myOrganization.generateEntityId(),
+				snapshots);
+		flush();
+
+		List<OrganizationRoleSummary> roleSnapshots = organizationService.findOrganizationRoleSummariesLikeShortName(
+				"O",
+				OrganizationRoleType.COMPANY_ROLE);
+
+		assertEquals(1, roleSnapshots.size());
 	}
 
 

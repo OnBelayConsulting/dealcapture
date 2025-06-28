@@ -8,14 +8,10 @@ import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.PowerProfileRestAdapter;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
-import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePowerProfilePositionsService;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -97,23 +93,6 @@ public class PowerProfileRestAdapterBean extends BaseRestAdapterBean implements 
         return powerProfileService.save(dealSnapshot);
     }
 
-    @Override
-    public TransactionResult generatePositions(Integer powerProfileId, EvaluationContextRequest request) {
-        initializeSession();
-
-        String positionGenerationIdentifier = "PP_" + powerProfileId + System.currentTimeMillis();
-
-        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
-                request.getCurrencyCode(),
-                request.getCreatedDateTime(),
-                request.getFromDate(),
-                request.getToDate());
-
-        return generatePowerProfilePositionsService.generatePowerProfilePositions(
-                positionGenerationIdentifier,
-                context,
-                List.of(powerProfileId));
-    }
 
     @Override
     public TransactionResult save(List<PowerProfileSnapshot> snapshots) {

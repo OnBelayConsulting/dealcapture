@@ -9,33 +9,38 @@
 >
     <changeSet author="lefeuvrem" id="1.0" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
         <insert tableName='POWER_FLOW_CODE'>
-            <column name='CODE_ID' value='HOURLY'/>
+            <column name='CODE_ID' value='Hourly'/>
             <column name='CODE_LABEL' value='Hourly Price'/>
             <column name='DISPLAY_ORDER_NO' value='3'/>
         </insert>
         <insert tableName='POWER_FLOW_CODE'>
-            <column name='CODE_ID' value='END_OF_MTH'/>
+            <column name='CODE_ID' value='EndOfMonth'/>
             <column name='CODE_LABEL' value='End of Month Price'/>
             <column name='DISPLAY_ORDER_NO' value='3'/>
         </insert>
         <insert tableName='POWER_FLOW_CODE'>
-            <column name='CODE_ID' value='SETTLED'/>
+            <column name='CODE_ID' value='Settled'/>
             <column name='CODE_LABEL' value='Settled Price'/>
             <column name='DISPLAY_ORDER_NO' value='5'/>
         </insert>
         <insert tableName='POWER_FLOW_CODE'>
-            <column name='CODE_ID' value='ON_PEAK'/>
+            <column name='CODE_ID' value='OnPeak'/>
             <column name='CODE_LABEL' value='OnPeak Price'/>
             <column name='DISPLAY_ORDER_NO' value='10'/>
         </insert>
         <insert tableName='POWER_FLOW_CODE'>
-            <column name='CODE_ID' value='OFF_PEAK'/>
+            <column name='CODE_ID' value='OffPeak'/>
             <column name='CODE_LABEL' value='OffPeak Price'/>
             <column name='DISPLAY_ORDER_NO' value='15'/>
         </insert>
         <insert tableName='POWER_FLOW_CODE'>
-            <column name='CODE_ID' value='SUPER_PEAK'/>
+            <column name='CODE_ID' value='SuperPeak'/>
             <column name='CODE_LABEL' value='SuperPeak Price'/>
+            <column name='DISPLAY_ORDER_NO' value='20'/>
+        </insert>
+        <insert tableName='POWER_FLOW_CODE'>
+            <column name='CODE_ID' value='None'/>
+            <column name='CODE_LABEL' value='None'/>
             <column name='DISPLAY_ORDER_NO' value='20'/>
         </insert>
     </changeSet>

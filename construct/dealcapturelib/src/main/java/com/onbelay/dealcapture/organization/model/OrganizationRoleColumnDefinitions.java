@@ -26,11 +26,13 @@ public class OrganizationRoleColumnDefinitions extends BaseColumnDefinitions imp
 
 	public static final ColumnDefinition organizationId = new ColumnDefinition("organizationId", ColumnDataType.INTEGER, "organization.id");
 	public static final ColumnDefinition organizationShortName = new ColumnDefinition("shortName", ColumnDataType.STRING, "organization.detail.shortName");
+	public static final ColumnDefinition organizationLegalName = new ColumnDefinition("legalName", ColumnDataType.STRING, "organization.detail.legalName");
 	public static final ColumnDefinition organizationRoleType = new ColumnDefinition("organizationRoleType", ColumnDataType.STRING, "organizationRoleTypeCode");
 	
 	public OrganizationRoleColumnDefinitions() {
 		add(organizationId);
 		add(organizationShortName);
+		add(organizationLegalName);
 		add(organizationRoleType);
 	}
 

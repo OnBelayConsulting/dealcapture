@@ -18,18 +18,37 @@ package com.onbelay.dealcapture.organization.snapshot;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.dealcapture.organization.enums.OrganizationRoleStatus;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganizationRoleSummary extends AbstractSnapshot {
-	
+
+	private Integer organizationId;
 	private String organizationRoleTypeValue;
 	private OrganizationRoleSummaryDetail detail = new OrganizationRoleSummaryDetail();
 	
 	public OrganizationRoleSummary () { 
 		
 	}
-	
+
+	public OrganizationRoleSummary (
+			Integer id,
+			Integer organizationId,
+			final String organizationRoleTypeValue,
+			String shortName,
+			String longName,
+			String status) {
+		setEntityId(new EntityId(id, shortName, longName, true));
+		this.organizationId = organizationId;
+		this.organizationRoleTypeValue = organizationRoleTypeValue;
+		detail.setLegalName(longName);
+		detail.setShortName(shortName);
+		detail.setStatus(OrganizationRoleStatus.lookUp(status));
+
+	}
+
 	public OrganizationRoleSummaryDetail getDetail() {
 		return detail;
 	}
@@ -45,7 +64,15 @@ public class OrganizationRoleSummary extends AbstractSnapshot {
 	public void setOrganizationRoleTypeValue(String organizationRoleTypeValue) {
 		this.organizationRoleTypeValue = organizationRoleTypeValue;
 	}
-	
+
+	public Integer getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Integer organizationId) {
+		this.organizationId = organizationId;
+	}
+
 	@JsonIgnore
 	public OrganizationRoleType getOrganizationRoleType() {
 		return OrganizationRoleType.lookUp(organizationRoleTypeValue);

@@ -23,19 +23,27 @@ import org.springframework.stereotype.Component;
 
 public class DealColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
 	public static final ColumnDefinition dealId = new ColumnDefinition("dealId", ColumnDataType.INTEGER, "id");
-	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeValue");
-	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "dealDetail.ticketNo");
 	public static final ColumnDefinition companyShortName = new ColumnDefinition("companyShortName", ColumnDataType.STRING, "companyRole.detail.shortName");
 	public static final ColumnDefinition counterpartyShortName = new ColumnDefinition("counterpartyShortName", ColumnDataType.STRING, "counterpartyRole.detail.shortName");
-	public static final ColumnDefinition buySellCode = new ColumnDefinition("buySellCode", ColumnDataType.STRING, "dealDetail.buySellCode");
+	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeValue");
+	public static final ColumnDefinition commodity = new ColumnDefinition("commodity", ColumnDataType.STRING, "dealDetail.commodityCodeValue");
+	public static final ColumnDefinition dealStatus = new ColumnDefinition("dealStatus", ColumnDataType.STRING, "dealDetail.dealStatusCodeValue");
+	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "dealDetail.ticketNo");
+	public static final ColumnDefinition buySellCode = new ColumnDefinition("buySellCode", ColumnDataType.STRING, "dealDetail.buySellCodeValue");
+	public static final ColumnDefinition startDate = new ColumnDefinition("startDate", ColumnDataType.DATE, "dealDetail.startDate");
+	public static final ColumnDefinition endDate = new ColumnDefinition("endDate", ColumnDataType.DATE, "dealDetail.endDate");
 
 	public DealColumnDefinitions() {
 		add(dealId);
-		add(dealType);
-		add(ticketNo);
 		add(companyShortName);
 		add(counterpartyShortName);
+		add(dealType);
+		add(dealStatus);
+		add(commodity);
+		add(ticketNo);
 		add(buySellCode);
+		add(startDate);
+		add(endDate);
 	}
 
 	@Override

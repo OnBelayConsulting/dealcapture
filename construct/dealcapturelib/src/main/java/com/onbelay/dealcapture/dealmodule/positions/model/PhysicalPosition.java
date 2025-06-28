@@ -14,7 +14,7 @@ import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
 
 @Entity
-@DiscriminatorValue("PHY")
+@DiscriminatorValue("PhysicalDeal")
 public class PhysicalPosition extends DealPosition {
 
     private PriceRiskFactor dealPriceRiskFactor;

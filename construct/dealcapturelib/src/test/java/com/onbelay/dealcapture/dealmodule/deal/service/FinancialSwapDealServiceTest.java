@@ -103,6 +103,7 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				paysPrice);
+		swapDealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		TransactionResult result  = dealService.save(swapDealSnapshot);
 		flush();
@@ -143,6 +144,7 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 				UnitOfMeasureCode.GJ,
 				receivesIndex,
 				paysPrice);
+		swapDealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		TransactionResult result  = dealService.save(swapDealSnapshot);
 		flush();
@@ -182,6 +184,7 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				paysPrice);
+		swapDealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		TransactionResult result  = dealService.save(swapDealSnapshot);
 		flush();
@@ -221,6 +224,7 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				receivesIndex);
+		swapDealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		TransactionResult result  = dealService.save(swapDealSnapshot);
 		flush();
@@ -247,6 +251,7 @@ public class FinancialSwapDealServiceTest extends FinancialSwapDealServiceTestCa
 		snapshot.getDealDetail().setBuySell(BuySellCode.BUY);
 		snapshot.setEntityId(fixed4FloatSellDeal.generateEntityId());
 		snapshot.setEntityState(EntityState.MODIFIED);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		dealService.save(snapshot);
 		flush();

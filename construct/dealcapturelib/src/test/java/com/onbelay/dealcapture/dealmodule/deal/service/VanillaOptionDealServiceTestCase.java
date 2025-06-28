@@ -94,6 +94,7 @@ public abstract class VanillaOptionDealServiceTestCase extends DealServiceTestCa
 						BigDecimal.TEN,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		buyPutOptionDeal = VanillaOptionDeal.create(snapshot);
 
@@ -116,6 +117,7 @@ public abstract class VanillaOptionDealServiceTestCase extends DealServiceTestCa
 						BigDecimal.TEN,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		buyCallOptionDeal = VanillaOptionDeal.create(snapshot);
 
@@ -139,6 +141,7 @@ public abstract class VanillaOptionDealServiceTestCase extends DealServiceTestCa
 						BigDecimal.TEN,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		buyCallOptionOutOfMoneyDeal = VanillaOptionDeal.create(snapshot);
 
@@ -162,6 +165,7 @@ public abstract class VanillaOptionDealServiceTestCase extends DealServiceTestCa
 						BigDecimal.TEN,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		sellCallOptionDeal = VanillaOptionDeal.create(snapshot);
 

@@ -35,13 +35,17 @@
                     type="java.sql.Types.NUMERIC(10, 0)">
                 <constraints nullable="true"/>
             </column>
+            <column name="END_OF_MTH_PRICE_INDEX_ID"
+                    type="java.sql.Types.NUMERIC(10, 0)">
+                <constraints nullable="true"/>
+            </column>
             <column name="POSITION_GENERATION_STATUS_CODE" type="java.sql.Types.VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
             <column name="POSITION_GENERATION_IDENTIFIER" type="java.sql.Types.VARCHAR(500)">
                 <constraints nullable="true"/>
             </column>
-            <column name="POSITION_GENERATION_DATE_TIME" type="java.sql.Types.TIMESTAMP">
+            <column name="POSITION_GENERATION_DATE_TIME" type="${datetimeDataType}">
                 <constraints nullable="true"/>
             </column>
             <column name="AUDIT_LOCK_NO"
@@ -59,11 +63,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_FROM_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="VALID_TO_DTTM"
-                    type="java.sql.Types.TIMESTAMP">
+                    type="${datetimeDataType}">
                 <constraints nullable="false"/>
             </column>
             <column name="LAST_USER"

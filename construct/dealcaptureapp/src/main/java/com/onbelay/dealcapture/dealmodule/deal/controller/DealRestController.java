@@ -18,15 +18,11 @@ package com.onbelay.dealcapture.dealmodule.deal.controller;
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
-import com.onbelay.dealcapture.dealmodule.deal.adapter.MarkToMarketRestAdapter;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealSnapshotCollection;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.ErrorDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.MarkToMarketResult;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -56,9 +52,7 @@ public class DealRestController extends BaseRestController {
 	@Autowired
 	private DealRestAdapter dealRestAdapter;
 
-	@Autowired
-	private MarkToMarketRestAdapter markToMarketAdapter;
-	
+
 	@Operation(summary="Create or update a deal")
 	@PostMapping(
 			produces="application/json",
@@ -89,6 +83,75 @@ public class DealRestController extends BaseRestController {
 
 		return processResponse(result);
 	}
+
+
+	@Operation(summary="Create or update deal costs.")
+	@PostMapping(
+			value = "/{id}/dealCosts",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> saveDealCosts(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@RequestBody List<DealCostSnapshot> dealCostSnapshots,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+
+		TransactionResult result;
+		try {
+			result = dealRestAdapter.saveDealCosts(id, dealCostSnapshots);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
+
+	@Operation(summary="Create or update deal costs.")
+	@PostMapping(
+			value = "/dealCosts",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> saveDealCost(
+			@RequestHeader Map<String, String> headers,
+			@RequestBody DealCostSnapshot dealCostSnapshot,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+
+		TransactionResult result;
+		try {
+			result = dealRestAdapter.saveDealCost(dealCostSnapshot);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
 
 	@RequestMapping(
 			consumes = {
@@ -172,13 +235,39 @@ public class DealRestController extends BaseRestController {
 			collection = new DealSnapshotCollection(r.getErrorCode(), r.getParms());
 			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (DefinedQueryException r) {
-			collection = new DealSnapshotCollection(r.getMessage());
+			collection = new DealSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
 		} catch (RuntimeException r) {
 			collection = new DealSnapshotCollection(r.getMessage());
 		}
 
 		return (ResponseEntity<DealSnapshotCollection>) processResponse(collection);
 	}
+
+
+	@Operation(summary="get deal costs")
+	@GetMapping("/{id}/dealCosts")
+	public ResponseEntity<DealCostSnapshotCollection> getDealCosts(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id) {
+
+		DealCostSnapshotCollection collection;
+
+		try {
+			collection = dealRestAdapter.fetchDealCosts(id);
+		} catch (OBRuntimeException r) {
+			collection = new DealCostSnapshotCollection(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new DealCostSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			collection = new DealCostSnapshotCollection(r.getMessage());
+		}
+
+		return (ResponseEntity<DealCostSnapshotCollection>) processResponse(collection);
+	}
+
 
 	@Operation(summary="get an existing deal")
 	@GetMapping(value="/{id}")
@@ -206,39 +295,30 @@ public class DealRestController extends BaseRestController {
 	}
 
 
-	@Operation(summary="Generate Positions for a deal")
-	@PostMapping(
-			value = "/{id}/positions",
-			produces="application/json",
-			consumes="application/json"  )
-	public ResponseEntity<TransactionResult> generatePositions(
-			@RequestHeader Map<String, String> headers,
-			@PathVariable Integer id,
-			@RequestBody EvaluationContextRequest request,
-			BindingResult bindingResult) {
+	@Operation(summary="get an existing deal cost")
+	@GetMapping(value="/dealCosts/{id}")
+	public ResponseEntity<DealCostSnapshot> getDealCost(
+			@PathVariable Integer id) {
 
-		if (bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach( e -> {
-				logger.error(userMarker, "Error on ", e.toString());
-			});
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-
-		TransactionResult result;
+		DealCostSnapshot snapshot;
 		try {
-			result = dealRestAdapter.generatePositions(id, request);
+			snapshot = dealRestAdapter.loadDealCost(new EntityId(id));
+
+			if (snapshot == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+			HttpHeaders  headers = new HttpHeaders();
+			headers.add(HttpHeaders.ETAG, "" + id);
+			headers.add(HttpHeaders.LAST_MODIFIED, "V" + snapshot.getVersion());
 		} catch (OBRuntimeException r) {
-			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
-			result = new TransactionResult(r.getErrorCode(), r.getParms());
-			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+			snapshot = new DealCostSnapshot(r.getErrorCode(), r.getParms());
+			snapshot.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
 		} catch (RuntimeException e) {
-			result = new TransactionResult(e.getMessage());
+			snapshot = new DealCostSnapshot(e.getMessage());
 		}
 
-		return processResponse(result);
+		return (ResponseEntity<DealCostSnapshot>) processResponse(snapshot);
 	}
-
 
 	@Operation(summary="Run Mark to Market")
 	@PostMapping(
@@ -247,7 +327,7 @@ public class DealRestController extends BaseRestController {
 			consumes="application/json"  )
 	public ResponseEntity<MarkToMarketResult> runMarkToMarket(
 			@RequestHeader Map<String, String> headers,
-			@RequestBody EvaluationContextRequest request,
+			@RequestBody MarkToMarketJobRequest request,
 			BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
@@ -260,7 +340,7 @@ public class DealRestController extends BaseRestController {
 
 		MarkToMarketResult result;
 		try {
-			result = markToMarketAdapter.runMarkToMarket(request);
+			result = dealRestAdapter.queueMarkToMarketJobs(request);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
 			result = new MarkToMarketResult(r.getErrorCode(), r.getParms());

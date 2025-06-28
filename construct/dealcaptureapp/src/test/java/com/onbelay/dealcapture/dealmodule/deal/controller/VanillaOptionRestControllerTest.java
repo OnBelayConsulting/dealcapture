@@ -16,6 +16,8 @@
 package com.onbelay.dealcapture.dealmodule.deal.controller;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContactFixture;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
@@ -67,6 +69,7 @@ VanillaOptionRestControllerTest extends DealCaptureAppSpringTestCase {
 
 	@Autowired
 	private DealRestAdapter dealRestAdapter;
+	private BusinessContact contact;
 
 	private CompanyRole companyRole;
 	private CounterpartyRole counterpartyRole;
@@ -82,6 +85,7 @@ VanillaOptionRestControllerTest extends DealCaptureAppSpringTestCase {
 	@Override
 	public void setUp() {
 		super.setUp();
+		contact = BusinessContactFixture.createCompanyTrader("hans", "gruber", "gruber@terror.com");
 		companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
 		counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 
@@ -117,6 +121,7 @@ VanillaOptionRestControllerTest extends DealCaptureAppSpringTestCase {
 						BigDecimal.TEN,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		buyPutOptionDeal = VanillaOptionDeal.create(snapshot);
 
@@ -139,6 +144,7 @@ VanillaOptionRestControllerTest extends DealCaptureAppSpringTestCase {
 						BigDecimal.TEN,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		buyCallOptionDeal = VanillaOptionDeal.create(snapshot);
 
@@ -172,6 +178,7 @@ VanillaOptionRestControllerTest extends DealCaptureAppSpringTestCase {
 						BigDecimal.TEN,
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
+		snapshot.setCompanyTraderId(contact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		
 		String jsonPayload = objectMapper.writeValueAsString(snapshot);

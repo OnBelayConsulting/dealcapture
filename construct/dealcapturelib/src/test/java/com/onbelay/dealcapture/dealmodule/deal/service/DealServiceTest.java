@@ -73,6 +73,7 @@ public class DealServiceTest extends PhysicalDealServiceTestCase {
 	@Test
 	public void updateMultipleDeals() {
 		PhysicalDeal physicalDeal = DealFixture.createSamplePhysicalDeal(
+				myBusinessContact,
 				CommodityCode.CRUDE,
 				"myDeal", 
 				companyRole, 
@@ -125,6 +126,7 @@ public class DealServiceTest extends PhysicalDealServiceTestCase {
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				paysPrice);
+		swapDealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 
 		snapshots.add(swapDealSnapshot);
 
@@ -145,6 +147,7 @@ public class DealServiceTest extends PhysicalDealServiceTestCase {
 						BigDecimal.ONE,
 						CurrencyCode.USD,
 						UnitOfMeasureCode.GJ));
+		dealSnapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshots.add(dealSnapshot);
 
 		TransactionResult result  = dealService.save(snapshots);

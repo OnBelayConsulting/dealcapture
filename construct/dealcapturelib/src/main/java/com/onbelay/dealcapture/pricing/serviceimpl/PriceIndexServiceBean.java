@@ -60,6 +60,12 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 		return assembler.assemble(priceIndex);
 	}
 
+	@Override
+	public PriceCurveSnapshot loadPriceCurve(EntityId priceCurveId) {
+		PriceCurve priceCurve = priceCurveRepository.load(priceCurveId);
+		PriceCurveSnapshotAssembler assembler = new PriceCurveSnapshotAssembler();
+		return assembler.assemble(priceCurve);
+	}
 
 	@Override
 	public QuerySelectedPage findPriceIndexIds(DefinedQuery definedQuery) {

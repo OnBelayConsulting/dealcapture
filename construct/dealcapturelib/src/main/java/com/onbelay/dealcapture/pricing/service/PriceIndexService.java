@@ -61,4 +61,6 @@ public interface PriceIndexService {
 	List<PriceCurveSnapshot> fetchPriceCurvesByIds(QuerySelectedPage querySelectedPage);
 
     List<PriceIndexSnapshot> findActivePriceIndices();
+
+    PriceCurveSnapshot loadPriceCurve(EntityId priceCurveId);
 }

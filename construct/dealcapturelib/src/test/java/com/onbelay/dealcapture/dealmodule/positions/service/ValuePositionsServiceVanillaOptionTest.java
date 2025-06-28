@@ -95,7 +95,7 @@ public class ValuePositionsServiceVanillaOptionTest extends VanillaOptionDealSer
         clearCache();
 
         valuePositionsService.valuePositions(
-                buyCallOptionDeal.generateEntityId(),
+                List.of(buyCallOptionDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -176,7 +176,7 @@ public class ValuePositionsServiceVanillaOptionTest extends VanillaOptionDealSer
         clearCache();
 
         valuePositionsService.valuePositions(
-                buyCallOptionOutOfMoneyDeal.generateEntityId(),
+                List.of(buyCallOptionOutOfMoneyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -258,7 +258,7 @@ public class ValuePositionsServiceVanillaOptionTest extends VanillaOptionDealSer
         clearCache();
 
         valuePositionsService.valuePositions(
-                sellCallOptionDeal.generateEntityId(),
+                List.of(sellCallOptionDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -339,7 +339,7 @@ public class ValuePositionsServiceVanillaOptionTest extends VanillaOptionDealSer
         clearCache();
 
         valuePositionsService.valuePositions(
-                buyCallOptionDeal.generateEntityId(),
+                List.of(buyCallOptionDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -420,7 +420,7 @@ public class ValuePositionsServiceVanillaOptionTest extends VanillaOptionDealSer
         clearCache();
 
         valuePositionsService.valuePositions(
-                buyCallOptionOutOfMoneyDeal.generateEntityId(),
+                List.of(buyCallOptionOutOfMoneyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -501,7 +501,7 @@ public class ValuePositionsServiceVanillaOptionTest extends VanillaOptionDealSer
         clearCache();
 
         valuePositionsService.valuePositions(
-                buyPutOptionDeal.generateEntityId(),
+                List.of(buyPutOptionDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,

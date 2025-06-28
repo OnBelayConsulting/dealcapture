@@ -175,6 +175,7 @@ public abstract class PositionsServiceWithPowerProfileTestCase extends DealCaptu
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				dealPriceHourlyIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		indexSellMarketPowerProfileDeal = PhysicalDeal.create(snapshot);
 
@@ -196,6 +197,7 @@ public abstract class PositionsServiceWithPowerProfileTestCase extends DealCaptu
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		fixedPriceMarketPowerProfileDeal = PhysicalDeal.create(snapshot);
 

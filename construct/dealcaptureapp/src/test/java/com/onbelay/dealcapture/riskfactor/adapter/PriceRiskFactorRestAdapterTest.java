@@ -64,12 +64,6 @@ public class PriceRiskFactorRestAdapterTest extends DealCaptureAppSpringTestCase
     }
 
     @Test
-    public void valueRiskFactors() {
-        TransactionResult result = priceRiskFactorRestAdapter.valueRiskFactors("WHERE " );
-
-    }
-
-    @Test
     public void createRiskFactors() {
         PriceRiskFactorSnapshot snapshot = new PriceRiskFactorSnapshot();
         snapshot.getDetail().setDefaults();

@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.organization.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleDetail;
@@ -39,6 +40,19 @@ import jakarta.persistence.*;
 			   "  FROM OrganizationRole role " +
        	     "   WHERE role.organization.detail.shortName = :shortName " +
 			   "   AND role.organizationRoleTypeCode = :roleType"),
+	@NamedQuery(
+			name = OrganizationRoleRepositoryBean.FIND_SUMMARIES_LIKE_SHORT_NAME,
+			query = "SELECT new com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummary(" +
+					"	role.id, " +
+					"   role.organization.id, " +
+					"   role.organizationRoleTypeCode, " +
+					"   role.organization.detail.shortName, " +
+					"   role.organization.detail.legalName, " +
+					"   role.roleDetail.organizationRoleStatusValue ) " +
+					"  FROM OrganizationRole role " +
+					"   WHERE role.organization.detail.shortName like :shortName " +
+					"   AND role.organizationRoleTypeCode = :roleType " +
+					"ORDER BY role.organization.detail.shortName "),
     @NamedQuery(
        name = OrganizationRoleRepositoryBean.FIND_BY_SHORT_NAME,
        query = "SELECT role " +
@@ -56,6 +70,15 @@ public abstract class OrganizationRole extends TemporalAbstractEntity {
     protected OrganizationRoleDetail roleDetail = new OrganizationRoleDetail();
 
 	protected OrganizationRole() {
+	}
+
+	@Override
+	public EntityId generateEntityId() {
+		return new EntityId(
+				this.getId(),
+				organization.getDetail().getShortName(),
+				organization.getDetail().getLegalName(),
+				getIsExpired());
 	}
 
 	protected OrganizationRole(OrganizationRoleType roleType) {

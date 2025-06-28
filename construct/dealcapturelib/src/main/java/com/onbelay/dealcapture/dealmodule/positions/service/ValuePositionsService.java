@@ -7,18 +7,12 @@ import com.onbelay.shared.enums.CurrencyCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ValuePositionsService {
-    TransactionResult valuePositions(
-            EntityId dealId,
-            CurrencyCode currencyCode,
-            LocalDate fromPositionDate,
-            LocalDate toPositionDate,
-            LocalDateTime createdDateTime,
-            LocalDateTime currentDateTime);
 
     TransactionResult valuePositions(
-            DefinedQuery definedQuery,
+            List<Integer> dealIds,
             CurrencyCode currencyCode,
             LocalDate fromPositionDate,
             LocalDate toPositionDate,

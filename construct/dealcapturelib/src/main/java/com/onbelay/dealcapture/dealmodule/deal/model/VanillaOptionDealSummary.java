@@ -11,7 +11,7 @@ import org.hibernate.annotations.Immutable;
 
 @Entity
 @Immutable
-@DiscriminatorValue("VO")
+@DiscriminatorValue("VanillaOption")
 public class VanillaOptionDealSummary extends DealSummary {
 
     private Integer underlyingPriceIndexId;

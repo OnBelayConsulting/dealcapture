@@ -69,7 +69,7 @@ public class GeneratePositionsWithPowerProfileWithBasisServiceTest extends Posit
         List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
                 fixedPriceMarketPowerProfileDeal.generateEntityId());
 
-        assertEquals(107, positionSnapshots.size());
+        assertEquals(129, positionSnapshots.size());
 
         PhysicalPositionSnapshot positionSnapshot = (PhysicalPositionSnapshot) positionSnapshots.get(0);
         assertEquals(fixedPriceMarketPowerProfileDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());

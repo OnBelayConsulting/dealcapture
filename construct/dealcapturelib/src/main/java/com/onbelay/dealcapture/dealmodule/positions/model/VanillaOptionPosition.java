@@ -12,7 +12,7 @@ import com.onbelay.dealcapture.riskfactor.repository.PriceRiskFactorRepository;
 import jakarta.persistence.*;
 
 @Entity
-@DiscriminatorValue("VO")
+@DiscriminatorValue("VanillaOption")
 public class VanillaOptionPosition extends DealPosition {
 
     private PriceRiskFactor underlyingPriceRiskFactor;

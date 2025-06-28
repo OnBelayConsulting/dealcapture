@@ -23,6 +23,7 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
+import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummary;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -36,6 +37,7 @@ public class OrganizationRoleRepositoryBean extends BaseRepository<OrganizationR
 	public static final String FIND_BY_SHORT_NAME = "OrganizationRoleRepository.FIND_BY_SHORT_NAME";
 	public static final String GET_BY_SHORT_NAME_ROLE_TYPE = "OrganizationRoleRepository.GET_BY_SHORT_NAME_ROLE_TYPE";
 	public static final String FIND_BY_ORGANIZATION_ID = "OrganizationRoleRepository.FIND_BY_ORGANIZATION_ID";
+	public static final String FIND_SUMMARIES_LIKE_SHORT_NAME = "OrganizationRoleRepository.FIND_SUMMARIES_LIKE_SHORT_NAME";
 
 	@Autowired
 	private OrganizationRoleColumnDefinitions organizationRoleColumnDefinitions;
@@ -66,6 +68,27 @@ public class OrganizationRoleRepositoryBean extends BaseRepository<OrganizationR
 					"shortName",
 					shortName);
 	}
+
+
+	@Override
+	public List<OrganizationRoleSummary> findAllLikeShortName(String shortName, OrganizationRoleType organizationRoleType) {
+		String searchName = shortName + "%";
+		String[] names = {"shortName", "roleType"};
+		Object[] parms = {searchName, organizationRoleType.getCode()};
+		return (List<OrganizationRoleSummary>) executeReportQuery(
+				FIND_SUMMARIES_LIKE_SHORT_NAME,
+				names,
+				parms);
+	}
+
+
+	@Override
+	public List<OrganizationRole> findOrganizationRoles(DefinedQuery query) {
+		return executeDefinedQuery(
+				organizationRoleColumnDefinitions,
+				query);
+	}
+
 
 	@Override
 	public OrganizationRole getByShortNameAndRoleType(

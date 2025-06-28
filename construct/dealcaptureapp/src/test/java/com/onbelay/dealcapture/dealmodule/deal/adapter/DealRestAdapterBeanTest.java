@@ -1,6 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.deal.adapter;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContactFixture;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
@@ -34,7 +36,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
 
     @Autowired
     private DealRestAdapter dealRestAdapter;
-
+    private BusinessContact contact;
     private CompanyRole companyRole;
     private CounterpartyRole counterpartyRole;
     private PriceIndex priceIndex;
@@ -49,6 +51,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
     @Override
     public void setUp() {
         super.setUp();
+        contact = BusinessContactFixture.createCompanyTrader("hans", "gruber", "gruber@terror.com");
         companyRole = OrganizationRoleFixture.createCompanyRole(myOrganization);
         counterpartyRole = OrganizationRoleFixture.createCounterpartyRole(myOrganization);
 
@@ -83,6 +86,8 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
                         CurrencyCode.USD,
                         UnitOfMeasureCode.GJ));
 
+        dealSnapshot.setCompanyTraderId(contact.generateEntityId());
+
         TransactionResult result = dealRestAdapter.save(dealSnapshot);
         flush();
         PhysicalDeal physicalDeal = (PhysicalDeal) dealRepository.load(result.getEntityId());
@@ -111,7 +116,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
     @Test
     public void createIndexPhysicalDeal() {
         PhysicalDealSnapshot dealSnapshot = new PhysicalDealSnapshot();
-
+        dealSnapshot.setCompanyTraderId(contact.generateEntityId());
         dealSnapshot.setCompanyRoleId(companyRole.generateEntityId());
         dealSnapshot.setCounterpartyRoleId(counterpartyRole.generateEntityId());
 

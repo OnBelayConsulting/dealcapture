@@ -156,6 +156,7 @@ public abstract class PositionsServiceWithHourlyTestCase extends DealCaptureSpri
 				BigDecimal.TEN,
 				UnitOfMeasureCode.GJ,
 				dealPriceHourlyIndex);
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.USD);
 		indexSellDeal = PhysicalDeal.create(snapshot);
 
@@ -177,6 +178,7 @@ public abstract class PositionsServiceWithHourlyTestCase extends DealCaptureSpri
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		fixedPriceSellDeal = PhysicalDeal.create(snapshot);
 
@@ -199,6 +201,7 @@ public abstract class PositionsServiceWithHourlyTestCase extends DealCaptureSpri
 						CurrencyCode.CAD,
 						UnitOfMeasureCode.GJ));
 
+		snapshot.setCompanyTraderId(myBusinessContact.generateEntityId());
 		snapshot.getDealDetail().setVolumeFrequencyCode(FrequencyCode.HOURLY);
 		snapshot.getDealDetail().setSettlementCurrencyCode(CurrencyCode.CAD);
 		fixedPriceHourlySellDeal = PhysicalDeal.create(snapshot);

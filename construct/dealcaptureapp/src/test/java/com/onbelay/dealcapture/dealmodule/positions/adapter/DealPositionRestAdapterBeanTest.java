@@ -3,35 +3,23 @@ package com.onbelay.dealcapture.dealmodule.positions.adapter;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
+import com.onbelay.dealcapture.businesscontact.model.BusinessContactFixture;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
-import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter.DealPositionColumnType;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionsFixture;
 import com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter.PhysicalPositionColumnType;
-import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
-import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.EvaluationContextRequest;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FileReportResult;
-import com.onbelay.dealcapture.organization.model.CompanyRole;
-import com.onbelay.dealcapture.organization.model.CounterpartyRole;
-import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
-import com.onbelay.dealcapture.pricing.model.*;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactor;
-import com.onbelay.dealcapture.riskfactor.model.FxRiskFactorFixture;
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactor;
-import com.onbelay.dealcapture.riskfactor.model.PriceRiskFactorFixture;
-import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
-import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
-import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.FrequencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -44,7 +32,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,13 +44,20 @@ public class DealPositionRestAdapterBeanTest extends DealPositionRestTestCase {
     @Autowired
     private DealPositionRestAdapter dealPositionRestAdapter;
 
+    @Autowired
+    private ValuePositionsService valuePositionsService;
+
+
+    private BusinessContact contact;
     private PhysicalDeal physicalDeal;
 
     @Override
     public void setUp() {
         super.setUp();
+        contact = BusinessContactFixture.createCompanyTrader("hans", "gruber", "gruber@terror.com");
 
         physicalDeal = DealFixture.createPricePhysicalDeal(
+                contact,
                 CommodityCode.CRUDE,
                 "5566",
                 companyRole,
@@ -101,66 +95,6 @@ public class DealPositionRestAdapterBeanTest extends DealPositionRestTestCase {
 
     }
 
-    @Test
-    public void generatePositions() {
-        EvaluationContextRequest request = new EvaluationContextRequest();
-        request.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
-        request.setCreatedDateTime(createdDateTime);
-        request.setFromDate(fromMarketDate);
-        request.setToDate(toMarketDate);
-        request.setQueryText( "WHERE dealId eq " + physicalDeal.getId());
-
-        dealPositionRestAdapter.generatePositions(request);
-
-        List<DealPositionSnapshot> snapshots = dealPositionService.findPositionsByDeal(physicalDeal.generateEntityId());
-        assertTrue(snapshots.size() > 0);
-    }
-
-    @Test
-    public void valuePositions() {
-        dealService.updateDealPositionGenerationStatusToPending(List.of(physicalDeal.getId()));
-        DealPositionsEvaluationContext dealPositionsEvaluationContext = new DealPositionsEvaluationContext(
-                CurrencyCode.CAD,
-                createdDateTime,
-                fromMarketDate,
-                toMarketDate);
-
-
-        generatePositionsService.generatePositions(
-                "Test",
-                dealPositionsEvaluationContext,
-                List.of(physicalDeal.getId()));
-        flush();
-
-        priceRiskFactorService.valueRiskFactors(
-                new DefinedQuery("PriceRiskFactor"),
-                LocalDateTime.now());
-
-        fxRiskFactorService.valueRiskFactors(
-                new DefinedQuery("FxRiskFactor"),
-                LocalDateTime.now());
-        flush();
-        clearCache();
-
-        String query = "WHERE ticketNo eq '" + physicalDeal.getDealDetail().getTicketNo() + "'";
-        EvaluationContextRequest request = new EvaluationContextRequest();
-        request.setQueryText(query);
-        request.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
-        request.setCreatedDateTime(createdDateTime);
-        request.setFromDate(fromMarketDate);
-        request.setToDate(toMarketDate);
-
-        dealPositionRestAdapter.valuePositions(request);
-        flush();
-        clearCache();
-
-        DealPositionSnapshotCollection collection = dealPositionRestAdapter.find(query, 0, 500);
-        DealPositionSnapshot snapshot = collection.getSnapshots().get(0);
-        assertNotNull(snapshot.getSettlementDetail().getMarkToMarketValuation());
-
-    }
-
-
 
     @Test
     public void fetchPositionViewsAsCSV() {
@@ -187,17 +121,17 @@ public class DealPositionRestAdapterBeanTest extends DealPositionRestTestCase {
         flush();
         clearCache();
 
-        String query = "WHERE ticketNo eq '" + physicalDeal.getDealDetail().getTicketNo() + "'";
-        EvaluationContextRequest request = new EvaluationContextRequest();
-        request.setQueryText(query);
-        request.setCurrencyCodeValue(CurrencyCode.CAD.getCode());
-        request.setCreatedDateTime(createdDateTime);
-        request.setFromDate(fromMarketDate);
-        request.setToDate(toMarketDate);
+        valuePositionsService.valuePositions(
+                List.of(physicalDeal.getId()),
+                CurrencyCode.CAD,
+                fromMarketDate,
+                toMarketDate,
+                createdDateTime,
+                LocalDateTime.now());
 
-        dealPositionRestAdapter.valuePositions(request);
         flush();
         clearCache();
+        String query = "WHERE ticketNo eq '" + physicalDeal.getDealDetail().getTicketNo() + "'";
 
         String positionQuery = query + " ORDER BY startDate";
         FileReportResult fileReportResult = dealPositionRestAdapter.findPositionsAsCSV(positionQuery, 0, 500);
@@ -219,7 +153,7 @@ public class DealPositionRestAdapterBeanTest extends DealPositionRestTestCase {
             String ticketNo = record.get(DealPositionColumnType.TICKET_NO.getCode());
             assertEquals("5566", ticketNo);
 
-            assertEquals("PHY", record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
+            assertEquals(DealTypeCode.PHYSICAL_DEAL.getCode(), record.get(DealPositionColumnType.DEAL_TYPE.getCode()));
             assertEquals("SELL", record.get(DealPositionColumnType.BUY_SELL.getCode()));
             assertEquals("2023-01-01", record.get(DealPositionColumnType.START_DATE.getCode()));
             assertEquals("2023-01-01", record.get(DealPositionColumnType.END_DATE.getCode()));
@@ -227,7 +161,7 @@ public class DealPositionRestAdapterBeanTest extends DealPositionRestTestCase {
             assertEquals("CAD", record.get(DealPositionColumnType.CURRENCY.getCode()));
             assertEquals("10.00",  record.get(DealPositionColumnType.VOL_QUANTITY.getCode()));
             assertEquals("GJ", record.get(DealPositionColumnType.VOL_UNIT_OF_MEASURE.getCode()));
-            assertEquals("DAILY",record.get(DealPositionColumnType.POWER_FLOW_CODE.getCode()));
+            assertEquals("Daily",record.get(DealPositionColumnType.POWER_FLOW_CODE.getCode()));
             assertEquals("2023-01-01T01:00", record.get(DealPositionColumnType.CREATED_DATE_TIME.getCode()));
             assertNotNull(record.get(DealPositionColumnType.VALUED_DATE_TIME.getCode()));
             assertEquals("-90.00", record.get(DealPositionColumnType.MTM_AMT.getCode()));
@@ -237,11 +171,11 @@ public class DealPositionRestAdapterBeanTest extends DealPositionRestTestCase {
             assertEquals("10.00", record.get(DealPositionColumnType.TOTAL_SETTLEMENT_AMT.getCode()));
             assertEquals("0", record.get(DealPositionColumnType.ERROR_CODE.getCode()));
             assertEquals("", record.get(DealPositionColumnType.ERROR_MSG.getCode()));
-            assertEquals("FIXED", record.get(PhysicalPositionColumnType.DEAL_PRICE_VALUATION_CODE.getCode()));
+            assertEquals("Fixed", record.get(PhysicalPositionColumnType.DEAL_PRICE_VALUATION_CODE.getCode()));
             assertEquals("1.000", record.get(PhysicalPositionColumnType.DEAL_PRICE.getCode()));
             assertEquals("", record.get(PhysicalPositionColumnType.DEAL_INDEX_PRICE.getCode()));
             assertEquals("1.000", record.get(PhysicalPositionColumnType.TOTAL_DEAL_PRICE.getCode()));
-            assertEquals("INDEX", record.get(PhysicalPositionColumnType.MARKET_VALUATION_CODE.getCode()));
+            assertEquals("Index", record.get(PhysicalPositionColumnType.MARKET_VALUATION_CODE.getCode()));
             assertEquals("10.000", record.get(PhysicalPositionColumnType.MARKET_PRICE.getCode()));
             parser.close();
         } catch (IOException e) {

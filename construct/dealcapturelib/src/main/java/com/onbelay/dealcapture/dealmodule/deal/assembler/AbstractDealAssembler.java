@@ -36,6 +36,16 @@ public abstract class AbstractDealAssembler extends EntityAssembler {
 		snapshot.setCounterpartyRoleId(
 				deal.getCounterpartyRole().generateEntityId());
 
+		snapshot.setCompanyTraderId(deal.getCompanyTrader().generateEntityId());
+
+		if (deal.getCounterpartyTrader() != null) {
+			snapshot.setCounterpartyTraderId(deal.getCounterpartyTrader().generateEntityId());
+		}
+
+		if (deal.getAdministrator() != null) {
+			snapshot.setAdministratorId(deal.getAdministrator().generateEntityId());
+		}
+
 	}
 	
 

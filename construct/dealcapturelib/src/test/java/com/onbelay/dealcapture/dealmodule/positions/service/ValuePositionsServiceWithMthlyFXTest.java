@@ -93,7 +93,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
         FxRiskFactorSnapshot rf = fxRiskFactorService.findByMarketDate(fxIndex.generateEntityId(), startDate);
 
         valuePositionsService.valuePositions(
-                fixedPriceBuyDeal.generateEntityId(),
+                List.of(fixedPriceBuyDeal.getId()),
                 CurrencyCode.USD,
                 fromMarketDate,
                 toMarketDate,
@@ -152,7 +152,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                fixedPriceSellDeal.generateEntityId(),
+                List.of(fixedPriceSellDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -205,7 +205,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                indexBuyDeal.generateEntityId(),
+                List.of(indexBuyDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -255,7 +255,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                indexSellDeal.generateEntityId(),
+                List.of(indexSellDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,
@@ -310,7 +310,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                indexPlusBuyDeal.generateEntityId(),
+                List.of(indexPlusBuyDeal.getId()),
                 CurrencyCode.USD,
                 fromMarketDate,
                 toMarketDate,
@@ -360,7 +360,7 @@ public class ValuePositionsServiceWithMthlyFXTest extends PositionsServiceWithMt
                 LocalDateTime.now());
 
         valuePositionsService.valuePositions(
-                indexPlusSellDeal.generateEntityId(),
+                List.of(indexPlusSellDeal.getId()),
                 CurrencyCode.CAD,
                 fromMarketDate,
                 toMarketDate,

@@ -20,6 +20,7 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.model.OrganizationRole;
+import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSummary;
 
 import java.util.List;
 
@@ -37,6 +38,10 @@ public interface OrganizationRoleRepository {
 	
 	public List<OrganizationRole> findByShortName(String name);
 
+
+	List<OrganizationRoleSummary> findAllLikeShortName(String shortName, OrganizationRoleType organizationRoleType);
+
+    List<OrganizationRole> findOrganizationRoles(DefinedQuery query);
 
     OrganizationRole getByShortNameAndRoleType(
 			String organizationShortName,
