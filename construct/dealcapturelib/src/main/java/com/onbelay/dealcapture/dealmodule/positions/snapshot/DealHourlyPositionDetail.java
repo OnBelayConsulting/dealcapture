@@ -2,12 +2,8 @@ package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.onbelay.core.codes.annotations.CodeLabelSerializer;
-import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
-import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.pricing.enums.IndexType;
@@ -18,7 +14,6 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Transient;
 import org.hibernate.type.YesNoConverter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -228,8 +223,6 @@ public class DealHourlyPositionDetail extends AbstractDetail {
     }
 
     @Column(name = "UNIT_OF_MEASURE_CODE")
-    @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
-    @JsonSerialize(using = CodeLabelSerializer.class)
     public String getUnitOfMeasureValue() {
         return unitOfMeasureValue;
     }

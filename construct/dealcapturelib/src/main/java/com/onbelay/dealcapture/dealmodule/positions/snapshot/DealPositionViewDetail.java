@@ -1,13 +1,9 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.onbelay.core.codes.annotations.CodeLabelSerializer;
-import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
@@ -211,8 +207,6 @@ public class DealPositionViewDetail {
     }
 
     @Column(name = "VOLUME_UOM_CODE")
-    @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
-    @JsonSerialize(using = CodeLabelSerializer.class)
     public String getVolumeUnitOfMeasureValue() {
         return volumeUnitOfMeasureValue;
     }

@@ -2,9 +2,6 @@ package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.onbelay.core.codes.annotations.CodeLabelSerializer;
-import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.entity.snapshot.AbstractDetail;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Quantity;
@@ -191,8 +188,6 @@ public class DealPositionDetail extends AbstractDetail {
     }
 
     @Column(name = "VOLUME_UOM_CODE")
-    @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
-    @JsonSerialize(using = CodeLabelSerializer.class)
     public String getVolumeUnitOfMeasureValue() {
         return volumeUnitOfMeasureValue;
     }
@@ -212,8 +207,6 @@ public class DealPositionDetail extends AbstractDetail {
     }
 
     @Column(name = "FREQUENCY_CODE")
-    @InjectCodeLabel(codeFamily = "frequencyCode", injectedPropertyName = "frequencyCodeItem")
-    @JsonSerialize(using = CodeLabelSerializer.class)
     public String getFrequencyCodeValue() {
         return frequencyCodeValue;
     }

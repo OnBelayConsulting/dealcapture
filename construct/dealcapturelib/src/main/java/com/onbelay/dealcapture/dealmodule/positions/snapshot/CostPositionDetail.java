@@ -1,9 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.onbelay.core.codes.annotations.CodeLabelSerializer;
-import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -238,8 +235,6 @@ public class CostPositionDetail {
     }
 
     @Column(name = "UNIT_OF_MEASURE_CODE")
-    @InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "UnitOfMeasureCodeItem")
-    @JsonSerialize(using = CodeLabelSerializer.class)
     public String getUnitOfMeasureValue() {
         return unitOfMeasureValue;
     }
@@ -259,8 +254,6 @@ public class CostPositionDetail {
     }
 
     @Column(name = "FREQUENCY_CODE")
-    @InjectCodeLabel(codeFamily = "frequencyCode", injectedPropertyName = "frequencyCodeItem")
-    @JsonSerialize(using = CodeLabelSerializer.class)
     public String getFrequencyCodeValue() {
         return frequencyCodeValue;
     }

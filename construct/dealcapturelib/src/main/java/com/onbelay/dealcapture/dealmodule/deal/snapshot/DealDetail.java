@@ -17,9 +17,6 @@ package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.onbelay.core.codes.annotations.CodeLabelSerializer;
-import com.onbelay.core.codes.annotations.InjectCodeLabel;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
@@ -170,8 +167,6 @@ public class DealDetail {
 	}
 
 	@Column(name = "VOLUME_UOM_CODE")
-	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "volumeUnitOfMeasureCodeItem")
-	@JsonSerialize(using = CodeLabelSerializer.class)
 	public String getVolumeUnitOfMeasureCodeValue() {
 		return volumeUnitOfMeasureCodeValue;
 	}
@@ -247,8 +242,6 @@ public class DealDetail {
 	}
 	
 	@Column(name = "DEAL_STATUS_CODE")
-	@InjectCodeLabel(codeFamily = "dealStatusCode", injectedPropertyName = "dealStatusCodeItem")
-	@JsonSerialize(using = CodeLabelSerializer.class)
 	public String getDealStatusCodeValue() {
 		return dealStatusCodeValue;
 	}
@@ -308,8 +301,6 @@ public class DealDetail {
 	}
 	
 	@Column(name = "BUY_SELL_CODE")
-	@InjectCodeLabel(codeFamily = "buySellCode", injectedPropertyName = "buySellCodeItem")
-	@JsonSerialize(using = CodeLabelSerializer.class)
 	public String getBuySellCodeValue() {
 		return buySellCodeValue;
 	}
@@ -382,8 +373,6 @@ public class DealDetail {
 	}
 
 	@Column(name="FIXED_PRICE_CURRENCY_CODE")
-	@InjectCodeLabel(codeFamily = "currencyCode", injectedPropertyName = "dealPriceCurrencyCodeItem")
-	@JsonSerialize(using = CodeLabelSerializer.class)
 	public String getFixedPriceCurrencyCodeValue() {
 		return fixedPriceCurrencyCodeValue;
 	}
@@ -404,8 +393,6 @@ public class DealDetail {
 	}
 
 	@Column(name="FIXED_PRICE_UOM_CODE")
-	@InjectCodeLabel(codeFamily = "unitOfMeasureCode", injectedPropertyName = "dealPriceUnitOfMeasureCodeItem")
-	@JsonSerialize(using = CodeLabelSerializer.class)
 	public String getFixedPriceUnitOfMeasureCodeValue() {
 		return fixedPriceUnitOfMeasureCodeValue;
 	}
