@@ -16,7 +16,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
 import com.onbelay.dealcapture.dealmodule.positions.model.FinancialSwapPositionValuationResult;
-import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionValuationResult;
 import com.onbelay.dealcapture.dealmodule.positions.model.PositionValuationResult;
 
 import java.sql.PreparedStatement;

@@ -16,7 +16,6 @@
 package com.onbelay.dealcapture.riskfactor.snapshot;
 
 import com.onbelay.core.entity.snapshot.AbstractSnapshotCollection;
-import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 
 import java.util.List;
 

@@ -15,13 +15,9 @@
  */
 package com.onbelay.dealcapture.pricing.model;
 
-import com.onbelay.dealcapture.pricing.enums.BenchSettlementRuleCode;
-import com.onbelay.dealcapture.pricing.enums.IndexType;
 import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshot;
-import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

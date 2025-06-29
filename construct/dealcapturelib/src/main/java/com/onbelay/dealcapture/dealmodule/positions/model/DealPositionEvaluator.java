@@ -10,7 +10,6 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSu
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.dealcapture.unitofmeasure.UnitOfMeasureConverter;
-import com.onbelay.shared.enums.BuySellCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.apache.logging.log4j.LogManager;

@@ -20,7 +20,6 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CreateDealFactory {

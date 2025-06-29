@@ -1,8 +1,5 @@
 package com.onbelay.dealcapture.pricing.priceCurvesfilereader;
 
-import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.DealColumnType;
-import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.SourceFileFormat;
-
 import java.util.ArrayList;
 import java.util.List;
 

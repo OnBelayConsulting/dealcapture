@@ -25,8 +25,8 @@ import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepositor
 import com.onbelay.dealcapture.organization.snapshot.OrganizationDetail;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationSnapshot;
-
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 

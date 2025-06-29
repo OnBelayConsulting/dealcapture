@@ -24,7 +24,6 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
-import com.onbelay.dealcapture.pricing.model.PriceIndexRepositoryBean;
 import jakarta.persistence.*;
 
 /**

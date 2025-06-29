@@ -1,8 +1,5 @@
 package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PhysicalDealFileFormat extends DealFileFormat {
 
     public PhysicalDealFileFormat() {

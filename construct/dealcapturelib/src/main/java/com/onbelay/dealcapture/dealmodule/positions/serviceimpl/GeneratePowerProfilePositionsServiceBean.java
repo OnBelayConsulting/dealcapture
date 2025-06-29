@@ -9,7 +9,6 @@ import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionGe
 import com.onbelay.dealcapture.dealmodule.positions.service.EvaluationContext;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePowerProfilePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

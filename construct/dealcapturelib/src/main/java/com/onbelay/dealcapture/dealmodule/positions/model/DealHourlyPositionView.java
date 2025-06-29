@@ -6,14 +6,12 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionDetail;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourPriceRiskFactorIdMap;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourFixedValueDayDetail;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourPriceRiskFactorIdMap;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
-
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "DEAL_HOURLY_POSITION_VIEW")

@@ -17,7 +17,6 @@ package com.onbelay.dealcapture.riskfactor.batch.sql;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.dealmodule.positions.model.CostPositionValuationResult;
 import com.onbelay.dealcapture.riskfactor.valuatorimpl.PriceRiskFactorEvaluationResult;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;

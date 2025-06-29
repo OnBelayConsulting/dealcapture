@@ -5,7 +5,6 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePosition;
 import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionView;
-import com.onbelay.shared.enums.CurrencyCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

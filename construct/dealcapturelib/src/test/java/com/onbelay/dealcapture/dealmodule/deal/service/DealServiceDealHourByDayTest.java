@@ -16,9 +16,9 @@
 package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealHourByDayRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealHourByDaySnapshot;

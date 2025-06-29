@@ -22,15 +22,15 @@ import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.core.utils.SubLister;
-import com.onbelay.dealcapture.common.snapshot.EntityIdCollection;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexReport;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Repository (value="priceIndexRepository")
 @Transactional

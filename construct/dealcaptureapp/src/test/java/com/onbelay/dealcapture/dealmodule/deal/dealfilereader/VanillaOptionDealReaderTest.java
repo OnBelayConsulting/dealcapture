@@ -1,7 +1,10 @@
 package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
 import com.onbelay.dealcapture.common.enums.OptionExpiryDateRuleToken;
-import com.onbelay.dealcapture.dealmodule.deal.enums.*;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.OptionStyleCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.OptionTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.TradeTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.VanillaOptionDealSnapshot;
@@ -26,7 +29,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @WithMockUser
 public class VanillaOptionDealReaderTest extends DealCaptureAppSpringTestCase {

@@ -17,24 +17,29 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.core.query.enums.ExpressionOperator;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.DefinedWhereExpression;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.busmath.model.Price;
-import com.onbelay.dealcapture.busmath.model.Quantity;
 import com.onbelay.dealcapture.dealmodule.deal.enums.*;
-import com.onbelay.dealcapture.dealmodule.deal.model.*;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDeal;
+import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDealFixture;
+import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.VanillaOptionDealSnapshot;
-import com.onbelay.shared.enums.*;
+import com.onbelay.shared.enums.BuySellCode;
+import com.onbelay.shared.enums.CommodityCode;
+import com.onbelay.shared.enums.CurrencyCode;
+import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class VanillaOptionDealServiceTest extends VanillaOptionDealServiceTestCase {
 

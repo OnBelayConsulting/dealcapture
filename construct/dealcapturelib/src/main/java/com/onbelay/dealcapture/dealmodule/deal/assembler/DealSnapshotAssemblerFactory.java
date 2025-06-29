@@ -18,7 +18,6 @@ package com.onbelay.dealcapture.dealmodule.deal.assembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.assembler.VanillaOptionPositionAssembler;
 
 import java.util.ArrayList;
 import java.util.HashMap;

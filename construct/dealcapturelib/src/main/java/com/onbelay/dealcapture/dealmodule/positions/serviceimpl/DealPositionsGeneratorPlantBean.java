@@ -1,12 +1,10 @@
 package com.onbelay.dealcapture.dealmodule.positions.serviceimpl;
 
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
-import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDealSummary;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGeneratorFactory;
 import com.onbelay.dealcapture.dealmodule.positions.model.PowerProfilePositionView;

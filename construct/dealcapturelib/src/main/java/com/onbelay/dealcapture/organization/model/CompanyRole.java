@@ -15,13 +15,15 @@
  */
 package com.onbelay.dealcapture.organization.model;
 
-import jakarta.persistence.*;
-
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.snapshot.CompanyDetail;
 import com.onbelay.dealcapture.organization.snapshot.CompanyRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "COMPANY_ROLE")

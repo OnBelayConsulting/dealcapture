@@ -34,7 +34,6 @@ import com.onbelay.dealcapture.pricing.repository.InterestIndexRepository;
 import com.onbelay.dealcapture.pricing.service.InterestIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshot;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -16,7 +16,10 @@
 package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
-import com.onbelay.dealcapture.dealmodule.deal.model.*;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthFixture;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
+import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealDayByMonthRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDayByMonthSnapshot;
 import com.onbelay.shared.enums.CommodityCode;

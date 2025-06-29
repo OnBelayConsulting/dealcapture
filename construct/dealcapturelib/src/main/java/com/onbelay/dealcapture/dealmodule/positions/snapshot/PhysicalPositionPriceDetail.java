@@ -1,11 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.snapshot;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.onbelay.shared.enums.CurrencyCode;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Transient;
-import org.hibernate.type.YesNoConverter;
 
 import java.math.BigDecimal;
 

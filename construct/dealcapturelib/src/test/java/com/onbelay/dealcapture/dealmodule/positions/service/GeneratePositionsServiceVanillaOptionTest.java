@@ -1,16 +1,9 @@
 package com.onbelay.dealcapture.dealmodule.positions.service;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.PositionGenerationStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDeal;
-import com.onbelay.dealcapture.dealmodule.deal.service.FinancialSwapDealServiceTestCase;
-import com.onbelay.dealcapture.dealmodule.deal.service.PowerProfileService;
 import com.onbelay.dealcapture.dealmodule.deal.service.VanillaOptionDealServiceTestCase;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.VanillaOptionPositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
@@ -20,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class GeneratePositionsServiceVanillaOptionTest extends VanillaOptionDealServiceTestCase {
 

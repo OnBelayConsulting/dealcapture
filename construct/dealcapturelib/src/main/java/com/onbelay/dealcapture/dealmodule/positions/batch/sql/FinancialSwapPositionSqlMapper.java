@@ -17,7 +17,6 @@ package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionSnapshot;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

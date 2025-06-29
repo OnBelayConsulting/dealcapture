@@ -5,7 +5,6 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

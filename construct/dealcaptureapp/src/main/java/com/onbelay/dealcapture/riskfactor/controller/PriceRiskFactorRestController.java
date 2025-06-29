@@ -20,7 +20,6 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
-import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshotCollection;
 import com.onbelay.dealcapture.riskfactor.adapter.PriceRiskFactorRestAdapter;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshotCollection;

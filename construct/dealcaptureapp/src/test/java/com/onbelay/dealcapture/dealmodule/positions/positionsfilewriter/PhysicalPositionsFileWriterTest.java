@@ -5,7 +5,6 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
-import com.onbelay.dealcapture.dealmodule.positions.model.FinancialSwapPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.PhysicalPositionView;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import com.onbelay.shared.enums.BuySellCode;

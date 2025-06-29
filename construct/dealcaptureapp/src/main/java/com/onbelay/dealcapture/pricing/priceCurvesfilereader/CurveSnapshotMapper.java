@@ -1,18 +1,8 @@
 package com.onbelay.dealcapture.pricing.priceCurvesfilereader;
 
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.BaseDealSnapshotMapper;
-import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.DealColumnType;
-import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.PhysicalDealFileFormat;
-import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.SourceFileFormat;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
-import com.onbelay.dealcapture.pricing.model.PriceCurve;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
-import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

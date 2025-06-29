@@ -1,22 +1,14 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
-import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.busmath.model.Amount;
-import com.onbelay.dealcapture.busmath.model.Conversion;
 import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.common.enums.CalculatedErrorType;
 import com.onbelay.dealcapture.dealmodule.deal.enums.OptionTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.optionvaluation.OptionEvaluator;
 import com.onbelay.dealcapture.dealmodule.positions.optionvaluation.OptionEvaluatorFactory;
 import com.onbelay.dealcapture.dealmodule.positions.optionvaluation.OptionResult;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourFixedValueDayDetail;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSummary;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
-import com.onbelay.dealcapture.unitofmeasure.UnitOfMeasureConverter;
 import com.onbelay.shared.enums.BuySellCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +17,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.List;
 
 public class VanillaOptionsPositionEvaluator extends DealPositionEvaluator implements PositionEvaluator {
     private static final Logger logger = LogManager.getLogger();

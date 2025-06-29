@@ -5,10 +5,13 @@ import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary;
-import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
-import com.onbelay.dealcapture.dealmodule.positions.batch.sql.*;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.CostPositionsBatchInserter;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealHourlyPositionsBatchInserter;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.DealPositionsBatchInserter;
+import com.onbelay.dealcapture.dealmodule.positions.batch.sql.PositionRiskFactorMappingBatchInserter;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionGenerator;
 import com.onbelay.dealcapture.dealmodule.positions.model.PositionGenerationResult;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionsEvaluationContext;
@@ -26,8 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class GeneratePositionsServiceBean extends BasePositionsServiceBean implements GeneratePositionsService {

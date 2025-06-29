@@ -15,12 +15,12 @@
  */
 package com.onbelay.dealcapture.dealmodule.positions.batch.sql;
 
-import com.onbelay.core.entity.snapshot.AbstractSnapshot;
-import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.dealmodule.positions.model.PositionValuationResult;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 

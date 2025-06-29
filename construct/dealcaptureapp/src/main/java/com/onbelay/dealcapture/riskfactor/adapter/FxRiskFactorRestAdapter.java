@@ -4,7 +4,6 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshotCollection;
-import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 
 import java.util.List;
 

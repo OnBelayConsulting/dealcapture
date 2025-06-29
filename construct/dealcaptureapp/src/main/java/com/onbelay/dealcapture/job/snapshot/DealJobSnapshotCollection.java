@@ -16,7 +16,6 @@
 package com.onbelay.dealcapture.job.snapshot;
 
 import com.onbelay.core.entity.snapshot.AbstractSnapshotCollection;
-import com.onbelay.dealcapture.job.snapshot.DealJobSnapshot;
 
 import java.util.List;
 

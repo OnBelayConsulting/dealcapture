@@ -15,11 +15,14 @@
  */
 package com.onbelay.dealcapture.pricing.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
+import com.onbelay.dealcapture.pricing.model.PricingLocation;
+import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
+import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshotCollection;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,15 +36,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
-import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
-import com.onbelay.dealcapture.pricing.model.PricingLocation;
-import com.onbelay.dealcapture.pricing.model.PricingLocationFixture;
-import com.onbelay.dealcapture.pricing.repository.PricingLocationRepository;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshotCollection;
-
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
 @WithMockUser(username="test")

@@ -20,8 +20,6 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealSummary;
-import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDealSummary;
 
 import java.time.LocalDateTime;
 import java.util.List;

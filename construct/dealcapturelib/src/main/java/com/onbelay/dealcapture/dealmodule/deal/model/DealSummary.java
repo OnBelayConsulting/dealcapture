@@ -20,15 +20,8 @@ import com.onbelay.core.entity.model.AbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDetail;
-import com.onbelay.shared.enums.BuySellCode;
-import com.onbelay.shared.enums.CurrencyCode;
-import com.onbelay.shared.enums.FrequencyCode;
-import com.onbelay.shared.enums.UnitOfMeasureCode;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 
 @Entity

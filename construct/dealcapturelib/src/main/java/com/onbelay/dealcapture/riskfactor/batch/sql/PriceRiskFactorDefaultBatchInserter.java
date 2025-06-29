@@ -16,22 +16,15 @@
 package com.onbelay.dealcapture.riskfactor.batch.sql;
 
 import com.onbelay.core.entity.component.ApplicationContextFactory;
-import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.core.utils.SubLister;
 import com.onbelay.dealcapture.batch.BatchDefaultInsertWorker;
-import com.onbelay.dealcapture.dealmodule.positions.batch.sql.CostPositionSqlMapper;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.CostPositionSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.sql.*;
 import java.util.List;
 
 @Transactional

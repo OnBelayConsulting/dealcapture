@@ -1,28 +1,18 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.common.enums.OptionExpiryDateRuleToken;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDealSummary;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
-import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.VanillaOptionPositionSnapshot;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorMappingSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
-import com.onbelay.dealcapture.riskfactor.components.PriceIndexPositionDateContainer;
-import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.RiskFactorManager;
-import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class VanillaOptionDealPositionGenerator extends BaseDealPositionGenerator {
     private static final Logger logger = LogManager.getLogger();

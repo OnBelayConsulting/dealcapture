@@ -17,9 +17,13 @@ package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.*;
+import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDeal;
+import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealFixture;
+import com.onbelay.dealcapture.dealmodule.deal.model.PowerProfile;
+import com.onbelay.dealcapture.dealmodule.deal.model.PowerProfileFixture;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.FinancialSwapDealSnapshot;
-import com.onbelay.dealcapture.pricing.model.*;
+import com.onbelay.dealcapture.pricing.model.PriceIndex;
+import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.shared.enums.*;
 
 import java.math.BigDecimal;

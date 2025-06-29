@@ -22,8 +22,6 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.TradeTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.VanillaOptionDealSnapshot;
-import com.onbelay.dealcapture.pricing.model.InterestIndex;
-import com.onbelay.dealcapture.pricing.model.InterestIndexFixture;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;
 import com.onbelay.dealcapture.pricing.model.PriceIndexFixture;
 import com.onbelay.shared.enums.*;

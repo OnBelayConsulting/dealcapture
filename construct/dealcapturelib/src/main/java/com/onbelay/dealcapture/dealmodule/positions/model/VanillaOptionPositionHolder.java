@@ -1,13 +1,10 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.model.FinancialSwapDealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.model.VanillaOptionDealSummary;
 import com.onbelay.dealcapture.riskfactor.components.FxRiskFactorHolder;
 import com.onbelay.dealcapture.riskfactor.components.PriceRiskFactorHolder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class VanillaOptionPositionHolder extends BasePositionHolder {
     private LocalDate optionExpiryDate;

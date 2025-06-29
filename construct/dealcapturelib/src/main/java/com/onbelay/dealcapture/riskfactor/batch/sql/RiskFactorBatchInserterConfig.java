@@ -1,6 +1,5 @@
 package com.onbelay.dealcapture.riskfactor.batch.sql;
 
-import com.onbelay.dealcapture.dealmodule.positions.batch.sql.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

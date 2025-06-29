@@ -1,7 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealHourByDayDetail;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealHourByDayDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.HourFixedValueDayDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionSettlementDetail;

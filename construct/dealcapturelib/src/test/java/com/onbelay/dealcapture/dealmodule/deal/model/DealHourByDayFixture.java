@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealDayByMonthSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealHourByDaySnapshot;
 
 import java.math.BigDecimal;

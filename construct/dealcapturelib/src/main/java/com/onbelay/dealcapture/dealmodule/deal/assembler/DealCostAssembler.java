@@ -17,7 +17,6 @@ package com.onbelay.dealcapture.dealmodule.deal.assembler;
 
 import com.onbelay.core.entity.assembler.EntityAssembler;
 import com.onbelay.core.entity.snapshot.EntityId;
-import com.onbelay.dealcapture.dealmodule.deal.model.BaseDeal;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealCost;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSnapshot;
 

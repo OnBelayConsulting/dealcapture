@@ -4,8 +4,6 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.OptionTypeCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.math.BigDecimal;
-
 /**
  * The Black-Scholes formula gives a theoretical estimate of
  * the price of European-style options.

@@ -26,7 +26,6 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.PositionRiskFactorM
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 

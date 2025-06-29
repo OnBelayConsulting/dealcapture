@@ -3,7 +3,6 @@ package com.onbelay.dealcapture.organization.assembler;
 import com.onbelay.core.entity.assembler.EntityAssembler;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.model.Organization;
-import com.onbelay.dealcapture.organization.model.OrganizationRole;
 import com.onbelay.dealcapture.organization.snapshot.CompanyRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.CounterpartyRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;

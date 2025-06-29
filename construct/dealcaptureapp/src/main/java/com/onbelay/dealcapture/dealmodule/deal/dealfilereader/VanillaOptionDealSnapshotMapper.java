@@ -5,8 +5,6 @@ import com.onbelay.dealcapture.common.enums.OptionExpiryDateRuleToken;
 import com.onbelay.dealcapture.dealmodule.deal.enums.OptionStyleCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.OptionTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.TradeTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.VanillaOptionDealSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;

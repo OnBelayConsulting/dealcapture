@@ -7,7 +7,6 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
-import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.organization.assembler.OrganizationAssembler;
 import com.onbelay.dealcapture.organization.assembler.OrganizationRoleSnapshotAssemblerFactory;
 import com.onbelay.dealcapture.organization.assembler.OrganizationRoleSummaryAssembler;
@@ -27,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

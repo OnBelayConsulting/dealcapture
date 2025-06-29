@@ -15,14 +15,16 @@
  */
 package com.onbelay.dealcapture.organization.model;
 
-import jakarta.persistence.*;
-
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.snapshot.CounterpartyDetail;
 import com.onbelay.dealcapture.organization.snapshot.CounterpartyRoleSnapshot;
 import com.onbelay.dealcapture.organization.snapshot.OrganizationRoleSnapshot;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "COUNTERPARTY_ROLE")

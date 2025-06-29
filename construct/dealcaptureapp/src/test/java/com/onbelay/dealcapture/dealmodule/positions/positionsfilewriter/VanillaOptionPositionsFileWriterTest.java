@@ -3,7 +3,6 @@ package com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.model.VanillaOptionPositionView;
 import com.onbelay.dealcapture.test.DealCaptureAppSpringTestCase;

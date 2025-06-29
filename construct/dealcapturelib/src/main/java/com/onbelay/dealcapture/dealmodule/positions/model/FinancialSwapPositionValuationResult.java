@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionPriceDetail;
-import com.onbelay.dealcapture.dealmodule.positions.snapshot.PhysicalPositionPriceDetail;
 
 import java.time.LocalDateTime;
 

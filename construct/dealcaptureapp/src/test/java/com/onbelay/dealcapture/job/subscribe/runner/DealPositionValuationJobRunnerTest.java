@@ -15,7 +15,6 @@ import com.onbelay.dealcapture.job.enums.JobTypeCode;
 import com.onbelay.dealcapture.job.publish.snapshot.DealJobRequestPublication;
 import com.onbelay.dealcapture.job.service.DealJobService;
 import com.onbelay.dealcapture.job.snapshot.DealJobSnapshot;
-import com.onbelay.dealcapture.job.snapshot.DealJobSnapshot;
 import com.onbelay.shared.enums.CommodityCode;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.UnitOfMeasureCode;

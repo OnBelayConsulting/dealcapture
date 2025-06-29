@@ -20,7 +20,9 @@ import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
-import com.onbelay.dealcapture.dealmodule.deal.model.*;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealDayByMonthView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealHourByDayView;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealSummary;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 
 import java.time.LocalDate;

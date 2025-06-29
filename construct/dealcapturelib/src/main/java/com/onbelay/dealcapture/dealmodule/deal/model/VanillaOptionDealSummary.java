@@ -2,7 +2,6 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.OptionDealDetail;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Embedded;

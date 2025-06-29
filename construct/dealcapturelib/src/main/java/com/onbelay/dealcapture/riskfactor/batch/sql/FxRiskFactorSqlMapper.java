@@ -18,7 +18,6 @@ package com.onbelay.dealcapture.riskfactor.batch.sql;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.dealcapture.batch.BaseSqlMapper;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
-import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 
 import java.sql.*;
 import java.util.ArrayList;

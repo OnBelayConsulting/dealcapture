@@ -1,7 +1,6 @@
 package com.onbelay.dealcapture.riskfactor.valuatorimpl;
 
 import com.onbelay.dealcapture.busmath.model.FxRate;
-import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.dealmodule.positions.model.BaseValuationResult;
 
 import java.time.LocalDateTime;
