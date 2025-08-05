@@ -5,10 +5,12 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 
 public class FinancialSwapPositionSnapshot extends DealPositionSnapshot {
 
+    private String receivesPriceIndexName;
     private EntityId receivesPriceRiskFactorId;
 
     private EntityId receivesFxRiskFactorId;
 
+    private String paysPriceIndexName;
     private EntityId paysPriceRiskFactorId;
 
     private EntityId paysFxRiskFactorId;
@@ -57,5 +59,21 @@ public class FinancialSwapPositionSnapshot extends DealPositionSnapshot {
 
     public void setPaysFxRiskFactorId(EntityId paysFxRiskFactorId) {
         this.paysFxRiskFactorId = paysFxRiskFactorId;
+    }
+
+    public String getReceivesPriceIndexName() {
+        return receivesPriceIndexName;
+    }
+
+    public void setReceivesPriceIndexName(String receivesPriceIndexName) {
+        this.receivesPriceIndexName = receivesPriceIndexName;
+    }
+
+    public String getPaysPriceIndexName() {
+        return paysPriceIndexName;
+    }
+
+    public void setPaysPriceIndexName(String paysPriceIndexName) {
+        this.paysPriceIndexName = paysPriceIndexName;
     }
 }

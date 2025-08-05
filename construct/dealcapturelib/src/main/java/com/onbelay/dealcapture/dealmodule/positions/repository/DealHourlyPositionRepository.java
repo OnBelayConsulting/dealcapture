@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.dealmodule.positions.model.DealHourlyPosition;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealHourlyPositionView;
 import com.onbelay.shared.enums.CurrencyCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,11 +21,15 @@ public interface DealHourlyPositionRepository {
     List<DealHourlyPositionView> findDealHourlyPositionViews(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
     List<DealHourlyPositionView> findDealHourlyPositionViews(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
     List<Integer> findDealHourlyPositionIds(DefinedQuery definedQuery);

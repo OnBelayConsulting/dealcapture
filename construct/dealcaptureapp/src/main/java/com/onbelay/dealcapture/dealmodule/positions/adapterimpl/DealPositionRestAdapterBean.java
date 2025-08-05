@@ -14,6 +14,7 @@ import com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter.DealPosi
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CreatedDateTimeCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FileReportResult;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -181,5 +183,11 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
         } catch (IOException e) {
             return new FileReportResult("error");
         }
+    }
+
+    @Override
+    public CreatedDateTimeCollection getCreatedDateTimeCollection() {
+        List<LocalDateTime> dateTimes =  dealPositionService.getPositionCreatedDateTimes();
+        return new CreatedDateTimeCollection(dateTimes);
     }
 }

@@ -1,8 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 
-public interface SourceFileFormat {
+public interface SourceFileFormat<T> {
 
-    DealColumnType get(int index);
+    T get(int index);
 
     public String[] getAsArray();
 

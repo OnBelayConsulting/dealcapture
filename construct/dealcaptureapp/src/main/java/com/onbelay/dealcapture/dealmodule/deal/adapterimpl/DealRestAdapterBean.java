@@ -9,8 +9,11 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.adapter.DealRestAdapter;
 import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.DealFileReader;
+import com.onbelay.dealcapture.dealmodule.deal.dealoverridefilereader.DealOverrideFileReader;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.service.DealService;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
+import com.onbelay.dealcapture.job.enums.JobActionCode;
 import com.onbelay.dealcapture.job.enums.JobStatusCode;
 import com.onbelay.dealcapture.job.enums.JobTypeCode;
 import com.onbelay.dealcapture.job.publish.publisher.DealJobRequestPublisher;
@@ -23,8 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRestAdapter {
@@ -100,6 +106,16 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    public TransactionResult saveDealOverridesByMonth(
+            EntityId dealId,
+            DealOverrideMonthSnapshot snapshot) {
+        initializeSession();
+        return dealService.saveDealOverridesByMonth(
+                dealId,
+                snapshot);
+    }
+
+    @Override
     public TransactionResult save(List<BaseDealSnapshot> snapshots) {
         initializeSession();
         return dealService.save(snapshots);
@@ -109,6 +125,55 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     public BaseDealSnapshot load(EntityId dealId) {
         initializeSession();
         return dealService.load(dealId);
+    }
+
+    @Override
+    public DealOverrideMonthSnapshot getDealOverridesForMonth(
+            EntityId dealId,
+            LocalDate overrideDate) {
+        initializeSession();
+
+        LocalDate monthDate = overrideDate.withDayOfMonth(1);
+        DealOverrideSnapshot overrideSnapshot = dealService.fetchDealOverrides(dealId);
+        Optional<DealOverrideMonthSnapshot> search = overrideSnapshot.getOverrideMonths()
+                .stream()
+                .filter(c-> c.getMonthDate().equals(monthDate)).findFirst();
+        return search.orElseGet(() -> new DealOverrideMonthSnapshot(DealErrorCode.INVALID_DEAL_ID.getCode()));
+    }
+
+    @Override
+    public DealOverrideSnapshotCollection fetchDealOverrides(
+            EntityId dealId,
+            Integer start,
+            Integer limit) {
+
+        initializeSession();
+        DealOverrideSnapshot overrideSnapshot = dealService.fetchDealOverrides(dealId);
+        List<DealOverrideDaySnapshot> snapshots = new ArrayList<>();
+        for (DealOverrideMonthSnapshot month : overrideSnapshot.getOverrideMonths()) {
+            snapshots.addAll(month.getOverrideDays());
+        }
+
+
+        int toIndex = start + limit;
+
+        if (toIndex > snapshots.size())
+            toIndex =  snapshots.size();
+        int fromIndex = start;
+
+        List<DealOverrideDaySnapshot> selected = snapshots.subList(fromIndex, toIndex);
+
+
+        DealOverrideSnapshotCollection collection = new DealOverrideSnapshotCollection(
+                start,
+                limit,
+                selected.size(),
+                selected);
+
+        collection.setStartDate(overrideSnapshot.getStartDate());
+        collection.setEndDate(overrideSnapshot.getEndDate());
+        collection.setHeadings(overrideSnapshot.getHeadings());
+        return collection;
     }
 
     @Override
@@ -170,7 +235,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
         powerProfilePositionGenerationJobSnapshot.getDetail().setToDate(request.getToDate());
 
         TransactionResult result = dealJobService.save(powerProfilePositionGenerationJobSnapshot);
-        dealJobService.updateJobStatus(result.getEntityId(), JobStatusCode.QUEUED);
+        dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
         dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
 
         DealJobSnapshot dealPositionGenerationJobSnapshot = new DealJobSnapshot();
@@ -179,12 +244,11 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
         dealPositionGenerationJobSnapshot.getDetail().setQueryText(request.getDealQueryText());
         dealPositionGenerationJobSnapshot.getDetail().setCreatedDateTime(createdDateTime);
         dealPositionGenerationJobSnapshot.getDetail().setCurrencyCode(request.getCurrencyCode());
-        dealPositionGenerationJobSnapshot.getDetail().setJobStatusCode(JobStatusCode.PENDING);
         dealPositionGenerationJobSnapshot.getDetail().setFromDate(request.getFromDate());
         dealPositionGenerationJobSnapshot.getDetail().setToDate(request.getToDate());
 
         result = dealJobService.save(dealPositionGenerationJobSnapshot);
-        dealJobService.updateJobStatus(result.getEntityId(), JobStatusCode.QUEUED);
+        dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
         dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
 
         DealJobSnapshot priceRiskFactorValuationJobSnapshot = new DealJobSnapshot();
@@ -195,7 +259,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
         priceRiskFactorValuationJobSnapshot.getDetail().setCurrencyCode(request.getCurrencyCode());
 
         result = dealJobService.save(priceRiskFactorValuationJobSnapshot);
-        dealJobService.updateJobStatus(result.getEntityId(), JobStatusCode.QUEUED);
+        dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
         dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
 
 
@@ -205,12 +269,11 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
         powerProfilePositionValuationJobSnapshot.getDetail().setQueryText(request.getPowerProfileQueryText());
         powerProfilePositionValuationJobSnapshot.getDetail().setCreatedDateTime(createdDateTime);
         powerProfilePositionValuationJobSnapshot.getDetail().setCurrencyCode(request.getCurrencyCode());
-        powerProfilePositionValuationJobSnapshot.getDetail().setJobStatusCode(JobStatusCode.PENDING);
         powerProfilePositionValuationJobSnapshot.getDetail().setFromDate(request.getFromDate());
         powerProfilePositionValuationJobSnapshot.getDetail().setToDate(request.getToDate());
 
         result = dealJobService.save(powerProfilePositionValuationJobSnapshot);
-        dealJobService.updateJobStatus(result.getEntityId(), JobStatusCode.QUEUED);
+        dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
         dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
 
 
@@ -220,12 +283,11 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
         dealPositionValuationSnapshot.getDetail().setQueryText(request.getDealQueryText());
         dealPositionValuationSnapshot.getDetail().setCreatedDateTime(createdDateTime);
         dealPositionValuationSnapshot.getDetail().setCurrencyCode(request.getCurrencyCode());
-        dealPositionValuationSnapshot.getDetail().setJobStatusCode(JobStatusCode.PENDING);
         dealPositionValuationSnapshot.getDetail().setFromDate(request.getFromDate());
         dealPositionValuationSnapshot.getDetail().setToDate(request.getToDate());
 
         result = dealJobService.save(dealPositionValuationSnapshot);
-        dealJobService.updateJobStatus(result.getEntityId(), JobStatusCode.QUEUED);
+        dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
         dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
 
         return new MarkToMarketResult(createdDateTime);
@@ -233,7 +295,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
 
 
     @Override
-    public TransactionResult saveFile(String originalFileName, byte[] fileContents) {
+    public TransactionResult saveDealFile(String originalFileName, byte[] fileContents) {
         initializeSession();
 
         ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
@@ -241,5 +303,16 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
 
         dealFileReader.readContents();
         return dealService.save(dealFileReader.getDealSnapshots());
+    }
+
+    @Override
+    public TransactionResult saveDealOverridesFile(String originalFileName, byte[] fileContents) {
+        initializeSession();
+
+        ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
+        DealOverrideFileReader fileReader = new DealOverrideFileReader(fileStream);
+
+        fileReader.readContents();
+        return dealService.saveDealOverrides(fileReader.getSnapshots());
     }
 }

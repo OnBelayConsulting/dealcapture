@@ -3,6 +3,7 @@ package com.onbelay.dealcapture.job.subscribe.subscriber;
 import com.onbelay.core.entity.model.AuditManager;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.job.enums.JobStatusCode;
 import com.onbelay.dealcapture.job.publish.snapshot.DealJobRequestPublication;
 import com.onbelay.dealcapture.job.service.DealJobService;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.dao.NonTransientDataAccessResourceException;
 import org.springframework.messaging.Message;
 
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 
@@ -58,6 +60,19 @@ public class JobSubscriberConfig {
                 }
                 runner.execute(publication);
             } catch (OBRuntimeException e) {
+                logger.error("Deal Job run failed");
+                dealJobService.failJobExecution(
+                        new EntityId(publication.getJobId()),
+                       e.getErrorCode(),
+                        e.getMessage(),
+                        LocalDateTime.now());
+                throw new NonTransientDataAccessResourceException("Deal Job run failed.");
+            } catch (RuntimeException e) {
+                dealJobService.failJobExecution(
+                        new EntityId(publication.getJobId()),
+                        PositionErrorCode.ERROR_POSITION_GENERATION_FAILED.getCode(),
+                        e.getMessage(),
+                        LocalDateTime.now());
                 logger.error("Deal Job run failed");
                 throw new NonTransientDataAccessResourceException("Deal Job run failed.");
             }

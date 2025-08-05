@@ -3,7 +3,7 @@ package com.onbelay.dealcapture.dealmodule.deal.dealfilereader;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DealFileFormat implements SourceFileFormat {
+public abstract class DealFileFormat implements SourceFileFormat<DealColumnType> {
 
     private List<DealColumnType> columns = new ArrayList<>();
 

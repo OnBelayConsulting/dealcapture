@@ -26,6 +26,9 @@ public class PhysicalPositionView extends DealPositionView {
 
     @Embedded
     public PhysicalPositionPriceDetail getPriceDetail() {
+        if (priceDetail == null) {
+            priceDetail = new PhysicalPositionPriceDetail();
+        }
         return priceDetail;
     }
 

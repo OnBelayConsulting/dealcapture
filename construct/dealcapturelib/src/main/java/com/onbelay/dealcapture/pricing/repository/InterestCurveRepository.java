@@ -19,6 +19,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.model.InterestCurve;
+import com.onbelay.shared.enums.FrequencyCode;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,5 +33,8 @@ public interface InterestCurveRepository {
 	
 	public List<InterestCurve> fetchByIds(QuerySelectedPage selectedPage);
 
-	public InterestCurve fetchCurrentInterestRate(EntityId entityId, LocalDate currentDate);
+	public InterestCurve fetchCurrentInterestRate(
+			EntityId interestIndexId,
+			LocalDate currentDate,
+			FrequencyCode frequencyCode);
 }

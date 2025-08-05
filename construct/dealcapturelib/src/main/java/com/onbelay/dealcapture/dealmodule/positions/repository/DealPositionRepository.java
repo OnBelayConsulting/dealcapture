@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.dealmodule.positions.model.DealPosition;
 import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.shared.enums.CurrencyCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface DealPositionRepository {
     public static final String BEAN_NAME = "dealPositionsRepository";
 
     DealPosition load(EntityId entityId);
+
+    List<LocalDateTime> getPositionCreatedDateTimes();
 
     List<DealPosition> findByDeal(EntityId dealEntityId);
 
@@ -26,12 +29,16 @@ public interface DealPositionRepository {
     List<DealPositionView> findDealPositionViews(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
     List<DealPositionView> findDealPositionViews(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 

@@ -75,7 +75,7 @@ public class PowerProfileFixture {
 
         PowerProfileSnapshot powerProfileSnapshot = createPowerProfileSnapshotWeekDaysSomeHours(name);
         powerProfileSnapshot.setSettledPriceIndexId(settledIndex.generateEntityId());
-        powerProfileSnapshot.setEndOfMonthPriceIndexId(hourlyForwardIndex.generateEntityId());
+        powerProfileSnapshot.setRestOfMonthPriceIndexId(hourlyForwardIndex.generateEntityId());
 
         PowerProfileIndexMappingSnapshot indexMappingSnapshot = new PowerProfileIndexMappingSnapshot();
         indexMappingSnapshot.setPriceIndexId(offPeakIndex.generateEntityId());

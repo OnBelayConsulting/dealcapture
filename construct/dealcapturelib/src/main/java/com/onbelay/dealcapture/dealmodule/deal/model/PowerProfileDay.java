@@ -18,8 +18,10 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.repository.PowerProfileRepository;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDayDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDayPrivateDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDaySnapshot;
 import jakarta.persistence.*;
 
@@ -39,7 +41,7 @@ public class PowerProfileDay extends TemporalAbstractEntity {
 
 	private PowerProfile powerProfile;
 
-	private PowerProfileDayDetail detail = new PowerProfileDayDetail();
+	private PowerProfileDayPrivateDetail detail = new PowerProfileDayPrivateDetail();
 
 	protected PowerProfileDay() {
 		
@@ -101,12 +103,12 @@ public class PowerProfileDay extends TemporalAbstractEntity {
 
 
 	@Embedded
-	public PowerProfileDayDetail getDetail() {
+	public PowerProfileDayPrivateDetail getDetail() {
 		return detail;
 	}
 
 
-	private void setDetail(PowerProfileDayDetail detail) {
+	private void setDetail(PowerProfileDayPrivateDetail detail) {
 		this.detail = detail;
 	}
 
@@ -127,4 +129,12 @@ public class PowerProfileDay extends TemporalAbstractEntity {
 		return (PowerProfileRepository) ApplicationContextFactory.getBean(PowerProfileRepositoryBean.BEAN_NAME);
 	}
 
+	public int calculateHours() {
+		int hours = 0;
+		for (int i=1; i < 25; i++) {
+			if (getDetail().getPowerFlowCode(i) != PowerFlowCode.NONE)
+				hours++;
+		}
+		return hours;
+	}
 }

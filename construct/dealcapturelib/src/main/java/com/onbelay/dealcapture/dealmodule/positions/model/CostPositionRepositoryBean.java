@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,10 +91,12 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 	public List<TotalCostPositionSummary> calculateTotalCostSummaries(
 			Integer dealId,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"dealId", "currencyCode", "createdDateTime"};
-		Object[] parms = {dealId, currencyCode.getCode(), createdDateTime};
+		String[] names = {"dealId", "currencyCode", "fromDate", "toDate", "createdDateTime"};
+		Object[] parms = {dealId, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 		return (List<TotalCostPositionSummary>) executeReportQuery(
 				CALC_TOTAL_COST_SUMMARIES_BY_DEAL,
 				names,
@@ -104,11 +107,13 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 	public List<TotalCostPositionSummary> calculateTotalCostSummaries(
 			List<Integer> dealIds,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
-		String[] names = {"dealIds", "currencyCode", "createdDateTime"};
+		String[] names = {"dealIds", "currencyCode", "fromDate", "toDate", "createdDateTime"};
 
 		if (dealIds.size() < 2000) {
-			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
+			Object[] parms = {dealIds, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 			return (List<TotalCostPositionSummary>) executeReportQuery(
 					CALC_TOTAL_COST_SUMMARIES,
 					names,
@@ -117,7 +122,7 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
 			ArrayList<TotalCostPositionSummary> summaries = new ArrayList<>();
 			while (subLister.moreElements()) {
-				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), createdDateTime};
+				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), fromDate, toDate, createdDateTime};
 				summaries.addAll (
 						(List<TotalCostPositionSummary>) executeReportQuery(
 							CALC_TOTAL_COST_SUMMARIES,
@@ -150,10 +155,12 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 	public List<CostPositionView> findCostPositionViewsWithFX(
 			Integer dealId,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"dealId", "currencyCode", "createdDateTime"};
-		Object[] parms = {dealId, currencyCode.getCode(), createdDateTime};
+		String[] names = {"dealId", "currencyCode", "fromDate", "toDate", "createdDateTime"};
+		Object[] parms = {dealId, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 
 		return (List<CostPositionView>) executeReportQuery(
 				FIND_COST_POSITION_VIEWS_FX_BY_DEAL,
@@ -165,12 +172,14 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 	public List<CostPositionView> findCostPositionViewsWithFX(
 			List<Integer> dealIds,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"dealIds", "currencyCode", "createdDateTime"};
+		String[] names = {"dealIds", "currencyCode", "fromDate", "toDate", "createdDateTime"};
 
 		if (dealIds.size() < 2000) {
-			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
+			Object[] parms = {dealIds, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 
 			return (List<CostPositionView>) executeReportQuery(
 					FIND_COST_POSITION_VIEWS_FX,
@@ -180,7 +189,7 @@ public class CostPositionRepositoryBean extends BaseRepository<CostPosition> imp
 			ArrayList<CostPositionView> views = new ArrayList<>();
 			SubLister<Integer> subLister = new SubLister<>(dealIds, 2000);
 			while (subLister.moreElements()) {
-				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), createdDateTime};
+				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), fromDate, toDate, createdDateTime};
 				views.addAll (
 						(Collection<? extends CostPositionView>) executeReportQuery(
 								FIND_COST_POSITION_VIEWS_FX,

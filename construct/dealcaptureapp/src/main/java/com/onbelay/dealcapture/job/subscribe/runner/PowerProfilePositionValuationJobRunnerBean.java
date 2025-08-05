@@ -76,27 +76,15 @@ public class PowerProfilePositionValuationJobRunnerBean implements DealJobRunner
             return;
         }
 
-        try {
-            dealJobService.startPositionValuationExecution(
-                    snapshot.getEntityId(),
-                    valuationDateTime,
-                    LocalDateTime.now());
-            TransactionResult result = valuePowerProfilePositionsService.valuePositions(
-                    ids,
-                    snapshot.getDetail().getCurrencyCode(),
-                    snapshot.getDetail().getCreatedDateTime(),
-                    valuationDateTime);
-        } catch (OBRuntimeException e) {
-            dealJobService.failJobExecution(snapshot.getEntityId(),
-                    e.getErrorCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        } catch (RuntimeException e) {
-            dealJobService.failJobExecution(snapshot.getEntityId(),
-                    PositionErrorCode.ERROR_POSITION_GENERATION_FAILED.getCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        }
+        dealJobService.startPositionValuationExecution(
+                snapshot.getEntityId(),
+                valuationDateTime,
+                LocalDateTime.now());
+        TransactionResult result = valuePowerProfilePositionsService.valuePositions(
+                ids,
+                snapshot.getDetail().getCurrencyCode(),
+                snapshot.getDetail().getCreatedDateTime(),
+                valuationDateTime);
 
     }
 }

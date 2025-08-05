@@ -23,6 +23,7 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.job.assembler.DealJobAssembler;
+import com.onbelay.dealcapture.job.enums.JobActionCode;
 import com.onbelay.dealcapture.job.enums.JobStatusCode;
 import com.onbelay.dealcapture.job.model.DealJob;
 import com.onbelay.dealcapture.job.repository.DealJobRepository;
@@ -68,11 +69,11 @@ public class DealJobServiceBean extends BaseDomainService implements DealJobServ
 	}
 
 	@Override
-	public void updateJobStatus(
+	public void changeJobStatus(
 			EntityId jobId,
-			JobStatusCode jobStatusCode) {
+			JobActionCode actionCode) {
 		DealJob job = dealJobRepository.load(jobId);
-		job.updateJobStatus(jobStatusCode);
+		job.changeJobStatus(actionCode);
 	}
 
 	@Override

@@ -32,6 +32,7 @@ import jakarta.persistence.*;
        		+ "   FROM InterestCurve curve " +
        	     "   WHERE curve.interestIndex.id = :interestIndexId "
        	     + "   AND curve.detail.curveDate = :curveDate "
+	 	     + "   AND curve.detail.frequencyCodeValue = :frequencyCode "
 			 + "   AND curve.detail.hourEnding = :hourEnding "
        	     + "   AND curve.detail.observedDateTime = "
        	     + "    (SELECT MAX(searchInterest.detail.observedDateTime)"

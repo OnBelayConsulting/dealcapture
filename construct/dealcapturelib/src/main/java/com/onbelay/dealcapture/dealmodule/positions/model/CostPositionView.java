@@ -23,6 +23,8 @@ import org.hibernate.annotations.Immutable;
                         " WHERE position.dealId in (:dealIds) " +
                         "   AND position.detail.isFixedValued = false " +
                         "   AND position.detail.currencyCodeValue = :currencyCode  " +
+                        "   AND position.detail.startDate >= :fromDate  " +
+                        "   AND position.detail.startDate <= :toDate  " +
                         "   AND position.detail.createdDateTime = :createdDateTime " +
                       "ORDER BY position.detail.startDate "),
         @NamedQuery(
@@ -32,6 +34,8 @@ import org.hibernate.annotations.Immutable;
                         " WHERE position.dealId = :dealId " +
                         "   AND position.detail.isFixedValued = false " +
                         "   AND position.detail.currencyCodeValue = :currencyCode  " +
+                        "   AND position.detail.startDate >= :fromDate  " +
+                        "   AND position.detail.startDate <= :toDate  " +
                         "   AND position.detail.createdDateTime = :createdDateTime " +
                       "ORDER BY position.detail.startDate ")
 })

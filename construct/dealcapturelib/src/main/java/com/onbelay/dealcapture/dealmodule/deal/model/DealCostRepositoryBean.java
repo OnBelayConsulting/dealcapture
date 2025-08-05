@@ -35,9 +35,10 @@ public class DealCostRepositoryBean extends BaseRepository<DealCost> implements 
 	public static final String FETCH_DEAL_COSTS = "DealCostRepository.FETCH_DEAL_COSTS";
 	public static final String FIND_BY_DEAL_AND_NAME = "DealCostRepository.FIND_BY_DEAL_AND_NAME";
     public static final String FETCH_DEAL_COST_SUMMARIES = "DealCostRepository.FETCH_DEAL_COST_SUMMARIES" ;
+	public static final String FETCH_DEAL_COST_NAMES = "DealCostRepository.FETCH_DEAL_COST_NAMES";
 
 
-    @Override
+	@Override
 	public DealCost load(EntityId entityId) {
 		if (entityId == null)
 			throw new OBRuntimeException(CoreTransactionErrorCode.INVALID_ENTITY_ID.getCode());
@@ -67,6 +68,11 @@ public class DealCostRepositoryBean extends BaseRepository<DealCost> implements 
 				names,
 				parms);
 	}
+
+	@Override
+	public List<String> getDealCostNames(Integer dealId) {
+		return (List<String>) executeReportQuery(FETCH_DEAL_COST_NAMES, "dealId", dealId);
+    }
 
 	@Override
 	public List<DealCost> fetchDealCosts(Integer dealId) {

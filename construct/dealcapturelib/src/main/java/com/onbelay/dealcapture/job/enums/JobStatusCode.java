@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Defines the type of position
+ * Defines current status of job.
  * 
  * @author lefeuvrem
  *

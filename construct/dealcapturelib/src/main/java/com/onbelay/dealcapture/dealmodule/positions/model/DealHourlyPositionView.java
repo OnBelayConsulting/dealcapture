@@ -23,6 +23,8 @@ import org.hibernate.annotations.Immutable;
                         "  FROM DealHourlyPositionView position " +
                         " WHERE position.dealId in (:dealIds) " +
                         "   AND position.detail.currencyCodeValue = :currencyCode  " +
+                        "   AND position.detail.startDate >= :fromDate  " +
+                        "   AND position.detail.startDate <= :toDate  " +
                         "   AND position.detail.createdDateTime = :createdDateTime "),
         @NamedQuery(
                 name = DealHourlyPositionRepositoryBean.FIND_DEAL_HOURLY_POSITION_VIEWS_BY_DEAL,
@@ -30,6 +32,8 @@ import org.hibernate.annotations.Immutable;
                         "  FROM DealHourlyPositionView position " +
                         " WHERE position.dealId = :dealId " +
                         "   AND position.detail.currencyCodeValue = :currencyCode  " +
+                        "   AND position.detail.startDate >= :fromDate  " +
+                        "   AND position.detail.startDate <= :toDate  " +
                         "   AND position.detail.createdDateTime = :createdDateTime " )
 })
 public class DealHourlyPositionView extends AbstractEntity {

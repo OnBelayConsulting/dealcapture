@@ -8,6 +8,8 @@ import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.adapter.FxIndexRestAdapter;
+import com.onbelay.dealcapture.pricing.curvesfilereader.FxCurvesFileReader;
+import com.onbelay.dealcapture.pricing.curvesfilereader.PriceCurvesFileReader;
 import com.onbelay.dealcapture.pricing.service.FxIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshotCollection;
@@ -16,6 +18,7 @@ import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -169,4 +172,24 @@ public class FxIndexRestAdapterBean extends BaseRestAdapterBean implements FxInd
                 totalIds.size(),
                 snapshots);
     }
+
+
+    @Override
+    public TransactionResult saveFxCurvesFile(String originalFilename, byte[] fileContents) {
+        initializeSession();
+
+        ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
+        FxCurvesFileReader fileReader = new FxCurvesFileReader(fileStream);
+
+        fileReader.readContents();
+        TransactionResult result = new TransactionResult();
+        for (String indexName : fileReader.getCurveSnapshotMap().keySet()) {
+            TransactionResult childResult = fxIndexService.saveFxCurves(
+                    new EntityId(indexName),
+                    fileReader.getCurveSnapshotMap().get(indexName));
+            result.setIds(childResult.getIds());
+        }
+        return result;
+    }
+
 }

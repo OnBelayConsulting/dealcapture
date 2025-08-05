@@ -29,6 +29,7 @@ public class DealJobFactoryConfig {
         return runner;
     }
 
+    @Bean
     public DealJobRunner priceRiskFactorValuationJobRunner() {
         return new PriceRiskFactorValuationJobRunnerBean();
     }

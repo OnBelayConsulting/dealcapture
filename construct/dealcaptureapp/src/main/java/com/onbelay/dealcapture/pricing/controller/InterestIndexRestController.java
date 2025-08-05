@@ -22,10 +22,7 @@ import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.pricing.adapter.InterestIndexRestAdapter;
-import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshotCollection;
-import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshotCollection;
+import com.onbelay.dealcapture.pricing.snapshot.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -34,10 +31,13 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -207,7 +207,7 @@ public class InterestIndexRestController extends BaseRestController {
 	}
 
 
-	@Operation(summary="fetch all index interests")
+	@Operation(summary="fetch all rates")
 	@GetMapping(value="/curves" )
 	public ResponseEntity<InterestCurveSnapshotCollection> getIndexInterests(
 			@RequestHeader Map<String, String> headers,
@@ -236,6 +236,67 @@ public class InterestIndexRestController extends BaseRestController {
 
 	}
 
+	@Operation(summary="Create or update a interest rate curve.")
+	@PostMapping(
+			value = "/curves",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> saveInterestCurve(
+			@RequestHeader Map<String, String> headers,
+			@RequestBody InterestCurveSnapshot snapshot,
+			BindingResult bindingResult) {
 
-	
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		TransactionResult result;
+		try {
+			result  = interestIndexRestAdapter.saveInterestCurve(snapshot);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
+	@RequestMapping(
+			value = "rates",
+			consumes = {
+					MediaType.MULTIPART_FORM_DATA_VALUE
+			},
+			produces = "application/json",
+			method = RequestMethod.POST
+	)
+	public ResponseEntity<TransactionResult> uploadInterestCurves(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam("file") List<MultipartFile> submissions) {
+
+		TransactionResult result;
+		try {
+			result = interestIndexRestAdapter.saveInterestCurvesFile(
+					submissions.get(0).getOriginalFilename(),
+					submissions.get(0).getBytes());
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (IOException | RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
+
 }

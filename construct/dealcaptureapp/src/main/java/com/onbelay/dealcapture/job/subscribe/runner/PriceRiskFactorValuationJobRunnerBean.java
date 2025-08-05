@@ -45,30 +45,16 @@ public class PriceRiskFactorValuationJobRunnerBean implements DealJobRunner{
         }
         LocalDateTime valuationDateTime = LocalDateTime.now();
 
-        try {
-            dealJobService.startPositionValuationExecution(
-                    snapshot.getEntityId(),
-                    valuationDateTime,
-                    LocalDateTime.now());
-            priceRiskFactorService.valueRiskFactors(
-                    definedQuery,
-                    valuationDateTime);
-            dealJobService.endPositionValuationExecution(
-                    snapshot.getEntityId(),
-                    LocalDateTime.now());
-        } catch (OBRuntimeException e) {
-            dealJobService.failJobExecution(
-                    snapshot.getEntityId(),
-                    e.getErrorCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        } catch (RuntimeException e) {
-            dealJobService.failJobExecution(
-                    snapshot.getEntityId(),
-                    PositionErrorCode.ERROR_INVALID_POSITION_VALUATION.getCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        }
+        dealJobService.startPositionValuationExecution(
+                snapshot.getEntityId(),
+                valuationDateTime,
+                LocalDateTime.now());
+        priceRiskFactorService.valueRiskFactors(
+                definedQuery,
+                valuationDateTime);
+        dealJobService.endPositionValuationExecution(
+                snapshot.getEntityId(),
+                LocalDateTime.now());
 
 
     }

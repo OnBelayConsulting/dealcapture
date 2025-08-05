@@ -11,6 +11,8 @@ import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsServic
 import com.onbelay.dealcapture.job.publish.snapshot.DealJobRequestPublication;
 import com.onbelay.dealcapture.job.service.DealJobService;
 import com.onbelay.dealcapture.job.snapshot.DealJobSnapshot;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 @Component
 public class DealPositionValuationJobRunnerBean implements DealJobRunner{
+    private static final Logger logger = LogManager.getLogger(DealPositionValuationJobRunnerBean.class);
     @Autowired
     private DealService dealService;
 
@@ -66,32 +69,20 @@ public class DealPositionValuationJobRunnerBean implements DealJobRunner{
             return;
         }
 
-        try {
-            dealJobService.startPositionValuationExecution(
-                    snapshot.getEntityId(),
-                    valuationDateTime,
-                    LocalDateTime.now());
-            valuePositionsService.valuePositions(
-                    ids,
-                    snapshot.getDetail().getCurrencyCode(),
-                    snapshot.getDetail().getFromDate(),
-                    snapshot.getDetail().getToDate(),
-                    snapshot.getDetail().getCreatedDateTime(),
-                    valuationDateTime);
-            dealJobService.endPositionValuationExecution(
-                    snapshot.getEntityId(),
-                    LocalDateTime.now());
-        } catch (OBRuntimeException e) {
-            dealJobService.failJobExecution(snapshot.getEntityId(),
-                e.getErrorCode(),
-                e.getMessage(),
+        dealJobService.startPositionValuationExecution(
+                snapshot.getEntityId(),
+                valuationDateTime,
                 LocalDateTime.now());
-        } catch (RuntimeException e) {
-            dealJobService.failJobExecution(snapshot.getEntityId(),
-                    PositionErrorCode.ERROR_POSITION_GENERATION_FAILED.getCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        }
+        valuePositionsService.valuePositions(
+                ids,
+                snapshot.getDetail().getCurrencyCode(),
+                snapshot.getDetail().getFromDate(),
+                snapshot.getDetail().getToDate(),
+                snapshot.getDetail().getCreatedDateTime(),
+                valuationDateTime);
+        dealJobService.endPositionValuationExecution(
+                snapshot.getEntityId(),
+                LocalDateTime.now());
 
     }
 }

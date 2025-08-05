@@ -24,6 +24,7 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
 import com.onbelay.dealcapture.businesscontact.repository.BusinessContactRepository;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
+import com.onbelay.dealcapture.dealmodule.deal.assembler.DealDayByMonthAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
@@ -37,9 +38,15 @@ import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.repository.OrganizationRoleRepository;
 import com.onbelay.dealcapture.pricing.repository.PriceIndexRepository;
 import jakarta.persistence.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 
@@ -59,7 +66,7 @@ import java.util.List;
        	     "   WHERE deal.dealDetail.ticketNo = :ticketNo")
 })
 public abstract class BaseDeal extends TemporalAbstractEntity {
-	
+	private static final Logger logger = LogManager.getLogger();
 	private Integer id;
     private DealDetail dealDetail = new DealDetail();
     private PowerProfile powerProfile;
@@ -233,26 +240,47 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	public List<Integer> saveDealDayByMonths(List<DealDayByMonthSnapshot> snapshots) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		for (DealDayByMonthSnapshot snapshot : snapshots) {
-			switch (snapshot.getEntityState()) {
-
-				case NEW -> {
-					DealDayByMonth dealDayByMonth = DealDayByMonth.create(this, snapshot);
-					ids.add(dealDayByMonth.getId());
-				}
-				case MODIFIED -> {
-					DealDayByMonth dealDayByMonth = getDealDayByMonthRepository().load(snapshot.getEntityId());
-					dealDayByMonth.updateWith(snapshot);
-					ids.add(dealDayByMonth.getId());
-				}
-
-				case DELETE -> {
-					DealDayByMonth dealDayByMonth = getDealDayByMonthRepository().load(snapshot.getEntityId());
-					dealDayByMonth.delete();
-				}
+			Integer id = saveDealDayByMonth(snapshot);
+			if (id != null) {
+				ids.add(id);
 			}
 		}
 		return ids;
 	}
+
+	public Integer saveDealDayByMonth(DealDayByMonthSnapshot snapshot) {
+		DealDayByMonth dealDayByMonth = null;
+		if (snapshot.getDetail().areAllValuesNull()) {
+			if (snapshot.getEntityState() == EntityState.NEW) {
+				return null;
+			}
+			if (snapshot.getEntityState() == EntityState.MODIFIED) {
+				snapshot.setEntityState(EntityState.DELETE);
+			}
+		}
+
+		switch (snapshot.getEntityState()) {
+
+			case NEW -> {
+				 dealDayByMonth = DealDayByMonth.create(this, snapshot);
+			}
+			case MODIFIED -> {
+				dealDayByMonth = getDealDayByMonthRepository().load(snapshot.getEntityId());
+				dealDayByMonth.updateWith(snapshot);
+			}
+
+			case DELETE -> {
+				dealDayByMonth = getDealDayByMonthRepository().load(snapshot.getEntityId());
+				dealDayByMonth.delete();
+			}
+		}
+		if (dealDayByMonth != null) {
+			return dealDayByMonth.getId();
+		} else {
+			return null;
+		}
+	}
+
 
 	public List<DealDayByMonth> fetchDealDayByMonths() {
 		return getDealDayByMonthRepository().fetchDealDayByMonths(id);
@@ -301,6 +329,219 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 				code);
 	}
 
+	public List<String> fetchCostNames() {
+		return getDealCostRepository().getDealCostNames(this.id);
+	}
+
+
+	public void saveDealOverridesByMonth(DealOverrideMonthSnapshot snapshot) {
+		DealOverrideSnapshot dealOverrideSnapshot = new DealOverrideSnapshot();
+		dealOverrideSnapshot.setHeadings(snapshot.getHeadings());
+		dealOverrideSnapshot.addOverrideMonth(snapshot);
+		saveDealOverrides(dealOverrideSnapshot);
+	}
+
+	/**
+	 * This method provides an easier way of managing deal overrides.
+	 * Note that the headers in the DealOverrideSnapshot must match costs in this deal.
+	 * @param dealOverrideSnapshot - describes one or more quantity, price or cost overrides by month and day.
+	 */
+	public void saveDealOverrides(DealOverrideSnapshot dealOverrideSnapshot) {
+		List<String> dealCostNames = getDealCostRepository().getDealCostNames(this.id);
+		int QUANTITY_IDX = dealOverrideSnapshot.indexOfQuantityHeading();
+		int PRICE_IDX = dealOverrideSnapshot.indexOfPriceHeading();
+
+		Map<LocalDate, OverrideLattice> overridesMap = buildOverrideLattice();
+
+
+		// Update or create existing override snapshots
+		for (DealOverrideMonthSnapshot monthOverride : dealOverrideSnapshot.getOverrideMonths()) {
+			OverrideLattice lattice = overridesMap.get(monthOverride.getMonthDate());
+			if (lattice == null) {
+				lattice = new OverrideLattice();
+				lattice.setMonthDate(monthOverride.getMonthDate());
+				overridesMap.put(monthOverride.getMonthDate(), lattice);
+			}
+			for (DealOverrideDaySnapshot dayOverride : monthOverride.getOverrideDays()) {
+				Integer dayOfMonth = dayOverride.getDayOfMonth();
+
+				// Handle Quantity overrides
+				if (QUANTITY_IDX >= 0) {
+					if (dayOverride.getValues().get(QUANTITY_IDX) != null) {
+						if (lattice.getQuantityDealDayByMonthSnapshot() == null) {
+							lattice.setQuantityDealDayByMonthSnapshot(new DealDayByMonthSnapshot(DayTypeCode.QUANTITY, monthOverride.getMonthDate()));
+						} else {
+							if (lattice.getQuantityDealDayByMonthSnapshot().getEntityState() == EntityState.UNMODIFIED)
+								lattice.getQuantityDealDayByMonthSnapshot().setEntityState(EntityState.MODIFIED);
+						}
+						lattice.getQuantityDealDayByMonthSnapshot().getDetail().setDayValue(
+								dayOfMonth,
+								dayOverride.getValues().get(QUANTITY_IDX));
+					} else {
+						if (lattice.getQuantityDealDayByMonthSnapshot() != null) {
+							if (lattice.getQuantityDealDayByMonthSnapshot().getEntityState() != EntityState.NEW) {
+								lattice.getQuantityDealDayByMonthSnapshot().setEntityState(EntityState.MODIFIED);
+								lattice.getQuantityDealDayByMonthSnapshot().getDetail().setDayValue(
+										dayOfMonth,
+										null);
+							}
+						}
+					}
+				}
+
+				// Handle Price overrides
+				if (PRICE_IDX >= 0) {
+					if (dayOverride.getValues().get(PRICE_IDX) != null) {
+						if (lattice.getPriceDealDayByMonthSnapshot() == null) {
+							lattice.setPriceDealDayByMonthSnapshot(new DealDayByMonthSnapshot(DayTypeCode.PRICE, monthOverride.getMonthDate()));
+						} else {
+							if (lattice.getPriceDealDayByMonthSnapshot().getEntityState() == EntityState.UNMODIFIED)
+								lattice.getPriceDealDayByMonthSnapshot().setEntityState(EntityState.MODIFIED);
+						}
+						lattice.getPriceDealDayByMonthSnapshot().getDetail().setDayValue(
+								dayOfMonth,
+								dayOverride.getValues().get(PRICE_IDX));
+					} else {
+						if (lattice.getPriceDealDayByMonthSnapshot() != null) {
+							if (lattice.getPriceDealDayByMonthSnapshot().getEntityState() != EntityState.NEW) {
+								lattice.getPriceDealDayByMonthSnapshot().setEntityState(EntityState.MODIFIED);
+								lattice.getPriceDealDayByMonthSnapshot().getDetail().setDayValue(
+										dayOfMonth,
+										null);
+							}
+						}
+					}
+				}
+
+				// Handle cost overrides. The overrides are in order of the headings.
+
+				for (String costName : dealCostNames) {
+					int costIdx = dealOverrideSnapshot.indexOfCostHeading(costName);
+					if (costIdx >= 0) {
+						DealDayByMonthSnapshot costByMonth = lattice.getDealDayCosts().get(costName);
+						if (costByMonth == null) {
+							costByMonth = new DealDayByMonthSnapshot(DayTypeCode.COST, lattice.getMonthDate());
+							costByMonth.getDetail().setDaySubTypeCodeValue(costName);
+
+							lattice.getDealDayCosts().put(
+									costName,
+									costByMonth);
+						} else {
+							if (costByMonth.getEntityState() == EntityState.UNMODIFIED)
+								costByMonth.setEntityState(EntityState.MODIFIED);
+						}
+						BigDecimal costValue = dayOverride.getValues().get(costIdx);
+						costByMonth.getDetail().setDayValue(
+								dayOfMonth,
+								costValue);
+					}
+
+				}
+
+			}
+
+		}
+		for (OverrideLattice updatedLattice : overridesMap.values()) {
+			if (updatedLattice.getQuantityDealDayByMonthSnapshot() != null) {
+				saveDealDayByMonth(updatedLattice.getQuantityDealDayByMonthSnapshot());
+			}
+			if (updatedLattice.getPriceDealDayByMonthSnapshot() != null) {
+				saveDealDayByMonth(updatedLattice.getPriceDealDayByMonthSnapshot());
+			}
+			for (DealDayByMonthSnapshot costSnapshot : updatedLattice.getDealDayCosts().values()) {
+				saveDealDayByMonth(costSnapshot);
+			}
+		}
+
+
+	}
+
+	private Map<LocalDate, OverrideLattice> buildOverrideLattice() {
+		HashMap<LocalDate, OverrideLattice> overridesMap = new HashMap<>();
+		DealDayByMonthAssembler assembler = new DealDayByMonthAssembler(this);
+		// Prepare existing overrides to be updated (if exists)
+		for (DealDayByMonth dd : getDealDayByMonthRepository().fetchDealDayByMonths(id)) {
+			OverrideLattice overrideLattice = overridesMap.get(dd.getDetail().getDealMonthDate());
+			if (overrideLattice == null) {
+				overrideLattice = new OverrideLattice();
+				overridesMap.put(dd.getDetail().getDealMonthDate(), overrideLattice);
+			}
+
+			switch (dd.getDetail().getDealDayTypeCode()) {
+				case PRICE -> overrideLattice.setPriceDealDayByMonthSnapshot(assembler.assemble(dd));
+				case QUANTITY -> overrideLattice.setQuantityDealDayByMonthSnapshot(assembler.assemble(dd));
+				default -> overrideLattice.addCostDealDayByMonthSnapshot(assembler.assemble(dd));
+			}
+
+		}
+		return overridesMap;
+	}
+
+	public List<OverrideLattice> fetchOverrideLattices() {
+		DealDayByMonthAssembler assembler = new DealDayByMonthAssembler(this);
+		HashMap<LocalDate, OverrideLattice> latticeHashMap = new HashMap<>();
+		for (DealDayByMonth byMonth : fetchDealDayByMonths()) {
+			OverrideLattice lattice = latticeHashMap.get(byMonth.getDetail().getDealMonthDate());
+			if (lattice == null) {
+				lattice = new OverrideLattice();
+				lattice.setMonthDate(byMonth.getDetail().getDealMonthDate());
+				latticeHashMap.put(byMonth.getDetail().getDealMonthDate(), lattice);
+			}
+			switch (byMonth.getDetail().getDealDayTypeCode()) {
+				case PRICE -> lattice.setPriceDealDayByMonthSnapshot(assembler.assemble(byMonth));
+				case QUANTITY -> lattice.setQuantityDealDayByMonthSnapshot(assembler.assemble(byMonth));
+				default -> {
+					lattice.getDealDayCosts().put(
+							byMonth.getDetail().getDaySubTypeCodeValue(),
+							assembler.assemble(byMonth));
+				}
+			}
+		}
+		ArrayList<OverrideLattice> lattices = new ArrayList<>();
+
+		// First Lattice
+		LocalDate currentDate = dealDetail.getStartDate().withDayOfMonth(1);
+		OverrideLattice lattice = latticeHashMap.get(currentDate);
+		if (lattice == null) {
+			lattice = new OverrideLattice();
+			lattice.setMonthDate(currentDate);
+		}
+
+		if (dealDetail.getStartDate().isAfter(currentDate))
+			lattice.setMonthStartDate(dealDetail.getStartDate());
+		else
+			lattice.setMonthStartDate(currentDate);
+
+		LocalDate endOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
+		if (dealDetail.getEndDate().isBefore(endOfMonth))
+			lattice.setMonthEndDate(dealDetail.getEndDate());
+		else
+			lattice.setMonthEndDate(endOfMonth);
+
+
+		lattices.add(lattice);
+		currentDate = currentDate.withDayOfMonth(1);
+		currentDate = currentDate.plusMonths(1);
+
+
+		// Next lattices
+		while (currentDate.isAfter(dealDetail.getEndDate()) == false) {
+			lattice = latticeHashMap.get(currentDate);
+			if (lattice == null) {
+				lattice = new OverrideLattice();
+				lattice.setMonthDate(currentDate);
+			}
+			lattice.setMonthStartDate(currentDate);
+			endOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
+			if (dealDetail.getEndDate().isBefore(endOfMonth))
+				lattice.setMonthEndDate(dealDetail.getEndDate());
+			else
+				lattice.setMonthEndDate(endOfMonth);
+			lattices.add(lattice);
+			currentDate = currentDate.plusMonths(1);
+		}
+		return lattices;
+	}
 
 
 	public List<DealCost> fetchDealCosts() {

@@ -60,6 +60,14 @@ public class DealDayByMonthDetail {
         initializeGetterMap();
     }
 
+    public boolean areAllValuesNull() {
+        for (int i = 1; i < 32; i++) {
+            if (getDayValue(i) != null)
+                return false;
+        }
+        return true;
+    }
+
     public void copyFrom(DealDayByMonthDetail copy) {
 
         if (copy.dealMonthDate != null)

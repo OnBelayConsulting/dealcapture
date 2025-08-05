@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,6 +85,10 @@ public class GeneratePositionsServiceTest extends PhysicalDealServiceTestCase {
                 endDate).get(0);
 
         assertEquals(marketRiskFactor.getEntityId().getId(), positionSnapshot.getMarketPriceRiskFactorId().getId());
+
+        List<LocalDateTime> createdDateTimes = dealPositionService.getPositionCreatedDateTimes();
+        assertTrue(createdDateTimes.size() > 0);
+
     }
 
 

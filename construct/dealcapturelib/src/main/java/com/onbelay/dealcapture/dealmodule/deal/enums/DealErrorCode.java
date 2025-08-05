@@ -92,7 +92,7 @@ public enum DealErrorCode {
     MISSING_DEAL_DAY_YEAR		     ("DC_DL-E0701", "Error: Missing deal day year."),
     MISSING_DEAL_DAY_MONTH		     ("DC_DL-E0702", "Error: Missing deal day month."),
     DUPLICATE_DEAL_DAY	    	     ("DC_DL-E0703", "Error: Deal Day with same dealid, type, year, month already exists."),
-
+    INVALID_COST_OVERRIDE            ("DC_DL-E0750", "Error: Deal Cost not found for cost override"),
     ;
 
     private String code;

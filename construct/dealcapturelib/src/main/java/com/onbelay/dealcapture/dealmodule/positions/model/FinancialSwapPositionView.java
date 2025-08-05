@@ -1,8 +1,10 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.busmath.model.Price;
+import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionDetail;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionPriceDetail;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
@@ -110,6 +112,8 @@ public class FinancialSwapPositionView extends DealPositionView {
             return null;
 
         PriceRiskFactorSnapshot snapshot = valuationIndexManager.getPriceRiskFactor(receivesPriceRiskFactorId);
+        if (snapshot == null)
+            throw new  OBRuntimeException(PositionErrorCode.ERROR_INVALID_POSITION_VALUATION.getCode());
         return valuationIndexManager.generatePrice(
                 snapshot.getPriceIndexId().getId(),
                 snapshot.getDetail().getValue());

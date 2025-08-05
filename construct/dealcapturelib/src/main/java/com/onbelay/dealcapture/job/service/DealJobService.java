@@ -4,6 +4,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
+import com.onbelay.dealcapture.job.enums.JobActionCode;
 import com.onbelay.dealcapture.job.enums.JobStatusCode;
 import com.onbelay.dealcapture.job.snapshot.DealJobSnapshot;
 
@@ -48,7 +49,7 @@ public interface DealJobService {
             EntityId jobId,
             LocalDateTime executionEndDateTime);
 
-    void updateJobStatus(
+    void changeJobStatus(
             EntityId entityId,
-            JobStatusCode jobStatusCode);
+            JobActionCode actionCodeCode);
 }

@@ -8,6 +8,8 @@ import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.adapter.InterestIndexRestAdapter;
+import com.onbelay.dealcapture.pricing.curvesfilereader.FxCurvesFileReader;
+import com.onbelay.dealcapture.pricing.curvesfilereader.InterestCurvesFileReader;
 import com.onbelay.dealcapture.pricing.service.InterestIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshotCollection;
@@ -16,6 +18,7 @@ import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -114,6 +117,15 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
     }
 
     @Override
+    public TransactionResult saveInterestCurve(InterestCurveSnapshot snapshot) {
+        initializeSession();
+
+        return interestIndexService.saveInterestCurves(
+                snapshot.getIndexId(),
+                List.of(snapshot));
+    }
+
+    @Override
     public InterestCurveSnapshotCollection findInterestCurves(
             String queryText,
             Integer start,
@@ -126,7 +138,7 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
             definedQuery = new DefinedQuery("InterestCurve");
             definedQuery.getOrderByClause()
                     .addOrderExpression(
-                            new DefinedOrderExpression("startDate"));
+                            new DefinedOrderExpression("curveDate"));
         } else {
             DefinedQueryBuilder builder = new DefinedQueryBuilder("InterestCurve", queryText);
             definedQuery = builder.build();
@@ -134,11 +146,11 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
             if (definedQuery.getOrderByClause().hasExpressions() == false) {
                 definedQuery.getOrderByClause()
                         .addOrderExpression(
-                                new DefinedOrderExpression("startDate"));
+                                new DefinedOrderExpression("curveDate"));
             }
         }
 
-        QuerySelectedPage selectedPage = interestIndexService.findInterestIndexIds(definedQuery);
+        QuerySelectedPage selectedPage = interestIndexService.findInterestCurveIds(definedQuery);
         List<Integer> totalIds = selectedPage.getIds();
 
         int toIndex =  start.intValue() + limit;
@@ -169,4 +181,25 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
                 totalIds.size(),
                 snapshots);
     }
+
+
+    @Override
+    public TransactionResult saveInterestCurvesFile(String originalFilename, byte[] fileContents) {
+        initializeSession();
+
+        ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
+        InterestCurvesFileReader fileReader = new InterestCurvesFileReader(fileStream);
+
+        fileReader.readContents();
+        TransactionResult result = new TransactionResult();
+        for (String indexName : fileReader.getCurveSnapshotMap().keySet()) {
+            TransactionResult childResult = interestIndexService.saveInterestCurves(
+                    new EntityId(indexName),
+                    fileReader.getCurveSnapshotMap().get(indexName));
+            result.setIds(childResult.getIds());
+        }
+        return result;
+    }
+
+
 }

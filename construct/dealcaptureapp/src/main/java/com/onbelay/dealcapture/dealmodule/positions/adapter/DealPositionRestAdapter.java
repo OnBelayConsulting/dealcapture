@@ -2,6 +2,7 @@ package com.onbelay.dealcapture.dealmodule.positions.adapter;
 
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CreatedDateTimeCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FileReportResult;
@@ -27,5 +28,7 @@ public interface DealPositionRestAdapter {
             String queryText,
             Integer start,
             Integer limit);
+
+    public CreatedDateTimeCollection getCreatedDateTimeCollection();
 
 }

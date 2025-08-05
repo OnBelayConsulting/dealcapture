@@ -8,6 +8,7 @@ import com.onbelay.dealcapture.dealmodule.positions.model.CostPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
 import com.onbelay.shared.enums.CurrencyCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,23 +22,31 @@ public interface CostPositionRepository {
     List<CostPositionView> findCostPositionViewsWithFX(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
     List<CostPositionView> findCostPositionViewsWithFX(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
     List<TotalCostPositionSummary> calculateTotalCostSummaries(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
     List<TotalCostPositionSummary> calculateTotalCostSummaries(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 

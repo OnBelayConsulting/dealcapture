@@ -178,7 +178,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
 
         InputStream inputStream = getClass().getResourceAsStream("/physicaldealfixedupload.csv");
 
-        TransactionResult result = dealRestAdapter.saveFile("test.csv", inputStream.readAllBytes());
+        TransactionResult result = dealRestAdapter.saveDealFile("test.csv", inputStream.readAllBytes());
         flush();
         PhysicalDeal physicalDeal = (PhysicalDeal) dealRepository.load(result.getEntityId());
         assertEquals("OnBelay", physicalDeal.getCompanyRole().getOrganization().getDetail().getShortName());

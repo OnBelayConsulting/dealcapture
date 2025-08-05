@@ -8,6 +8,7 @@ import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.job.adapter.DealJobRestAdapter;
+import com.onbelay.dealcapture.job.enums.JobActionCode;
 import com.onbelay.dealcapture.job.enums.JobStatusCode;
 import com.onbelay.dealcapture.job.publish.publisher.DealJobRequestPublisher;
 import com.onbelay.dealcapture.job.publish.snapshot.DealJobRequestPublication;
@@ -40,7 +41,7 @@ public class DealJobRestAdapterBean extends BaseRestAdapterBean implements DealJ
 
         TransactionResult result = dealJobService.save(snapshot);
 
-        dealJobService.updateJobStatus(result.getEntityId(), JobStatusCode.QUEUED);
+        dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
 
         dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
         return result;
@@ -107,4 +108,17 @@ public class DealJobRestAdapterBean extends BaseRestAdapterBean implements DealJ
         return dealJobService.load(entityId);
     }
 
+    @Override
+    public TransactionResult cancelJob(EntityId dealId) {
+        initializeSession();
+        dealJobService.changeJobStatus(dealId, JobActionCode.CANCEL);
+        return new TransactionResult(dealId.getId());
+    }
+
+    @Override
+    public TransactionResult deleteJob(EntityId dealId) {
+        initializeSession();
+        dealJobService.changeJobStatus(dealId, JobActionCode.DELETE);
+        return new TransactionResult();
+    }
 }

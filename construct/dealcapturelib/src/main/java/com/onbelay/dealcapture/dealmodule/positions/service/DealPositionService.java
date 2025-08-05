@@ -14,6 +14,7 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapsho
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.TotalCostPositionSummary;
 import com.onbelay.shared.enums.CurrencyCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,35 +27,47 @@ public interface DealPositionService {
     List<DealPositionView> fetchDealPositionViews(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
     List<DealPositionView> fetchDealPositionViews(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
     List<DealHourlyPositionView> fetchDealHourlyPositionViews(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
     List<DealHourlyPositionView> fetchDealHourlyPositionViews(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
     List<CostPositionView> fetchCostPositionViewsWithFX(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
     List<CostPositionView> fetchCostPositionViewsWithFX(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
 
@@ -81,16 +94,21 @@ public interface DealPositionService {
 
     List<DealPositionView> findViewsByIds(QuerySelectedPage selectedPage);
 
+    List<LocalDateTime> getPositionCreatedDateTimes();
 
     DealPositionSnapshot load(EntityId entityId);
 
     List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 
     List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime);
 }

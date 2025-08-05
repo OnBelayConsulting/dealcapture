@@ -270,7 +270,7 @@ public class FinancialSwapDealRestAdapterBeanTest extends DealCaptureAppSpringTe
 
         InputStream inputStream = getClass().getResourceAsStream("/fixed4floatswapdealupload.csv");
 
-        TransactionResult result = dealRestAdapter.saveFile("test.csv", inputStream.readAllBytes());
+        TransactionResult result = dealRestAdapter.saveDealFile("test.csv", inputStream.readAllBytes());
         flush();
         FinancialSwapDeal physicalDeal = (FinancialSwapDeal) dealRepository.load(result.getEntityId());
         assertEquals("OnBelay", physicalDeal.getCompanyRole().getOrganization().getDetail().getShortName());

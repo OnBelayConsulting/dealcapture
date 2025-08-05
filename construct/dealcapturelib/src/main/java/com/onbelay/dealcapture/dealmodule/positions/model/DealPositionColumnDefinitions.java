@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component(value = "dealPositionColumnDefinitions")
 public class DealPositionColumnDefinitions extends BaseColumnDefinitions implements ColumnDefinitions{
-	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeValue");
+	public static final ColumnDefinition dealType = new ColumnDefinition("dealType", ColumnDataType.STRING, "dealTypeCodeValue");
 	public static final ColumnDefinition ticketNo = new ColumnDefinition("ticketNo", ColumnDataType.STRING, "deal.dealDetail.ticketNo");
 	public static final ColumnDefinition frequencyCode = new ColumnDefinition("frequencyCode", ColumnDataType.STRING, "detail.frequencyCodeValue");
 	public static final ColumnDefinition currencyCode = new ColumnDefinition("currencyCode", ColumnDataType.STRING, "detail.currencyCodeValue");

@@ -64,7 +64,7 @@ public class DealFileReader {
         String code = record.get(0);
         DealTypeCode dealTypeCode = DealTypeCode.lookUp(code);
         BaseDealSnapshotMapper mapper = DealSnapshotMapperFactory.newMapper(dealTypeCode);
-        SourceFileFormat sourceFileFormat = mapper.getSourceFileFormat();;
+        SourceFileFormat<DealColumnType> sourceFileFormat = mapper.getSourceFileFormat();;
 
         for (int i=1; i < sourceFileFormat.length(); i++) {
 

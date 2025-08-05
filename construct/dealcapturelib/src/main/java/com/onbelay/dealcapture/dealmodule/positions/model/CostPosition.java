@@ -31,6 +31,8 @@ import jakarta.persistence.*;
                         "       position.detail.createdDateTime, " +
                         "       sum(position.detail.costAmount) ) " +
                         "  FROM CostPosition position " +
+                        "WHERE  position.detail.startDate >= :fromDate " +
+                        "  AND  position.detail.endDate <= :toDate " +
                      " GROUP BY position.deal.id, position.detail.currencyCodeValue, position.detail.startDate, position.detail.createdDateTime " +
                       "  HAVING position.deal.id = :dealId" +
                         "   AND position.detail.currencyCodeValue = :currencyCode " +
@@ -44,6 +46,8 @@ import jakarta.persistence.*;
                         "       position.detail.createdDateTime, " +
                         "       sum(position.detail.costAmount) ) " +
                         "  FROM CostPosition position " +
+                        "WHERE  position.detail.startDate >= :fromDate " +
+                        "  AND  position.detail.endDate <= :toDate " +
                      " GROUP BY position.deal.id, position.detail.currencyCodeValue, position.detail.startDate, position.detail.createdDateTime " +
                       "  HAVING position.deal.id in (:dealIds)" +
                         "   AND position.detail.currencyCodeValue = :currencyCode " +

@@ -24,16 +24,17 @@ import java.util.stream.Collectors;
 
 public class FxCurveSnapshotAssembler extends EntityAssembler {
 
-	public FxCurveSnapshot assemble(FxCurve price) {
+	public FxCurveSnapshot assemble(FxCurve rate) {
 		
 		FxCurveSnapshot snapshot = new FxCurveSnapshot();
-		super.setEntityAttributes(price, snapshot);
-		snapshot.getDetail().copyFrom(price.getDetail());
+		snapshot.setIndexId(rate.getFxIndex().generateEntityId());
+		super.setEntityAttributes(rate, snapshot);
+		snapshot.getDetail().copyFrom(rate.getDetail());
 		return snapshot;
 	}
 	
-	public List<FxCurveSnapshot> assemble(List<FxCurve> prices) {
-		return prices
+	public List<FxCurveSnapshot> assemble(List<FxCurve> rates) {
+		return rates
 			.stream()
 			.map( c -> assemble(c))
 			.collect(Collectors.toList());

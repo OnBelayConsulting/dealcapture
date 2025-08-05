@@ -11,11 +11,9 @@ public class PowerProfileDayAssembler extends EntityAssembler {
     public PowerProfileDaySnapshot assemble(PowerProfileDay profileDay) {
         PowerProfileDaySnapshot daySnapshot = new PowerProfileDaySnapshot();
         setEntityAttributes(profileDay, daySnapshot);
-        daySnapshot.getDetail().copyFrom(profileDay.getDetail());
-        for (int i = 1 ; i <= 24; i++) {
-            daySnapshot.getDetail().getHours().add(
-                    daySnapshot.getDetail().getPowerFlowCode(i).getCode());
-        }
+        daySnapshot.setPowerProfileId(profileDay.getPowerProfile().generateEntityId());
+
+        profileDay.getDetail().copyTo(daySnapshot.getDetail());
         return daySnapshot;
     }
     

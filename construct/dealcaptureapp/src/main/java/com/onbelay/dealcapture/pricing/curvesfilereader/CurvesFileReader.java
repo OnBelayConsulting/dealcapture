@@ -1,8 +1,8 @@
-package com.onbelay.dealcapture.pricing.priceCurvesfilereader;
+package com.onbelay.dealcapture.pricing.curvesfilereader;
 
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
-import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
+import com.onbelay.dealcapture.pricing.snapshot.CurveSnapshot;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -16,16 +16,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public class PriceCurvesFileReader {
+public class CurvesFileReader<T extends CurveSnapshot> {
     private static final Logger logger = LogManager.getLogger();
+
+    private Supplier<T> curveConstructor;
 
     private ByteArrayInputStream streamIn;
 
-    private HashMap<String, List<PriceCurveSnapshot>> curveSnapshotMap = new HashMap<>();
+    private HashMap<String, List<T>> curveSnapshotMap = new HashMap<>();
 
-    public PriceCurvesFileReader(ByteArrayInputStream streamIn) {
-
+    public CurvesFileReader(ByteArrayInputStream streamIn, Supplier<T> curveConstructor) {
+        this.curveConstructor = curveConstructor;
         this.streamIn = streamIn;
     }
 
@@ -55,21 +58,21 @@ public class PriceCurvesFileReader {
 
     }
 
-    private void addSnapshot(PriceCurveSnapshot snapshot) {
-        List<PriceCurveSnapshot> snapshots = curveSnapshotMap.computeIfAbsent(
+    private void addSnapshot(T snapshot) {
+        List<T> snapshots = curveSnapshotMap.computeIfAbsent(
                 snapshot.getIndexId().getCode(),
                 k -> new ArrayList<>());
         snapshots.add(snapshot);
     }
 
-    public Map<String, List<PriceCurveSnapshot>> getCurveSnapshotMap() {
+    public Map<String, List<T>> getCurveSnapshotMap() {
         return curveSnapshotMap;
     }
 
-    private PriceCurveSnapshot parse(CSVRecord record) {
+    private T parse(CSVRecord record) {
 
         CurveFileFormat sourceFileFormat = new CurveFileFormat();
-        CurveSnapshotMapper mapper = new CurveSnapshotMapper();
+        CurveSnapshotMapper<T> mapper = new CurveSnapshotMapper<T>(curveConstructor);
 
         for (int i=0; i < sourceFileFormat.length(); i++) {
 

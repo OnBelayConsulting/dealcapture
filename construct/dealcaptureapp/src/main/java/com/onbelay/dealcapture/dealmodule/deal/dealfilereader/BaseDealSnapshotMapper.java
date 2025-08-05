@@ -16,7 +16,7 @@ public abstract  class BaseDealSnapshotMapper {
         this.snapshot = dealSnapshot;
     }
 
-    public abstract SourceFileFormat getSourceFileFormat();
+    public abstract SourceFileFormat<DealColumnType> getSourceFileFormat();
 
     public BaseDealSnapshot getSnapshot() {return snapshot;}
 

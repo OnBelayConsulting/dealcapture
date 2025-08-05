@@ -2,7 +2,9 @@ package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class DealDayByMonthSnapshot extends AbstractSnapshot {
@@ -11,6 +13,11 @@ public class DealDayByMonthSnapshot extends AbstractSnapshot {
     private DealDayByMonthDetail detail = new DealDayByMonthDetail();
 
     public DealDayByMonthSnapshot() {
+    }
+
+    public DealDayByMonthSnapshot(DayTypeCode code, LocalDate monthDate) {
+        detail.setDealDayTypeCode(code);
+        detail.setDealMonthDate(monthDate);
     }
 
     public DealDayByMonthSnapshot(String errorCode) {

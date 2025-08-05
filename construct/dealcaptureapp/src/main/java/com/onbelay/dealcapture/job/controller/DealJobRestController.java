@@ -135,5 +135,50 @@ public class DealJobRestController extends BaseRestController {
 		return (ResponseEntity<DealJobSnapshot>) processResponse(snapshot);
 	}
 
+	@Operation(summary="Cancel an existing job.")
+	@PostMapping(
+			value = "/{id}/cancelled",
+			produces="application/json" )
+	public ResponseEntity<TransactionResult> cancelDealJob(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id) {
+
+		TransactionResult result;
+		try {
+			result = dealJobRestAdapter.cancelJob(new EntityId(id));
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Cancel failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
+	@Operation(summary="Delete an existing job.")
+	@PostMapping(
+			value = "/{id}/deleted",
+			produces="application/json"  )
+	public ResponseEntity<TransactionResult> deleteDealJob(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id) {
+
+
+		TransactionResult result;
+		try {
+			result = dealJobRestAdapter.deleteJob(new EntityId(id));
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Cancel failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
 
 }

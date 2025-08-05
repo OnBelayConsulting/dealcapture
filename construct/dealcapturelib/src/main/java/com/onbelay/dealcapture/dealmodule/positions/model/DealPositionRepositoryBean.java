@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.List;
 @Transactional
 
 public class DealPositionRepositoryBean extends BaseRepository<DealPosition> implements DealPositionRepository {
+	public static final String FIND_CREATED_DATE_TIMES = "DealPositionsRepository.FIND_CREATED_DATE_TIMES";
 	private static final Logger logger = LogManager.getLogger();
 	public static final String FIND_MIN_START_DATE = "DealPositionsRepository.FIND_MIN_START_DATE";
 	public static final String FIND_MAX_START_DATE = "DealPositionsRepository.FIND_MAX_START_DATE";
@@ -81,13 +83,20 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 	}
 
 	@Override
+	public List<LocalDateTime> getPositionCreatedDateTimes() {
+		return (List<LocalDateTime>) executeReportQuery(FIND_CREATED_DATE_TIMES);
+	}
+
+	@Override
 	public List<DealPositionView> findDealPositionViews(
 			Integer dealId,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"dealId", "currencyCode", "createdDateTime"};
-		Object[] parms = {dealId, currencyCode.getCode(), createdDateTime};
+		String[] names = {"dealId", "currencyCode", "fromDate", "toDate", "createdDateTime"};
+		Object[] parms = {dealId, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 
 		return (List<DealPositionView>) executeReportQuery(
 				FIND_DEAL_POSITION_VIEWS_BY_DEAL,
@@ -99,12 +108,14 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 	public List<DealPositionView> findDealPositionViews(
 			List<Integer> dealIds,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"dealIds", "currencyCode", "createdDateTime"};
+		String[] names = {"dealIds", "currencyCode", "fromDate", "toDate", "createdDateTime"};
 
 		if (dealIds.size() < 1000) {
-			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
+			Object[] parms = {dealIds, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 
 			return (List<DealPositionView>) executeReportQuery(
 					FIND_DEAL_POSITION_VIEWS,
@@ -114,7 +125,7 @@ public class DealPositionRepositoryBean extends BaseRepository<DealPosition> imp
 			ArrayList<DealPositionView> views = new ArrayList<>();
 			SubLister<Integer> subLister = new SubLister<>(dealIds, 1000);
 			while (subLister.moreElements()) {
-				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), createdDateTime};
+				Object[] parmsTwo = {subLister.nextList(), currencyCode.getCode(), fromDate, toDate, createdDateTime};
 				views.addAll (
 						(Collection<? extends DealPositionView>) executeReportQuery(
 							FIND_DEAL_POSITION_VIEWS,

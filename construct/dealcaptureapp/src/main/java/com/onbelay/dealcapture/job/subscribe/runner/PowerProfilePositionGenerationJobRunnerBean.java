@@ -66,7 +66,7 @@ public class PowerProfilePositionGenerationJobRunnerBean implements DealJobRunne
             if (definedQuery.getOrderByClause().hasExpressions() == false) {
                 definedQuery.getOrderByClause().addOrderExpression(
                         new DefinedOrderExpression(
-                                "ticketNo"));
+                                "name"));
             }
 
             QuerySelectedPage allIds = powerProfileService.findPowerProfileIds(definedQuery);
@@ -95,33 +95,19 @@ public class PowerProfilePositionGenerationJobRunnerBean implements DealJobRunne
                 snapshot.getDetail().getFromDate(),
                 snapshot.getDetail().getToDate());
 
-        try {
-            dealJobService.startPositionGenerationExecution(
-                    snapshot.getEntityId(),
-                    createdDateTime,
-                    positionGenerationIdentifier,
-                    LocalDateTime.now());
+        dealJobService.startPositionGenerationExecution(
+                snapshot.getEntityId(),
+                createdDateTime,
+                positionGenerationIdentifier,
+                LocalDateTime.now());
 
-            generatePowerProfilePositionsService.generatePowerProfilePositions(
-                    positionGenerationIdentifier,
-                    context,
-                    ids);
-            dealJobService.endPositionGenerationExecution(
-                    snapshot.getEntityId(),
-                    LocalDateTime.now());
-        } catch (OBRuntimeException e) {
-            dealJobService.failJobExecution(
-                    snapshot.getEntityId(),
-                    e.getErrorCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        } catch (RuntimeException e) {
-            dealJobService.failJobExecution(
-                    snapshot.getEntityId(),
-                    PositionErrorCode.ERROR_POSITION_GENERATION_FAILED.getCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        }
+        generatePowerProfilePositionsService.generatePowerProfilePositions(
+                positionGenerationIdentifier,
+                context,
+                ids);
+        dealJobService.endPositionGenerationExecution(
+                snapshot.getEntityId(),
+                LocalDateTime.now());
 
     }
 }

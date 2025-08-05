@@ -68,6 +68,12 @@ public class DealDayByMonth extends TemporalAbstractEntity {
 		deal.addDealDayByMonth(this);
 	}
 
+	public void updateWith(DealDayByMonthSnapshot snapshot) {
+		super.updateWith(snapshot);
+		detail.copyFrom(snapshot.getDetail());
+		update();
+	}
+
 
 	@Id
     @Column(name="ENTITY_ID", insertable = false, updatable = false)

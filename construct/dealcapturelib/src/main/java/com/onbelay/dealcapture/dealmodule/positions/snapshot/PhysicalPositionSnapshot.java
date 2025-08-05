@@ -5,10 +5,12 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
 
 public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
+    private String marketPriceIndexName;
     private EntityId marketPriceRiskFactorId;
 
     private EntityId marketPriceFxRiskFactorId;
 
+    private String dealPriceIndexName;
     private EntityId dealPriceRiskFactorId;
 
     private EntityId dealPriceFxRiskFactorId;
@@ -57,5 +59,21 @@ public class PhysicalPositionSnapshot extends DealPositionSnapshot {
 
     public void setDealPriceFxRiskFactorId(EntityId dealPriceFxRiskFactorId) {
         this.dealPriceFxRiskFactorId = dealPriceFxRiskFactorId;
+    }
+
+    public String getMarketPriceIndexName() {
+        return marketPriceIndexName;
+    }
+
+    public void setMarketPriceIndexName(String marketPriceIndexName) {
+        this.marketPriceIndexName = marketPriceIndexName;
+    }
+
+    public String getDealPriceIndexName() {
+        return dealPriceIndexName;
+    }
+
+    public void setDealPriceIndexName(String dealPriceIndexName) {
+        this.dealPriceIndexName = dealPriceIndexName;
     }
 }

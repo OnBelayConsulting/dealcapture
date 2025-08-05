@@ -31,4 +31,10 @@ public interface FxIndexRestAdapter {
             String queryText,
             Integer start,
             Integer limit);
+
+
+    TransactionResult saveFxCurvesFile(
+            String originalFilename,
+            byte[] bytes);
+
 }

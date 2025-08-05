@@ -9,7 +9,7 @@
  * in FAR 52.227-19, Commercial Computer Software
  * Restricted Rights (June 1987).
  */
-package com.onbelay.dealcapture.pricing.priceCurvesfilereader;
+package com.onbelay.dealcapture.dealmodule.deal.dealoverridefilereader;
 
 
 import com.onbelay.dealcapture.dealmodule.deal.dealfilereader.ColumnType;
@@ -19,37 +19,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Defines the columns for a curve
+ * Defines the columns for a fixed price physical deal
  * @author canmxf
  *
  */
-public enum CurveColumnType {
-	INDEX_NAME ("INDEX_NAME", ColumnType.STRING),
-	FREQUENCY_CODE ("FREQUENCY_CODE", ColumnType.STRING),
-	CURVE_DATE ("CURVE_DATE", ColumnType.DATE),
-	CURVE_DATE_HOUR_ENDING ("HOUR_ENDING", ColumnType.INTEGER),
-	OBSERVED_DATE_TIME ("OBSERVED_DATE_TIME", ColumnType.DATE_TIME),
-	CURVE_VALUE ("CURVE_VALUE", ColumnType.BIG_DECIMAL),
+public enum DealOverrideColumnType {
+	TICKET_NO ("TICKET_NO", ColumnType.STRING),
+	OVERRIDE_DATE ("OVERRIDE_DATE", ColumnType.DATE),
+	HOUR_ENDING ("HOUR_ENDING", ColumnType.INTEGER),
+	VALUE ("VALUE", ColumnType.BIG_DECIMAL),
 	;
 
 	private final String code;
 	private ColumnType columnType;
 
-	private static final Map<String, CurveColumnType> codeMap
+	private static final Map<String, DealOverrideColumnType> codeMap
 			= new HashMap<>();
 
 	static {
-		for(CurveColumnType c : EnumSet.allOf(CurveColumnType.class))
+		for(DealOverrideColumnType c : EnumSet.allOf(DealOverrideColumnType.class))
 			codeMap.put(c.code, c);
 	}
 
-	private static CurveColumnType[] list = CurveColumnType.values();
+	private static DealOverrideColumnType[] list = DealOverrideColumnType.values();
 
-	public static CurveColumnType[] getAsArray() {
+	public static DealOverrideColumnType[] getAsArray() {
 		return list;
 	}
 
-	private CurveColumnType(String code, ColumnType type) {
+	private DealOverrideColumnType(String code, ColumnType type) {
 		this.code = code;
 		this.columnType = type;
 	}
@@ -71,7 +69,7 @@ public enum CurveColumnType {
 	 * If the code does not exist as a property value of one
 	 * of the enum constants, null is returned.
 	 */
-	public static CurveColumnType lookUp(String code) {
+	public static DealOverrideColumnType lookUp(String code) {
 		return codeMap.get(code);
 	}
 
@@ -80,14 +78,14 @@ public enum CurveColumnType {
 	 * of the enum constant's name.
 	 * If the name does not exist in the enum, null is returned.
 	 */
-	public static CurveColumnType lookUpByName(String name) {
+	public static DealOverrideColumnType lookUpByName(String name) {
 
 		if (name == null) {
 			return null;
 		}
 
 		try {
-			return CurveColumnType.valueOf(name);
+			return DealOverrideColumnType.valueOf(name);
 		} catch (IllegalArgumentException e) {
 			return null;
 		}
@@ -99,9 +97,9 @@ public enum CurveColumnType {
 	 * If neither findByCode or findByName return a value,
 	 * then null is returned.
 	 */
-	public static CurveColumnType lookUpByCodeOrName(String value) {
+	public static DealOverrideColumnType lookUpByCodeOrName(String value) {
 
-		CurveColumnType enumConstant = lookUp(value);
+		DealOverrideColumnType enumConstant = lookUp(value);
 		if (enumConstant != null) {
 			return enumConstant;
 		}
@@ -123,7 +121,7 @@ public enum CurveColumnType {
 	 */
 	public static String convertToCode(String value) {
 
-		CurveColumnType enumConstant = lookUp(value);
+		DealOverrideColumnType enumConstant = lookUp(value);
 		if (enumConstant != null) {
 			return enumConstant.getCode();
 		}

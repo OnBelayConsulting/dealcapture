@@ -213,6 +213,8 @@ public class GeneratePositionsServiceWithCostsAndFXTest extends PhysicalDealServ
         List<TotalCostPositionSummary> summaries = dealPositionService.calculateTotalCostPositionSummaries(
                 fixedPriceBuyDeal.getId(),
                 CurrencyCode.CAD,
+                fixedPriceBuyDeal.getDealDetail().getStartDate(),
+                fixedPriceBuyDeal.getDealDetail().getEndDate(),
                 createdDateTime);
         assertEquals(31, summaries.size());
         TotalCostPositionSummary summary = summaries.get(0);

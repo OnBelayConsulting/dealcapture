@@ -1,4 +1,4 @@
-package com.onbelay.dealcapture.pricing.priceCurvesfilereader;
+package com.onbelay.dealcapture.pricing.curvesfilereader;
 
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
 import com.onbelay.dealcapture.pricing.model.PriceIndex;

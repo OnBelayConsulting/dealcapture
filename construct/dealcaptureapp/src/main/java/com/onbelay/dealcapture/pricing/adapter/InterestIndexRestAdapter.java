@@ -31,4 +31,8 @@ public interface InterestIndexRestAdapter {
             String queryText,
             Integer start,
             Integer limit);
+
+    TransactionResult saveInterestCurve(InterestCurveSnapshot snapshot);
+
+    TransactionResult saveInterestCurvesFile(String originalFilename, byte[] bytes);
 }

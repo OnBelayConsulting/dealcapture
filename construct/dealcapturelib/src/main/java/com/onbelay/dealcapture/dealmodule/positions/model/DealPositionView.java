@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
                         "  FROM DealPositionView position " +
                         " WHERE position.dealId in (:dealIds) " +
                         "   AND viewDetail.currencyCodeValue = :currencyCode " +
+                        "   AND viewDetail.startDate >= :fromDate  " +
+                        "   AND viewDetail.startDate <= :toDate  " +
                         "   AND viewDetail.createdDateTime = :createdDateTime "),
         @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_DEAL_POSITION_VIEWS_BY_DEAL,
@@ -35,6 +37,8 @@ import java.util.stream.Collectors;
                         "  FROM DealPositionView position " +
                         " WHERE position.dealId = :dealId " +
                         "   AND viewDetail.currencyCodeValue = :currencyCode " +
+                        "   AND viewDetail.startDate >= :fromDate  " +
+                        "   AND viewDetail.startDate <= :toDate  " +
                         "   AND viewDetail.createdDateTime = :createdDateTime ")
 })
 public abstract class DealPositionView extends AbstractEntity {

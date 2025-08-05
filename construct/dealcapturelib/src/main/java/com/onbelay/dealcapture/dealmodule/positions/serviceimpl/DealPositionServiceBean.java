@@ -71,14 +71,23 @@ public class DealPositionServiceBean implements DealPositionService {
     }
 
     @Override
+    public List<LocalDateTime> getPositionCreatedDateTimes() {
+        return dealPositionRepository.getPositionCreatedDateTimes();
+    }
+
+    @Override
     public List<DealPositionView> fetchDealPositionViews(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
 
         List<DealPositionView> views = dealPositionRepository.findDealPositionViews(
                     dealIds,
                     currencyCode,
+                    fromDate,
+                    toDate,
                     createdDateTime);
 
         HashMap<Integer, DealPositionView> viewMap = new HashMap<>();
@@ -97,11 +106,15 @@ public class DealPositionServiceBean implements DealPositionService {
     public List<DealPositionView> fetchDealPositionViews(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
 
         List<DealPositionView> views = dealPositionRepository.findDealPositionViews(
                 dealId,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
         HashMap<Integer, DealPositionView> viewMap = new HashMap<>();
         views.forEach(c-> viewMap.put(c.getId(), c));
@@ -120,11 +133,15 @@ public class DealPositionServiceBean implements DealPositionService {
     public List<DealHourlyPositionView> fetchDealHourlyPositionViews(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
 
         return dealHourlyPositionRepository.findDealHourlyPositionViews(
                 dealIds,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
     }
 
@@ -132,11 +149,15 @@ public class DealPositionServiceBean implements DealPositionService {
     public List<DealHourlyPositionView> fetchDealHourlyPositionViews(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
 
         return dealHourlyPositionRepository.findDealHourlyPositionViews(
                 dealId,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
     }
 
@@ -194,11 +215,15 @@ public class DealPositionServiceBean implements DealPositionService {
     public List<CostPositionView> fetchCostPositionViewsWithFX(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
 
         return costPositionRepository.findCostPositionViewsWithFX(
                 dealIds,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
     }
 
@@ -206,11 +231,15 @@ public class DealPositionServiceBean implements DealPositionService {
     public List<CostPositionView> fetchCostPositionViewsWithFX(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
 
         return costPositionRepository.findCostPositionViewsWithFX(
                 dealId,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
     }
 
@@ -228,11 +257,15 @@ public class DealPositionServiceBean implements DealPositionService {
     public List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
 
         return costPositionRepository.calculateTotalCostSummaries(
                 dealId,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
     }
 
@@ -240,10 +273,14 @@ public class DealPositionServiceBean implements DealPositionService {
     public List<TotalCostPositionSummary> calculateTotalCostPositionSummaries(
             List<Integer> dealIds,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime) {
         return costPositionRepository.calculateTotalCostSummaries(
                 dealIds,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
     }
 

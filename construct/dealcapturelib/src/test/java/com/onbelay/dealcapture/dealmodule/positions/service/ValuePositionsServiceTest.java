@@ -133,6 +133,8 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
         List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                 fixedPriceBuyDeal.getId(),
                 CurrencyCode.CAD,
+                fixedPriceBuyDeal.getDealDetail().getStartDate(),
+                fixedPriceBuyDeal.getDealDetail().getEndDate(),
                 createdDateTime);
         PhysicalPositionView view = (PhysicalPositionView) views.get(0);
         assertNull(view.getPriceDetail().getDealIndexPriceValue());
@@ -258,6 +260,8 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
         List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                 indexBuyDeal.getId(),
                 CurrencyCode.CAD,
+                indexBuyDeal.getDealDetail().getStartDate(),
+                indexBuyDeal.getDealDetail().getEndDate(),
                 createdDateTime);
         PhysicalPositionView view = (PhysicalPositionView) views.get(0);
 
@@ -375,6 +379,8 @@ public class ValuePositionsServiceTest extends PhysicalDealServiceTestCase {
         List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                 indexPlusBuyDeal.getId(),
                 CurrencyCode.CAD,
+                indexPlusBuyDeal.getDealDetail().getStartDate(),
+                indexPlusBuyDeal.getDealDetail().getEndDate(),
                 createdDateTime);
         PhysicalPositionView view = (PhysicalPositionView) views.get(0);
 

@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +74,42 @@ public class DealRestController extends BaseRestController {
 		TransactionResult result;
 		try {
 			  result = dealRestAdapter.save(dealSnapshot);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
+	@Operation(summary="Create or update a deal overrides by month")
+	@PostMapping(
+			value = "/{id}/overrides",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> saveDealOverrides(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@RequestBody DealOverrideMonthSnapshot snapshot,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+
+		TransactionResult result;
+		try {
+			result = dealRestAdapter.saveDealOverridesByMonth(
+					new EntityId(id),
+					snapshot);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
 			result = new TransactionResult(r.getErrorCode(), r.getParms());
@@ -167,7 +204,7 @@ public class DealRestController extends BaseRestController {
 
 		TransactionResult result;
 		try {
-			result = dealRestAdapter.saveFile(
+			result = dealRestAdapter.saveDealFile(
 					submissions.get(0).getOriginalFilename(),
 					submissions.get(0).getBytes());
 		} catch (OBRuntimeException r) {
@@ -183,7 +220,39 @@ public class DealRestController extends BaseRestController {
         return processResponse(result);
 	}
 
-	
+
+	@RequestMapping(
+			consumes = {
+					MediaType.MULTIPART_FORM_DATA_VALUE
+			},
+			value = "/overrides",
+			produces = "application/json",
+			method = RequestMethod.POST
+	)
+	public ResponseEntity<TransactionResult> uploadDealOverrideFile(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "file-data", defaultValue = "") String fileData,
+			@RequestParam("file") List<MultipartFile> submissions) {
+
+		TransactionResult result;
+		try {
+			result = dealRestAdapter.saveDealOverridesFile(
+					submissions.get(0).getOriginalFilename(),
+					submissions.get(0).getBytes());
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		} catch (IOException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
 	@Operation(summary="Save deals")
 	@PutMapping(
 			produces="application/json",
@@ -267,6 +336,64 @@ public class DealRestController extends BaseRestController {
 
 		return (ResponseEntity<DealCostSnapshotCollection>) processResponse(collection);
 	}
+
+
+
+	@Operation(summary="get deal overrides")
+	@GetMapping("/{id}/overrides")
+	public ResponseEntity<DealOverrideSnapshotCollection> getDealOverrides(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "start", defaultValue="0")Integer start,
+			@RequestParam(value = "limit", defaultValue="100")Integer limit,
+			@PathVariable Integer id) {
+
+		DealOverrideSnapshotCollection collection;
+
+		try {
+			collection = dealRestAdapter.fetchDealOverrides(
+					new EntityId(id),
+					start,
+					limit);
+		} catch (OBRuntimeException r) {
+			collection = new DealOverrideSnapshotCollection(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new DealOverrideSnapshotCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			collection = new DealOverrideSnapshotCollection(r.getMessage());
+		}
+
+		return (ResponseEntity<DealOverrideSnapshotCollection>) processResponse(collection);
+	}
+
+
+	@Operation(summary="get deal overrides for month")
+	@GetMapping("/{id}/overrides/{monthDate}")
+	public ResponseEntity<DealOverrideMonthSnapshot> getDealOverridesForMonth(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@PathVariable LocalDate monthDate) {
+
+		DealOverrideMonthSnapshot collection;
+
+		try {
+			collection = dealRestAdapter.getDealOverridesForMonth(
+					new EntityId(id),
+					monthDate);
+		} catch (OBRuntimeException r) {
+			collection = new DealOverrideMonthSnapshot(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new DealOverrideMonthSnapshot(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			collection = new DealOverrideMonthSnapshot(r.getMessage());
+		}
+
+		return (ResponseEntity<DealOverrideMonthSnapshot>) processResponse(collection);
+	}
+
 
 
 	@Operation(summary="get an existing deal")

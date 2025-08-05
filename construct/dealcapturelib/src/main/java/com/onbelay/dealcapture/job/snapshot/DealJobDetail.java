@@ -34,6 +34,7 @@ public class DealJobDetail extends AbstractDetail {
     
     public void setDefaults() {
         errorCode = "0";
+        jobStatusCodeValue = JobStatusCode.PENDING.getCode();
     }
 
     public void validate() throws OBValidationException {

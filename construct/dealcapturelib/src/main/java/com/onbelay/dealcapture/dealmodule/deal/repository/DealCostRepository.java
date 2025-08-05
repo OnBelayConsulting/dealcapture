@@ -14,6 +14,8 @@ public interface DealCostRepository {
             Integer dealId,
             String name);
 
+    List<String> getDealCostNames(Integer dealId);
+
     List<DealCost> fetchDealCosts(Integer dealId);
 
     List<DealCostSummary> fetchDealCostSummaries(List<Integer> dealIds);

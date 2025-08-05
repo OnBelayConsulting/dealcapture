@@ -28,6 +28,11 @@ public enum JobErrorCode {
     MISSING_JOB_STATUS_CODE         ("DC_JB-E0007", "Error: Missing job status code."),
     MISSING_JOB_TYPE_CODE           ("DC_JB-E0008", "Error: Missing job type code."),
     MISSING_VALUATION_DATE_TIME     ("DC_JB-E0100", "Error: Missing valuation date/time."),
+    QUEUE_FAILED                    ("DC_JB-E0200", "Error: Request to queue failed. Must be in status pending."),
+    COMPLETE_FAILED                 ("DC_JB-E0201", "Error: Request to complete failed. Must be in status of executing."),
+    FAIL_FAILED                     ("DC_JB-E0202", "Error: Request to fail - failed. Must be in status of pending, queued or executing."),
+    DELETE_FAILED                   ("DC_JB-E0203", "Error: Request to delete failed. Must be in status of failed or cancelled."),
+    CANCEL_FAILED                   ("DC_JB-E0204", "Error: Request to cancel failed. Must be in status of pending, queued or executing."),
 
     ;
 

@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,9 +107,11 @@ public class DealHourlyPositionRepositoryBean extends BaseRepository<DealHourlyP
 	public List<DealHourlyPositionView> findDealHourlyPositionViews(
 			Integer dealId,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
-		String[] names = {"dealId", "currencyCode", "createdDateTime"};
-		Object[] parms = {dealId, currencyCode.getCode(), createdDateTime};
+		String[] names = {"dealId", "currencyCode", "fromDate", "toDate", "createdDateTime"};
+		Object[] parms = {dealId, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 
 		return (List<DealHourlyPositionView>) executeReportQuery(
 				FIND_DEAL_HOURLY_POSITION_VIEWS_BY_DEAL,
@@ -120,12 +123,14 @@ public class DealHourlyPositionRepositoryBean extends BaseRepository<DealHourlyP
 	public List<DealHourlyPositionView> findDealHourlyPositionViews(
 			List<Integer> dealIds,
 			CurrencyCode currencyCode,
+			LocalDate fromDate,
+			LocalDate toDate,
 			LocalDateTime createdDateTime) {
 
-		String[] names = {"dealIds", "currencyCode", "createdDateTime"};
+		String[] names = {"dealIds", "currencyCode", "fromDate", "toDate", "createdDateTime"};
 
 		if (dealIds.size() < 2000) {
-			Object[] parms = {dealIds, currencyCode.getCode(), createdDateTime};
+			Object[] parms = {dealIds, currencyCode.getCode(), fromDate, toDate, createdDateTime};
 
 			return (List<DealHourlyPositionView>) executeReportQuery(
 					FIND_DEAL_HOURLY_POSITION_VIEWS,

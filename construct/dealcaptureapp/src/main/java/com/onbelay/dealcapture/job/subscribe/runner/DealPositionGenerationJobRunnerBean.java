@@ -82,33 +82,19 @@ public class DealPositionGenerationJobRunnerBean implements DealJobRunner {
             throw new OBRuntimeException(PositionErrorCode.MISSING_REQUIRED_EVAL_CONTEXT_FIELDS.getCode());
         }
 
-        try {
-            dealJobService.startPositionGenerationExecution(
-                    snapshot.getEntityId(),
-                    createdDateTime,
-                    positionGenerationIdentifier,
-                    LocalDateTime.now());
+        dealJobService.startPositionGenerationExecution(
+                snapshot.getEntityId(),
+                createdDateTime,
+                positionGenerationIdentifier,
+                LocalDateTime.now());
 
-            generatePositionsService.generatePositions(
-                    positionGenerationIdentifier,
-                    dealPositionsEvaluationContext,
-                    ids);
-            dealJobService.endPositionGenerationExecution(
-                    snapshot.getEntityId(),
-                    LocalDateTime.now());
-        } catch (OBRuntimeException e) {
-            dealJobService.failJobExecution(
-                    snapshot.getEntityId(),
-                    e.getErrorCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        } catch (RuntimeException e) {
-            dealJobService.failJobExecution(
-                    snapshot.getEntityId(),
-                    PositionErrorCode.ERROR_POSITION_GENERATION_FAILED.getCode(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-        }
+        generatePositionsService.generatePositions(
+                positionGenerationIdentifier,
+                dealPositionsEvaluationContext,
+                ids);
+        dealJobService.endPositionGenerationExecution(
+                snapshot.getEntityId(),
+                LocalDateTime.now());
 
 
     }

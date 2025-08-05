@@ -20,6 +20,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.repository.InterestCurveRepository;
+import com.onbelay.shared.enums.FrequencyCode;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -50,9 +51,12 @@ public class InterestCurveRepositoryBean extends BaseRepository<InterestCurve> i
 
 
 	@Override
-	public InterestCurve fetchCurrentInterestRate(EntityId entityId, LocalDate interestDate) {
-		String[] names = {"interestIndexId", "curveDate", "hourEnding", "currentDateTime"};
-		Object[] values = {entityId.getId(), interestDate, 0, LocalDateTime.now()};
+	public InterestCurve fetchCurrentInterestRate(
+			EntityId interestIndexId,
+			LocalDate interestDate,
+			FrequencyCode frequencyCode) {
+		String[] names = {"interestIndexId", "curveDate", "frequencyCode", "hourEnding", "currentDateTime"};
+		Object[] values = {interestIndexId.getId(), interestDate, frequencyCode.getCode(), 0, LocalDateTime.now()};
 		List<InterestCurve> curves = executeQuery(FETCH_RATE_BY_CURVE_DATE_OBS_DATE, names, values);
 		if (curves == null || curves.isEmpty())
 			return null;

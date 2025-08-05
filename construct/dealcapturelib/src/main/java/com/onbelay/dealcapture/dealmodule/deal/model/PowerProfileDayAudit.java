@@ -19,6 +19,7 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
 import com.onbelay.core.utils.DateUtils;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDayDetail;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileDayPrivateDetail;
 import jakarta.persistence.*;
 
 @Entity
@@ -40,7 +41,7 @@ public class PowerProfileDayAudit extends AuditAbstractEntity {
 	
 	private PowerProfileDay powerProfileDay;
 	
-	private PowerProfileDayDetail detail = new PowerProfileDayDetail();
+	private PowerProfileDayPrivateDetail detail = new PowerProfileDayPrivateDetail();
 
 	public static PowerProfileDayAudit create(PowerProfileDay powerProfileDay) {
 		PowerProfileDayAudit audit = new PowerProfileDayAudit();
@@ -93,11 +94,11 @@ public class PowerProfileDayAudit extends AuditAbstractEntity {
 	}
 
 	@Embedded
-	public PowerProfileDayDetail getDetail() {
+	public PowerProfileDayPrivateDetail getDetail() {
 		return detail;
 	}
 
-	private void setDetail(PowerProfileDayDetail detail) {
+	private void setDetail(PowerProfileDayPrivateDetail detail) {
 		this.detail = detail;
 	}
 

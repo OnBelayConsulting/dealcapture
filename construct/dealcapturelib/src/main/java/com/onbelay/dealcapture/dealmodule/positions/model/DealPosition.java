@@ -30,6 +30,10 @@ import java.util.List;
                         "  FROM DealPosition position " +
                         " WHERE position.detail.createdDateTime = :createdDateTime " +
                       "     AND position.detail.currencyCodeValue = :currencyCode "),
+        @NamedQuery(
+                name = DealPositionRepositoryBean.FIND_CREATED_DATE_TIMES,
+                query = "SELECT distinct position.detail.createdDateTime " +
+                        "  FROM DealPosition position"),
          @NamedQuery(
                 name = DealPositionRepositoryBean.FIND_MAX_START_DATE,
                 query = "SELECT max(position.detail.startDate) " +

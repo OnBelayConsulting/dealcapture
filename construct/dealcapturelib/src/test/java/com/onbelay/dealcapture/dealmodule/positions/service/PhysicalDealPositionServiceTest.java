@@ -94,6 +94,8 @@ public class PhysicalDealPositionServiceTest extends PhysicalDealServiceTestCase
         List<DealPositionView> reports = dealPositionService.fetchDealPositionViews(
                 List.of(fixedPriceBuyDeal.getId()),
                 CurrencyCode.CAD,
+                fixedPriceBuyDeal.getDealDetail().getStartDate(),
+                fixedPriceBuyDeal.getDealDetail().getEndDate(),
                 createdDateTime);
 
         assertTrue(reports.size() > 0);

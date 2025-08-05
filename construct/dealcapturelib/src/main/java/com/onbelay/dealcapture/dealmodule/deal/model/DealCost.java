@@ -32,6 +32,12 @@ import jakarta.persistence.*;
 			   "  FROM DealCost dealCost " +
        		 "   WHERE dealCost.deal.id = :dealId " +
        	     "ORDER BY dealCost.detail.costNameCodeValue DESC"),
+	@NamedQuery(
+		name = DealCostRepositoryBean.FETCH_DEAL_COST_NAMES,
+		query = "SELECT dealCost.detail.costNameCodeValue " +
+				"  FROM DealCost dealCost " +
+    	        "WHERE dealCost.deal.id = :dealId " +
+				"ORDER BY dealCost.detail.costNameCodeValue DESC"),
     @NamedQuery(
        name = DealCostRepositoryBean.FETCH_DEAL_COST_SUMMARIES,
        query = "SELECT new com.onbelay.dealcapture.dealmodule.deal.snapshot.DealCostSummary( " +

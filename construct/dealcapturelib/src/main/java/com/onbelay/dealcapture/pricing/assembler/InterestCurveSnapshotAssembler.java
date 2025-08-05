@@ -24,16 +24,17 @@ import java.util.stream.Collectors;
 
 public class InterestCurveSnapshotAssembler extends EntityAssembler {
 
-	public InterestCurveSnapshot assemble(InterestCurve price) {
+	public InterestCurveSnapshot assemble(InterestCurve rate) {
 		
 		InterestCurveSnapshot snapshot = new InterestCurveSnapshot();
-		super.setEntityAttributes(price, snapshot);
-		snapshot.getDetail().copyFrom(price.getDetail());
+		super.setEntityAttributes(rate, snapshot);
+		snapshot.setIndexId(rate.getInterestIndex().generateEntityId());
+		snapshot.getDetail().copyFrom(rate.getDetail());
 		return snapshot;
 	}
 	
-	public List<InterestCurveSnapshot> assemble(List<InterestCurve> prices) {
-		return prices
+	public List<InterestCurveSnapshot> assemble(List<InterestCurve> rates) {
+		return rates
 			.stream()
 			.map( c -> assemble(c))
 			.collect(Collectors.toList());

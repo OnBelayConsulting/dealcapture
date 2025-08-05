@@ -136,6 +136,8 @@ public class ValueFinancialSwapPositionsServiceTest extends FinancialSwapDealSer
         List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                 fixed4FloatSellDeal.getId(),
                 CurrencyCode.CAD,
+                fixed4FloatSellDeal.getDealDetail().getStartDate(),
+                fixed4FloatSellDeal.getDealDetail().getEndDate(),
                 createdDateTime);
         FinancialSwapPositionView view = (FinancialSwapPositionView) views.get(0);
         assertNull(view.getPriceDetail().getPaysIndexPriceValue());
@@ -270,6 +272,8 @@ public class ValueFinancialSwapPositionsServiceTest extends FinancialSwapDealSer
         List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                 float4FloatBuyDeal.getId(),
                 CurrencyCode.CAD,
+                float4FloatBuyDeal.getDealDetail().getStartDate(),
+                float4FloatBuyDeal.getDealDetail().getEndDate(),
                 createdDateTime);
         FinancialSwapPositionView  view = (FinancialSwapPositionView) views.get(0);
 
@@ -339,6 +343,8 @@ public class ValueFinancialSwapPositionsServiceTest extends FinancialSwapDealSer
         List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                 float4FloatPlusBuyDeal.getId(),
                 CurrencyCode.CAD,
+                float4FloatPlusBuyDeal.getDealDetail().getStartDate(),
+                float4FloatPlusBuyDeal.getDealDetail().getEndDate(),
                 createdDateTime);
         FinancialSwapPositionView  view = (FinancialSwapPositionView) views.get(0);
 

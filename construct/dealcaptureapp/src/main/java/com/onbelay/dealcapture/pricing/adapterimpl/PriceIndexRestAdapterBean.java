@@ -8,7 +8,7 @@ import com.onbelay.core.query.snapshot.DefinedOrderExpression;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.pricing.adapter.PriceIndexRestAdapter;
-import com.onbelay.dealcapture.pricing.priceCurvesfilereader.PriceCurvesFileReader;
+import com.onbelay.dealcapture.pricing.curvesfilereader.PriceCurvesFileReader;
 import com.onbelay.dealcapture.pricing.service.PriceIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshotCollection;

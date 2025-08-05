@@ -59,7 +59,7 @@ public class PowerProfile extends TemporalAbstractEntity {
 
 	private PriceIndex settledPriceIndex;
 
-	private PriceIndex endOfMonthPriceIndex;
+	private PriceIndex restOfMonthPriceIndex;
 
 	private PowerProfileDetail detail = new PowerProfileDetail();
 	
@@ -81,11 +81,14 @@ public class PowerProfile extends TemporalAbstractEntity {
 		detail.setDefaults();
 		detail.copyFrom(snapshot.getDetail());
 		save();
-		savePowerProfileIndexMappings(snapshot.getIndexMappings());
-		if (snapshot.getDaysMap().isEmpty())
+		if (snapshot.getChangedMappings().isEmpty())
+			savePowerProfileIndexMappings(snapshot.getIndexMappings());
+		else
+			processIndexMappings(snapshot.getChangedMappings());
+		if (snapshot.getChangedProfileDays().isEmpty())
 			savePowerProfileDays(snapshot.getProfileDays());
 		else
-			processPowerProfileDayMap(snapshot.getDaysMap());
+			processPowerProfileDayMap(snapshot.getChangedProfileDays());
 		updateRelationships(snapshot);
 		validateDays();
 	}
@@ -93,11 +96,14 @@ public class PowerProfile extends TemporalAbstractEntity {
 	public void updateWith(PowerProfileSnapshot snapshot) {
 		super.updateWith(snapshot);
 		detail.copyFrom(snapshot.getDetail());
-		savePowerProfileIndexMappings(snapshot.getIndexMappings());
-		if (snapshot.getDaysMap().isEmpty())
+		if (snapshot.getChangedMappings().isEmpty())
+			savePowerProfileIndexMappings(snapshot.getIndexMappings());
+		else
+			processIndexMappings(snapshot.getChangedMappings());
+		if (snapshot.getChangedProfileDays().isEmpty())
 			savePowerProfileDays(snapshot.getProfileDays());
 		else
-			processPowerProfileDayMap(snapshot.getDaysMap());
+			processPowerProfileDayMap(snapshot.getChangedProfileDays());
 
 		updateRelationships(snapshot);
 		update();
@@ -131,8 +137,8 @@ public class PowerProfile extends TemporalAbstractEntity {
 		if (snapshot.getSettledPriceIndexId() != null) {
 			this.settledPriceIndex = getPriceIndexRepository().load(snapshot.getSettledPriceIndexId());
 		}
-		if (snapshot.getEndOfMonthPriceIndexId() != null) {
-			this.endOfMonthPriceIndex = getPriceIndexRepository().load(snapshot.getEndOfMonthPriceIndexId());
+		if (snapshot.getRestOfMonthPriceIndexId() != null) {
+			this.restOfMonthPriceIndex = getPriceIndexRepository().load(snapshot.getRestOfMonthPriceIndexId());
 		}
 	}
 
@@ -153,27 +159,74 @@ public class PowerProfile extends TemporalAbstractEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "END_OF_MTH_PRICE_INDEX_ID")
-	public PriceIndex getEndOfMonthPriceIndex() {
-		return endOfMonthPriceIndex;
+	public PriceIndex getRestOfMonthPriceIndex() {
+		return restOfMonthPriceIndex;
 	}
 
-	public void setEndOfMonthPriceIndex(PriceIndex endOfMonthPriceIndex) {
-		this.endOfMonthPriceIndex = endOfMonthPriceIndex;
+	public void setRestOfMonthPriceIndex(PriceIndex endOfMonthPriceIndex) {
+		this.restOfMonthPriceIndex = endOfMonthPriceIndex;
 	}
 
-	private void processPowerProfileDayMap(Map<Integer, PowerProfileDaySnapshot> powerProfileDayMap) {
-		Map<Integer, PowerProfileDay> powerProfileDayExistingMap = new HashMap<>();
-
-		fetchPowerProfileDays().forEach(powerProfileDay -> {
-			powerProfileDayExistingMap.put(powerProfileDay.getDetail().getDayOfWeek(), powerProfileDay);
+	/*
+	Update the collection of index mappings from a new list of changed mappings by adding updating or deleting.
+	 */
+	private void processIndexMappings(List<PowerProfileIndexMappingSnapshot> mappings) {
+		Map<PowerFlowCode, PowerProfileIndexMappingSnapshot> changedMap = new HashMap<>();
+		mappings.forEach(mapping -> {
+			changedMap.put(mapping.getDetail().getPowerFlowCode(), mapping);
 		});
 
-		for (Integer key : powerProfileDayMap.keySet()) {
-			PowerProfileDay existing = powerProfileDayExistingMap.get(key);
+		Map<PowerFlowCode, PowerProfileIndexMapping> existingMap = new HashMap<>();
+
+		fetchPowerProfileIndexMappings().forEach(mapping -> {
+			existingMap.put(mapping.getDetail().getPowerFlowCode(), mapping);
+		});
+
+		for (PowerFlowCode code : existingMap.keySet()) {
+			PowerProfileIndexMappingSnapshot snapshot = changedMap.get(code);
+			if (snapshot == null) {
+				PowerProfileIndexMapping existing = existingMap.get(code);
+				existing.delete();
+			}
+		}
+
+		for (PowerFlowCode key : changedMap.keySet()) {
+			PowerProfileIndexMapping existing = existingMap.get(key);
 			if (existing == null) {
-				savePowerProfileDay(powerProfileDayMap.get(key));
+				savePowerProfileIndexMapping(changedMap.get(key));
 			} else {
-				existing.updateWith(powerProfileDayMap.get(key));
+				existing.updateWith(changedMap.get(key));
+			}
+		}
+
+	}
+
+	private void processPowerProfileDayMap(List<PowerProfileDaySnapshot> powerProfileDays) {
+		Map<Integer, PowerProfileDaySnapshot> changedDayMap = new HashMap<>();
+		powerProfileDays.forEach(powerProfileDay -> {
+			changedDayMap.put(powerProfileDay.getDetail().getDayOfWeek(), powerProfileDay);
+		});
+
+		Map<Integer, PowerProfileDay> existingDayMap = new HashMap<>();
+
+		fetchPowerProfileDays().forEach(powerProfileDay -> {
+			existingDayMap.put(powerProfileDay.getDetail().getDayOfWeek(), powerProfileDay);
+		});
+
+		for (Integer key : existingDayMap.keySet()) {
+			PowerProfileDaySnapshot snapshot = changedDayMap.get(key);
+			if (snapshot == null) {
+				PowerProfileDay existing = existingDayMap.get(key);
+				existing.delete();
+			}
+		}
+
+		for (Integer key : changedDayMap.keySet()) {
+			PowerProfileDay existing = existingDayMap.get(key);
+			if (existing == null) {
+				savePowerProfileDay(changedDayMap.get(key));
+			} else {
+				existing.updateWith(changedDayMap.get(key));
 			}
 		}
 	}
@@ -220,26 +273,35 @@ public class PowerProfile extends TemporalAbstractEntity {
 	public List<Integer> savePowerProfileIndexMappings(List<PowerProfileIndexMappingSnapshot> snapshots) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		for (PowerProfileIndexMappingSnapshot snapshot : snapshots) {
-			if (snapshot.getDetail().getPowerFlowCode().isHourly() == false)
-				throw new OBValidationException(PowerProfileErrorCode.INVALID_POWER_PROFILE_CODE.getCode());
-			switch (snapshot.getEntityState()) {
-
-				case NEW -> {
-					PowerProfileIndexMapping mapping = PowerProfileIndexMapping.create(this, snapshot);
-					ids.add(mapping.getId());
-				}
-				case MODIFIED -> {
-					PowerProfileIndexMapping mapping = getPowerProfileIndexMappingRepository().load(snapshot.getEntityId());
-					mapping.updateWith(snapshot);
-					ids.add(mapping.getId());
-				}
-				case DELETE -> {
-					PowerProfileIndexMapping mapping = getPowerProfileIndexMappingRepository().load(snapshot.getEntityId());
-					mapping.delete();
-				}
+			Integer id = savePowerProfileIndexMapping(snapshot);
+			if (id != null) {
+				ids.add(id);
 			}
 		}
 		return ids;
+	}
+
+	public Integer savePowerProfileIndexMapping(PowerProfileIndexMappingSnapshot snapshot) {
+		if (snapshot.getDetail().getPowerFlowCode().isHourly() == false)
+			throw new OBValidationException(PowerProfileErrorCode.INVALID_POWER_PROFILE_CODE.getCode());
+		switch (snapshot.getEntityState()) {
+
+			case NEW -> {
+				PowerProfileIndexMapping mapping = PowerProfileIndexMapping.create(this, snapshot);
+				return mapping.getId();
+			}
+			case MODIFIED -> {
+				PowerProfileIndexMapping mapping = getPowerProfileIndexMappingRepository().load(snapshot.getEntityId());
+				mapping.updateWith(snapshot);
+				return mapping.getId();
+			}
+			case DELETE -> {
+				PowerProfileIndexMapping mapping = getPowerProfileIndexMappingRepository().load(snapshot.getEntityId());
+				mapping.delete();
+				return mapping.getId();
+			}
+		}
+		return null;
 	}
 
 	public void addPowerProfileIndexMapping(PowerProfileIndexMapping powerProfileIndexMapping) {

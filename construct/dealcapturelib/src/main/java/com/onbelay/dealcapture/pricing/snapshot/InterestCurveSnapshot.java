@@ -17,10 +17,13 @@ package com.onbelay.dealcapture.pricing.snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.core.entity.snapshot.EntityId;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InterestCurveSnapshot extends AbstractSnapshot {
-	
+public class InterestCurveSnapshot extends AbstractSnapshot implements CurveSnapshot{
+
+	private EntityId indexId;
+
 	private CurveDetail detail = new CurveDetail();
 
 	public CurveDetail getDetail() {
@@ -31,4 +34,11 @@ public class InterestCurveSnapshot extends AbstractSnapshot {
 		this.detail = detail;
 	}
 
+	public EntityId getIndexId() {
+		return indexId;
+	}
+
+	public void setIndexId(EntityId indexId) {
+		this.indexId = indexId;
+	}
 }

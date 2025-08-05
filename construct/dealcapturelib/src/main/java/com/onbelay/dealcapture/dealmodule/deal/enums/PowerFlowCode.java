@@ -26,7 +26,7 @@ import java.util.Map;
  *
  */
 public enum PowerFlowCode {
-	HOURLY		("Hourly", false),
+	HOURLY		("Hourly", true),
 	DAILY		("Daily", false),
 	MONTHLY		("Monthly", false),
 	END_OF_MTH	("EndOfMonth", false),

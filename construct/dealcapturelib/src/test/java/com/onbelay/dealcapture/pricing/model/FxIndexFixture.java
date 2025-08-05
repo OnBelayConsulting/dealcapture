@@ -65,6 +65,31 @@ public class FxIndexFixture {
         return fxIndex;
     }
 
+
+    public static FxIndex createFxIndex(
+            String name,
+            FrequencyCode frequencyCode,
+            CurrencyCode to,
+            CurrencyCode from) {
+
+        FxIndexSnapshot snapshot = new FxIndexSnapshot();
+        snapshot.getDetail().setFrequencyCode(frequencyCode);
+        snapshot.getDetail().setFromCurrencyCode(from);
+        snapshot.getDetail().setToCurrencyCode(to);
+        snapshot.getDetail().setDescription( "From: "
+                + from.getCode()
+                + " To:"
+                + to.getCode()
+                + ":"
+                + frequencyCode.getCode() );
+        snapshot.getDetail().setName(name);
+
+        FxIndex fxIndex = new FxIndex();
+        fxIndex.createWith( snapshot);
+        return fxIndex;
+    }
+
+
     public static FxIndexSnapshot createFxIndexSnapshot(
             FrequencyCode frequencyCode,
             CurrencyCode to,

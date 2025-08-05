@@ -1,4 +1,4 @@
-package com.onbelay.dealcapture.pricing.priceCurvesfilereader;
+package com.onbelay.dealcapture.pricing.curvesfilereader;
 
 import java.util.ArrayList;
 import java.util.List;

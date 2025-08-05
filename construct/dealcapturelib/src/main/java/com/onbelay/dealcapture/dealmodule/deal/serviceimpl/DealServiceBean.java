@@ -254,6 +254,47 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
+	public DealOverrideSnapshot fetchDealOverrides(EntityId dealId) {
+		BaseDeal deal = dealRepository.load(dealId);
+		if (deal == null) {
+			throw new OBRuntimeException(DealErrorCode.INVALID_DEAL_ID.getCode());
+		}
+		DealOverridesAssembler assembler = new DealOverridesAssembler();
+		return assembler.assemble(deal);
+	}
+
+	@Override
+	public TransactionResult saveDealOverrides(DealOverrideSnapshot dealOverrideSnapshot) {
+		BaseDeal deal = dealRepository.load(dealOverrideSnapshot.getEntityId());
+		if (deal == null) {
+			throw new OBRuntimeException(DealErrorCode.INVALID_DEAL_ID.getCode());
+		}
+		deal.saveDealOverrides(dealOverrideSnapshot);
+		return new TransactionResult();
+	}
+
+	@Override
+	public TransactionResult saveDealOverrides(List<DealOverrideSnapshot> snapshots) {
+		for (DealOverrideSnapshot snapshot : snapshots) {
+			saveDealOverrides(snapshot);
+		}
+
+		return new TransactionResult();
+	}
+
+	@Override
+	public TransactionResult saveDealOverridesByMonth(
+			EntityId dealId,
+			DealOverrideMonthSnapshot snapshot) {
+		BaseDeal deal = dealRepository.load(dealId);
+		if (deal == null) {
+			throw new OBRuntimeException(DealErrorCode.INVALID_DEAL_ID.getCode());
+		}
+		deal.saveDealOverridesByMonth(snapshot);
+		return new TransactionResult();
+	}
+
+	@Override
 	public List<DealCostSummary> fetchDealCostSummaries(List<Integer> dealIds) {
 		return dealCostRepository.fetchDealCostSummaries(dealIds);
 	}

@@ -96,6 +96,8 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             List<DealPositionView> views = dealPositionService.fetchDealPositionViews(
                     dealId,
                     currencyCode,
+                    fromPositionDate,
+                    toPositionDate,
                     createdDateTime);
             logger.debug("fetch deal position views end: " + LocalDateTime.now().toString());
 
@@ -107,6 +109,8 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
             List<DealHourlyPositionView> hourlyPositionViews = dealPositionService.fetchDealHourlyPositionViews(
                     dealId,
                     currencyCode,
+                    fromPositionDate,
+                    toPositionDate,
                     createdDateTime);
 
             valueCostsAndPositionsByDeal(
@@ -115,6 +119,8 @@ public class ValuePositionsServiceBean extends AbstractValuePositionsServiceBean
                     views,
                     hourlyPositionViews,
                     currencyCode,
+                    fromPositionDate,
+                    toPositionDate,
                     createdDateTime,
                     currentDateTime);
         }
@@ -128,12 +134,16 @@ private void valueCostsAndPositionsByDeal(
         List<DealPositionView> dealPositionViews,
         List<DealHourlyPositionView> hourlyPositionViews,
         CurrencyCode currencyCode,
+        LocalDate fromDate,
+        LocalDate toDate,
         LocalDateTime createdDateTime,
         LocalDateTime currentDateTime) {
 
         valueCostPositions(
                 dealId,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime,
                 valuationIndexManager,
                 currentDateTime);
@@ -142,6 +152,8 @@ private void valueCostsAndPositionsByDeal(
         List<TotalCostPositionSummary> costPositionSummaries = dealPositionService.calculateTotalCostPositionSummaries(
                 dealId,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
         logger.debug("fetch cost summaries end: " + LocalDateTime.now().toString());
 
@@ -250,6 +262,8 @@ private void valueCostsAndPositionsByDeal(
     private void valueCostPositions(
             Integer dealId,
             CurrencyCode currencyCode,
+            LocalDate fromDate,
+            LocalDate toDate,
             LocalDateTime createdDateTime,
             ValuationIndexManager valuationIndexManager,
             LocalDateTime currentDateTime) {
@@ -259,6 +273,8 @@ private void valueCostsAndPositionsByDeal(
         List<CostPositionView> views = dealPositionService.fetchCostPositionViewsWithFX(
                 dealId,
                 currencyCode,
+                fromDate,
+                toDate,
                 createdDateTime);
 
         if (views.isEmpty()) {

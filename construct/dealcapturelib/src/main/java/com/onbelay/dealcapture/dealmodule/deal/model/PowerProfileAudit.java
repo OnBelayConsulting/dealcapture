@@ -124,7 +124,7 @@ public class PowerProfileAudit extends AuditAbstractEntity {
 	public void copyFrom(TemporalAbstractEntity entity) {
 		PowerProfile powerProfile = (PowerProfile) entity;
 		this.settledPriceIndex = powerProfile.getSettledPriceIndex();
-		this.endOfMonthPriceIndex = powerProfile.getEndOfMonthPriceIndex();
+		this.endOfMonthPriceIndex = powerProfile.getRestOfMonthPriceIndex();
 		this.detail.copyFrom(powerProfile.getDetail());
 	}
 

@@ -16,4 +16,8 @@ public interface DealJobRestAdapter {
             Integer start,
             Integer limit);
 
+    TransactionResult cancelJob(EntityId dealId);
+
+    TransactionResult deleteJob(EntityId dealId);
+
 }

@@ -22,7 +22,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PriceCurveSnapshot extends AbstractSnapshot {
+public class PriceCurveSnapshot extends AbstractSnapshot implements CurveSnapshot{
 
 	private EntityId indexId;
 	

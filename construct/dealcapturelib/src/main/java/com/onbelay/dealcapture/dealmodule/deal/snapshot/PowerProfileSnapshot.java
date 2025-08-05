@@ -5,9 +5,7 @@ import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PowerProfileSnapshot extends AbstractSnapshot {
 
@@ -15,13 +13,15 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
 
     private EntityId settledPriceIndexId;
 
-    private EntityId endOfMonthPriceIndexId;
+    private EntityId restOfMonthPriceIndexId;
+
+    private Integer totalHours;
 
     private List<PowerProfileDaySnapshot> profileDays = new ArrayList<PowerProfileDaySnapshot>();
-
-    private Map<Integer, PowerProfileDaySnapshot> daysMap = new HashMap<>();
+    private List<PowerProfileDaySnapshot> changedProfileDays = new ArrayList<PowerProfileDaySnapshot>();
 
     private List<PowerProfileIndexMappingSnapshot> indexMappings = new ArrayList<>();
+    private List<PowerProfileIndexMappingSnapshot> changedMappings = new ArrayList<>();
 
     public PowerProfileSnapshot() {
     }
@@ -36,6 +36,14 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
 
     public PowerProfileSnapshot(String errorCode, boolean isPermissionException) {
         super(errorCode, isPermissionException);
+    }
+
+    public Integer getTotalHours() {
+        return totalHours;
+    }
+
+    public void setTotalHours(Integer totalHours) {
+        this.totalHours = totalHours;
     }
 
     public PowerProfileSnapshot(String errorCode, List<String> parameters) {
@@ -56,6 +64,14 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
 
     public void setProfileDays(List<PowerProfileDaySnapshot> profileDays) {
         this.profileDays = profileDays;
+    }
+
+    public List<PowerProfileDaySnapshot> getChangedProfileDays() {
+        return changedProfileDays;
+    }
+
+    public void setChangedProfileDays(List<PowerProfileDaySnapshot> changedProfileDays) {
+        this.changedProfileDays = changedProfileDays;
     }
 
     public void addPowerProfileDay(PowerProfileDaySnapshot day) {
@@ -82,20 +98,20 @@ public class PowerProfileSnapshot extends AbstractSnapshot {
         this.indexMappings = indexMappings;
     }
 
-    public EntityId getEndOfMonthPriceIndexId() {
-        return endOfMonthPriceIndexId;
+    public EntityId getRestOfMonthPriceIndexId() {
+        return restOfMonthPriceIndexId;
     }
 
-    public void setEndOfMonthPriceIndexId(EntityId endOfMonthPriceIndexId) {
-        this.endOfMonthPriceIndexId = endOfMonthPriceIndexId;
+    public void setRestOfMonthPriceIndexId(EntityId restOfMonthPriceIndexId) {
+        this.restOfMonthPriceIndexId = restOfMonthPriceIndexId;
     }
 
-    public Map<Integer, PowerProfileDaySnapshot> getDaysMap() {
-        return daysMap;
+    public List<PowerProfileIndexMappingSnapshot> getChangedMappings() {
+        return changedMappings;
     }
 
-    public void setDaysMap(Map<Integer, PowerProfileDaySnapshot> daysMap) {
-        this.daysMap = daysMap;
+    public void setChangedMappings(List<PowerProfileIndexMappingSnapshot> changedMappings) {
+        this.changedMappings = changedMappings;
     }
 
     public EntityId findPriceIndexMappingByFlowCode(PowerFlowCode code) {

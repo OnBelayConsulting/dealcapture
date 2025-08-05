@@ -68,6 +68,11 @@ public class DealHourByDay extends TemporalAbstractEntity {
 		deal.addDealHourByDay(this);
 	}
 
+	public void updateWith(DealHourByDaySnapshot snapshot) {
+		super.updateWith(snapshot);
+		detail.copyFrom(snapshot.getDetail());
+		update();
+	}
 
 	@Id
     @Column(name="ENTITY_ID", insertable = false, updatable = false)

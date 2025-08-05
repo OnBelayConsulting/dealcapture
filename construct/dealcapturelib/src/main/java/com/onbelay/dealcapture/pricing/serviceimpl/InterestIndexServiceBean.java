@@ -34,6 +34,7 @@ import com.onbelay.dealcapture.pricing.repository.InterestIndexRepository;
 import com.onbelay.dealcapture.pricing.service.InterestIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshot;
+import com.onbelay.shared.enums.FrequencyCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,11 +69,22 @@ public class InterestIndexServiceBean extends BaseDomainService implements Inter
 		}
 		InterestCurve curve = interestCurveRepository.fetchCurrentInterestRate(
 				interestIndex.generateEntityId(),
-				currentDate);
-		if (curve == null) {
+				currentDate,
+				FrequencyCode.DAILY);
+
+		if (curve != null)
+			return new InterestRate(curve.getDetail().getCurveValue());
+
+		curve = interestCurveRepository.fetchCurrentInterestRate(
+					interestIndex.generateEntityId(),
+					currentDate.withDayOfMonth(1),
+					FrequencyCode.MONTHLY);
+
+		if (curve == null)
 			return new InterestRate(CalculatedErrorType.ERROR);
-		}
-		return new InterestRate(curve.getDetail().getCurveValue());
+		else
+			return new InterestRate(curve.getDetail().getCurveValue());
+
 	}
 
 	@Override

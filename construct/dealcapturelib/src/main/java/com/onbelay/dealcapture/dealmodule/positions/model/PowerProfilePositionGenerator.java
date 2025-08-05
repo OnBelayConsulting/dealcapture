@@ -71,13 +71,13 @@ public class PowerProfilePositionGenerator implements ProfilePositionGenerator {
 
                     positionHolders.add(holder);
                 } else {
-                    if (currentDate.isBefore(endOfMonthDate) && powerProfile.getEndOfMonthPriceIndexId() != null) {
+                    if (currentDate.isBefore(endOfMonthDate) && powerProfile.getRestOfMonthPriceIndexId() != null) {
                             PowerProfilePositionHolder holder = new PowerProfilePositionHolder();
                             holder.getSnapshot().getDetail().setDefaults();
                             holder.getSnapshot().getDetail().setStartDate(currentDate);
                             holder.getSnapshot().getDetail().setEndDate(currentDate);
                             holder.getSnapshot().setPowerProfileId(powerProfile.getEntityId());
-                            holder.getSnapshot().setPriceIndexId(powerProfile.getEndOfMonthPriceIndexId());
+                            holder.getSnapshot().setPriceIndexId(powerProfile.getRestOfMonthPriceIndexId());
 
                             holder.getSnapshot().getDetail().setCreatedDateTime(context.getCreatedDateTime());
                             holder.getSnapshot().getDetail().setErrorCode("0");

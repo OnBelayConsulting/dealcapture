@@ -18,14 +18,18 @@ public class FinancialSwapPositionAssembler extends DealPositionAssembler implem
         if (position.getFixedPriceFxRiskFactor() != null)
             snapshot.setFixedPriceFxRiskFactorId(position.getFixedPriceFxRiskFactor().generateEntityId());
 
-        if (position.getPaysPriceRiskFactor() != null)
+        if (position.getPaysPriceRiskFactor() != null) {
+            snapshot.setPaysPriceIndexName(position.getPaysPriceRiskFactor().getIndex().getDetail().getName());
             snapshot.setPaysPriceRiskFactorId(position.getPaysPriceRiskFactor().generateEntityId());
+        }
 
         if (position.getPaysFxRiskFactor() != null)
             snapshot.setPaysFxRiskFactorId(position.getPaysFxRiskFactor().generateEntityId());
 
-        if (position.getReceivesPriceRiskFactor() != null)
+        if (position.getReceivesPriceRiskFactor() != null) {
+            snapshot.setReceivesPriceIndexName(position.getReceivesPriceRiskFactor().getIndex().getDetail().getName());
             snapshot.setReceivesPriceRiskFactorId(position.getReceivesPriceRiskFactor().generateEntityId());
+        }
 
         if (position.getReceivesFxRiskFactor() != null)
             snapshot.setReceivesFxRiskFactorId(position.getReceivesFxRiskFactor().generateEntityId());
