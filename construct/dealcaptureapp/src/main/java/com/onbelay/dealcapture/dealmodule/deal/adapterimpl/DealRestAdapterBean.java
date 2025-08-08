@@ -116,6 +116,16 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    public TransactionResult saveHourlyDealOverrides(
+            EntityId dealId,
+            DealOverrideHoursForDaySnapshot snapshot) {
+        initializeSession();
+        return dealService.saveHourlyDealOverrides(
+                dealId,
+                snapshot);
+    }
+
+    @Override
     public TransactionResult save(List<BaseDealSnapshot> snapshots) {
         initializeSession();
         return dealService.save(snapshots);
@@ -139,6 +149,16 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
                 .stream()
                 .filter(c-> c.getMonthDate().equals(monthDate)).findFirst();
         return search.orElseGet(() -> new DealOverrideMonthSnapshot(DealErrorCode.INVALID_DEAL_ID.getCode()));
+    }
+
+    @Override
+    public DealOverrideHoursForDaySnapshot getHourlyDealOverrides(
+            EntityId dealId,
+            LocalDate dayDate) {
+        initializeSession();
+        return dealService.fetchHourlyDealOverrides(
+                dealId,
+                dayDate);
     }
 
     @Override

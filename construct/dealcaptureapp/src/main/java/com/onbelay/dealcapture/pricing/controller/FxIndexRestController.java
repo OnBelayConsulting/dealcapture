@@ -22,10 +22,7 @@ import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.pricing.adapter.FxIndexRestAdapter;
-import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshotCollection;
-import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshotCollection;
+import com.onbelay.dealcapture.pricing.snapshot.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -144,6 +141,40 @@ public class FxIndexRestController extends BaseRestController {
 			result  = fxIndexRestAdapter.saveFxCurves(
 					id,
 					snapshots);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
+
+	@Operation(summary="Create or update a f/x curve.")
+	@PostMapping(
+			value = "/curves",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> saveFxCurve(
+			@RequestHeader Map<String, String> headers,
+			@RequestBody FxCurveSnapshot snapshot,
+			BindingResult bindingResult) {
+
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		TransactionResult result;
+		try {
+			result  = fxIndexRestAdapter.saveFxCurve(snapshot);
 		} catch (OBRuntimeException r) {
 			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
 			result = new TransactionResult(r.getErrorCode(), r.getParms());

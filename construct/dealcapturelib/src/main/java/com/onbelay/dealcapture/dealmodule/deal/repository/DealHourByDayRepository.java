@@ -19,6 +19,10 @@ public interface DealHourByDayRepository {
 
     List<DealHourByDay> fetchDealHourByDays(Integer dealId);
 
+    List<DealHourByDay> fetchDealHourByDayForADay(
+            Integer dealId,
+            LocalDate dayDate);
+
     List<DealHourByDayView> fetchDealHourByDayViewsByType(
             EntityId dealId,
             DayTypeCode dayTypeCode,

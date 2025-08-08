@@ -283,6 +283,33 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
+	public DealOverrideHoursForDaySnapshot fetchHourlyDealOverrides(
+			EntityId dealId,
+			LocalDate dayDate) {
+		BaseDeal deal = dealRepository.load(dealId);
+		if (deal == null) {
+			throw new OBRuntimeException(DealErrorCode.INVALID_DEAL_ID.getCode());
+		}
+		DealOverrideHoursByDayAssembler assembler = new DealOverrideHoursByDayAssembler();
+
+		return assembler.assemble(
+				deal,
+				dayDate);
+	}
+
+	@Override
+	public TransactionResult saveHourlyDealOverrides(
+			EntityId dealId,
+			DealOverrideHoursForDaySnapshot snapshot) {
+		BaseDeal deal = dealRepository.load(dealId);
+		if (deal == null) {
+			throw new OBRuntimeException(DealErrorCode.INVALID_DEAL_ID.getCode());
+		}
+		deal.saveHourlyDealOverrides(snapshot);
+		return new TransactionResult();
+	}
+
+	@Override
 	public TransactionResult saveDealOverridesByMonth(
 			EntityId dealId,
 			DealOverrideMonthSnapshot snapshot) {

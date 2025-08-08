@@ -37,4 +37,5 @@ public interface FxIndexRestAdapter {
             String originalFilename,
             byte[] bytes);
 
+    TransactionResult saveFxCurve(FxCurveSnapshot snapshot);
 }

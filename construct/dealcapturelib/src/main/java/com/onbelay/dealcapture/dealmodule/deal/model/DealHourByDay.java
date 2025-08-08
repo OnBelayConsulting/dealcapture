@@ -32,6 +32,13 @@ import jakarta.persistence.*;
        		 "   WHERE dealHour.deal.id = :dealId " +
        	     "ORDER BY dealHour.detail.dayTypeCodeValue, " +
 			   "       dealHour.detail.dealDayDate "),
+	@NamedQuery(
+		name = DealHourByDayRepositoryBean.FETCH_DEAL_HOURS_FOR_ONE_DAY,
+		query = "SELECT dealHour " +
+				"  FROM DealHourByDay dealHour " +
+				"   WHERE dealHour.deal.id = :dealId " +
+				"     AND dealHour.detail.dealDayDate = :dayDate " +
+				"ORDER BY dealHour.detail.dayTypeCodeValue "),
     @NamedQuery(
        name = DealHourByDayRepositoryBean.FIND_BY_DEAL_AND_TYPE,
        query = "SELECT dealHour " +

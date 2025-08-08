@@ -59,6 +59,18 @@ public interface DealService {
 
 	public TransactionResult saveDealOverrides(DealOverrideSnapshot snapshot);
 
+	public DealOverrideHoursForDaySnapshot fetchHourlyDealOverrides(
+			EntityId dealId,
+			LocalDate dayDate);
+
+	public TransactionResult saveHourlyDealOverrides(
+			EntityId dealId,
+			DealOverrideHoursForDaySnapshot snapshot);
+
+
+	TransactionResult saveDealOverridesByMonth(
+			EntityId dealId,
+			DealOverrideMonthSnapshot snapshot);
 
 	public TransactionResult saveDealOverrides(List<DealOverrideSnapshot> snapshots);
 
@@ -112,8 +124,4 @@ public interface DealService {
 	List<DealCostSummary> fetchDealCostSummaries(List<Integer> dealIds);
 
 	DealCostSnapshot loadDealCost(EntityId dealCostId);
-
-	TransactionResult saveDealOverridesByMonth(
-			EntityId dealId,
-			DealOverrideMonthSnapshot snapshot);
 }

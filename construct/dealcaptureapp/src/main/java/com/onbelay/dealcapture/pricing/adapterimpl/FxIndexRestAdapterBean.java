@@ -40,6 +40,12 @@ public class FxIndexRestAdapterBean extends BaseRestAdapterBean implements FxInd
     }
 
     @Override
+    public TransactionResult saveFxCurve(FxCurveSnapshot snapshot) {
+        initializeSession();
+        return fxIndexService.saveFxCurves(snapshot.getIndexId(), List.of(snapshot));
+    }
+
+    @Override
     public FxIndexSnapshot load(EntityId fxIndexId) {
         initializeSession();
         return fxIndexService.load(fxIndexId);

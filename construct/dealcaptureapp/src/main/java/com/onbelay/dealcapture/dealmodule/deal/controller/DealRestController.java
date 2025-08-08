@@ -122,6 +122,42 @@ public class DealRestController extends BaseRestController {
 	}
 
 
+	@Operation(summary="Create or update a hourly deal overrides by day")
+	@PostMapping(
+			value = "/{id}/hourlyoverrides",
+			produces="application/json",
+			consumes="application/json"  )
+	public ResponseEntity<TransactionResult> saveHourlyDealOverrides(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@RequestBody DealOverrideHoursForDaySnapshot snapshot,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach( e -> {
+				logger.error(userMarker, "Error on ", e.toString());
+			});
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
+
+		TransactionResult result;
+		try {
+			result = dealRestAdapter.saveHourlyDealOverrides(
+					new EntityId(id),
+					snapshot);
+		} catch (OBRuntimeException r) {
+			logger.error(userMarker,"Create/update failed ", r.getErrorCode(), r);
+			result = new TransactionResult(r.getErrorCode(), r.getParms());
+			result.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (RuntimeException e) {
+			result = new TransactionResult(e.getMessage());
+		}
+
+		return processResponse(result);
+	}
+
+
 	@Operation(summary="Create or update deal costs.")
 	@PostMapping(
 			value = "/{id}/dealCosts",
@@ -392,6 +428,34 @@ public class DealRestController extends BaseRestController {
 		}
 
 		return (ResponseEntity<DealOverrideMonthSnapshot>) processResponse(collection);
+	}
+
+
+
+	@Operation(summary="get hourly overrides for a day")
+	@GetMapping("/{id}/hourlyoverrides/{dayDate}")
+	public ResponseEntity<DealOverrideHoursForDaySnapshot> getHourlyDealOverrides(
+			@RequestHeader Map<String, String> headers,
+			@PathVariable Integer id,
+			@PathVariable LocalDate dayDate) {
+
+		DealOverrideHoursForDaySnapshot snapshot;
+
+		try {
+			snapshot = dealRestAdapter.getHourlyDealOverrides(
+					new EntityId(id),
+					dayDate);
+		} catch (OBRuntimeException r) {
+			snapshot = new DealOverrideHoursForDaySnapshot(r.getErrorCode(), r.getParms());
+			snapshot.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			snapshot = new DealOverrideHoursForDaySnapshot(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			snapshot.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			snapshot = new DealOverrideHoursForDaySnapshot(r.getMessage());
+		}
+
+		return (ResponseEntity<DealOverrideHoursForDaySnapshot>) processResponse(snapshot);
 	}
 
 

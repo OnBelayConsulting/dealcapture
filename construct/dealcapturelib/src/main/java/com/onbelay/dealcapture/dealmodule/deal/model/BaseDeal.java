@@ -25,6 +25,7 @@ import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
 import com.onbelay.dealcapture.businesscontact.repository.BusinessContactRepository;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealCostAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.assembler.DealDayByMonthAssembler;
+import com.onbelay.dealcapture.dealmodule.deal.assembler.DealHourByDayAssembler;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
@@ -297,25 +298,34 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	public List<Integer> saveDealHourByDays(List<DealHourByDaySnapshot> snapshots) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		for (DealHourByDaySnapshot snapshot : snapshots) {
-			switch (snapshot.getEntityState()) {
-
-				case NEW -> {
-					DealHourByDay dealHourByDay = DealHourByDay.create(this, snapshot);
-					ids.add(dealHourByDay.getId());
-				}
-				case MODIFIED -> {
-					DealHourByDay dealHourByDay = getDealHourByDayRepository().load(snapshot.getEntityId());
-					dealHourByDay.updateWith(snapshot);
-					ids.add(dealHourByDay.getId());
-				}
-
-				case DELETE -> {
-					DealHourByDay dealHourByDay = getDealHourByDayRepository().load(snapshot.getEntityId());
-					dealHourByDay.delete();
-				}
+			Integer id = saveDealHourByDay(snapshot);
+			if (id != null) {
+				ids.add(id);
 			}
 		}
 		return ids;
+	}
+
+	public Integer saveDealHourByDay(DealHourByDaySnapshot snapshot) {
+		switch (snapshot.getEntityState()) {
+
+			case NEW -> {
+				DealHourByDay dealHourByDay = DealHourByDay.create(this, snapshot);
+				return dealHourByDay.getId();
+			}
+			case MODIFIED -> {
+				DealHourByDay dealHourByDay = getDealHourByDayRepository().load(snapshot.getEntityId());
+				dealHourByDay.updateWith(snapshot);
+				return dealHourByDay.getId();
+			}
+
+			case DELETE -> {
+				DealHourByDay dealHourByDay = getDealHourByDayRepository().load(snapshot.getEntityId());
+				dealHourByDay.delete();
+			}
+		}
+		return null;
+
 	}
 
 	public List<DealHourByDay> fetchDealHourByDays() {
@@ -323,11 +333,10 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	}
 
 
-	public List<DealHourByDay> fetchDealHourByDays(DayTypeCode code) {
-		return getDealHourByDayRepository().fetchDealHourByDays(
-				id,
-				code);
+	public List<DealHourByDay> fetchDealHoursForADay(LocalDate dayDate) {
+		return getDealHourByDayRepository().fetchDealHourByDayForADay(id, dayDate);
 	}
+
 
 	public List<String> fetchCostNames() {
 		return getDealCostRepository().getDealCostNames(this.id);
@@ -339,6 +348,98 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		dealOverrideSnapshot.setHeadings(snapshot.getHeadings());
 		dealOverrideSnapshot.addOverrideMonth(snapshot);
 		saveDealOverrides(dealOverrideSnapshot);
+	}
+
+	public void saveHourlyDealOverrides(DealOverrideHoursForDaySnapshot snapshot) {
+		HourlyOverrideLattice lattice = buildHourlyOverrideLattice(snapshot.getDayDate());
+		List<String> dealCostNames = getDealCostRepository().getDealCostNames(this.id);
+		int QUANTITY_IDX = snapshot.indexOfQuantityHeading();
+		int PRICE_IDX = snapshot.indexOfPriceHeading();
+
+		for (DealOverrideHourSnapshot hourOverride: snapshot.getOverrideHours()) {
+			if (QUANTITY_IDX >= 0) {
+				if (hourOverride.getValues().get(QUANTITY_IDX) != null) {
+					if (lattice.getQuantityDealHourByDaySnapshot() == null) {
+						lattice.setQuantityDealHourByDaySnapshot(new DealHourByDaySnapshot(snapshot.getDayDate(), (DayTypeCode.QUANTITY)));
+					} else {
+						if (lattice.getQuantityDealHourByDaySnapshot().getEntityState() == EntityState.UNMODIFIED)
+							lattice.getQuantityDealHourByDaySnapshot().setEntityState(EntityState.MODIFIED);
+					}
+					lattice.getQuantityDealHourByDaySnapshot().getDetail().setHourValue(
+							hourOverride.getHourEnding(),
+							hourOverride.getValues().get(QUANTITY_IDX));
+				} else {
+					if (lattice.getQuantityDealHourByDaySnapshot() != null) {
+						if (lattice.getQuantityDealHourByDaySnapshot().getEntityState() != EntityState.NEW) {
+							lattice.getQuantityDealHourByDaySnapshot().setEntityState(EntityState.MODIFIED);
+							lattice.getQuantityDealHourByDaySnapshot().getDetail().setHourValue(
+									hourOverride.getHourEnding(),
+									null);
+						}
+					}
+				}
+			}
+
+			// Handle Price overrides
+			if (PRICE_IDX >= 0) {
+				if (hourOverride.getValues().get(PRICE_IDX) != null) {
+					if (lattice.getPriceDealHourByDaySnapshot() == null) {
+						lattice.setPriceDealHourByDaySnapshot(new DealHourByDaySnapshot(snapshot.getDayDate(), DayTypeCode.PRICE));
+					} else {
+						if (lattice.getPriceDealHourByDaySnapshot().getEntityState() == EntityState.UNMODIFIED)
+							lattice.getPriceDealHourByDaySnapshot().setEntityState(EntityState.MODIFIED);
+					}
+					lattice.getPriceDealHourByDaySnapshot().getDetail().setHourValue(
+							hourOverride.getHourEnding(),
+							hourOverride.getValues().get(PRICE_IDX));
+				} else {
+					if (lattice.getPriceDealHourByDaySnapshot() != null) {
+						if (lattice.getPriceDealHourByDaySnapshot().getEntityState() != EntityState.NEW) {
+							lattice.getPriceDealHourByDaySnapshot().setEntityState(EntityState.MODIFIED);
+							lattice.getPriceDealHourByDaySnapshot().getDetail().setHourValue(
+									hourOverride.getHourEnding(),
+									null);
+						}
+					}
+				}
+			}
+
+			// Handle cost overrides. The overrides are in order of the headings.
+
+			for (String costName : dealCostNames) {
+				int costIdx = snapshot.indexOfCostHeading(costName);
+				if (costIdx >= 0) {
+					DealHourByDaySnapshot costByDay = lattice.getDealHourCosts().get(costName);
+					if (costByDay == null) {
+						costByDay = new DealHourByDaySnapshot(lattice.getDayDate(), DayTypeCode.COST);
+						costByDay.getDetail().setDaySubTypeCodeValue(costName);
+
+						lattice.getDealHourCosts().put(
+								costName,
+								costByDay);
+					} else {
+						if (costByDay.getEntityState() == EntityState.UNMODIFIED)
+							costByDay.setEntityState(EntityState.MODIFIED);
+					}
+					BigDecimal costValue = hourOverride.getValues().get(costIdx);
+					costByDay.getDetail().setHourValue(
+							hourOverride.getHourEnding(),
+							costValue);
+				}
+
+			}
+
+		}
+		if (lattice.getQuantityDealHourByDaySnapshot() != null) {
+			saveDealHourByDay(lattice.getQuantityDealHourByDaySnapshot());
+		}
+		if (lattice.getPriceDealHourByDaySnapshot() != null) {
+			saveDealHourByDay(lattice.getPriceDealHourByDaySnapshot());
+		}
+		for (DealHourByDaySnapshot costSnapshot : lattice.getDealHourCosts().values()) {
+			saveDealHourByDay(costSnapshot);
+		}
+
 	}
 
 	/**
@@ -543,6 +644,25 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		return lattices;
 	}
 
+	public HourlyOverrideLattice buildHourlyOverrideLattice(LocalDate dayDate) {
+		DealHourByDayAssembler assembler = new DealHourByDayAssembler(this);
+		HourlyOverrideLattice lattice = new HourlyOverrideLattice();
+		lattice.setDayDate(dayDate);
+
+		for (DealHourByDay byDay : fetchDealHourByDays()) {
+			switch (byDay.getDetail().getDealDayTypeCode()) {
+				case PRICE -> lattice.setPriceDealHourByDaySnapshot(assembler.assemble(byDay));
+				case QUANTITY -> lattice.setQuantityDealHourByDaySnapshot(assembler.assemble(byDay));
+				default -> {
+					lattice.getDealHourCosts().put(
+							byDay.getDetail().getDaySubTypeCodeValue(),
+							assembler.assemble(byDay));
+				}
+			}
+
+		}
+		return lattice;
+	}
 
 	public List<DealCost> fetchDealCosts() {
 		return getDealCostRepository().fetchDealCosts(id);

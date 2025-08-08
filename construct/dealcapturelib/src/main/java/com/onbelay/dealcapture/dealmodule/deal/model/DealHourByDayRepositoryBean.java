@@ -39,6 +39,7 @@ public class DealHourByDayRepositoryBean extends BaseRepository<DealHourByDay> i
 	public static final String FETCH_DEAL_HOUR_VIEWS = "DealHourByDayRepository.FETCH_DEAL_HOUR_VIEWS" ;
 	public static final String FETCH_DEAL_HOUR_VIEWS_BY_TYPE = "DealHourByDayRepository.FETCH_DEAL_HOUR_VIEWS_BY_TYPE" ;
 	public static final String FETCH_ALL_DEAL_HOUR_VIEWS_BY_DATE = "DealHourByDayRepository.FETCH_ALL_DEAL_HOUR_VIEWS_BY_DATE";
+	public static final String FETCH_DEAL_HOURS_FOR_ONE_DAY = "DealHourByDayRepository.FETCH_DEAL_HOURS_FOR_ONE_DAY" ;
 
 
 	@Override
@@ -80,6 +81,20 @@ public class DealHourByDayRepositoryBean extends BaseRepository<DealHourByDay> i
 				"dealId",
 				dealId); 
 	}
+
+	@Override
+	public List<DealHourByDay> fetchDealHourByDayForADay(
+			Integer dealId,
+			LocalDate dayDate) {
+		String[] names = {"dealId", "dayDate"};
+		Object[] parms = {dealId, dayDate};
+
+		return  executeQuery(
+				FETCH_DEAL_HOURS_FOR_ONE_DAY,
+				names,
+				parms);
+	}
+
 
 	@Override
 	public List<DealHourByDayView> fetchDealHourByDayViewsByType(

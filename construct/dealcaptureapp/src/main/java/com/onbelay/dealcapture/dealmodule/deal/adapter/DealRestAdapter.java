@@ -53,4 +53,12 @@ public interface DealRestAdapter {
     DealCostSnapshotCollection fetchDealCosts(Integer dealId);
 
     DealCostSnapshot loadDealCost(EntityId dealCostId);
+
+    TransactionResult saveHourlyDealOverrides(
+            EntityId dealId,
+            DealOverrideHoursForDaySnapshot snapshot);
+
+    DealOverrideHoursForDaySnapshot getHourlyDealOverrides(
+            EntityId dealId,
+            LocalDate dayDate);
 }
