@@ -5,12 +5,14 @@ import com.onbelay.dealcapture.businesscontact.model.BusinessContact;
 import com.onbelay.dealcapture.businesscontact.model.BusinessContactFixture;
 import com.onbelay.dealcapture.busmath.model.Price;
 import com.onbelay.dealcapture.busmath.model.Quantity;
+import com.onbelay.dealcapture.dealmodule.deal.enums.CostNameCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
+import com.onbelay.dealcapture.dealmodule.deal.model.DealCostFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.DealFixture;
 import com.onbelay.dealcapture.dealmodule.deal.model.PhysicalDeal;
 import com.onbelay.dealcapture.dealmodule.deal.repository.DealRepository;
-import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
+import com.onbelay.dealcapture.dealmodule.deal.snapshot.*;
 import com.onbelay.dealcapture.organization.model.CompanyRole;
 import com.onbelay.dealcapture.organization.model.CounterpartyRole;
 import com.onbelay.dealcapture.organization.model.OrganizationRoleFixture;
@@ -45,6 +47,9 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
     private LocalDate startDate = LocalDate.of(2022, 1, 1);
     private LocalDate endDate = LocalDate.of(2022, 12, 31);
 
+    private PhysicalDeal physicalDeal;
+    private PhysicalDeal secondDeal;
+
     @Autowired
     private DealRepository dealRepository;
 
@@ -64,6 +69,47 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
                 location);
 
         flush();
+        physicalDeal = DealFixture.createPricePhysicalDeal(
+                myBusinessContact,
+                CommodityCode.CRUDE,
+                "MyDeal",
+                companyRole,
+                counterpartyRole,
+                priceIndex,
+                LocalDate.of(2025,1,1),
+                LocalDate.of(2025,3,31),
+                BigDecimal.TEN,
+                UnitOfMeasureCode.GJ,
+                CurrencyCode.CAD,
+                new Price(BigDecimal.valueOf(2.3), CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+        flush();
+        DealCostFixture.createPerUnitCost(
+                physicalDeal,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
+                CostNameCode.FACILITY_PER_UNIT_FEE,
+                BigDecimal.TEN);
+        DealCostFixture.createPerUnitCost(
+                physicalDeal,
+                CurrencyCode.CAD,
+                UnitOfMeasureCode.GJ,
+                CostNameCode.BROKERAGE_DAILY_FEE,
+                BigDecimal.TEN);
+        flush();
+        secondDeal = DealFixture.createPricePhysicalDeal(
+                myBusinessContact,
+                CommodityCode.CRUDE,
+                "gh-35",
+                companyRole,
+                counterpartyRole,
+                priceIndex,
+                LocalDate.of(2025,1,1),
+                LocalDate.of(2025,3,31),
+                BigDecimal.TEN,
+                UnitOfMeasureCode.GJ,
+                CurrencyCode.CAD,
+                new Price(BigDecimal.valueOf(2.3), CurrencyCode.CAD, UnitOfMeasureCode.GJ));
+        flush();
     }
 
     @Test
@@ -75,7 +121,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
                 LocalDate.of(2023, 1, 31),
                 DealStatusCode.VERIFIED,
                 CurrencyCode.CAD,
-                "mydeal",
+                "ourdeal",
                 companyRole,
                 counterpartyRole,
                 priceIndex,
@@ -96,7 +142,7 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
         assertEquals(CommodityCode.CRUDE, physicalDeal.getDealDetail().getCommodityCode());
         assertEquals(DealStatusCode.VERIFIED, physicalDeal.getDealDetail().getDealStatus());
         assertEquals(BuySellCode.SELL, physicalDeal.getDealDetail().getBuySell());
-        assertEquals("mydeal", physicalDeal.getDealDetail().getTicketNo());
+        assertEquals("ourdeal", physicalDeal.getDealDetail().getTicketNo());
         assertEquals(LocalDate.of(2023, 1, 1), physicalDeal.getDealDetail().getStartDate());
         assertEquals(LocalDate.of(2023, 1, 31), physicalDeal.getDealDetail().getEndDate());
         assertEquals(0, BigDecimal.valueOf(10).compareTo(physicalDeal.getDealDetail().getVolumeQuantity()));
@@ -197,6 +243,64 @@ public class DealRestAdapterBeanTest extends DealCaptureAppSpringTestCase {
         assertEquals(0, BigDecimal.valueOf(2).compareTo(physicalDeal.getDealDetail().getFixedPriceValue()));
         assertEquals(UnitOfMeasureCode.GJ, physicalDeal.getDealDetail().getFixedPriceUnitOfMeasureCode());
         assertEquals(CurrencyCode.CAD, physicalDeal.getDealDetail().getFixedPriceCurrencyCode());
+    }
+
+
+    @Test
+    public void loadDayOverrides() throws IOException {
+        InputStream inputStream = getClass().getResourceAsStream("/dealoverrides.csv");
+
+        TransactionResult result = dealRestAdapter.saveDealOverridesFile("test.csv", inputStream.readAllBytes());
+        flush();
+        DealOverrideSnapshotCollection collection = dealRestAdapter.fetchDealOverrides(
+                physicalDeal.generateEntityId(),
+                0,
+                100);
+        assertEquals(90, collection.getSnapshots().size());
+        DealOverrideDaySnapshot firstSnapshot = collection.getSnapshots().get(0);
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(firstSnapshot.getValues().get(0)));
+        assertEquals(0, BigDecimal.valueOf(100).compareTo(firstSnapshot.getValues().get(1)));
+    }
+
+
+    @Test
+    public void loadHourlyOverrides() throws IOException {
+        InputStream inputStream = getClass().getResourceAsStream("/hourlydealoverrides.csv");
+
+        TransactionResult result = dealRestAdapter.saveDealOverridesFile("test.csv", inputStream.readAllBytes());
+        DealOverrideHoursForDaySnapshot day = dealRestAdapter.getHourlyDealOverrides(
+                physicalDeal.generateEntityId(),
+                LocalDate.of(2025,1,1));
+        DealOverrideHourSnapshot hourSnapshot = day.getOverrideHours().get(0);
+        assertEquals(0, BigDecimal.valueOf(1.34).compareTo(hourSnapshot.getValues().get(0)));
+
+
+        DealOverrideHoursForDaySnapshot secondDay = dealRestAdapter.getHourlyDealOverrides(
+                physicalDeal.generateEntityId(),
+                LocalDate.of(2025,2,1));
+        hourSnapshot = secondDay.getOverrideHours().get(4);
+        assertEquals(0, BigDecimal.valueOf(1.36).compareTo(hourSnapshot.getValues().get(0)));
+
+        flush();
+
+    }
+
+    @Test
+    public void saveDealOverridesJustQuantity() throws IOException {
+        InputStream inputStream = getClass().getResourceAsStream("/dealquantityoverrides.csv");
+
+        TransactionResult result = dealRestAdapter.saveDealOverridesFile("test.csv", inputStream.readAllBytes());
+        flush();
+        DealOverrideSnapshotCollection collection = dealRestAdapter.fetchDealOverrides(
+                physicalDeal.generateEntityId(),
+                0,
+                100);
+        assertEquals(90, collection.getSnapshots().size());
+        DealOverrideDaySnapshot firstSnapshot = collection.getSnapshots().get(0);
+        assertEquals(0, BigDecimal.valueOf(100).compareTo(firstSnapshot.getValues().get(1)));
+        DealOverrideDaySnapshot secondSnapshot = collection.getSnapshots().get(1);
+        assertEquals(0, BigDecimal.valueOf(200).compareTo(secondSnapshot.getValues().get(1)));
+
     }
 
 }

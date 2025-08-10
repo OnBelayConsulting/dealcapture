@@ -523,6 +523,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 						if (costByMonth == null) {
 							costByMonth = new DealDayByMonthSnapshot(DayTypeCode.COST, lattice.getMonthDate());
 							costByMonth.getDetail().setDaySubTypeCodeValue(costName);
+							costByMonth.getDetail().setDealMonthDate(monthOverride.getMonthDate());
 
 							lattice.getDealDayCosts().put(
 									costName,
@@ -649,7 +650,7 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 		HourlyOverrideLattice lattice = new HourlyOverrideLattice();
 		lattice.setDayDate(dayDate);
 
-		for (DealHourByDay byDay : fetchDealHourByDays()) {
+		for (DealHourByDay byDay : fetchDealHoursForADay(dayDate)) {
 			switch (byDay.getDetail().getDealDayTypeCode()) {
 				case PRICE -> lattice.setPriceDealHourByDaySnapshot(assembler.assemble(byDay));
 				case QUANTITY -> lattice.setQuantityDealHourByDaySnapshot(assembler.assemble(byDay));

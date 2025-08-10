@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.deal.snapshot;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 
 import java.math.BigDecimal;
@@ -23,16 +24,19 @@ public class DealOverrideDaySnapshot extends AbstractSnapshot {
         }
     }
 
+    @JsonIgnore
     public Integer getDayOfMonth() {
         return overrideDate.getDayOfMonth();
     }
 
+    @JsonIgnore
     public void setOverrideDateWithDayOfMonth(
             LocalDate monthDate,
             Integer dayOfMonth) {
         this.overrideDate = monthDate.withDayOfMonth(dayOfMonth);
     }
 
+    @JsonIgnore
     public LocalDate getMonthDate() {
         return overrideDate.withDayOfMonth(1);
     }

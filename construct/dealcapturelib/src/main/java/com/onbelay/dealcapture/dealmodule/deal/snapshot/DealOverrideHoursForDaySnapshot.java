@@ -7,6 +7,7 @@ import com.onbelay.dealcapture.dealmodule.deal.enums.DayTypeCode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DealOverrideHoursForDaySnapshot extends AbstractSnapshot {
 
@@ -53,8 +54,20 @@ public class DealOverrideHoursForDaySnapshot extends AbstractSnapshot {
         return overrideHours;
     }
 
+    public DealOverrideHourSnapshot getOverrideHourAtHourEnding(int index) {
+        return overrideHours.get(index-1);
+    }
+
     public void setOverrideHours(List<DealOverrideHourSnapshot> overrideHours) {
         this.overrideHours = overrideHours;
+    }
+
+    public void processHeadings(List<String> headings) {
+        this.headings = headings;
+        this.costHeadings = headings
+                .stream()
+                .filter(c-> !(c.equalsIgnoreCase("PRICE") || c.equalsIgnoreCase("QUANTITY")) )
+                .collect(Collectors.toList());
     }
 
     public List<String> getHeadings() {

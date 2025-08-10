@@ -333,6 +333,10 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
         DealOverrideFileReader fileReader = new DealOverrideFileReader(fileStream);
 
         fileReader.readContents();
-        return dealService.saveDealOverrides(fileReader.getSnapshots());
+        if (fileReader.isHourly()) {
+            return dealService.saveHourlyDealOverrides(fileReader.getHourlyDealOverrideSnapshots());
+        } else {
+            return dealService.saveDealOverrides(fileReader.getDealOverrideSnapshots());
+        }
     }
 }

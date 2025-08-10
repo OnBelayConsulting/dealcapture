@@ -42,11 +42,13 @@ public class DealOverrideHoursByDayAssembler {
         for (int j = 0; j < snapshot.getCostHeadings().size(); j++) {
             String costHeading = snapshot.getCostHeadings().get(j);
             DealHourByDaySnapshot costHourByDay = lattice.getDealHourCosts().get(costHeading);
-            for (int i=0; i < 24;i++) {
-                DealOverrideHourSnapshot hourSnapshot = snapshot.getOverrideHours().get(i);
-                hourSnapshot.setValueAt(
-                        j + 2,
-                        costHourByDay.getDetail().getHourValue(i+1));
+            if (costHourByDay != null) {
+                for (int i = 0; i < 24; i++) {
+                    DealOverrideHourSnapshot hourSnapshot = snapshot.getOverrideHours().get(i);
+                    hourSnapshot.setValueAt(
+                            j + 2,
+                            costHourByDay.getDetail().getHourValue(i + 1));
+                }
             }
 
         }

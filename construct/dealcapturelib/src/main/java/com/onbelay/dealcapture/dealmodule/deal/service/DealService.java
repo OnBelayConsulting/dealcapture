@@ -68,6 +68,10 @@ public interface DealService {
 			DealOverrideHoursForDaySnapshot snapshot);
 
 
+	public TransactionResult saveHourlyDealOverrides(
+			List<DealOverrideHoursForDaySnapshot> snapshots);
+
+
 	TransactionResult saveDealOverridesByMonth(
 			EntityId dealId,
 			DealOverrideMonthSnapshot snapshot);

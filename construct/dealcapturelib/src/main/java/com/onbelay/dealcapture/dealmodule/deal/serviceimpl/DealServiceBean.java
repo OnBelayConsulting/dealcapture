@@ -310,6 +310,14 @@ public class DealServiceBean extends BaseDomainService implements DealService {
 	}
 
 	@Override
+	public TransactionResult saveHourlyDealOverrides(List<DealOverrideHoursForDaySnapshot> snapshots) {
+		for (DealOverrideHoursForDaySnapshot snapshot : snapshots) {
+			saveHourlyDealOverrides(snapshot.getEntityId(), snapshot);
+		}
+		return new TransactionResult();
+	}
+
+	@Override
 	public TransactionResult saveDealOverridesByMonth(
 			EntityId dealId,
 			DealOverrideMonthSnapshot snapshot) {

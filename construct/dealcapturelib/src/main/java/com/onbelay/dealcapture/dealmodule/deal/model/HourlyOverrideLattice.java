@@ -5,6 +5,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.DealHourByDaySnapshot;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Map;
 
 public class HourlyOverrideLattice {
 
@@ -13,7 +14,7 @@ public class HourlyOverrideLattice {
     private DealHourByDaySnapshot quantityDealHourByDaySnapshot;
     private DealHourByDaySnapshot priceDealHourByDaySnapshot;
     
-    private HashMap<String, DealHourByDaySnapshot> dealHourCosts = new HashMap<>();
+    private Map<String, DealHourByDaySnapshot> dealHourCosts = new HashMap<>();
 
     public LocalDate getDayDate() {
         return dayDate;
@@ -39,11 +40,11 @@ public class HourlyOverrideLattice {
         this.priceDealHourByDaySnapshot = priceDealHourByDaySnapshot;
     }
 
-    public HashMap<String, DealHourByDaySnapshot> getDealHourCosts() {
+    public Map<String, DealHourByDaySnapshot> getDealHourCosts() {
         return dealHourCosts;
     }
 
-    public void setDealHourCosts(HashMap<String, DealHourByDaySnapshot> dealHourCosts) {
+    public void setDealHourCosts(Map<String, DealHourByDaySnapshot> dealHourCosts) {
         this.dealHourCosts = dealHourCosts;
     }
 
