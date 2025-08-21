@@ -89,6 +89,9 @@ public class FinancialSwapDeal extends BaseDeal {
         FinancialSwapDealSnapshot snapshot = (FinancialSwapDealSnapshot) dealSnapshot;
         detail.copyFrom(snapshot.getDetail());
         updateRelationships(snapshot);
+        if (getPowerProfile() != null) {
+            detail.setReceivesValuationCode(ValuationCode.POWER_PROFILE);
+        }
         save();
     }
 
@@ -97,6 +100,9 @@ public class FinancialSwapDeal extends BaseDeal {
         FinancialSwapDealSnapshot snapshot = (FinancialSwapDealSnapshot) dealSnapshot;
         detail.copyFrom(snapshot.getDetail());
         updateRelationships(snapshot);
+        if (getPowerProfile() != null) {
+            detail.setReceivesValuationCode(ValuationCode.POWER_PROFILE);
+        }
         update();
     }
 
@@ -133,9 +139,12 @@ public class FinancialSwapDeal extends BaseDeal {
                 throw new OBValidationException(DealErrorCode.MISSING_RECEIVES_PRICE.getCode());
 
 
-        if (detail.getReceivesValuationCode() == ValuationCode.POWER_PROFILE)
+        if (detail.getReceivesValuationCode() == ValuationCode.POWER_PROFILE) {
+            if (receivesPriceIndex != null)
+                throw new OBValidationException(DealErrorCode.INVALID_MARKET_INDEX.getCode());
             if (getPowerProfile() == null)
                 throw new OBValidationException(DealErrorCode.MISSING_MARKET_POWER_PROFILE.getCode());
+        }
 
 
     }

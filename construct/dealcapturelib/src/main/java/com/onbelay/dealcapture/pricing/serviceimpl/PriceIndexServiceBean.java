@@ -76,6 +76,11 @@ public class PriceIndexServiceBean extends BaseDomainService implements PriceInd
 	}
 
 	@Override
+	public List<EntityId> findPriceIndexEntityIds(DefinedQuery definedQuery) {
+		return priceIndexRepository.findPriceIndexEntityIds(definedQuery);
+	}
+
+	@Override
 	public List<PriceIndexSnapshot> findActivePriceIndices() {
 		List<PriceIndex> indices = priceIndexRepository.findActivePriceIndices();
 		PriceIndexSnapshotAssembler assembler = new PriceIndexSnapshotAssembler();

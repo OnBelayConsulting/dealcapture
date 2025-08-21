@@ -33,6 +33,11 @@ public class PowerProfileServiceBean extends BaseDomainService implements PowerP
     }
 
     @Override
+    public List<EntityId> findPowerProfileEntityIds(DefinedQuery definedQuery) {
+        return powerProfileRepository.findProfileEntityIds(definedQuery);
+    }
+
+    @Override
     public List<PowerProfileSnapshot> findByIds(QuerySelectedPage selectedPage) {
         List<PowerProfile> profiles = powerProfileRepository.fetchByIds(selectedPage);
         PowerProfileAssembler assembler = new PowerProfileAssembler();

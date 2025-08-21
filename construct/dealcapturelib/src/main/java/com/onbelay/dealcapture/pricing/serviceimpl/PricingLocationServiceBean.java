@@ -90,6 +90,11 @@ public class PricingLocationServiceBean extends BaseDomainService implements Pri
 	}
 
 	@Override
+	public List<EntityId> findPricingLocationEntityIds(DefinedQuery definedQuery) {
+		return pricingLocationRepository.findPricingLocationEntityIds(definedQuery);
+	}
+
+	@Override
 	public List<PricingLocationSnapshot> findByIds(QuerySelectedPage selectedPage) {
 		List<PricingLocation> locations = pricingLocationRepository.fetchByIds(selectedPage);
 		PricingLocationSnapshotAssembler assembler = new PricingLocationSnapshotAssembler();

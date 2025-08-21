@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.deal.adapter;
 
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshotCollection;
@@ -20,4 +21,10 @@ public interface PowerProfileRestAdapter {
             String queryText,
             Integer start,
             Integer limit);
+
+    EntityListItemCollection findEntityIds(
+            String queryText,
+            Integer start,
+            Integer limit);
+
 }

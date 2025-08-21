@@ -57,7 +57,7 @@ public class PowerProfilePositionValuationJobRunnerBean implements DealJobRunner
             if (definedQuery.getOrderByClause().hasExpressions() == false) {
                 definedQuery.getOrderByClause().addOrderExpression(
                         new DefinedOrderExpression(
-                                "ticketNo"));
+                                "name"));
             }
 
             QuerySelectedPage allIds = powerProfileService.findPowerProfileIds(definedQuery);
@@ -82,9 +82,12 @@ public class PowerProfilePositionValuationJobRunnerBean implements DealJobRunner
                 LocalDateTime.now());
         TransactionResult result = valuePowerProfilePositionsService.valuePositions(
                 ids,
-                snapshot.getDetail().getCurrencyCode(),
                 snapshot.getDetail().getCreatedDateTime(),
                 valuationDateTime);
+        dealJobService.endPositionValuationExecution(
+                snapshot.getEntityId(),
+                LocalDateTime.now());
+
 
     }
 }

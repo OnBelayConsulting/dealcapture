@@ -30,8 +30,7 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 	
 	private EntityId marketPriceIndexId;
 	private EntityId dealPriceIndexId;
-	private CurrencyCode marketCurrencyCode;
-	
+
 	public PhysicalDealSnapshot() {
 		super(DealTypeCode.PHYSICAL_DEAL);
 	}
@@ -86,12 +85,4 @@ public class PhysicalDealSnapshot extends BaseDealSnapshot {
 		this.dealPriceIndexId = dealPriceIndexId;
 	}
 
-	@JsonIgnore
-	public CurrencyCode getMarketCurrencyCode() {
-		return marketCurrencyCode;
-	}
-
-	public void setMarketCurrencyCode(CurrencyCode marketCurrencyCode) {
-		this.marketCurrencyCode = marketCurrencyCode;
-	}
 }

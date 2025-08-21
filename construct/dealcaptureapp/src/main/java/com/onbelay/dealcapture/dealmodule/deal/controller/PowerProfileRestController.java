@@ -17,6 +17,7 @@ package com.onbelay.dealcapture.dealmodule.deal.controller;
 
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
@@ -116,7 +117,8 @@ public class PowerProfileRestController extends BaseRestController {
 	
 	
 	@Operation(summary="get powerProfiles")
-	@GetMapping()
+	@GetMapping(
+			produces="application/json" )
 	public ResponseEntity<PowerProfileSnapshotCollection> getPowerProfiles(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
@@ -142,6 +144,38 @@ public class PowerProfileRestController extends BaseRestController {
 
 		return (ResponseEntity<PowerProfileSnapshotCollection>) processResponse(collection);
 	}
+
+
+	@Operation(summary="get powerProfiles")
+	@GetMapping(
+			value="/ids",
+			produces = "application/json")
+	public ResponseEntity<EntityListItemCollection> getPowerProfileIds(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "query", defaultValue="default") String queryText,
+			@RequestParam(value = "start", defaultValue="0")Integer start,
+			@RequestParam(value = "limit", defaultValue="100")Integer limit) {
+
+		EntityListItemCollection collection;
+
+		try {
+			collection = powerProfileRestAdapter.findEntityIds(
+					queryText,
+					start,
+					limit);
+		} catch (OBRuntimeException r) {
+			collection = new EntityListItemCollection(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new EntityListItemCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			collection = new EntityListItemCollection(r.getMessage());
+		}
+
+		return (ResponseEntity<EntityListItemCollection>) processResponse(collection);
+	}
+
 
 	@Operation(summary="get an existing powerProfile")
 	@GetMapping(value="/{id}")

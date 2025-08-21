@@ -13,6 +13,7 @@ import com.onbelay.dealcapture.dealmodule.positions.model.DealPositionView;
 import com.onbelay.dealcapture.dealmodule.positions.positionsfilewriter.DealPositionFileWriter;
 import com.onbelay.dealcapture.dealmodule.positions.service.DealPositionService;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.service.PowerProfilePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.service.ValuePositionsService;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.CreatedDateTimeCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
@@ -21,18 +22,23 @@ import com.onbelay.dealcapture.dealmodule.positions.snapshot.FileReportResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements DealPositionRestAdapter {
     private static final Logger logger = LogManager.getLogger();
     @Autowired
     private DealPositionService dealPositionService;
+
+    @Autowired
+    private PowerProfilePositionsService powerProfilePositionsService;
 
     @Autowired
     private GeneratePositionsService generatePositionsService;
@@ -44,6 +50,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     private DealService dealService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public DealPositionSnapshotCollection find(
             String queryText,
             Integer start,
@@ -99,6 +106,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult save(
             EntityId dealId,
             DealPositionSnapshot positionSnapshot) {
@@ -113,6 +121,7 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult save(List<DealPositionSnapshot> snapshots) {
         initializeSession();
         String positionGenerationIdentifier = "PG_" + Thread.currentThread().getId();
@@ -123,12 +132,14 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public DealPositionSnapshot load(EntityId entityId) {
         initializeSession();
         return dealPositionService.load(entityId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public FileReportResult findPositionsAsCSV(
             String queryText,
             Integer start,
@@ -188,6 +199,9 @@ public class DealPositionRestAdapterBean extends BaseRestAdapterBean implements 
     @Override
     public CreatedDateTimeCollection getCreatedDateTimeCollection() {
         List<LocalDateTime> dateTimes =  dealPositionService.getPositionCreatedDateTimes();
+        List<LocalDateTime> ppDateTimes = powerProfilePositionsService.getPositionCreatedDateTimes();
+        dateTimes.addAll(ppDateTimes);
+        dateTimes = dateTimes.stream().distinct().collect(Collectors.toList());
         return new CreatedDateTimeCollection(dateTimes);
     }
 }

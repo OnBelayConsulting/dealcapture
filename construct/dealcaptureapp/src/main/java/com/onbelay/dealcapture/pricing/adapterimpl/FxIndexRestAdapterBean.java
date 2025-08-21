@@ -16,6 +16,7 @@ import com.onbelay.dealcapture.pricing.snapshot.FxCurveSnapshotCollection;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.FxIndexSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -28,30 +29,35 @@ public class FxIndexRestAdapterBean extends BaseRestAdapterBean implements FxInd
     private FxIndexService fxIndexService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(FxIndexSnapshot snapshot) {
         initializeSession();
         return fxIndexService.save(snapshot);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(List<FxIndexSnapshot> snapshots) {
         initializeSession();
         return fxIndexService.save(snapshots);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult saveFxCurve(FxCurveSnapshot snapshot) {
         initializeSession();
         return fxIndexService.saveFxCurves(snapshot.getIndexId(), List.of(snapshot));
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public FxIndexSnapshot load(EntityId fxIndexId) {
         initializeSession();
         return fxIndexService.load(fxIndexId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public FxIndexSnapshotCollection find(
             String queryText,
             Integer start,
@@ -110,6 +116,7 @@ public class FxIndexRestAdapterBean extends BaseRestAdapterBean implements FxInd
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult saveFxCurves(
             Integer fxIndexId,
             List<FxCurveSnapshot> snapshots) {
@@ -123,6 +130,7 @@ public class FxIndexRestAdapterBean extends BaseRestAdapterBean implements FxInd
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public FxCurveSnapshotCollection findFxCurves(
             String queryText,
             Integer start,
@@ -181,6 +189,7 @@ public class FxIndexRestAdapterBean extends BaseRestAdapterBean implements FxInd
 
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult saveFxCurvesFile(String originalFilename, byte[] fileContents) {
         initializeSession();
 

@@ -46,6 +46,10 @@ public abstract class AbstractDealAssembler extends EntityAssembler {
 			snapshot.setAdministratorId(deal.getAdministrator().generateEntityId());
 		}
 
+		if (deal.getPowerProfile() != null) {
+			snapshot.setPowerProfileId(deal.getPowerProfile().generateEntityId());
+		}
+
 	}
 	
 

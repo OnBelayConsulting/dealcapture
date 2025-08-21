@@ -63,4 +63,6 @@ public interface PriceIndexService {
     List<PriceIndexSnapshot> findActivePriceIndices();
 
     PriceCurveSnapshot loadPriceCurve(EntityId priceCurveId);
+
+    List<EntityId> findPriceIndexEntityIds(DefinedQuery definedQuery);
 }

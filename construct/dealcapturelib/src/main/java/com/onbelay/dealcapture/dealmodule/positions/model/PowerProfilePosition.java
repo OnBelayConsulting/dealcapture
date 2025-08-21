@@ -17,6 +17,16 @@ import jakarta.persistence.*;
 @Table(name = "POWER_PROFILE_POSITION")
 @NamedQueries({
         @NamedQuery(
+                name = PowerProfilePositionRepositoryBean.FIND_CREATED_DATE_TIMES,
+                query = "SELECT distinct position.detail.createdDateTime " +
+                        "  FROM PowerProfilePosition position"),
+        @NamedQuery(
+                name = PowerProfilePositionRepositoryBean.FIND_LATEST_CREATED_DATE_TIME,
+                query = "SELECT position.detail.createdDateTime " +
+                        "  FROM PowerProfilePosition position " +
+                        " WHERE position.detail.createdDateTime <= :dateTime " +
+                     " ORDER BY position.detail.createdDateTime desc"),
+        @NamedQuery(
                 name = PowerProfilePositionRepositoryBean.FIND_BY_POWER_PROFILE,
                 query = "SELECT position " +
                         "  FROM PowerProfilePosition position " +

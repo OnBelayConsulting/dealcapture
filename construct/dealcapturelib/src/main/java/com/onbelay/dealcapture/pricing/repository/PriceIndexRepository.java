@@ -38,4 +38,5 @@ public interface PriceIndexRepository {
 
 	List<PriceIndexReport> fetchPriceIndexReports(List<Integer> indexIds);
 
+    List<EntityId> findPriceIndexEntityIds(DefinedQuery definedQuery);
 }

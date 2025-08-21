@@ -115,7 +115,6 @@ public class ValuePowerProfilePositionsServiceWithBasisTest extends PowerProfile
 
         valuePowerProfilePositionsService.valuePositions(
                 powerProfileWithBasis.generateEntityId(),
-                CurrencyCode.CAD,
                 createdDateTime,
                 LocalDateTime.now());
         flush();

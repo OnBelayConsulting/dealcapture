@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +29,8 @@ public class CurvesFileReader<T extends CurveSnapshot> {
     private ByteArrayInputStream streamIn;
 
     private HashMap<String, List<T>> curveSnapshotMap = new HashMap<>();
+
+    private boolean hasObservedDateTime = false;
 
     public CurvesFileReader(ByteArrayInputStream streamIn, Supplier<T> curveConstructor) {
         this.curveConstructor = curveConstructor;
@@ -44,11 +49,17 @@ public class CurvesFileReader<T extends CurveSnapshot> {
                         .build());
 
             Iterable<CSVRecord> records = parser;
+            List<String> headers = parser.getHeaderNames();
+            for ( String header : headers ) {
+                if (CurveColumnType.OBSERVED_DATE_TIME.getCode().equals(header)) {
+                    hasObservedDateTime = true;
+                }
+            }
 
             for (CSVRecord record : records) {
 
                 if (record.get(0).isBlank() == false)
-                    addSnapshot(parse(record));
+                    addSnapshot(parse(record, headers));
             }
             parser.close();
         } catch (IOException e) {
@@ -69,22 +80,24 @@ public class CurvesFileReader<T extends CurveSnapshot> {
         return curveSnapshotMap;
     }
 
-    private T parse(CSVRecord record) {
+    private T parse(CSVRecord record, List<String> headers) {
 
-        CurveFileFormat sourceFileFormat = new CurveFileFormat();
         CurveSnapshotMapper<T> mapper = new CurveSnapshotMapper<T>(curveConstructor);
 
-        for (int i=0; i < sourceFileFormat.length(); i++) {
-
-            CurveColumnType type = sourceFileFormat.get(i);
-            String field = record.get(i);
-            if (field == null || field.isEmpty())
-                continue;
-            Object value = type.getColumnType().getFromCSVConverter().apply(field);
+        for (String header : headers) {
+            String value = record.get(header);
+            CurveColumnType columnType = CurveColumnType.valueOf(header);
+            Object converted = columnType.getColumnType().getFromCSVConverter().apply(value);
 
             mapper.setPropertyValue(
-                type,
-                value);
+                columnType,
+                    converted);
+        }
+
+        if (hasObservedDateTime == false) {
+            LocalDateTime observedDateTime = LocalDateTime.now();
+            observedDateTime = observedDateTime.truncatedTo(ChronoUnit.SECONDS);
+            mapper.setObservedDateTime(observedDateTime);
         }
         return mapper.getSnapshot();
     }

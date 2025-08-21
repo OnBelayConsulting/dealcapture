@@ -5,9 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -16,6 +18,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @EnableWebSecurity
+@EnableMethodSecurity
 @Order(1)
 @Profile("!test")
 @Configuration
@@ -35,12 +38,16 @@ public class APISecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakJwtConverter("dealcapture"));
         return http
                 .formLogin(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        authHttpRequests -> authHttpRequests.requestMatchers("/api/*").authenticated().anyRequest().hasAnyAuthority("SCOPE_profile")
-                ).oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())).build();
+                        authHttpRequests -> authHttpRequests
+                                .requestMatchers("/api/**").authenticated().anyRequest().hasAnyAuthority("SCOPE_profile")
+                ).oauth2ResourceServer((oauth2) -> oauth2.jwt(
+                        jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))).build();
     }
 }

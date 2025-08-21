@@ -2,7 +2,6 @@ package com.onbelay.dealcapture.pricing.curvesfilereader;
 
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dealcapture.pricing.snapshot.CurveSnapshot;
-import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.shared.enums.FrequencyCode;
 
 import java.math.BigDecimal;
@@ -12,8 +11,6 @@ import java.util.function.Supplier;
 
 public class CurveSnapshotMapper <T extends CurveSnapshot> {
 
-    private Supplier<T> supplier;
-
     private T curveSnapshot;
 
 
@@ -22,8 +19,8 @@ public class CurveSnapshotMapper <T extends CurveSnapshot> {
     }
 
     public CurveSnapshotMapper(Supplier<T> supplier) {
-        this.supplier = supplier;
         curveSnapshot = supplier.get();
+        curveSnapshot.getDetail().setHourEnding(0);
     }
 
     public boolean setPropertyValue(
@@ -49,7 +46,7 @@ public class CurveSnapshotMapper <T extends CurveSnapshot> {
                 return true;
             }
 
-            case CURVE_DATE_HOUR_ENDING -> {
+            case HOUR_ENDING -> {
                 curveSnapshot.getDetail().setHourEnding((Integer) value);
                 return true;
             }
@@ -74,4 +71,11 @@ public class CurveSnapshotMapper <T extends CurveSnapshot> {
     }
 
 
+    public void setObservedDateTime(LocalDateTime observedDateTime) {
+        if (observedDateTime.toLocalDate().isAfter(curveSnapshot.getDetail().getCurveDate())) {
+            curveSnapshot.getDetail().setObservedDateTime(curveSnapshot.getDetail().getCurveDate().atStartOfDay());
+        } else {
+            curveSnapshot.getDetail().setObservedDateTime(observedDateTime);
+        }
+    }
 }

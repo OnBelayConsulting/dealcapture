@@ -17,6 +17,7 @@ package com.onbelay.dealcapture.pricing.controller;
 
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
@@ -211,6 +212,37 @@ public class PriceIndexRestController extends BaseRestController {
 		}
 
 		return (ResponseEntity<PriceIndexSnapshotCollection>) processResponse(collection);
+	}
+
+
+	@Operation(summary="fetch priceIndices")
+	@GetMapping(
+			value = "/ids",
+			produces="application/json" )
+	public ResponseEntity<EntityListItemCollection> fetchPriceIndexIds(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "query", defaultValue="default") String queryText,
+			@RequestParam(value = "start", defaultValue="0")Integer start,
+			@RequestParam(value = "limit", defaultValue="100")Integer limit) {
+
+		EntityListItemCollection collection;
+
+		try {
+			collection = priceIndexRestAdapter.findEntityIds(
+					queryText,
+					start,
+					limit);
+		} catch (OBRuntimeException r) {
+			collection = new EntityListItemCollection(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new EntityListItemCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			collection = new EntityListItemCollection(r.getMessage());
+		}
+
+		return (ResponseEntity<EntityListItemCollection>) processResponse(collection);
 	}
 
 

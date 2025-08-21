@@ -31,8 +31,8 @@ public class InterestCurvesReaderTest extends DealCaptureAppSpringTestCase {
         super.setUp();
 
         interestIndex = InterestIndexFixture.createInterestIndex(
-                "RiskFree",
-                FrequencyCode.DAILY);
+                "MthRiskFree",
+                FrequencyCode.MONTHLY);
 
         flush();
     }
@@ -47,7 +47,7 @@ public class InterestCurvesReaderTest extends DealCaptureAppSpringTestCase {
         fileReader.readContents();
         Map<String, List<InterestCurveSnapshot>> snapshotMap = fileReader.getCurveSnapshotMap();
 
-        assertEquals("RiskFree", snapshotMap.keySet().iterator().next());
+        assertEquals("MthRiskFree", snapshotMap.keySet().iterator().next());
     }
 
 

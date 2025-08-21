@@ -17,6 +17,7 @@ package com.onbelay.dealcapture.pricing.controller;
 
 import com.onbelay.core.controller.BaseRestController;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
@@ -118,7 +119,7 @@ public class PricingLocationRestController extends BaseRestController {
 
 	@Operation(summary="Fetch pricing locations")
 	@GetMapping(produces="application/json" )
-	public ResponseEntity<PricingLocationSnapshotCollection> getPricingLocationSummaries(
+	public ResponseEntity<PricingLocationSnapshotCollection> getPricingLocations(
 			@RequestHeader Map<String, String> headers,
 			@RequestParam(value = "query", defaultValue="default") String queryText,
 			@RequestParam(value = "start", defaultValue="0")Integer start,
@@ -143,6 +144,38 @@ public class PricingLocationRestController extends BaseRestController {
 
 		return (ResponseEntity<PricingLocationSnapshotCollection>) processResponse(collection);
 	}
+
+
+	@Operation(summary="Fetch pricing location entityIds")
+	@GetMapping(
+			value = "/ids",
+			produces="application/json" )
+	public ResponseEntity<EntityListItemCollection> getPricingLocationIds(
+			@RequestHeader Map<String, String> headers,
+			@RequestParam(value = "query", defaultValue="default") String queryText,
+			@RequestParam(value = "start", defaultValue="0")Integer start,
+			@RequestParam(value = "limit", defaultValue="100")Integer limit) {
+
+		EntityListItemCollection collection;
+
+		try {
+			collection = pricingLocationRestAdapter.findEntityIds(
+					queryText,
+					start,
+					limit);
+		} catch (OBRuntimeException r) {
+			collection = new EntityListItemCollection(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new EntityListItemCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			collection = new EntityListItemCollection(r.getMessage());
+		}
+
+		return (ResponseEntity<EntityListItemCollection>) processResponse(collection);
+	}
+
 
 	@Operation(summary="Get a pricing location")
 	@GetMapping(value="/{id}")

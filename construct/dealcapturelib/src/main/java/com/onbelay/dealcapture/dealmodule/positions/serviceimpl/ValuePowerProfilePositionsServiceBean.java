@@ -41,13 +41,11 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
     @Override
     public TransactionResult valuePositions(
             List<Integer> powerProfileIds,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
         doValuePositions(
                 powerProfileIds,
-                currencyCode,
                 createdDateTime,
                 currentDateTime);
 
@@ -58,13 +56,11 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
     @Override
     public TransactionResult valuePositions(
             EntityId powerProfileId,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
         doValuePositions(
                 List.of(powerProfileId.getId()),
-                currencyCode,
                 createdDateTime,
                 currentDateTime);
 
@@ -74,7 +70,6 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
     @Override
     public TransactionResult valuePositions(
             DefinedQuery definedQuery,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 
@@ -84,7 +79,6 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
 
         doValuePositions(
                 selectedPage.getIds(),
-                currencyCode,
                 createdDateTime,
                 currentDateTime);
 
@@ -93,7 +87,6 @@ public class ValuePowerProfilePositionsServiceBean extends AbstractValuePosition
 
     private void doValuePositions(
             List<Integer> powerProfileIds,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime) {
 

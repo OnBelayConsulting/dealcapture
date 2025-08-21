@@ -35,6 +35,11 @@ public class DealJobFactoryConfig {
     }
 
     @Bean
+    public DealJobRunner fxRiskFactorJobRunner() {
+        return new FxRiskFactorValuationJobRunnerBean();
+    }
+
+    @Bean
     public DealJobRunnerFactory dealJobRunnerFactory() {
         DealJobRunnerFactoryBean factory = new DealJobRunnerFactoryBean();
         factory.addRunner(JobTypeCode.DEAL_POS_GENERATION, dealPositionGenerationJobRunner());
@@ -42,6 +47,7 @@ public class DealJobFactoryConfig {
         factory.addRunner(JobTypeCode.PWR_PROFILE_POS_GENERATION, powerProfilePositionGenerationJobRunner());
         factory.addRunner(JobTypeCode.PWR_PROFILE_POS_VALUATION, powerProfilePositionValuationJobRunner());
         factory.addRunner(JobTypeCode.PRICE_RF_VALUATION, priceRiskFactorValuationJobRunner());
+        factory.addRunner(JobTypeCode.FX_RF_VALUATION, fxRiskFactorJobRunner());
         return factory;
     }
 

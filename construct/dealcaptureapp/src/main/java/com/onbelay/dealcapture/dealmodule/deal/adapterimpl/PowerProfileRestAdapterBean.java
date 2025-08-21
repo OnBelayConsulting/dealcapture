@@ -2,6 +2,7 @@ package com.onbelay.dealcapture.dealmodule.deal.adapterimpl;
 
 import com.onbelay.core.controller.BaseRestAdapterBean;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
@@ -13,6 +14,7 @@ import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PowerProfileSnapshotCollection;
 import com.onbelay.dealcapture.dealmodule.positions.service.GeneratePowerProfilePositionsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,57 @@ public class PowerProfileRestAdapterBean extends BaseRestAdapterBean implements 
     private GeneratePowerProfilePositionsService generatePowerProfilePositionsService;
 
     @Override
+    public EntityListItemCollection findEntityIds(
+            String queryText,
+            Integer start,
+            Integer limit) {
+
+        initializeSession();
+
+        DefinedQuery definedQuery;
+
+        if (queryText != null) {
+            if (queryText.equalsIgnoreCase("default")) {
+                definedQuery = new DefinedQuery("PowerProfile");
+            } else {
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("PowerProfile", queryText);
+                definedQuery = builder.build();
+            }
+        } else {
+            definedQuery = new DefinedQuery("PowerProfile");
+        }
+
+        if (definedQuery.getOrderByClause().hasExpressions() == false) {
+            definedQuery.getOrderByClause().addOrderExpression(
+                    new DefinedOrderExpression(
+                            "name"));
+        }
+
+        List<EntityId> allIds = powerProfileService.findPowerProfileEntityIds(definedQuery);
+
+        if (allIds.isEmpty() || start >= allIds.size()) {
+            return new EntityListItemCollection(
+                    start,
+                    limit,
+                    allIds.size());
+        }
+
+        int toIndex = start + limit;
+
+        if (toIndex > allIds.size())
+            toIndex =  allIds.size();
+        int fromIndex = start;
+
+        List<EntityId> selected = allIds.subList(fromIndex, toIndex);
+        return new EntityListItemCollection(
+                start,
+                limit,
+                selected.size(),
+                selected);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public PowerProfileSnapshotCollection find(
             String queryText,
             Integer start,
@@ -88,6 +141,7 @@ public class PowerProfileRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult save(PowerProfileSnapshot dealSnapshot) {
         initializeSession();
         return powerProfileService.save(dealSnapshot);
@@ -95,12 +149,14 @@ public class PowerProfileRestAdapterBean extends BaseRestAdapterBean implements 
 
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult save(List<PowerProfileSnapshot> snapshots) {
         initializeSession();
         return powerProfileService.save(snapshots);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public PowerProfileSnapshot load(EntityId dealId) {
         initializeSession();
         return powerProfileService.load(dealId);

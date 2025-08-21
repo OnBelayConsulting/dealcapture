@@ -37,9 +37,11 @@ import java.util.List;
 @Transactional
 
 public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProfilePosition> implements PowerProfilePositionRepository {
+	public static final String FIND_CREATED_DATE_TIMES = "PowerProfilePositionsRepository.FIND_CREATED_DATE_TIMES";
 	public static final String FIND_BY_POWER_PROFILE = "PowerProfilePositionsRepository.FIND_BY_POWER_PROFILE";
 	public static final String FIND_PROFILE_POSITION_VIEWS ="PowerProfilePositionsRepository.FIND_PROFILE_POSITION_VIEWS";
 	public static final String FIND_PROFILE_POSITION_VIEWS_BY_CONTEXT ="PowerProfilePositionsRepository.FIND_PROFILE_POSITION_VIEWS_BY_CONTEXT";
+	public static final String FIND_LATEST_CREATED_DATE_TIME = "PowerProfilePositionsRepository.FIND_LATEST_CREATED_DATE_TIME" ;
 
 	@Autowired
 	private PowerProfilePositionColumnDefinitions powerProfilePositionColumnDefinitions;
@@ -129,6 +131,25 @@ public class PowerProfilePositionRepositoryBean extends BaseRepository<PowerProf
 				powerProfilePositionColumnDefinitions,
 				definedQuery);
 
+	}
+
+
+	@Override
+	public List<LocalDateTime> getPositionCreatedDateTimes() {
+		return (List<LocalDateTime>) executeReportQuery(FIND_CREATED_DATE_TIMES);
+	}
+
+
+	@Override
+	public LocalDateTime getLastCreatedDateTime(LocalDateTime dateTime) {
+		List<LocalDateTime> dateTimes = (List<LocalDateTime>) executeReportQuery(
+				FIND_LATEST_CREATED_DATE_TIME,
+				"dateTime",
+				dateTime);
+		if (dateTimes == null || dateTimes.isEmpty())
+			return null;
+		else
+			return dateTimes.get(0);
 	}
 
 

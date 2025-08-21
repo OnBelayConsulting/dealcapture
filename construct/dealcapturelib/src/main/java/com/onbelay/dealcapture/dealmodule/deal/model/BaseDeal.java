@@ -101,6 +101,21 @@ public abstract class BaseDeal extends TemporalAbstractEntity {
 	}
 
 	@Override
+	public void delete() {
+		for (DealDayByMonth month : getDealDayByMonthRepository().fetchDealDayByMonths(this.id)) {
+			month.delete();
+		}
+		for (DealHourByDay day : getDealHourByDayRepository().fetchDealHourByDays(this.id)) {
+			day.delete();
+		}
+		for (DealCost cost : getDealCostRepository().fetchDealCosts(this.id)) {
+			cost.delete();
+		}
+
+		super.delete();
+	}
+
+	@Override
 	protected void validate() throws OBValidationException {
 		super.validate();
 		

@@ -1,6 +1,8 @@
 package com.onbelay.dealcapture.dealmodule.deal.service;
 
 import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
@@ -24,6 +26,7 @@ import com.onbelay.shared.enums.UnitOfMeasureCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -109,6 +112,20 @@ public class PowerProfileServiceTest extends DealCaptureSpringTestCase {
         QuerySelectedPage selectedPage = powerProfileService.findPowerProfileIds(definedQuery);
         assertEquals(1, selectedPage.getIds().size());
 
+    }
+
+
+    @Test
+    public void findPowerProfilesEntityIds()  {
+        PowerProfileFixture.createPowerProfileAllDaysAllHours(
+                "5*12",
+                priceDailyIndex);
+        flush();
+        DefinedQuery definedQuery = new DefinedQuery("PowerProfile");
+        List<EntityId> ids = powerProfileService.findPowerProfileEntityIds(definedQuery);
+        assertEquals(1, ids.size());
+        EntityId entityId = ids.get(0);
+        assertEquals("5*12", entityId.getCode());
     }
 
 

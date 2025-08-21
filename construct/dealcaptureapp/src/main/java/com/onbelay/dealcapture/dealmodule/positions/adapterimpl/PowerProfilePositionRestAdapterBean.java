@@ -8,13 +8,16 @@ import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.PowerProfilePositionRestAdapter;
 import com.onbelay.dealcapture.dealmodule.positions.service.PowerProfilePositionsService;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CreatedDateTimeCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshotCollection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,6 +28,7 @@ public class PowerProfilePositionRestAdapterBean extends BaseRestAdapterBean imp
 
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public PowerProfilePositionSnapshotCollection find(
             String queryText,
             Integer start,
@@ -80,8 +84,17 @@ public class PowerProfilePositionRestAdapterBean extends BaseRestAdapterBean imp
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public PowerProfilePositionSnapshot load(EntityId entityId) {
         initializeSession();
         return powerProfilePositionsService.load(entityId);
     }
+
+
+    @Override
+    public CreatedDateTimeCollection getCreatedDateTimeCollection() {
+        List<LocalDateTime> dateTimes =  powerProfilePositionsService.getPositionCreatedDateTimes();
+        return new CreatedDateTimeCollection(dateTimes);
+    }
+
 }

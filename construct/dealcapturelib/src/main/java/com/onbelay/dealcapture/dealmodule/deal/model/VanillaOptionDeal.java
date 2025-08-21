@@ -19,6 +19,7 @@ import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.OptionDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.VanillaOptionDealSnapshot;

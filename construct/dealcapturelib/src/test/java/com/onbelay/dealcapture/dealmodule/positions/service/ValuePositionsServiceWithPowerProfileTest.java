@@ -126,7 +126,6 @@ public class ValuePositionsServiceWithPowerProfileTest extends PositionsServiceW
 
         valuePowerProfilePositionsService.valuePositions(
                 powerProfile.generateEntityId(),
-                CurrencyCode.CAD,
                 createdDateTime,
                 LocalDateTime.now());
         flush();

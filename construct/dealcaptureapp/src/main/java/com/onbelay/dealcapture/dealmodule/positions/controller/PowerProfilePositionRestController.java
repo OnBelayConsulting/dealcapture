@@ -21,6 +21,7 @@ import com.onbelay.core.enums.CoreTransactionErrorCode;
 import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.exception.DefinedQueryException;
 import com.onbelay.dealcapture.dealmodule.positions.adapter.PowerProfilePositionRestAdapter;
+import com.onbelay.dealcapture.dealmodule.positions.snapshot.CreatedDateTimeCollection;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.PowerProfilePositionSnapshotCollection;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,6 +100,36 @@ public class PowerProfilePositionRestController extends BaseRestController {
 		}
 
 		return (ResponseEntity<PowerProfilePositionSnapshot>) processResponse(snapshot);
+	}
+
+
+	@Operation(summary="get list of dateTimes when positions were created.")
+	@GetMapping(
+			value = "/createdDateTimes",
+			produces="application/json"
+	)
+	public ResponseEntity<CreatedDateTimeCollection> getPositionCreatedDateTimes(
+			@RequestHeader Map<String, String> headers) {
+
+		CreatedDateTimeCollection collection;
+
+		try {
+			collection = powerProfilePositionRestAdapter.getCreatedDateTimeCollection();
+		} catch (OBRuntimeException r) {
+			collection = new CreatedDateTimeCollection(r.getErrorCode(), r.getParms());
+			collection.setErrorMessage(errorMessageService.getErrorMessage(r.getErrorCode()));
+		} catch (DefinedQueryException r) {
+			collection = new CreatedDateTimeCollection(CoreTransactionErrorCode.INVALID_QUERY.getCode());
+			collection.setErrorMessage(r.getMessage());
+		} catch (RuntimeException r) {
+			collection = new CreatedDateTimeCollection(r.getMessage());
+		}
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", "application/json; charset=utf-8");
+		return collection.isSuccessful()
+				? new ResponseEntity<CreatedDateTimeCollection>(collection, httpHeaders, HttpStatus.OK)
+				: new ResponseEntity<CreatedDateTimeCollection>(collection, httpHeaders, HttpStatus.BAD_REQUEST);
 	}
 
 

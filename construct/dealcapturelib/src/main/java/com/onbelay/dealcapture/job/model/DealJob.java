@@ -8,6 +8,7 @@ import com.onbelay.dealcapture.job.enums.JobErrorCode;
 import com.onbelay.dealcapture.job.enums.JobStatusCode;
 import com.onbelay.dealcapture.job.snapshot.DealJobDetail;
 import com.onbelay.dealcapture.job.snapshot.DealJobSnapshot;
+import com.onbelay.shared.enums.CurrencyCode;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -114,6 +115,7 @@ public class DealJob extends AbstractEntity {
         if (snapshot.getDependsOnId() != null) {
             this.dependsOnJobId = snapshot.getDependsOnId().getId();
         }
+        getDetail().setCurrencyCode(CurrencyCode.CAD);
         getDetail().copyFrom(snapshot.getDetail());
         getDetail().setJobStatusCode(JobStatusCode.PENDING);
         save();

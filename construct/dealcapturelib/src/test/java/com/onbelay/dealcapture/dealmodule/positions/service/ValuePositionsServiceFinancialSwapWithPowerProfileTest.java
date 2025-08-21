@@ -129,7 +129,6 @@ public class ValuePositionsServiceFinancialSwapWithPowerProfileTest extends Fina
 
         valuePowerProfilePositionsService.valuePositions(
                 powerProfile.generateEntityId(),
-                CurrencyCode.CAD,
                 createdDateTime,
                 LocalDateTime.now());
         flush();

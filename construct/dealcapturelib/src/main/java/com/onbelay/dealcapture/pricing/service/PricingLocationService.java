@@ -34,4 +34,6 @@ public interface PricingLocationService {
 	public QuerySelectedPage findPricingLocationIds(DefinedQuery definedQuery);
 
 	public List<PricingLocationSnapshot> findByIds(QuerySelectedPage selectedPage);
+
+    List<EntityId> findPricingLocationEntityIds(DefinedQuery definedQuery);
 }

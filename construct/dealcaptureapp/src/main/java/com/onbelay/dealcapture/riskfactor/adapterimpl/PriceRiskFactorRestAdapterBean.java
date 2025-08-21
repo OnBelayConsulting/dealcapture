@@ -12,6 +12,7 @@ import com.onbelay.dealcapture.riskfactor.service.PriceRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class PriceRiskFactorRestAdapterBean extends BaseRestAdapterBean implemen
     private PriceRiskFactorService priceRiskFactorService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(
             EntityId priceIndexId,
             List<PriceRiskFactorSnapshot> snapshots) {
@@ -32,12 +34,14 @@ public class PriceRiskFactorRestAdapterBean extends BaseRestAdapterBean implemen
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PriceRiskFactorSnapshot load(EntityId priceRiskFactorId) {
         initializeSession();
         return priceRiskFactorService.load(priceRiskFactorId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PriceRiskFactorSnapshotCollection find(
             String queryText,
             Integer start,

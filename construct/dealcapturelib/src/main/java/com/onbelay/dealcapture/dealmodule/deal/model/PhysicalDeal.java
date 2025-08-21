@@ -20,6 +20,7 @@ import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealErrorCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealStatusCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.DealTypeCode;
+import com.onbelay.dealcapture.dealmodule.deal.enums.ValuationCode;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.BaseDealSnapshot;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealDetail;
 import com.onbelay.dealcapture.dealmodule.deal.snapshot.PhysicalDealSnapshot;
@@ -77,6 +78,9 @@ public class PhysicalDeal extends BaseDeal {
 	public void updateWith(BaseDealSnapshot snapshot) {
 		super.updateWith(snapshot);
 		updateRelationships(snapshot);
+		if (getPowerProfile() != null) {
+			detail.setMarketValuationCode(ValuationCode.POWER_PROFILE);
+		}
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
 		this.detail.copyFrom(physicalDealSnapshot.getDetail());
 		update();
@@ -86,6 +90,9 @@ public class PhysicalDeal extends BaseDeal {
 		detail.setDefaults();
 		super.createWith(snapshot);
 		updateRelationships(snapshot);
+		if (getPowerProfile() != null) {
+			detail.setMarketValuationCode(ValuationCode.POWER_PROFILE);
+		}
 		PhysicalDealSnapshot physicalDealSnapshot = (PhysicalDealSnapshot) snapshot;
 		this.detail.copyFrom(physicalDealSnapshot.getDetail());
 		save();
@@ -134,6 +141,8 @@ public class PhysicalDeal extends BaseDeal {
 						throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
 				}
 				case POWER_PROFILE -> {
+					if (marketPriceIndex != null)
+						throw new OBValidationException(DealErrorCode.MISSING_MARKET_INDEX.getCode());
 					if (getPowerProfile() == null)
 						throw new OBValidationException(DealErrorCode.MISSING_MARKET_POWER_PROFILE.getCode());
 				}

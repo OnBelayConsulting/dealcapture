@@ -42,7 +42,7 @@ public class FxCurveSnapshotMapper {
                 return true;
             }
 
-            case CURVE_DATE_HOUR_ENDING -> {
+            case HOUR_ENDING -> {
                 fxCurveSnapshot.getDetail().setHourEnding((Integer) value);
                 return true;
             }

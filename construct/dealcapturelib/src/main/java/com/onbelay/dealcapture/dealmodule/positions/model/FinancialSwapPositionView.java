@@ -53,7 +53,7 @@ public class FinancialSwapPositionView extends DealPositionView {
         this.paysPriceRiskFactorId = paysPriceRiskFactorId;
     }
 
-    @Column(name = "DEAL_PRICE_FX_RISK_FACTOR_ID")
+    @Column(name = "PAYS_PRICE_FX_RISK_FACTOR_ID")
     public Integer getPaysPriceFXRiskFactorId() {
         return paysPriceFXRiskFactorId;
     }

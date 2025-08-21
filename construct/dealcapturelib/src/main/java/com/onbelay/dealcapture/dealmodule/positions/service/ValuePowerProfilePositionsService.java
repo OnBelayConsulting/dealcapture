@@ -11,20 +11,17 @@ import java.util.List;
 public interface ValuePowerProfilePositionsService {
     TransactionResult valuePositions(
             EntityId powerProfileId,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime);
 
     TransactionResult valuePositions(
             List<Integer> powerProfileIds,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime);
 
 
     TransactionResult valuePositions(
             DefinedQuery definedQuery,
-            CurrencyCode currencyCode,
             LocalDateTime createdDateTime,
             LocalDateTime currentDateTime);
 }

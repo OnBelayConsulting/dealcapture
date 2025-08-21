@@ -9,6 +9,7 @@ import com.onbelay.dealcapture.dealmodule.positions.enums.PriceTypeCode;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealHourlyPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.DealPositionSnapshot;
 import com.onbelay.dealcapture.dealmodule.positions.snapshot.FinancialSwapPositionSnapshot;
+import com.onbelay.dealcapture.pricing.model.FxIndex;
 import com.onbelay.dealcapture.riskfactor.snapshot.PriceRiskFactorSnapshot;
 import com.onbelay.shared.enums.CurrencyCode;
 import com.onbelay.shared.enums.FrequencyCode;
@@ -209,6 +210,70 @@ public class GeneratePositionsServiceFinancialSwapTest extends FinancialSwapDeal
 
         assertEquals(true, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
         assertEquals(CurrencyCode.CAD, positionSnapshot.getSettlementDetail().getSettlementCurrencyCode());
+
+        PriceRiskFactorSnapshot paysRiskFactor = priceRiskFactorService.findByPriceIndexIds(
+                List.of(paysIndex.getId()),
+                startDate,
+                endDate).get(0);
+
+        assertEquals(paysRiskFactor.getEntityId().getId(), positionSnapshot.getPaysPriceRiskFactorId().getId());
+
+        PriceRiskFactorSnapshot receivesRiskFactor = priceRiskFactorService.findByPriceIndexIds(
+                List.of(receivesIndex.getId()),
+                startDate,
+                endDate).get(0);
+
+        assertEquals(receivesRiskFactor.getEntityId().getId(), positionSnapshot.getReceivesPriceRiskFactorId().getId());
+    }
+
+
+    @Test
+    public void generateFloat4FloatPlusSwapPositionsWithFx() {
+
+        dealService.updateDealPositionGenerationStatusToPending(List.of(float4FloatPlusBuyDeal.getId()));
+
+
+        DealPositionsEvaluationContext context = new DealPositionsEvaluationContext(
+                CurrencyCode.USD,
+                createdDateTime,
+                fromMarketDate,
+                toMarketDate)
+                .withUnitOfMeasureCode(UnitOfMeasureCode.GJ);
+
+
+        generatePositionsService.generatePositions(
+                "test",
+                context,
+                float4FloatPlusBuyDeal.getId());
+
+        flush();
+        clearCache();
+
+        FinancialSwapDeal deal = (FinancialSwapDeal) dealRepository.load(float4FloatPlusBuyDeal.generateEntityId());
+
+        assertEquals(PositionGenerationStatusCode.COMPLETE, deal.getDealDetail().getPositionGenerationStatusCode());
+        assertNotNull(deal.getDealDetail().getPositionGenerationDateTime());
+        List<DealPositionSnapshot> positionSnapshots = dealPositionService.findPositionsByDeal(
+                float4FloatPlusBuyDeal.generateEntityId());
+
+        assertEquals(31, positionSnapshots.size());
+
+        FinancialSwapPositionSnapshot positionSnapshot = (FinancialSwapPositionSnapshot) positionSnapshots.get(0);
+        assertEquals(float4FloatPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getStartDate());
+        assertEquals(float4FloatPlusBuyDeal.getDealDetail().getStartDate(), positionSnapshot.getPositionDetail().getEndDate());
+
+        assertEquals(FrequencyCode.DAILY, positionSnapshot.getPositionDetail().getFrequencyCode());
+        assertEquals(CurrencyCode.USD, positionSnapshot.getPositionDetail().getCurrencyCode());
+        assertEquals(UnitOfMeasureCode.GJ, positionSnapshot.getPositionDetail().getVolumeUnitOfMeasure());
+        assertEquals(0, BigDecimal.TEN.compareTo(positionSnapshot.getPositionDetail().getVolumeQuantityValue()));
+        assertNotNull(positionSnapshot.getPositionDetail().getCreatedDateTime());
+        assertEquals("0", positionSnapshot.getPositionDetail().getErrorCode());
+
+        assertEquals(0,
+                float4FloatPlusBuyDeal.getDealDetail().getFixedPrice().getValue().compareTo(
+                        positionSnapshot.getPositionDetail().getFixedPriceValue()));
+
+        assertEquals(false, positionSnapshot.getSettlementDetail().getIsSettlementPosition().booleanValue());
 
         PriceRiskFactorSnapshot paysRiskFactor = priceRiskFactorService.findByPriceIndexIds(
                 List.of(paysIndex.getId()),

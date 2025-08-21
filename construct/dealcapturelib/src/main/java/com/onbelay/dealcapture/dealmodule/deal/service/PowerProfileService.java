@@ -14,6 +14,9 @@ public interface PowerProfileService {
 
     public QuerySelectedPage findPowerProfileIds(DefinedQuery definedQuery);
 
+    public List<EntityId> findPowerProfileEntityIds(DefinedQuery definedQuery);
+
+
     public List<PowerProfileSnapshot> findByIds(QuerySelectedPage selectedPage);
 
     void assignPositionIdentifierToPowerProfiles(

@@ -1,5 +1,6 @@
 package com.onbelay.dealcapture.dealmodule.positions.model;
 
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dealcapture.busmath.model.Amount;
 import com.onbelay.dealcapture.busmath.model.FxRate;
 import com.onbelay.dealcapture.busmath.model.Price;
@@ -9,6 +10,7 @@ import com.onbelay.dealcapture.dealmodule.positions.enums.PositionErrorCode;
 import com.onbelay.dealcapture.dealmodule.positions.optionvaluation.OptionEvaluator;
 import com.onbelay.dealcapture.dealmodule.positions.optionvaluation.OptionEvaluatorFactory;
 import com.onbelay.dealcapture.dealmodule.positions.optionvaluation.OptionResult;
+import com.onbelay.dealcapture.pricing.enums.PricingErrorCode;
 import com.onbelay.shared.enums.BuySellCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -167,7 +169,11 @@ public class VanillaOptionsPositionEvaluator extends DealPositionEvaluator imple
         int netDays = expiryDays - currentDays;
         BigDecimal yearInDays = BigDecimal.valueOf(netDays).divide(BigDecimal.valueOf(365.00), MathContext.DECIMAL128);
         yearInDays = yearInDays.setScale(4, RoundingMode.HALF_UP);
-        
+
+        if (valuationIndexManager.getCurrentRiskFreeRate() == null) {
+            logger.error("Missing interest rate for option evaluation.");
+            throw new OBRuntimeException(PricingErrorCode.MISSING_INTEREST_INDEX.getCode());
+        }
         OptionResult result = optionEvaluator.evaluate(
                 getVanillaOptionPositionView().getOptionPositionDetail().getOptionTypeCode(),
                 underlyingPrice.toDouble(),

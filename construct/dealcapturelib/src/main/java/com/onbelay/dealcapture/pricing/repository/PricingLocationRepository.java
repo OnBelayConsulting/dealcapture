@@ -34,5 +34,6 @@ public interface PricingLocationRepository {
 	
 	public List<PricingLocation> fetchByIds(QuerySelectedPage selectedPage);
 
-	
+
+    List<EntityId> findPricingLocationEntityIds(DefinedQuery definedQuery);
 }

@@ -16,6 +16,7 @@ import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshotCollection;
 import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -28,24 +29,28 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
     private InterestIndexService interestIndexService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(InterestIndexSnapshot snapshot) {
         initializeSession();
         return interestIndexService.save(snapshot);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(List<InterestIndexSnapshot> snapshots) {
         initializeSession();
         return interestIndexService.save(snapshots);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public InterestIndexSnapshot load(EntityId interestIndexId) {
         initializeSession();
         return interestIndexService.load(interestIndexId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public InterestIndexSnapshotCollection find(
             String queryText,
             Integer start,
@@ -104,6 +109,7 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult saveInterestCurves(
             Integer interestIndexId,
             List<InterestCurveSnapshot> snapshots) {
@@ -117,6 +123,7 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult saveInterestCurve(InterestCurveSnapshot snapshot) {
         initializeSession();
 
@@ -126,6 +133,7 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public InterestCurveSnapshotCollection findInterestCurves(
             String queryText,
             Integer start,
@@ -184,6 +192,7 @@ public class InterestIndexRestAdapterBean extends BaseRestAdapterBean implements
 
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult saveInterestCurvesFile(String originalFilename, byte[] fileContents) {
         initializeSession();
 

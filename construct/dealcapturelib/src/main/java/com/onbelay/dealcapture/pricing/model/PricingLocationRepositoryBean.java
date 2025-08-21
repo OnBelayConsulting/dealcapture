@@ -79,5 +79,13 @@ public class PricingLocationRepositoryBean extends BaseRepository<PricingLocatio
 	}
 
 
+	@Override
+	public List<EntityId> findPricingLocationEntityIds(DefinedQuery definedQuery) {
+		return  executeDefinedQueryForList(
+				pricingLocationColumnDefinitions,
+				definedQuery);
+	}
+
+
 
 }

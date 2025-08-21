@@ -92,4 +92,17 @@ public class PowerProfilePositionServiceBean implements PowerProfilePositionsSer
         return assembler.assemble(positions);
     }
 
+    @Override
+    public List<LocalDateTime> getPositionCreatedDateTimes() {
+        return powerProfilePositionRepository.getPositionCreatedDateTimes();
+    }
+
+
+    @Override
+    public LocalDateTime getLastestCreatedDateTime(LocalDateTime dateTime) {
+        return powerProfilePositionRepository.getLastCreatedDateTime(dateTime);
+    }
+
+
+
 }

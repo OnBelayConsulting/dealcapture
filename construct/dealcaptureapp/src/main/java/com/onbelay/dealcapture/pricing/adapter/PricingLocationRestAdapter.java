@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.pricing.adapter;
 
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshotCollection;
@@ -15,4 +16,9 @@ public interface PricingLocationRestAdapter {
     PricingLocationSnapshotCollection find(String queryText, Integer start, Integer limit);
 
     PricingLocationSnapshot load(EntityId entityId);
+
+    EntityListItemCollection findEntityIds(
+            String queryText,
+            Integer start,
+            Integer limit);
 }

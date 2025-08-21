@@ -59,6 +59,7 @@ public enum DealErrorCode {
 
     MISSING_MARKET_INDEX      		 ("DC_DL-E0501", "Error: Missing market index"),
     MISSING_MARKET_POWER_PROFILE	 ("DC_DL-E0502", "Error: Missing market Power Profile."),
+    INVALID_MARKET_INDEX	         ("DC_DL-E0503", "Error: Invalid market index -  Power Profile is present."),
 
     MISSED_FIXED_PRICE_CURRENCY      ("DC_DL-E0550", "Error: Fixed price is set and currency is missing."),
     MISSING_FIXED_PRICE_UOM          ("DC_DL-E0551", "Error: Fixed price is set and unit of measure is missing."),

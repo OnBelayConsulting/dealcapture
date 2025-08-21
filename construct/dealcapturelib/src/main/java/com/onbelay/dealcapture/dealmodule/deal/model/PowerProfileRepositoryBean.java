@@ -191,4 +191,11 @@ public class PowerProfileRepositoryBean extends BaseRepository<PowerProfile> imp
 				powerProfileColumnDefinitions,
 				definedQuery);
 	}
+
+	@Override
+	public List<EntityId> findProfileEntityIds(DefinedQuery definedQuery) {
+		return  executeDefinedQueryForList(
+				powerProfileColumnDefinitions,
+				definedQuery);
+	}
 }

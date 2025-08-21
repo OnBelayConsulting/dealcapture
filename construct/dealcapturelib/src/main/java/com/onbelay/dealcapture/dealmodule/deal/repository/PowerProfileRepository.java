@@ -35,6 +35,9 @@ public interface PowerProfileRepository {
 	 */
 	public List<Integer> findProfileIds(DefinedQuery definedQuery);
 
+	public List<EntityId> findProfileEntityIds(DefinedQuery definedQuery);
+
+
 	/**
 	 * Find PowerProfiles using a defined query
 	 * @param query

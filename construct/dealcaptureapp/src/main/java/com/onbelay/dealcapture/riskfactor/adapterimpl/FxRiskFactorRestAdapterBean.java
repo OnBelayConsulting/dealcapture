@@ -12,6 +12,7 @@ import com.onbelay.dealcapture.riskfactor.service.FxRiskFactorService;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshot;
 import com.onbelay.dealcapture.riskfactor.snapshot.FxRiskFactorSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class FxRiskFactorRestAdapterBean extends BaseRestAdapterBean implements 
     private FxRiskFactorService fxRiskFactorService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(
             EntityId fxIndexId, 
             List<FxRiskFactorSnapshot> snapshots) {
@@ -32,12 +34,14 @@ public class FxRiskFactorRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public FxRiskFactorSnapshot load(EntityId fxRiskFactorId) {
         initializeSession();
         return fxRiskFactorService.load(fxRiskFactorId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public FxRiskFactorSnapshotCollection find(
             String queryText,
             Integer start,

@@ -106,6 +106,14 @@ public class PriceIndexRepositoryBean extends BaseRepository<PriceIndex> impleme
 	}
 
 	@Override
+	public List<EntityId> findPriceIndexEntityIds(DefinedQuery definedQuery) {
+		return  executeDefinedQueryForList(
+				priceIndexColumnDefinitions,
+				definedQuery);
+	}
+
+
+	@Override
 	public List<PriceIndex> fetchByIds(QuerySelectedPage selectedPage) {
 		return fetchEntitiesById(
 				priceIndexColumnDefinitions,

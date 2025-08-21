@@ -2,6 +2,7 @@ package com.onbelay.dealcapture.pricing.adapterimpl;
 
 import com.onbelay.core.controller.BaseRestAdapterBean;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
@@ -12,6 +13,7 @@ import com.onbelay.dealcapture.pricing.service.PricingLocationService;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PricingLocationSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class PricingLocationRestAdapterBean extends BaseRestAdapterBean implemen
     private PricingLocationService pricingLocationService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(PricingLocationSnapshot snapshot) {
 
         initializeSession();
@@ -32,6 +35,7 @@ public class PricingLocationRestAdapterBean extends BaseRestAdapterBean implemen
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult save(List<PricingLocationSnapshot> snapshots) {
 
         initializeSession();
@@ -40,6 +44,7 @@ public class PricingLocationRestAdapterBean extends BaseRestAdapterBean implemen
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PricingLocationSnapshotCollection find(
             String queryText,
             Integer start,
@@ -97,7 +102,60 @@ public class PricingLocationRestAdapterBean extends BaseRestAdapterBean implemen
                 snapshots);
     }
 
+
     @Override
+    public EntityListItemCollection findEntityIds(
+            String queryText,
+            Integer start,
+            Integer limit) {
+
+        initializeSession();
+
+        DefinedQuery definedQuery;
+
+        if (queryText != null) {
+            if (queryText.equalsIgnoreCase("default")) {
+                definedQuery = new DefinedQuery("PricingLocation");
+            } else {
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("PricingLocation", queryText);
+                definedQuery = builder.build();
+            }
+        } else {
+            definedQuery = new DefinedQuery("PricingLocation");
+        }
+
+        if (definedQuery.getOrderByClause().hasExpressions() == false) {
+            definedQuery.getOrderByClause().addOrderExpression(
+                    new DefinedOrderExpression(
+                            "name"));
+        }
+
+        List<EntityId> allIds = pricingLocationService.findPricingLocationEntityIds(definedQuery);
+
+        if (allIds.isEmpty() || start >= allIds.size()) {
+            return new EntityListItemCollection(
+                    start,
+                    limit,
+                    allIds.size());
+        }
+
+        int toIndex = start + limit;
+
+        if (toIndex > allIds.size())
+            toIndex =  allIds.size();
+        int fromIndex = start;
+
+        List<EntityId> selected = allIds.subList(fromIndex, toIndex);
+        return new EntityListItemCollection(
+                start,
+                limit,
+                selected.size(),
+                selected);
+    }
+
+
+    @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PricingLocationSnapshot load(EntityId entityId) {
         initializeSession();
         return pricingLocationService.load(entityId);

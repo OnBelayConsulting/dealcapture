@@ -36,4 +36,7 @@ public interface PowerProfilePositionsService {
 
     PowerProfilePositionSnapshot load(EntityId entityId);
 
+    List<LocalDateTime> getPositionCreatedDateTimes();
+
+    LocalDateTime getLastestCreatedDateTime(LocalDateTime createdDateTime);
 }

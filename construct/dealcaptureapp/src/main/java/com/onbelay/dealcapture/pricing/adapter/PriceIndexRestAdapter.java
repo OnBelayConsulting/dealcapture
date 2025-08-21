@@ -1,6 +1,7 @@
 package com.onbelay.dealcapture.pricing.adapter;
 
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshotCollection;
@@ -41,4 +42,9 @@ public interface PriceIndexRestAdapter {
             byte[] bytes);
 
     PriceCurveSnapshot loadPriceCurve(EntityId entityId);
+
+    EntityListItemCollection findEntityIds(
+            String queryText,
+            Integer start,
+            Integer limit);
 }

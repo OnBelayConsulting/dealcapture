@@ -50,14 +50,16 @@ public class DealPositionsGeneratorPlantBean implements DealPositionsGeneratorPl
         if (dealHourByDayViews.size() > 0)
             factory.withHourByDayViews(dealHourByDayViews);
 
+        LocalDateTime powerProfileLatest = powerProfilePositionsService.getLastestCreatedDateTime(context.getCreatedDateTime());
+        if (powerProfileLatest != null) {
+            List<PowerProfilePositionView> powerProfilePositionViews = powerProfilePositionsService.fetchPowerProfilePositionViews(
+                    context.getStartPositionDate(),
+                    context.getEndPositionDate(),
+                    powerProfileLatest);
 
-        List<PowerProfilePositionView> powerProfilePositionViews = powerProfilePositionsService.fetchPowerProfilePositionViews(
-                context.getStartPositionDate(),
-                context.getEndPositionDate(),
-                context.getCreatedDateTime());
-
-        if(powerProfilePositionViews.size() > 0)
-            factory.withPowerProfilePositionViews(powerProfilePositionViews);
+            if (powerProfilePositionViews.size() > 0)
+                factory.withPowerProfilePositionViews(powerProfilePositionViews);
+        }
 
 
         List<DealPositionGenerator> dealPositionGenerators = new ArrayList<>(dealSummaries.size());

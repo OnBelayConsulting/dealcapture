@@ -35,6 +35,8 @@ import com.onbelay.dealcapture.pricing.service.InterestIndexService;
 import com.onbelay.dealcapture.pricing.snapshot.InterestCurveSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.InterestIndexSnapshot;
 import com.onbelay.shared.enums.FrequencyCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,7 @@ import java.util.List;
 @Service(value = "interestIndexService")
 @Transactional
 public class InterestIndexServiceBean extends BaseDomainService implements InterestIndexService {
+	private static Logger logger = LogManager.getLogger(InterestIndexServiceBean.class);
 
 	@Autowired
 	private InterestIndexRepository interestIndexRepository;
@@ -65,7 +68,8 @@ public class InterestIndexServiceBean extends BaseDomainService implements Inter
 	public InterestRate getCurrentInterestRate(LocalDate currentDate) {
 		InterestIndex interestIndex = interestIndexRepository.findInterestIndexByIsRiskFreeRate();
 		if (interestIndex == null) {
-			throw new OBRuntimeException(PricingErrorCode.MISSING_INTEREST_INDEX.getCode());
+			logger.info("No interest index found. Options will not evaluate.");
+			return null;
 		}
 		InterestCurve curve = interestCurveRepository.fetchCurrentInterestRate(
 				interestIndex.generateEntityId(),

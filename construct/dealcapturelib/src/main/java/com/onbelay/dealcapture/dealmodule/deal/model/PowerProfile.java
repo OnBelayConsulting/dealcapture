@@ -18,6 +18,7 @@ package com.onbelay.dealcapture.dealmodule.deal.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.model.AuditAbstractEntity;
 import com.onbelay.core.entity.model.TemporalAbstractEntity;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerFlowCode;
 import com.onbelay.dealcapture.dealmodule.deal.enums.PowerProfileErrorCode;
@@ -66,8 +67,16 @@ public class PowerProfile extends TemporalAbstractEntity {
 	protected PowerProfile() {
 		
 	}
-	
-	
+
+	@Override
+	public EntityId generateEntityId() {
+		return new EntityId(
+				id,
+				detail.getName(),
+				detail.getDescription(),
+				getIsExpired());
+	}
+
 	public static PowerProfile create(PowerProfileSnapshot snapshot) {
 		
 		PowerProfile profile = new PowerProfile();
@@ -107,6 +116,15 @@ public class PowerProfile extends TemporalAbstractEntity {
 
 		updateRelationships(snapshot);
 		update();
+	}
+
+	@Override
+	public void delete() {
+		for (PowerProfileDay day : getPowerProfileDayRepository().fetchPowerProfileDays(this)) {
+			day.delete();
+		}
+
+		super.delete();
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.onbelay.dealcapture.dealmodule.deal.adapterimpl;
 
+import com.onbelay.core.auth.model.OBUser;
+import com.onbelay.core.auth.service.ApplicationAuthenticationService;
 import com.onbelay.core.controller.BaseRestAdapterBean;
 import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.entity.snapshot.TransactionResult;
@@ -23,6 +25,12 @@ import com.onbelay.dealcapture.job.snapshot.DealJobSnapshot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -30,6 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -42,15 +51,35 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     private DealJobService dealJobService;
 
     @Autowired
+    private ApplicationAuthenticationService authenticationService;
+
+    @Autowired
     private DealJobRequestPublisher dealJobRequestPublisher;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN', 'VIEW-DEALS')")
     public DealSnapshotCollection find(
             String queryText,
             Integer start,
             Integer limit) {
 
         initializeSession();
+
+        OBUser user = authenticationService.getCurrentUser();
+
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        String name = authentication.getName();
+
+        if (authentication instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken token = (JwtAuthenticationToken) authentication;
+            Jwt jwt = token.getToken();
+            name = (String) jwt.getClaims().get("name");
+            for (String claim: jwt.getClaims().keySet()) {
+                logger.debug("Claim name: " + claim);
+            }
+        }
+
 
         DefinedQuery definedQuery;
 
@@ -100,12 +129,15 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult save(BaseDealSnapshot dealSnapshot) {
         initializeSession();
+
         return dealService.save(dealSnapshot);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult saveDealOverridesByMonth(
             EntityId dealId,
             DealOverrideMonthSnapshot snapshot) {
@@ -116,6 +148,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult saveHourlyDealOverrides(
             EntityId dealId,
             DealOverrideHoursForDaySnapshot snapshot) {
@@ -126,18 +159,21 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult save(List<BaseDealSnapshot> snapshots) {
         initializeSession();
         return dealService.save(snapshots);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public BaseDealSnapshot load(EntityId dealId) {
         initializeSession();
         return dealService.load(dealId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public DealOverrideMonthSnapshot getDealOverridesForMonth(
             EntityId dealId,
             LocalDate overrideDate) {
@@ -152,6 +188,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public DealOverrideHoursForDaySnapshot getHourlyDealOverrides(
             EntityId dealId,
             LocalDate dayDate) {
@@ -162,6 +199,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public DealOverrideSnapshotCollection fetchDealOverrides(
             EntityId dealId,
             Integer start,
@@ -197,6 +235,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult saveDealCosts(
             Integer dealId,
             List<DealCostSnapshot> dealCostSnapshots) {
@@ -208,6 +247,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult saveDealCost(DealCostSnapshot dealCostSnapshot) {
         initializeSession();
 
@@ -217,6 +257,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public DealCostSnapshotCollection fetchDealCosts(Integer dealId) {
 
         initializeSession();
@@ -230,6 +271,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-DEALS')")
     public DealCostSnapshot loadDealCost(EntityId dealCostId) {
         initializeSession();
 
@@ -237,6 +279,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','RUN-JOBS')")
     public MarkToMarketResult queueMarkToMarketJobs(MarkToMarketJobRequest request) {
         initializeSession();
 
@@ -268,6 +311,17 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
         dealPositionGenerationJobSnapshot.getDetail().setToDate(request.getToDate());
 
         result = dealJobService.save(dealPositionGenerationJobSnapshot);
+        dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
+        dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
+
+        DealJobSnapshot fxRiskFactorValuationJobSnapshot = new DealJobSnapshot();
+        fxRiskFactorValuationJobSnapshot.getDetail().setJobTypeCode(JobTypeCode.FX_RF_VALUATION);
+        fxRiskFactorValuationJobSnapshot.setDependsOnId(result.getEntityId());
+        fxRiskFactorValuationJobSnapshot.getDetail().setQueryText("default");
+        fxRiskFactorValuationJobSnapshot.getDetail().setCreatedDateTime(createdDateTime);
+        fxRiskFactorValuationJobSnapshot.getDetail().setCurrencyCode(request.getCurrencyCode());
+
+        result = dealJobService.save(fxRiskFactorValuationJobSnapshot);
         dealJobService.changeJobStatus(result.getEntityId(), JobActionCode.QUEUE);
         dealJobRequestPublisher.publish(new DealJobRequestPublication(result.getId()));
 
@@ -315,6 +369,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
 
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult saveDealFile(String originalFileName, byte[] fileContents) {
         initializeSession();
 
@@ -326,6 +381,7 @@ public class DealRestAdapterBean extends BaseRestAdapterBean implements DealRest
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-DEALS')")
     public TransactionResult saveDealOverridesFile(String originalFileName, byte[] fileContents) {
         initializeSession();
 

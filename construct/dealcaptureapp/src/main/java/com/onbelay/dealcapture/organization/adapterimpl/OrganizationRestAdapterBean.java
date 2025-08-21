@@ -14,6 +14,7 @@ import com.onbelay.dealcapture.organization.enums.OrganizationRoleType;
 import com.onbelay.dealcapture.organization.service.OrganizationService;
 import com.onbelay.dealcapture.organization.snapshot.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,18 +26,21 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
     private OrganizationService organizationService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-ORGANIZATIONS')")
     public TransactionResult save(OrganizationSnapshot snapshot) {
         initializeSession();
         return organizationService.save(snapshot);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-ORGANIZATIONS')")
     public OrganizationSnapshot get(Integer id) {
         initializeSession();
         return organizationService.load(new EntityId(id));
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-ORGANIZATIONS')")
     public OrganizationSnapshotCollection find(
             String queryText,
             String orgRoleTypeString,
@@ -139,6 +143,7 @@ public class OrganizationRestAdapterBean extends BaseRestAdapterBean implements 
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-ORGANIZATIONS')")
     public TransactionResult saveRoles(
             EntityId organizationId,
             List<OrganizationRoleSnapshot> snapshots) {

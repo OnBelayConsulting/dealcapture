@@ -18,6 +18,7 @@ import com.onbelay.dealcapture.job.snapshot.DealJobSnapshotCollection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class DealJobRestAdapterBean extends BaseRestAdapterBean implements DealJ
     DealJobRequestPublisher dealJobRequestPublisher;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-JOBS')")
     public TransactionResult createAndQueueDealJob(DealJobSnapshot snapshot) {
 
         initializeSession();
@@ -48,6 +50,7 @@ public class DealJobRestAdapterBean extends BaseRestAdapterBean implements DealJ
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-JOBS')")
     public DealJobSnapshotCollection find(
             String queryText,
             Integer start,
@@ -103,12 +106,14 @@ public class DealJobRestAdapterBean extends BaseRestAdapterBean implements DealJ
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-JOBS')")
     public DealJobSnapshot load(EntityId entityId) {
         initializeSession();
         return dealJobService.load(entityId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-JOBS')")
     public TransactionResult cancelJob(EntityId dealId) {
         initializeSession();
         dealJobService.changeJobStatus(dealId, JobActionCode.CANCEL);
@@ -116,6 +121,7 @@ public class DealJobRestAdapterBean extends BaseRestAdapterBean implements DealJ
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-JOBS')")
     public TransactionResult deleteJob(EntityId dealId) {
         initializeSession();
         dealJobService.changeJobStatus(dealId, JobActionCode.DELETE);

@@ -2,6 +2,7 @@ package com.onbelay.dealcapture.pricing.adapterimpl;
 
 import com.onbelay.core.controller.BaseRestAdapterBean;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.EntityListItemCollection;
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedOrderExpression;
@@ -15,6 +16,7 @@ import com.onbelay.dealcapture.pricing.snapshot.PriceCurveSnapshotCollection;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshot;
 import com.onbelay.dealcapture.pricing.snapshot.PriceIndexSnapshotCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -27,18 +29,21 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     private PriceIndexService priceIndexService;
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public TransactionResult save(PriceIndexSnapshot snapshot) {
         initializeSession();
         return priceIndexService.save(snapshot);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public TransactionResult save(List<PriceIndexSnapshot> snapshots) {
         initializeSession();
         return priceIndexService.save(snapshots);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PriceIndexSnapshot load(EntityId priceIndexId) {
         initializeSession();
         return priceIndexService.load(priceIndexId);
@@ -46,12 +51,14 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
 
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PriceCurveSnapshot loadPriceCurve(EntityId priceCurveId) {
         initializeSession();
         return priceIndexService.loadPriceCurve(priceCurveId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult savePriceCurve(PriceCurveSnapshot snapshot) {
         initializeSession();
         return priceIndexService.savePrices(snapshot.getIndexId(), List.of(snapshot));
@@ -59,6 +66,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
 
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PriceIndexSnapshotCollection find(
             String queryText,
             Integer start,
@@ -117,6 +125,58 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     }
 
     @Override
+    public EntityListItemCollection findEntityIds(
+            String queryText,
+            Integer start,
+            Integer limit) {
+
+        initializeSession();
+
+        DefinedQuery definedQuery;
+
+        if (queryText != null) {
+            if (queryText.equalsIgnoreCase("default")) {
+                definedQuery = new DefinedQuery("PriceIndex");
+            } else {
+                DefinedQueryBuilder builder = new DefinedQueryBuilder("PriceIndex", queryText);
+                definedQuery = builder.build();
+            }
+        } else {
+            definedQuery = new DefinedQuery("PriceIndex");
+        }
+
+        if (definedQuery.getOrderByClause().hasExpressions() == false) {
+            definedQuery.getOrderByClause().addOrderExpression(
+                    new DefinedOrderExpression(
+                            "name"));
+        }
+
+        List<EntityId> allIds = priceIndexService.findPriceIndexEntityIds(definedQuery);
+
+        if (allIds.isEmpty() || start >= allIds.size()) {
+            return new EntityListItemCollection(
+                    start,
+                    limit,
+                    allIds.size());
+        }
+
+        int toIndex = start + limit;
+
+        if (toIndex > allIds.size())
+            toIndex =  allIds.size();
+        int fromIndex = start;
+
+        List<EntityId> selected = allIds.subList(fromIndex, toIndex);
+        return new EntityListItemCollection(
+                start,
+                limit,
+                selected.size(),
+                selected);
+    }
+
+
+    @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult savePriceCurves(
             Integer priceIndexId,
             List<PriceCurveSnapshot> snapshots) {
@@ -130,6 +190,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','VIEW-PRICING')")
     public PriceCurveSnapshotCollection findPriceCurves(
             String queryText,
             Integer start,
@@ -187,6 +248,7 @@ public class PriceIndexRestAdapterBean extends BaseRestAdapterBean implements Pr
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('DEAL-ADMIN','SAVE-PRICING')")
     public TransactionResult savePriceCurvesFile(String originalFilename, byte[] fileContents) {
         initializeSession();
 

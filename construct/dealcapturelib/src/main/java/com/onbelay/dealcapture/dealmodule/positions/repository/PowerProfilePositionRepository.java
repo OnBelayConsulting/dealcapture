@@ -32,4 +32,8 @@ public interface PowerProfilePositionRepository {
     List<PowerProfilePosition> fetchByIds(QuerySelectedPage querySelectedPage);
 
     List<Integer> findPowerProfilePositionIds(DefinedQuery definedQuery);
+
+    List<LocalDateTime> getPositionCreatedDateTimes();
+
+    LocalDateTime getLastCreatedDateTime(LocalDateTime createdDateTime);
 }
