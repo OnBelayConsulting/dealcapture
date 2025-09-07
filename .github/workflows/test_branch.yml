@@ -44,7 +44,7 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-      image: gradle:jdk17-focal
+      image: gradle:jdk21
 
     permissions:
       contents: read

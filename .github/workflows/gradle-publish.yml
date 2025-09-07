@@ -43,7 +43,7 @@ jobs:
     
 
     runs-on: ubuntu-latest
-    container: gradle:jdk17-focal
+    container: gradle:jdk21
 
     # necessary for tagging.
     permissions: write-all
