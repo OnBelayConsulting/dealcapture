@@ -18,8 +18,6 @@ dependencyManagement {
 	}
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
 
 task construct (dependsOn: ["build", "srcZip"])
 
@@ -48,10 +46,10 @@ repositories {
 dependencies {
 	implementation project(path: ':construct:dealcapturelib')
 	testImplementation project(path: ':construct:dealcapturelib', configuration: 'tests')
-	implementation group: "com.onbelay.core", name: "obcore", version: "2.5.0"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "2.5.0", classifier: 'tests'
-	implementation group: "com.onbelay.shared", name: "obshared", version: "2.0.10"
-	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.0.10", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "2.7.0"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "2.7.0", classifier: 'tests'
+	implementation group: "com.onbelay.shared", name: "obshared", version: "2.1.0"
+	testImplementation group: "com.onbelay.shared", name: "obsharedtest", version: "2.1.0", classifier: 'tests'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')

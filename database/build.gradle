@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
 	liquibaseRuntime "org.liquibase:liquibase-core:4.16.0"
-	liquibaseRuntime 'org.postgresql:postgresql:42.2.8'
+	liquibaseRuntime 'org.postgresql:postgresql:42.7.7'
 	liquibaseRuntime 'com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre17'
 	liquibaseRuntime 'info.picocli:picocli:4.6.1'
 	liquibaseRuntime group: 'com.onbelay.shared', name: 'obshareddb', version: '2.0.10', classifier: 'database'
